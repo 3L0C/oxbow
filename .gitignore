@@ -1,0 +1,13 @@
+# Dune build output
+_build/
+.merlin
+
+# Nix build result
+result
+result-*
+
+# direnv cache
+.direnv/
+
+# Other dot dirs (editor configs, etc.)
+.*/
