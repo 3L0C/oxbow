@@ -11,3 +11,5 @@ result-*
 
 # Other dot dirs (editor configs, etc.)
 .*/
+/ocdwm.opam
+/protocol/*.ml
