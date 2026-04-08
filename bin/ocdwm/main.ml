@@ -61,7 +61,7 @@ let () =
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.(set_level (Some Info));
   Printexc.record_backtrace true;
-  (* Unix.putenv "WAYLAND_DEBUG" ""; *)
+  Unix.putenv "WAYLAND_DEBUG" "";
   try Eio_main.run @@ fun env -> main ~net:env#net with
   | Failure s -> begin
       Printf.eprintf "%s\n" s;

@@ -252,15 +252,6 @@ let op (wm : window_manager) (seat : seat) =
         | false, true ->
             Int32.add seat.op_start_height seat.op_dy
       in
-      Printf.fprintf Stdlib.stdout
-        "\n\
-         op_dx: %li\n\
-         op_dy: %li\n\
-         op_start_width: %li\n\
-         op_start_height: %li\n\
-         op_edges: %li        \n"
-         seat.op_dx seat.op_dy seat.op_start_width
-        seat.op_start_height seat.op_edges;
       Rwm.River_window_v1.propose_dimensions
         (Option.get seat.op_window).obj
         ~width:(max 1l width) ~height:(max 1l height)
