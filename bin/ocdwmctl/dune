@@ -1,0 +1,10 @@
+(executable
+ (name main)
+ (public_name ocdwmctl)
+ (libraries
+  ocdwm.core
+  eio_main
+  yojson
+  cmdliner
+  fmt
+  fmt.tty))

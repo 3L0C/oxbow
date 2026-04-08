@@ -1,0 +1,12 @@
+(executable
+ (name main)
+ (public_name ocdwm)
+ (libraries
+  ocdwm.wm
+  ocdwm.core
+  ocdwm.protocol
+  eio_main
+  logs
+  logs.fmt
+  fmt
+  fmt.tty))
