@@ -1,4 +1,13 @@
 (library
  (name ocdwm_wm)
  (public_name ocdwm.wm)
- (libraries ocdwm.core ocdwm.layout ocdwm.protocol wayland eio logs xkbcommon))
+ (libraries
+   ocdwm.config
+   ocdwm.core
+   ocdwm.ipc
+   ocdwm.layout
+   ocdwm.protocol
+   wayland
+   eio
+   logs
+   xkbcommon))

@@ -4,19 +4,22 @@ module Rwm =
 
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 open Types
+open Ocdwm_ipc.Types
 
-let disconnect_seats seats window =
+let disconnect_seats (seats : seat list) (window : window) =
   List.iter
     (fun seat ->
-       (match seat.focused with
-       | Some w when w == window -> seat.focused <- None
-       | _ -> ());
-       match seat.op_window with
-       | Some w when w == window ->
+       begin match seat.op with
+       | Op_move { window = w; _ }
+       | Op_resize { window = w; _ }
+         when w == window -> begin
            Rwm.River_seat_v1.op_end seat.obj;
            seat.op <- Op_none;
-           seat.op_window <- None
-       | _ -> ())
+           seat.interacted <- None;
+           seat.hovered <- None
+         end
+       | _ -> ()
+       end)
     seats
 
 let xkb_binding_destroy (binding : xkb_binding) =
@@ -29,7 +32,7 @@ let xkb_binding_create
       (keysym : Xkbcommon.Keysym.t)
       (action : action)
   =
-  let xkb_v1 = Option.get wm.xkb_v1 in
+  let xkb_v1 = wm.xkb_v1 in
   let keysym =
     Int32.of_int (Xkbcommon.Keysym.to_int keysym)
   in
@@ -90,61 +93,36 @@ let destroy seat =
 
 let init (wm : window_manager) (seat : seat) =
   let super = Rwm.River_seat_v1.Modifiers.mod4 in
-  seat.is_new <- false;
   xkb_binding_create wm seat super Xkbcommon.Keysym.K_space
-    Spawn_foot;
+    (Spawn [| "kitty" |]);
   xkb_binding_create wm seat super Xkbcommon.Keysym.K_q
-    Close;
+    Close_focused;
   xkb_binding_create wm seat super Xkbcommon.Keysym.K_n
-    Focus_next;
+    (Focus_window Dir_next);
   xkb_binding_create wm seat super Xkbcommon.Keysym.K_Escape
-    Exit;
+    Exit_wm;
   pointer_binding_create seat super Input_event.Btn_left
-    Move;
+    Move_interactive;
   pointer_binding_create seat super Input_event.Btn_right
-    Resize
-
-let focus
-      (wm : window_manager)
-      (seat : seat)
-      (window : window option)
-  =
-  let get_top =
-    match wm.windows with
-    | w :: _ -> Some w
-    | [] -> None
-  in
-  let window =
-    match window with
-    | Some _ -> window
-    | None -> get_top
-  in
-  (match (seat.focused, window) with
-  | Some w1, Some w2 when w1 == w2 -> ()
-  | _, Some window -> begin
-      Rwm.River_seat_v1.focus_window seat.obj
-        ~window:window.obj;
-      Rwm.River_node_v1.place_top window.node;
-      wm.windows <-
-        window
-        :: List.filter (fun w -> w != window) wm.windows
-    end
-  | _, _ -> Rwm.River_seat_v1.clear_focus seat.obj);
-  seat.focused <- window
+    Resize_interactive
 
 let pointer_move
       (wm : window_manager)
       (seat : seat)
       (window : window)
   =
-  focus wm seat (Some window);
+  Focus.focus_window seat window;
   Rwm.River_seat_v1.op_start_pointer seat.obj;
-  seat.op <- Op_move;
-  seat.op_window <- Some window;
-  seat.op_start_x <- window.x;
-  seat.op_start_y <- window.y;
-  seat.op_dx <- 0l;
-  seat.op_dy <- 0l
+  seat.op <-
+    Op_move
+      {
+        window;
+        start_x = window.geom.x;
+        start_y = window.geom.y;
+        dx = 0l;
+        dy = 0l;
+        release = false;
+      }
 
 let pointer_resize
       (wm : window_manager)
@@ -152,83 +130,57 @@ let pointer_resize
       (window : window)
       (edges : int32)
   =
-  focus wm seat (Some window);
+  Focus.focus_window seat window;
   Rwm.River_window_v1.inform_resize_start window.obj;
   Rwm.River_seat_v1.op_start_pointer seat.obj;
-  seat.op <- Op_resize;
-  seat.op_window <- Some window;
-  seat.op_edges <- edges;
-  seat.op_start_x <- window.x;
-  seat.op_start_y <- window.y;
-  seat.op_start_width <- window.width;
-  seat.op_start_height <- window.height;
-  seat.op_dx <- 0l;
-  seat.op_dy <- 0l
+  seat.op <-
+    Op_resize
+      {
+        window;
+        edges;
+        start_x = window.geom.x;
+        start_y = window.geom.y;
+        start_w = window.geom.w;
+        start_h = window.geom.h;
+        dx = 0l;
+        dy = 0l;
+        release = false;
+      }
 
-let spawn_foot () =
+let spawn_kitty () =
   match Unix.fork () with
   | 0 -> Unix.execvp "kitty" [||]
   | pid -> ()
 
-let action (wm : window_manager) (seat : seat) = function
-  | No_action -> ()
-  | Spawn_foot -> spawn_foot ()
-  | Close -> (
-      match seat.focused with
-      | Some window -> Rwm.River_window_v1.close window.obj
-      | None -> ())
-  | Focus_next -> (
-      match List.length wm.windows with
-      | 0 -> focus wm seat None
-      | n -> focus wm seat (List.nth_opt wm.windows (n - 1))
-      )
-  | Move -> (
-      match (seat.op, seat.hovered) with
-      | Op_none, Some window -> pointer_move wm seat window
-      | _, _ -> ())
-  | Resize -> (
-      match (seat.op, seat.hovered) with
-      | Op_none, Some window ->
-          pointer_resize wm seat window
-            (Int32.logor Rwm.River_window_v1.Edges.right
-               Rwm.River_window_v1.Edges.bottom)
-      | _, _ -> ())
-  | Exit ->
-      Option.get wm.wm_v1
-      |> Rwm.River_window_manager_v1.exit_session
-
 let op (wm : window_manager) (seat : seat) =
   match seat.op with
-  | Op_move when seat.op_release -> begin
+  | Op_move op_m when op_m.release -> begin
       Rwm.River_seat_v1.op_end seat.obj;
-      seat.op <- Op_none;
-      seat.op_window <- None
+      seat.op <- Op_none
     end
-  | Op_resize when seat.op_release -> begin
-      (Option.get seat.op_window).obj
-      |> Rwm.River_window_v1.inform_resize_end;
+  | Op_resize op_r when op_r.release -> begin
+      Rwm.River_window_v1.inform_resize_end op_r.window.obj;
       Rwm.River_seat_v1.op_end seat.obj;
-      seat.op <- Op_none;
-      seat.op_window <- None
+      seat.op <- Op_none
     end
-  | Op_resize -> begin
+  | Op_resize op_r -> begin
       let left =
-        Int32.logand seat.op_edges
+        Int32.logand op_r.edges
           Rwm.River_window_v1.Edges.left
         <> 0l
       in
       let right =
-        Int32.logand seat.op_edges
+        Int32.logand op_r.edges
           Rwm.River_window_v1.Edges.right
         <> 0l
       in
       let top =
-        Int32.logand seat.op_edges
+        Int32.logand op_r.edges
           Rwm.River_window_v1.Edges.top
         <> 0l
       in
       let bottom =
-        Int32.logand seat.op_edges
+        Int32.logand op_r.edges
           Rwm.River_window_v1.Edges.bottom
         <> 0l
       in
@@ -236,72 +188,22 @@ let op (wm : window_manager) (seat : seat) =
         match (left, right) with
         | true, true
         | false, false ->
-            seat.op_start_width
-        | true, false ->
-            Int32.sub seat.op_start_width seat.op_dx
-        | false, true ->
-            Int32.add seat.op_start_width seat.op_dx
+            op_r.start_w
+        | true, false -> Int32.sub op_r.start_w op_r.dx
+        | false, true -> Int32.add op_r.start_w op_r.dx
       in
       let height =
         match (top, bottom) with
         | true, true
         | false, false ->
-            seat.op_start_height
-        | true, false ->
-            Int32.sub seat.op_start_height seat.op_dy
-        | false, true ->
-            Int32.add seat.op_start_height seat.op_dy
+            op_r.start_h
+        | true, false -> Int32.sub op_r.start_h op_r.dy
+        | false, true -> Int32.add op_r.start_h op_r.dy
       in
-      Rwm.River_window_v1.propose_dimensions
-        (Option.get seat.op_window).obj
+      Rwm.River_window_v1.propose_dimensions op_r.window.obj
         ~width:(max 1l width) ~height:(max 1l height)
     end
   (* Op_resize *)
   | Op_none
   | _ ->
       ()
-
-let manage (wm : window_manager) (seat : seat) =
-  if seat.is_new then init wm seat;
-  focus wm seat seat.interacted;
-  seat.interacted <- None;
-  action wm seat seat.pending_action;
-  seat.pending_action <- No_action;
-  op wm seat;
-  seat.op_release <- false
-
-let render (wm : window_manager) (seat : seat) =
-  begin match seat.op with
-  | Op_none -> ()
-  | Op_move ->
-      wm.window_handler.set_position
-        (Option.get seat.op_window)
-        ~x:(Int32.add seat.op_start_x seat.op_dx)
-        ~y:(Int32.add seat.op_start_y seat.op_dy)
-  | Op_resize ->
-      let x =
-        if
-          Int32.logand seat.op_edges
-            Rwm.River_window_v1.Edges.left
-          <> 0l
-        then
-          Int32.sub seat.op_start_width
-            (Option.get seat.op_window).width
-          |> Int32.add seat.op_start_x
-        else seat.op_start_x
-      in
-      let y =
-        if
-          Int32.logand seat.op_edges
-            Rwm.River_window_v1.Edges.top
-          <> 0l
-        then
-          Int32.sub seat.op_start_height
-            (Option.get seat.op_window).height
-          |> Int32.add seat.op_start_y
-        else seat.op_start_y
-      in
-      wm.window_handler.set_position
-        (Option.get seat.op_window)
-        ~x ~y
-  end

@@ -4,112 +4,171 @@ module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
+open Ocdwm_config.Types
+open Ocdwm_core.Types
+open Ocdwm_ipc.Types
+open Ocdwm_layout.Types
 
-module Input_event = struct
-  type code =
-    | Key_unknown
-    | Btn_left
-    | Btn_right
+type presentation =
+  | Tiled
+  | Floating
+  | Fullscreen of { restore : [ `Tiled | `Floating ] }
 
-  let of_int32 = function
-    | 0x110l -> Btn_left
-    | 0x111l -> Btn_right
-    | _ -> Key_unknown
+type 'a size_hints = {
+  min_w : 'a;
+  max_w : 'a;
+  min_h : 'a;
+  max_h : 'a;
+}
 
-  let to_int32 = function
-    | Btn_left -> 0x110l
-    | Btn_right -> 0x111l
-    | Key_unknown -> 240l
-end
-
-type action =
-  | No_action
-  | Spawn_foot
-  | Close
-  | Focus_next
-  | Move
-  | Resize
-  | Exit
-
-type seat_op =
-  | Op_none
-  | Op_move
-  | Op_resize
+type output_state =
+  | O_active
+  | O_removed
 
 type output = {
-  mutable obj : [ `V4 ] Rwm.River_output_v1.t;
-  mutable removed : bool;
+  (* Wayland objects *)
+  obj : [ `V4 ] Rwm.River_output_v1.t;
+  (* Lifecycle *)
+  mutable state : output_state;
+  (* Identity *)
+  mutable name : string option;
+  (* Geometry *)
+  mutable geom : int32 rect;
+  (* Usable area *)
+  mutable usable : int rect;
+  (* Tag state *)
+  mutable selected_tags : tag_mask;
+  mutable previous_tags : tag_mask;
+  (* Per-tag layout configuration *)
+  tag_state : tag_data array;
+  (* Focus stack - most recently focused first *)
+  mutable focus_stack : window list;
+  (* All windows on this output. Ordered in tiling order when filtered by
+     selected_tags *)
+  mutable windows : window list;
 }
+(* output *)
+
+and window_request =
+  | Req_none
+  | Req_move of { seat : seat }
+  | Req_resize of {
+      seat : seat;
+      edges : int32;
+    }
+
+and window_state =
+  | W_new
+  | W_active
+  | W_closing
 
 and window = {
-  mutable obj : [ `V4 ] Rwm.River_window_v1.t;
+  (* Wayland objects *)
+  obj : [ `V4 ] Rwm.River_window_v1.t;
   node : [ `V4 ] Rwm.River_node_v1.t;
-  mutable is_new : bool;
-  mutable closed : bool;
-  mutable x : int32;
-  mutable y : int32;
-  mutable width : int32;
-  mutable height : int32;
-  mutable pointer_move_requested : seat option;
-  mutable pointer_resize_requested : seat option;
-  mutable pointer_resize_requested_edges : int32;
+  (* Lifecycle *)
+  mutable state : window_state;
+  (* Identity *)
+  mutable app_id : string option;
+  mutable title : string option;
+  mutable parent : window_box option;
+  (* Geometry *)
+  mutable geom : int32 rect;
+  (* Old Geometry - used when exiting fullscreen/floating *)
+  mutable old_geom : int32 rect;
+  (* Size hints from dimensions_hint *)
+  mutable size_hints : int32 size_hints;
+  (* Tag and output assignment *)
+  mutable tags : tag_mask;
+  mutable output : output option;
+  (* State flags *)
+  mutable is_fixed : bool;
+  mutable is_urgent : bool;
+  mutable presentation : presentation;
+  (* Pointer op state *)
+  mutable request : window_request;
 }
+(* managed_window *)
+
+and window_box = { mutable body : window option }
 
 and xkb_binding = {
-  mutable obj : [ `V2 ] Xkb.River_xkb_binding_v1.t;
-  mutable seat : seat;
+  obj : [ `V2 ] Xkb.River_xkb_binding_v1.t;
+  seat : seat;
   mutable action : action;
 }
 
 and pointer_binding = {
-  mutable obj : [ `V4 ] Rwm.River_pointer_binding_v1.t;
-  mutable seat : seat;
+  obj : [ `V4 ] Rwm.River_pointer_binding_v1.t;
+  seat : seat;
   mutable action : action;
 }
 
+and seat_op =
+  | Op_none
+  | Op_move of {
+      window : window;
+      start_x : int32;
+      start_y : int32;
+      mutable dx : int32;
+      mutable dy : int32;
+      mutable release : bool;
+    }
+  | Op_resize of {
+      window : window;
+      start_x : int32;
+      start_y : int32;
+      start_w : int32;
+      start_h : int32;
+      edges : int32;
+      mutable dx : int32;
+      mutable dy : int32;
+      mutable release : bool;
+    }
+
+and seat_state =
+  | S_active
+  | S_closing
+
 and seat = {
-  mutable obj : [ `V4 ] Rwm.River_seat_v1.t;
-  mutable is_new : bool;
-  mutable removed : bool;
-  mutable focused : window option;
-  mutable hovered : window option;
-  mutable interacted : window option;
+  (* Wayland objects *)
+  obj : [ `V4 ] Rwm.River_seat_v1.t;
+  (* Lifecycle *)
+  mutable state : seat_state;
+  (* Focus state *)
+  mutable output : output option;
+  (* Keybindings *)
   mutable xkb_bindings : xkb_binding list;
   mutable pointer_bindings : pointer_binding list;
   mutable pending_action : action;
+  (* Pointer state *)
+  mutable hovered : window option;
+  mutable interacted : window option;
+  (* Interactive op state *)
   mutable op : seat_op;
-  mutable op_window : window option;
-  mutable op_start_x : int32;
-  mutable op_start_y : int32;
-  mutable op_dx : int32;
-  mutable op_dy : int32;
-  mutable op_release : bool;
-  mutable op_start_width : int32;
-  mutable op_start_height : int32;
-  mutable op_edges : int32;
 }
+(* active_seat *)
 
-and seat_handler = {
-  pointer_move : window_manager -> seat -> window -> unit;
-  pointer_resize :
-    window_manager -> seat -> window -> int32 -> unit;
-}
+and seat_box = { mutable body : seat option }
 
-and window_handler = {
-  set_position : window -> x:int32 -> y:int32 -> unit;
-}
-
-and window_manager = {
-  mutable wm_v1 :
-    [ `V4 ] Rwm.River_window_manager_v1.t option;
-  mutable xkb_v1 :
-    [ `V2 ] Xkb.River_xkb_bindings_v1.t option;
+type window_manager = {
+  (* Wayland objects *)
+  wm_v1 : [ `V4 ] Rwm.River_window_manager_v1.t;
+  xkb_v1 : [ `V2 ] Xkb.River_xkb_bindings_v1.t;
+  (* Tracked outputs *)
+  mutable outputs : output list; (* Sorted by focus order *)
   mutable windows : window list;
-  mutable outputs : output list;
   mutable seats : seat list;
-  seat_handler : seat_handler;
-  window_handler : window_handler;
+  (* User configuration *)
+  config : config;
+  mutable config_loaded : bool;
+  (* Layout registry *)
+  layouts : layout_registry;
+  (* IPC state *)
+  ipc : ipc_state;
 }
+
+and wm_box = { mutable body : window_manager option }
 
 type (_, _) Wayland.S.user_data +=
   | Output_data of output

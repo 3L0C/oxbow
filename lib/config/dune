@@ -1,0 +1,6 @@
+(library
+ (name ocdwm_config)
+ (public_name ocdwm.config)
+ (libraries
+   ocdwm.core
+   ocdwm.layout))
