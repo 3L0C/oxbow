@@ -127,6 +127,7 @@ and seat_op =
     }
 
 and seat_state =
+  | S_new
   | S_active
   | S_closing
 

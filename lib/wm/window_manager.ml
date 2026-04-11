@@ -72,6 +72,13 @@ let action (wm : window_manager) (seat : seat) = function
   | _ -> ()
 
 let manage_seat (wm : window_manager) (seat : seat) =
+  begin match seat.state with
+  | S_new -> begin
+      Seat.init wm seat;
+      seat.state <- S_active
+    end
+  | _ -> ()
+  end;
   begin match seat.interacted with
   | Some w -> Focus.focus_window seat w
   | None -> ()
@@ -82,13 +89,15 @@ let manage_seat (wm : window_manager) (seat : seat) =
   Seat.op wm seat
 
 let manage_window (wm : window_manager) (window : window) =
-  (* Move the new logic to it's own function *)
-  (* if window.is_new then begin
-       window.is_new <- false;
-       set_position window ~x:0l ~y:0l;
-       Rwm.River_window_v1.propose_dimensions window.obj
-         ~width:0l ~height:0l
-     end; *)
+  begin match window.state with
+  | W_new -> begin
+      Window.set_position window ~x:0l ~y:0l;
+      Rwm.River_window_v1.propose_dimensions window.obj
+        ~width:0l ~height:0l;
+      window.state <- W_active
+    end
+  | _ -> ()
+  end;
   match window.request with
   | Req_none -> ()
   | Req_move r -> begin
@@ -277,7 +286,7 @@ let handle_seat _ river_seat (wm_box : wm_box) =
   let seat : seat =
     {
       obj = river_seat;
-      state = S_active;
+      state = S_new;
       output = Focus.get_output wm.outputs;
       xkb_bindings = [];
       pointer_bindings = [];
