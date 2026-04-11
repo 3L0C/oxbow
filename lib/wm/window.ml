@@ -11,7 +11,8 @@ let destroy (window : window) =
 let set_position (window : window) ~(x : int32) ~(y : int32)
   =
   Rwm.River_node_v1.set_position window.node ~x ~y;
-  window.geom <- { x; y; w = 0l; h = 0l }
+  window.geom <-
+    { x; y; w = window.geom.w; h = window.geom.h }
 
 let is_visible (w : window) =
   match w.output with
