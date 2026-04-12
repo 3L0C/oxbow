@@ -1,5 +1,7 @@
 (* ocdwm window manager - state management *)
+module Layout = Ocdwm_layout.Layout
 open Types
+open Ocdwm_core.Types
 open Ocdwm_ipc.Types
 open Ocdwm_config.Types
 
@@ -88,6 +90,29 @@ let manage_seat (wm : window_manager) (seat : seat) =
   seat.pending_action <- No_action;
   Seat.op wm seat
 
+let retile (wm : window_manager) = function
+  | None -> ()
+  | Some (o : output) -> begin
+      let n = Output.visible_window_count o in
+      let layout =
+        Layout.tile (Output.tag_data o).layout_params
+          o.usable n
+      in
+      let windows = Output.visible_windows o in
+      List.iter2
+        (fun g w ->
+           let g =
+             {
+               x = Int32.of_int g.x;
+               y = Int32.of_int g.y;
+               w = Int32.of_int g.w;
+               h = Int32.of_int g.h;
+             }
+           in
+           Window.set_geom w g)
+        layout windows
+    end
+
 let manage_window (wm : window_manager) (window : window) =
   begin match window.state with
   | W_new -> begin
@@ -98,10 +123,8 @@ let manage_window (wm : window_manager) (window : window) =
         end
       | None -> ()
       end;
-      Window.set_position window ~x:0l ~y:0l;
-      Rwm.River_window_v1.propose_dimensions window.obj
-        ~width:0l ~height:0l;
-      window.state <- W_active
+      window.state <- W_active;
+      retile wm window.output
     end
   | _ -> ()
   end;
@@ -129,6 +152,7 @@ let remove_outputs (wm : window_manager) =
       wm.outputs
 
 let close_windows (wm : window_manager) =
+  let outputs = ref [] in
   wm.windows <-
     List.filter
       (fun (w : window) ->
@@ -137,10 +161,16 @@ let close_windows (wm : window_manager) =
              Seat.disconnect_seats wm.seats w;
              Focus.remove_window wm w;
              Window.destroy w;
+             outputs :=
+               w.output
+               :: List.filter
+                    (fun o -> o != w.output)
+                    !outputs;
              false
            end
          | _ -> true)
-      wm.windows
+      wm.windows;
+  List.iter (retile wm) !outputs
 
 let close_seats (wm : window_manager) =
   wm.seats <-

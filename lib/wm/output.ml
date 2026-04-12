@@ -4,6 +4,7 @@ module Rwm =
 
 module Utils = Ocdwm_core.Utils
 open Ocdwm_core.Types
+open Ocdwm_config.Types
 open Types
 
 let destroy = Rwm.River_output_v1.destroy
@@ -66,3 +67,27 @@ let remove_window (window : window) =
       o.focus_stack <-
         List.filter (fun w -> w != window) o.focus_stack
     end
+
+let tag_to_index tags =
+  let rec aux i tags =
+    match Int32.logand tags 1l <> 0l with
+    | true -> i
+    | false ->
+        Int32.shift_right_logical tags 1 |> aux (i + 1)
+  in
+  match tags <> 0l with
+  | true -> aux 0 tags
+  | false -> 0
+
+let tag_data (output : output) =
+  assert (output.selected_tags <> 0l);
+  let i = tag_to_index output.selected_tags in
+  output.tag_state.(i)
+
+let visible_window_count (output : output) =
+  List.fold_left
+    (fun a w -> if Window.is_visible w then a + 1 else a)
+    0 output.windows
+
+let visible_windows (output : output) =
+  List.filter Window.is_visible output.windows
