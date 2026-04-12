@@ -29,12 +29,11 @@ let xkb_binding_create
       (wm : window_manager)
       (seat : seat)
       (mods : int32)
-      (keysym : Xkbcommon.Keysym.t)
-      (action : action)
+      (p : Xkbcommon.Keysym.t * action)
   =
   let xkb_v1 = wm.xkb_v1 in
   let keysym =
-    Int32.of_int (Xkbcommon.Keysym.to_int keysym)
+    Int32.of_int (Xkbcommon.Keysym.to_int @@ fst p)
   in
   let binding : xkb_binding =
     {
@@ -47,11 +46,11 @@ let xkb_binding_create
             method on_released _ = ()
 
             method on_pressed _ =
-              seat.pending_action <- action
+              seat.pending_action <- snd p
           end
           ~keysym ~modifiers:mods;
       seat;
-      action;
+      action = snd p;
     }
   in
   Xkb.River_xkb_binding_v1.enable binding.obj;
@@ -63,8 +62,7 @@ let pointer_binding_destroy (pointer : pointer_binding) =
 let pointer_binding_create
       (seat : seat)
       (modifiers : int32)
-      (button : Input_event.code)
-      (action : action)
+      (p : Input_event.code * action)
   =
   let binding : pointer_binding =
     {
@@ -75,12 +73,12 @@ let pointer_binding_create
             method on_released _ = ()
 
             method on_pressed _ =
-              seat.pending_action <- action
+              seat.pending_action <- snd p
           end
-          ~button:(Input_event.to_int32 button)
+          ~button:(Input_event.to_int32 @@ fst p)
           ~modifiers;
       seat;
-      action;
+      action = snd p;
     }
   in
   Rwm.River_pointer_binding_v1.enable binding.obj;
@@ -92,21 +90,30 @@ let destroy seat =
   Rwm.River_seat_v1.destroy seat.obj
 
 let init (wm : window_manager) (seat : seat) =
-  let super = Rwm.River_seat_v1.Modifiers.mod4 in
-  xkb_binding_create wm seat super Xkbcommon.Keysym.K_Return
-    (Spawn [| "kitty" |]);
-  xkb_binding_create wm seat super Xkbcommon.Keysym.K_q
-    Close_focused;
-  xkb_binding_create wm seat super Xkbcommon.Keysym.K_j
-    (Focus_window Dir_next);
-  xkb_binding_create wm seat super Xkbcommon.Keysym.K_k
-    (Focus_window Dir_prev);
-  xkb_binding_create wm seat super Xkbcommon.Keysym.K_Escape
-    Exit_wm;
-  pointer_binding_create seat super Input_event.Btn_left
-    Move_interactive;
-  pointer_binding_create seat super Input_event.Btn_right
-    Resize_interactive
+  let modkey = wm.config.modkey in
+  let xkb_bindings =
+    Xkbcommon.Keysym.
+      [
+        (K_Return, Spawn [| "kitty" |]);
+        (K_q, Close_focused);
+        (K_j, Focus_window Dir_next);
+        (K_k, Focus_window Dir_prev);
+        (K_Escape, Exit_wm);
+      ]
+  in
+  let pointer_bindings =
+    Input_event.
+      [
+        (Btn_left, Move_interactive);
+        (Btn_right, Resize_interactive);
+      ]
+  in
+  List.iter
+    (fun p -> xkb_binding_create wm seat modkey p)
+    xkb_bindings;
+  List.iter
+    (fun p -> pointer_binding_create seat modkey p)
+    pointer_bindings
 
 let pointer_move
       (wm : window_manager)
