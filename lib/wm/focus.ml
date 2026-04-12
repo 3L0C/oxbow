@@ -69,8 +69,10 @@ let remove_window (wm : window_manager) (window : window) =
   List.iter
     (fun s ->
        match (s.output, window.output) with
-       | Some o1, Some o2 when o1 == o2 -> begin
-           focus_window wm s window
-         end
+       | Some o1, Some o2 when o1 == o2 ->
+           begin match Output.focused_window o1 with
+           | Some w -> focus_window wm s w
+           | None -> clear s
+           end
        | _, _ -> ())
     wm.seats
