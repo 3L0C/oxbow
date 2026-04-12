@@ -17,7 +17,9 @@ let focus (output : output option) (target : window) =
   | None -> ()
 
 let focused_window output =
-  List.nth_opt output.focus_stack 0
+  List.find_opt
+    (fun w -> Window.is_visible w)
+    output.focus_stack
 
 let next_tiled : window list -> window option =
   Utils.wrapped_search Window.is_visible (fun w ->
@@ -64,7 +66,5 @@ let remove_window (window : window) =
       o.windows <-
         List.filter (fun w -> w != window) o.windows;
       o.focus_stack <-
-        List.filter (fun w -> w != window) o.focus_stack;
-      next_tiled o.focus_stack
-      |> Option.iter @@ focus @@ Some o
+        List.filter (fun w -> w != window) o.focus_stack
     end

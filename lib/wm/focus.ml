@@ -63,3 +63,14 @@ let focus_other_output
       wm.focused_output <-
         List.find_opt (fun o -> o != output) wm.outputs
   | _ -> ()
+
+let remove_window (wm : window_manager) (window : window) =
+  Output.remove_window window;
+  List.iter
+    (fun s ->
+       match (s.output, window.output) with
+       | Some o1, Some o2 when o1 == o2 -> begin
+           focus_window wm s window
+         end
+       | _, _ -> ())
+    wm.seats

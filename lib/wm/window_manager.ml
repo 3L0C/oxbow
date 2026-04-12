@@ -134,7 +134,7 @@ let close_windows (wm : window_manager) =
       (fun (w : window) ->
          match w.state with
          | W_closing -> begin
-             Output.remove_window w;
+             Focus.remove_window wm w;
              Seat.disconnect_seats wm.seats w;
              Window.destroy w;
              false
