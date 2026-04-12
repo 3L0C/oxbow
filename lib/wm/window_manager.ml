@@ -308,7 +308,7 @@ let handle_seat _ river_seat (wm_box : wm_box) =
     {
       obj = river_seat;
       state = S_new;
-      output = Focus.get_output wm.outputs;
+      output = wm.focused_output;
       xkb_bindings = [];
       pointer_bindings = [];
       pending_action = No_action;
