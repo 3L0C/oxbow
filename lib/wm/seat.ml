@@ -113,7 +113,7 @@ let pointer_move
       (seat : seat)
       (window : window)
   =
-  Focus.focus_window seat window;
+  Focus.focus_window wm seat window;
   Rwm.River_seat_v1.op_start_pointer seat.obj;
   seat.op <-
     Op_move
@@ -132,7 +132,7 @@ let pointer_resize
       (window : window)
       (edges : int32)
   =
-  Focus.focus_window seat window;
+  Focus.focus_window wm seat window;
   Rwm.River_window_v1.inform_resize_start window.obj;
   Rwm.River_seat_v1.op_start_pointer seat.obj;
   seat.op <-

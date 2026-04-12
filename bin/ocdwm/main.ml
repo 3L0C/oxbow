@@ -64,6 +64,7 @@ let main ~net =
       {
         wm_v1 = window_manager;
         xkb_v1 = xkb_bindings;
+        focused_output = None;
         outputs = [];
         windows = [];
         seats = [];

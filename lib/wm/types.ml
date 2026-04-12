@@ -156,7 +156,9 @@ type window_manager = {
   (* Wayland objects *)
   wm_v1 : [ `V4 ] Rwm.River_window_manager_v1.t;
   xkb_v1 : [ `V2 ] Xkb.River_xkb_bindings_v1.t;
-  (* Tracked outputs *)
+  (* State *)
+  mutable focused_output : output option;
+  (* Managed items *)
   mutable outputs : output list; (* Sorted by focus order *)
   mutable windows : window list;
   mutable seats : seat list;

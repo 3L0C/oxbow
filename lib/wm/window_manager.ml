@@ -52,7 +52,7 @@ let action (wm : window_manager) (seat : seat) = function
       | Some window -> Rwm.River_window_v1.close window.obj
       | None -> ()
       end
-  | Focus_window dir -> Focus.focus_dir seat dir
+  | Focus_window dir -> Focus.focus_dir wm seat dir
   | Move_interactive ->
       begin match (seat.op, seat.hovered) with
       | Op_none, Some window ->
@@ -80,7 +80,7 @@ let manage_seat (wm : window_manager) (seat : seat) =
   | _ -> ()
   end;
   begin match seat.interacted with
-  | Some w -> Focus.focus_window seat w
+  | Some w -> Focus.focus_window wm seat w
   | None -> ()
   end;
   seat.interacted <- None;
@@ -91,6 +91,13 @@ let manage_seat (wm : window_manager) (seat : seat) =
 let manage_window (wm : window_manager) (window : window) =
   begin match window.state with
   | W_new -> begin
+      begin match window.output with
+      | Some o -> begin
+          o.windows <- window :: o.windows;
+          o.focus_stack <- window :: o.focus_stack
+        end
+      | None -> ()
+      end;
       Window.set_position window ~x:0l ~y:0l;
       Rwm.River_window_v1.propose_dimensions window.obj
         ~width:0l ~height:0l;
@@ -146,11 +153,22 @@ let close_seats (wm : window_manager) =
          | _ -> true)
       wm.seats
 
+let maybe_focus_first_output (wm : window_manager) =
+  match wm.focused_output with
+  | None -> wm.focused_output <- List.nth_opt wm.outputs 0
+  | Some o ->
+      begin match List.memq o wm.outputs with
+      | false ->
+          wm.focused_output <- List.nth_opt wm.outputs 0
+      | true -> ()
+      end
+
 let handle_manage_start proxy (wm_box : wm_box) =
   let wm = Option.get wm_box.body in
   remove_outputs wm;
   close_windows wm;
   close_seats wm;
+  maybe_focus_first_output wm;
   List.iter (manage_window wm) wm.windows;
   List.iter (manage_seat wm) wm.seats;
   Rwm.River_window_manager_v1.manage_finish proxy
@@ -200,7 +218,10 @@ let handle_output _ river_output (wm_box : wm_box) =
       method on_position _ ~x ~y = ()
       method on_dimensions _ ~width ~height = ()
     end;
-  wm.outputs <- output :: wm.outputs
+  wm.outputs <- output :: wm.outputs;
+  match List.length wm.outputs with
+  | 1 -> wm.focused_output <- Some output
+  | _ -> ()
 
 let handle_window _ river_window (wm_box : wm_box) =
   let wm = Option.get wm_box.body in
@@ -222,7 +243,7 @@ let handle_window _ river_window (wm_box : wm_box) =
       size_hints =
         { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l };
       tags = 1l;
-      output = Focus.get_output wm.outputs;
+      output = wm.focused_output;
       is_fixed = false;
       is_urgent = false;
       presentation = Tiled;
