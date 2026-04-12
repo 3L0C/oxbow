@@ -93,12 +93,14 @@ let destroy seat =
 
 let init (wm : window_manager) (seat : seat) =
   let super = Rwm.River_seat_v1.Modifiers.mod4 in
-  xkb_binding_create wm seat super Xkbcommon.Keysym.K_space
+  xkb_binding_create wm seat super Xkbcommon.Keysym.K_Return
     (Spawn [| "kitty" |]);
   xkb_binding_create wm seat super Xkbcommon.Keysym.K_q
     Close_focused;
-  xkb_binding_create wm seat super Xkbcommon.Keysym.K_n
+  xkb_binding_create wm seat super Xkbcommon.Keysym.K_j
     (Focus_window Dir_next);
+  xkb_binding_create wm seat super Xkbcommon.Keysym.K_k
+    (Focus_window Dir_prev);
   xkb_binding_create wm seat super Xkbcommon.Keysym.K_Escape
     Exit_wm;
   pointer_binding_create seat super Input_event.Btn_left

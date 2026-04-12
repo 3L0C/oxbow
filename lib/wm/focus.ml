@@ -23,7 +23,21 @@ let focus_window (seat : seat) (target : window) =
     end
 
 let refresh_focus (output : output) (seats : seat list) = ()
-let focus_dir (seat : seat) (dir : direction) = ()
+
+let focus_dir (seat : seat) (dir : direction) =
+  match seat.output with
+  | None -> ()
+  | Some o ->
+      begin match dir with
+      | Dir_next ->
+          Output.next_window o
+          |> Option.iter (focus_window seat)
+      | Dir_prev ->
+          Output.prev_window o
+          |> Option.iter (focus_window seat)
+      | _ -> ()
+      end
+
 let focus_output (seat : seat) (dir : direction) = ()
 
 let clear (seat : seat) =
