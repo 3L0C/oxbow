@@ -8,7 +8,8 @@ open Types
 
 let destroy = Rwm.River_output_v1.destroy
 
-let focus (target : window) = function
+let focus (output : output option) (target : window) =
+  match output with
   | Some o ->
       o.focus_stack <-
         target
@@ -54,4 +55,16 @@ let prev_window (output : output) =
               "Focused window isn't in output window list"
       in
       List.rev output.windows |> after
+    end
+
+let remove_window (window : window) =
+  match window.output with
+  | None -> ()
+  | Some o -> begin
+      o.windows <-
+        List.filter (fun w -> w != window) o.windows;
+      o.focus_stack <-
+        List.filter (fun w -> w != window) o.focus_stack;
+      next_tiled o.focus_stack
+      |> Option.iter @@ focus @@ Some o
     end

@@ -21,7 +21,7 @@ let focus_window
   | _ -> begin
       seat.output <- target.output;
       wm.focused_output <- target.output;
-      Output.focus target seat.output;
+      Output.focus seat.output target;
       Rwm.River_seat_v1.focus_window seat.obj
         ~window:target.obj;
       Rwm.River_node_v1.place_top target.node
