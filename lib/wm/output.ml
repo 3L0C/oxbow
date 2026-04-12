@@ -8,8 +8,8 @@ open Types
 
 let destroy = Rwm.River_output_v1.destroy
 
-let focus (output : output option) (target : window) =
-  match output with
+let focus_window (target : window) =
+  match target.output with
   | Some o ->
       o.focus_stack <-
         target
@@ -17,9 +17,7 @@ let focus (output : output option) (target : window) =
   | None -> ()
 
 let focused_window output =
-  List.find_opt
-    (fun w -> Window.is_visible w)
-    output.focus_stack
+  List.find_opt Window.is_visible output.focus_stack
 
 let next_tiled : window list -> window option =
   Utils.wrapped_search Window.is_visible (fun w ->

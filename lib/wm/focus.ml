@@ -8,7 +8,7 @@ open Ocdwm_core.Types
 
 let focused_of (seat : seat) : window option =
   match seat.output with
-  | Some o -> List.find_opt Window.is_visible o.focus_stack
+  | Some o -> Output.focused_window o
   | None -> None
 
 let focus_window
@@ -21,7 +21,7 @@ let focus_window
   | _ -> begin
       seat.output <- target.output;
       wm.focused_output <- target.output;
-      Output.focus seat.output target;
+      Output.focus_window target;
       Rwm.River_seat_v1.focus_window seat.obj
         ~window:target.obj;
       Rwm.River_node_v1.place_top target.node
