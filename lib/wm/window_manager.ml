@@ -246,8 +246,33 @@ let handle_output _ river_output (wm_box : wm_box) =
       method user_data = Output_data output
       method on_removed _ = output.state <- O_removed
       method on_wl_output _ ~name = ()
-      method on_position _ ~x ~y = ()
-      method on_dimensions _ ~width ~height = ()
+
+      method on_position _ ~x ~y =
+        output.geom <-
+          { x; y; w = output.geom.w; h = output.geom.h };
+        output.usable <-
+          {
+            x = Int32.to_int output.geom.x;
+            y = Int32.to_int output.geom.y;
+            w = Int32.to_int output.geom.w;
+            h = Int32.to_int output.geom.h;
+          }
+
+      method on_dimensions _ ~width ~height =
+        output.geom <-
+          {
+            x = output.geom.x;
+            y = output.geom.y;
+            w = width;
+            h = height;
+          };
+        output.usable <-
+          {
+            x = Int32.to_int output.geom.x;
+            y = Int32.to_int output.geom.y;
+            w = Int32.to_int output.geom.w;
+            h = Int32.to_int output.geom.h;
+          }
     end;
   wm.outputs <- output :: wm.outputs;
   match List.length wm.outputs with
