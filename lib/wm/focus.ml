@@ -27,7 +27,36 @@ let focus_window
       Rwm.River_node_v1.place_top target.node
     end
 
-let refresh_focus (output : output) (seats : seat list) = ()
+let clear (seat : seat) =
+  Rwm.River_seat_v1.clear_focus seat.obj
+
+let refresh_focus (wm : window_manager) = function
+  | None -> ()
+  | Some (o : output) ->
+      begin match Output.focused_window o with
+      | None -> begin
+          wm.focused_output <- Some o;
+          List.iter
+            (fun s ->
+               match s.output with
+               | Some so when so == o -> clear s
+               | _ -> ())
+            wm.seats
+        end
+      | Some w -> begin
+          wm.focused_output <- Some o;
+          List.iter
+            (fun s ->
+               match s.output with
+               | Some so when so == o -> begin
+                   Rwm.River_seat_v1.focus_window s.obj
+                     ~window:w.obj;
+                   Rwm.River_node_v1.place_top w.node
+                 end
+               | _ -> ())
+            wm.seats
+        end
+      end
 
 let focus_dir
       (wm : window_manager)
@@ -48,10 +77,6 @@ let focus_dir
       end
 
 let focus_output (seat : seat) (dir : direction) = ()
-
-let clear (seat : seat) =
-  Rwm.River_seat_v1.clear_focus seat.obj
-
 let get_output (lst : output list) = List.nth_opt lst 0
 
 let focus_other_output
@@ -66,13 +91,4 @@ let focus_other_output
 
 let remove_window (wm : window_manager) (window : window) =
   Output.remove_window window;
-  List.iter
-    (fun s ->
-       match (s.output, window.output) with
-       | Some o1, Some o2 when o1 == o2 ->
-           begin match Output.focused_window o1 with
-           | Some w -> focus_window wm s w
-           | None -> clear s
-           end
-       | _, _ -> ())
-    wm.seats
+  refresh_focus wm window.output
