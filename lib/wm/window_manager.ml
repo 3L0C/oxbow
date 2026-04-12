@@ -190,8 +190,8 @@ let handle_output _ river_output (wm_box : wm_box) =
       name = None;
       geom = { x = 0l; y = 0l; w = 0l; h = 0l };
       usable = { x = 0; y = 0; w = 0; h = 0 };
-      selected_tags = 0l;
-      previous_tags = 0l;
+      selected_tags = 1l;
+      previous_tags = 1l;
       tag_state =
         Array.init 32 (fun _ ->
           {
