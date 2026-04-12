@@ -124,7 +124,8 @@ let manage_window (wm : window_manager) (window : window) =
       | None -> ()
       end;
       window.state <- W_active;
-      retile wm window.output
+      retile wm window.output;
+      Focus.refresh_focus wm window.output
     end
   | _ -> ()
   end;
