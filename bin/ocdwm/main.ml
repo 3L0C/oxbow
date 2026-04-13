@@ -16,7 +16,7 @@ let main ~net =
   let display = Wayland.Client.connect ~sw transport in
   let registry = Wayland.Registry.of_display display in
   let wm_box = { body = None } in
-  let window_manager =
+  let river_wm_v1 =
     Wayland.Registry.bind registry
     @@ object
          inherit [_] Rwm.River_window_manager_v1.v4
@@ -51,7 +51,7 @@ let main ~net =
              wm_box
        end
   in
-  let xkb_bindings =
+  let river_xkb_v1 =
     Wayland.Registry.bind registry
     @@ object
          inherit [_] Xkb.River_xkb_bindings_v1.v2
@@ -62,8 +62,9 @@ let main ~net =
   wm_box.body <-
     Some
       {
-        wm_v1 = window_manager;
-        xkb_v1 = xkb_bindings;
+        river_wm_v1;
+        river_xkb_v1;
+        registry;
         focused_output = None;
         outputs = [];
         windows = [];

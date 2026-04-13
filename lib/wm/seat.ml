@@ -31,15 +31,14 @@ let xkb_binding_create
       (mods : int32)
       (p : Xkbcommon.Keysym.t * action)
   =
-  let xkb_v1 = wm.xkb_v1 in
   let keysym =
     Int32.of_int (Xkbcommon.Keysym.to_int @@ fst p)
   in
   let binding : xkb_binding =
     {
       obj =
-        Xkb.River_xkb_bindings_v1.get_xkb_binding xkb_v1
-          ~seat:seat.obj
+        Xkb.River_xkb_bindings_v1.get_xkb_binding
+          wm.river_xkb_v1 ~seat:seat.obj
           object
             inherit [_] Xkb.River_xkb_binding_v1.v2
             method on_stop_repeat _ = ()

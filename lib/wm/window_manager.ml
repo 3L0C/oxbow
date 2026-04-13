@@ -70,7 +70,8 @@ let action (wm : window_manager) (seat : seat) = function
       | _, _ -> ()
       end
   | Exit_wm ->
-      Rwm.River_window_manager_v1.exit_session wm.wm_v1
+      Rwm.River_window_manager_v1.exit_session
+        wm.river_wm_v1
   | _ -> ()
 
 let manage_seat (wm : window_manager) (seat : seat) =
