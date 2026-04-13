@@ -291,7 +291,7 @@ let handle_output _ river_output (wm_box : wm_box) =
                  end,
                  4l )
           in
-          ()
+          Printf.printf "[INFO] output: id: %ld\n" id
         end
 
       method on_position _ ~x ~y =
