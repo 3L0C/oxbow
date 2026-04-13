@@ -124,9 +124,8 @@ let manage_window (wm : window_manager) (window : window) =
         end
       | None -> ()
       end;
-      window.state <- W_active;
-      retile wm window.output;
-      Focus.refresh_focus wm window.output
+      Output.mark_dirty window.output;
+      window.state <- W_active
     end
   | _ -> ()
   end;
@@ -146,7 +145,9 @@ let remove_outputs (wm : window_manager) =
     List.filter
       (fun (o : output) ->
          match o.state with
-         | O_active -> true
+         | O_dirty
+         | O_active ->
+             true
          | O_removed -> begin
              Output.destroy o.obj;
              false
@@ -154,7 +155,6 @@ let remove_outputs (wm : window_manager) =
       wm.outputs
 
 let close_windows (wm : window_manager) =
-  let outputs = ref [] in
   wm.windows <-
     List.filter
       (fun (w : window) ->
@@ -163,16 +163,11 @@ let close_windows (wm : window_manager) =
              Seat.disconnect_seats wm.seats w;
              Focus.remove_window wm w;
              Window.destroy w;
-             outputs :=
-               w.output
-               :: List.filter
-                    (fun o -> o != w.output)
-                    !outputs;
+             Output.mark_dirty w.output;
              false
            end
          | _ -> true)
-      wm.windows;
-  List.iter (retile wm) !outputs
+      wm.windows
 
 let close_seats (wm : window_manager) =
   wm.seats <-
@@ -196,6 +191,15 @@ let maybe_focus_first_output (wm : window_manager) =
       | true -> ()
       end
 
+let manage_output (wm : window_manager) (output : output) =
+  begin match output.state with
+  | O_dirty ->
+      Some output |> retile wm;
+      Some output |> Focus.refresh_focus wm;
+      output.state <- O_active
+  | _ -> ()
+  end
+
 let handle_manage_start proxy (wm_box : wm_box) =
   let wm = Option.get wm_box.body in
   remove_outputs wm;
@@ -204,6 +208,7 @@ let handle_manage_start proxy (wm_box : wm_box) =
   maybe_focus_first_output wm;
   List.iter (manage_window wm) wm.windows;
   List.iter (manage_seat wm) wm.seats;
+  List.iter (manage_output wm) wm.outputs;
   Rwm.River_window_manager_v1.manage_finish proxy
 
 let handle_render_start proxy (wm_box : wm_box) =
@@ -361,13 +366,11 @@ let handle_window _ river_window (wm_box : wm_box) =
       method on_closed _ = window.state <- W_closing
 
       method on_dimensions _ ~width ~height =
-        window.geom <-
-          {
-            x = window.geom.x;
-            y = window.geom.y;
-            w = width;
-            h = height;
-          }
+        match
+          window.geom.w <> width || window.geom.h <> height
+        with
+        | false -> ()
+        | true -> Output.mark_dirty window.output
 
       method on_pointer_move_requested _ ~seat =
         match Wayland.Proxy.user_data seat with

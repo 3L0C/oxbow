@@ -23,12 +23,13 @@ type 'a size_hints = {
 
 type output_state =
   | O_active
+  | O_dirty
   | O_removed
 
 type output = {
   (* Wayland objects *)
   obj : [ `V4 ] Rwm.River_output_v1.t;
-  (* Lifecycle *)
+  (* State *)
   mutable state : output_state;
   (* Identity *)
   mutable name : string option;

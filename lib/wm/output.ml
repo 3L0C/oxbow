@@ -91,3 +91,7 @@ let visible_window_count (output : output) =
 
 let visible_windows (output : output) =
   List.filter Window.is_visible output.windows
+
+let mark_dirty = function
+  | None -> ()
+  | Some (o : output) -> o.state <- O_dirty
