@@ -260,8 +260,9 @@ let handle_output _ river_output (wm_box : wm_box) =
                      [_] Wayland.Wayland_client.Wl_output.v4
 
                    method on_name _ ~name =
-                     Printf.printf
-                       "output: id: %ld name: %s\n" id name;
+                     Logs.info (fun m ->
+                       m "output: id: %ld name: %s\n" id
+                         name);
                      output.name <- Some name
 
                    method on_scale _ ~factor = ()
@@ -291,7 +292,7 @@ let handle_output _ river_output (wm_box : wm_box) =
                  end,
                  4l )
           in
-          Printf.printf "[INFO] output: id: %ld\n" id
+          Logs.info (fun m -> m "output: id: %ld\n" id)
         end
 
       method on_position _ ~x ~y =
@@ -382,7 +383,7 @@ let handle_window _ river_window (wm_box : wm_box) =
 
       method on_unreliable_pid _ ~unreliable_pid = ()
       method on_unmaximize_requested _ = ()
-      method on_title _ ~title = ()
+      method on_title _ ~title = window.title <- title
       method on_show_window_menu_requested _ ~x ~y = ()
       method on_presentation_hint _ ~hint = ()
       method on_parent _ ~parent = ()
