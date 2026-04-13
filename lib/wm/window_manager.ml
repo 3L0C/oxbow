@@ -247,7 +247,52 @@ let handle_output _ river_output (wm_box : wm_box) =
       inherit [_] Rwm.River_output_v1.v4
       method user_data = Output_data output
       method on_removed _ = output.state <- O_removed
-      method on_wl_output _ ~name = ()
+
+      method on_wl_output _ ~name =
+        begin
+          let id = name in
+          let _ =
+            Wayland.Wayland_client.Wl_registry.bind
+              (Wayland.Registry.wl_registry wm.registry)
+              ~name
+            @@ ( object
+                   inherit
+                     [_] Wayland.Wayland_client.Wl_output.v4
+
+                   method on_name _ ~name =
+                     Printf.printf
+                       "output: id: %ld name: %s\n" id name;
+                     output.name <- Some name
+
+                   method on_scale _ ~factor = ()
+
+                   method on_mode
+                     _
+                     ~flags
+                     ~width
+                     ~height
+                     ~refresh =
+                     ()
+
+                   method on_geometry
+                     _
+                     ~x
+                     ~y
+                     ~physical_width
+                     ~physical_height
+                     ~subpixel
+                     ~make
+                     ~model
+                     ~transform =
+                     ()
+
+                   method on_done _ = ()
+                   method on_description _ ~description = ()
+                 end,
+                 4l )
+          in
+          ()
+        end
 
       method on_position _ ~x ~y =
         output.geom <-

@@ -156,6 +156,7 @@ type window_manager = {
   (* Wayland objects *)
   river_wm_v1 : [ `V4 ] Rwm.River_window_manager_v1.t;
   river_xkb_v1 : [ `V2 ] Xkb.River_xkb_bindings_v1.t;
+  registry : Wayland.Registry.t;
   (* State *)
   mutable focused_output : output option;
   (* Managed items *)
