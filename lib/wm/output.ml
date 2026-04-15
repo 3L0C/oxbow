@@ -92,6 +92,19 @@ let visible_window_count (output : output) =
 let visible_windows (output : output) =
   List.filter Window.is_visible output.windows
 
+let tiled_window_count (output : output) =
+  List.fold_left
+    (fun a w ->
+       if Window.is_visible w && Window.is_tiled w then
+         a + 1
+       else a)
+    0 output.windows
+
+let tiled_windows (output : output) =
+  List.filter
+    (fun w -> Window.is_visible w && Window.is_tiled w)
+    output.windows
+
 let mark_dirty = function
   | None -> ()
   | Some (o : output) -> o.state <- O_dirty

@@ -19,7 +19,7 @@ let render (wm : window_manager) (seat : seat) =
   begin match seat.op with
   | Op_none -> ()
   | Op_move op_m ->
-      Window.set_position op_m.window
+      Window.set_floating_position op_m.window
         ~x:(Int32.add op_m.start_x op_m.dx)
         ~y:(Int32.add op_m.start_y op_m.dy)
   | Op_resize op_r ->
@@ -29,7 +29,7 @@ let render (wm : window_manager) (seat : seat) =
             Rwm.River_window_v1.Edges.left
           <> 0l
         then
-          Int32.sub op_r.start_w op_r.window.geom.w
+          Int32.sub op_r.start_w op_r.window.float_geom.w
           |> Int32.add op_r.start_x
         else op_r.start_x
       in
@@ -39,12 +39,51 @@ let render (wm : window_manager) (seat : seat) =
             Rwm.River_window_v1.Edges.top
           <> 0l
         then
-          Int32.sub op_r.start_h op_r.window.geom.h
+          Int32.sub op_r.start_h op_r.window.float_geom.h
           |> Int32.add op_r.start_y
         else op_r.start_y
       in
-      Window.set_position op_r.window ~x ~y
+      Window.set_floating_position op_r.window ~x ~y
   end
+
+let handle_window_request
+      (wm : window_manager)
+      (window : window)
+  = function
+  | Req_none -> ()
+  | Req_move r ->
+      begin match window.presentation with
+      | Fullscreen _ -> ()
+      | _ -> begin
+          if window.presentation = Tiled then begin
+            window.presentation <- Floating;
+            window.float_geom <- window.tile_geom;
+            Output.mark_dirty window.output
+          end;
+          Seat.pointer_move wm r.seat window
+        end
+      end
+  | Req_resize r ->
+      begin match window.presentation with
+      | Fullscreen _ -> ()
+      | _ -> begin
+          if window.presentation = Tiled then begin
+            window.presentation <- Floating;
+            window.float_geom <- window.tile_geom;
+            Output.mark_dirty window.output
+          end;
+          Seat.pointer_resize wm r.seat window r.edges
+        end
+      end
+  | Req_maximize ->
+      Rwm.River_window_v1.inform_maximized window.obj
+  | Req_unmaximize ->
+      Rwm.River_window_v1.inform_unmaximized window.obj
+  | Req_fullscreen r ->
+      begin match r.output with
+      | _ -> ()
+      end
+  | Req_exit_fullscreen -> ()
 
 let action (wm : window_manager) (seat : seat) = function
   | No_action -> ()
@@ -57,21 +96,34 @@ let action (wm : window_manager) (seat : seat) = function
   | Focus_window dir -> Focus.focus_dir wm seat dir
   | Move_interactive ->
       begin match (seat.op, seat.hovered) with
-      | Op_none, Some window ->
-          Seat.pointer_move wm seat window
+      | Op_none, Some window -> begin
+          handle_window_request wm window
+            (Req_move { seat })
+        end
       | _, _ -> ()
       end
   | Resize_interactive ->
       begin match (seat.op, seat.hovered) with
-      | Op_none, Some window ->
-          Int32.logor Rwm.River_window_v1.Edges.right
-            Rwm.River_window_v1.Edges.bottom
-          |> Seat.pointer_resize wm seat window
+      | Op_none, Some window -> begin
+          handle_window_request wm window
+            (Req_resize
+               {
+                 seat;
+                 edges =
+                   Int32.logor
+                     Rwm.River_window_v1.Edges.right
+                     Rwm.River_window_v1.Edges.bottom;
+               })
+        end
       | _, _ -> ()
       end
   | Exit_wm ->
       Rwm.River_window_manager_v1.exit_session
         wm.river_wm_v1
+  | Toggle_floating -> begin
+      Focus.focused_of seat |> Window.toggle_floating;
+      Output.mark_dirty seat.output
+    end
   | _ -> ()
 
 let manage_seat (wm : window_manager) (seat : seat) =
@@ -94,12 +146,12 @@ let manage_seat (wm : window_manager) (seat : seat) =
 let retile (wm : window_manager) = function
   | None -> ()
   | Some (o : output) -> begin
-      let n = Output.visible_window_count o in
+      let n = Output.tiled_window_count o in
       let layout =
         Layout.tile (Output.tag_data o).layout_params
           o.usable n
       in
-      let windows = Output.visible_windows o in
+      let windows = Output.tiled_windows o in
       List.iter2
         (fun g w ->
            let g =
@@ -110,7 +162,7 @@ let retile (wm : window_manager) = function
                h = Int32.of_int g.h;
              }
            in
-           Window.set_geom w g)
+           Window.set_tiled_geom w g)
         layout windows
     end
 
@@ -129,16 +181,8 @@ let manage_window (wm : window_manager) (window : window) =
     end
   | _ -> ()
   end;
-  match window.request with
-  | Req_none -> ()
-  | Req_move r -> begin
-      Seat.pointer_move wm r.seat window;
-      window.request <- Req_none
-    end
-  | Req_resize r -> begin
-      Seat.pointer_resize wm r.seat window r.edges;
-      window.request <- Req_none
-    end
+  handle_window_request wm window window.request;
+  window.request <- Req_none
 
 let remove_outputs (wm : window_manager) =
   wm.outputs <-
@@ -255,7 +299,6 @@ let handle_output _ river_output (wm_box : wm_box) =
 
       method on_wl_output _ ~name =
         begin
-          let id = name in
           let _ =
             Wayland.Wayland_client.Wl_registry.bind
               (Wayland.Registry.wl_registry wm.registry)
@@ -265,9 +308,6 @@ let handle_output _ river_output (wm_box : wm_box) =
                      [_] Wayland.Wayland_client.Wl_output.v4
 
                    method on_name _ ~name =
-                     Logs.info (fun m ->
-                       m "output: id: %ld name: %s\n" id
-                         name);
                      output.name <- Some name
 
                    method on_scale _ ~factor = ()
@@ -297,7 +337,7 @@ let handle_output _ river_output (wm_box : wm_box) =
                  end,
                  4l )
           in
-          Logs.info (fun m -> m "output: id: %ld\n" id)
+          ()
         end
 
       method on_position _ ~x ~y =
@@ -346,9 +386,12 @@ let handle_window _ river_window (wm_box : wm_box) =
       state = W_new;
       app_id = None;
       title = None;
+      identifier = None;
+      unreliable_pid = None;
       parent = None;
-      geom = { x = 0l; y = 0l; w = 0l; h = 0l };
-      old_geom = { x = 0l; y = 0l; w = 0l; h = 0l };
+      decoration_hint = None;
+      tile_geom = { x = 0l; y = 0l; w = 0l; h = 0l };
+      float_geom = { x = 0l; y = 0l; w = 0l; h = 0l };
       size_hints =
         { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l };
       tags = 1l;
@@ -366,11 +409,68 @@ let handle_window _ river_window (wm_box : wm_box) =
       method on_closed _ = window.state <- W_closing
 
       method on_dimensions _ ~width ~height =
-        match
-          window.geom.w <> width || window.geom.h <> height
-        with
-        | false -> ()
-        | true -> Output.mark_dirty window.output
+        match window.presentation with
+        | Tiled ->
+            begin match
+              window.tile_geom.w <> width
+              || window.tile_geom.h <> height
+            with
+            | false -> ()
+            | true -> Output.mark_dirty window.output
+            end
+        | Floating ->
+            begin match
+              window.float_geom.w <> width
+              || window.float_geom.h <> height
+            with
+            | false -> ()
+            | true -> begin
+                window.float_geom <-
+                  {
+                    x = window.float_geom.x;
+                    y = window.float_geom.y;
+                    w = width;
+                    h = height;
+                  };
+                Output.mark_dirty window.output
+              end
+            end
+        | _ -> ()
+
+      method on_unreliable_pid _ ~unreliable_pid =
+        window.unreliable_pid <- Some unreliable_pid
+
+      method on_parent _ ~parent = ()
+      method on_title _ ~title = window.title <- title
+
+      method on_identifier _ ~identifier =
+        window.identifier <- Some identifier
+
+      method on_dimensions_hint
+        _
+        ~min_width
+        ~min_height
+        ~max_width
+        ~max_height =
+        window.size_hints <-
+          {
+            min_w = min_width;
+            max_w = max_width;
+            min_h = min_height;
+            max_h = max_height;
+          }
+
+      method on_decoration_hint _ ~hint =
+        Rwm.River_window_v1.Decoration_hint.(
+          window.decoration_hint <-
+            Some
+              (match hint with
+              | Only_supports_csd -> W_only_csd
+              | Prefers_csd -> W_prefer_csd
+              | Prefers_ssd -> W_prefer_ssd
+              | No_preference -> W_no_preference))
+
+      method on_app_id _ ~app_id = window.app_id <- app_id
 
       method on_pointer_move_requested _ ~seat =
         match Wayland.Proxy.user_data seat with
@@ -384,28 +484,31 @@ let handle_window _ river_window (wm_box : wm_box) =
             window.request <- Req_resize { seat = s; edges }
         | _ -> assert false
 
-      method on_unreliable_pid _ ~unreliable_pid = ()
-      method on_unmaximize_requested _ = ()
-      method on_title _ ~title = window.title <- title
-      method on_show_window_menu_requested _ ~x ~y = ()
+      method on_maximize_requested _ =
+        window.request <- Req_maximize
+
+      method on_unmaximize_requested _ =
+        window.request <- Req_unmaximize
+
+      method on_fullscreen_requested _ ~output =
+        match output with
+        | Some o ->
+            begin match Wayland.Proxy.user_data o with
+            | Output_data o ->
+                window.request <-
+                  Req_fullscreen { output = Some o }
+            | _ -> assert false
+            end
+        | None ->
+            window.request <-
+              Req_fullscreen { output = None }
+
+      method on_exit_fullscreen_requested _ =
+        window.request <- Req_exit_fullscreen
+
       method on_presentation_hint _ ~hint = ()
-      method on_parent _ ~parent = ()
+      method on_show_window_menu_requested _ ~x ~y = ()
       method on_minimize_requested _ = ()
-      method on_maximize_requested _ = ()
-      method on_identifier _ ~identifier = ()
-      method on_fullscreen_requested _ ~output = ()
-      method on_exit_fullscreen_requested _ = ()
-
-      method on_dimensions_hint
-        _
-        ~min_width
-        ~min_height
-        ~max_width
-        ~max_height =
-        ()
-
-      method on_decoration_hint _ ~hint = ()
-      method on_app_id _ ~app_id = ()
     end;
   wm.windows <- window :: wm.windows
 
@@ -416,6 +519,7 @@ let handle_seat _ river_seat (wm_box : wm_box) =
       obj = river_seat;
       state = S_new;
       output = wm.focused_output;
+      position = { x = 0l; y = 0l };
       xkb_bindings = [];
       pointer_bindings = [];
       pending_action = No_action;
@@ -465,6 +569,7 @@ let handle_seat _ river_seat (wm_box : wm_box) =
       method on_shell_surface_interaction _ ~shell_surface =
         ()
 
-      method on_pointer_position _ ~x ~y = ()
+      method on_pointer_position _ ~x ~y =
+        seat.position <- { x; y }
     end;
   wm.seats <- seat :: wm.seats

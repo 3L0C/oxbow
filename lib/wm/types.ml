@@ -57,11 +57,21 @@ and window_request =
       seat : seat;
       edges : int32;
     }
+  | Req_maximize
+  | Req_unmaximize
+  | Req_fullscreen of { output : output option }
+  | Req_exit_fullscreen
 
 and window_state =
   | W_new
   | W_active
   | W_closing
+
+and window_decoration =
+  | W_only_csd
+  | W_prefer_csd
+  | W_prefer_ssd
+  | W_no_preference
 
 and window = {
   (* Wayland objects *)
@@ -69,14 +79,16 @@ and window = {
   node : [ `V4 ] Rwm.River_node_v1.t;
   (* Lifecycle *)
   mutable state : window_state;
-  (* Identity *)
+  (* State *)
   mutable app_id : string option;
   mutable title : string option;
+  mutable identifier : string option;
+  mutable unreliable_pid : int32 option;
   mutable parent : window_box option;
+  mutable decoration_hint : window_decoration option;
   (* Geometry *)
-  mutable geom : int32 rect;
-  (* Old Geometry - used when exiting fullscreen/floating *)
-  mutable old_geom : int32 rect;
+  mutable tile_geom : int32 rect;
+  mutable float_geom : int32 rect;
   (* Size hints from dimensions_hint *)
   mutable size_hints : int32 size_hints;
   (* Tag and output assignment *)
@@ -103,6 +115,11 @@ and pointer_binding = {
   obj : [ `V4 ] Rwm.River_pointer_binding_v1.t;
   seat : seat;
   mutable action : action;
+}
+
+and pointer_position = {
+  x : int32;
+  y : int32;
 }
 
 and seat_op =
@@ -137,8 +154,9 @@ and seat = {
   obj : [ `V4 ] Rwm.River_seat_v1.t;
   (* Lifecycle *)
   mutable state : seat_state;
-  (* Focus state *)
+  (* State *)
   mutable output : output option;
+  mutable position : pointer_position;
   (* Keybindings *)
   mutable xkb_bindings : xkb_binding list;
   mutable pointer_bindings : pointer_binding list;

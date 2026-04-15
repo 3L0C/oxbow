@@ -125,8 +125,8 @@ let pointer_move
     Op_move
       {
         window;
-        start_x = window.geom.x;
-        start_y = window.geom.y;
+        start_x = window.float_geom.x;
+        start_y = window.float_geom.y;
         dx = 0l;
         dy = 0l;
         release = false;
@@ -146,10 +146,10 @@ let pointer_resize
       {
         window;
         edges;
-        start_x = window.geom.x;
-        start_y = window.geom.y;
-        start_w = window.geom.w;
-        start_h = window.geom.h;
+        start_x = window.float_geom.x;
+        start_y = window.float_geom.y;
+        start_w = window.float_geom.w;
+        start_h = window.float_geom.h;
         dx = 0l;
         dy = 0l;
         release = false;
