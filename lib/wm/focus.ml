@@ -63,9 +63,10 @@ let focus_dir
       (seat : seat)
       (dir : direction)
   =
-  match seat.output with
-  | None -> ()
-  | Some o ->
+  match (focused_of seat, seat.output) with
+  | Some w, _ when Window.is_fullscreen w -> ()
+  | _, None -> ()
+  | _, Some o ->
       begin match dir with
       | Dir_next ->
           Output.next_window o

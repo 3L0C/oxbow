@@ -17,8 +17,8 @@ let focus_window (target : window) =
         :: List.filter (fun w -> w != target) o.focus_stack
   | None -> ()
 
-let focused_window output =
-  List.find_opt Window.is_visible output.focus_stack
+let focused_window o =
+  List.find_opt Window.is_visible o.focus_stack
 
 let next_tiled : window list -> window option =
   Utils.wrapped_search Window.is_visible (fun w ->
@@ -28,45 +28,45 @@ let prev_tiled : window list -> window option =
   Utils.wrapped_search Window.is_visible (fun w ->
     (Option.get w.output).windows |> List.rev)
 
-let next_window (output : output) =
-  match focused_window output with
+let next_window (o : output) =
+  match focused_window o with
   | None -> None
   | Some f -> begin
       let rec after = function
-        | w :: [] when w == f -> next_tiled output.windows
+        | w :: [] when w == f -> next_tiled o.windows
         | w :: xs when w == f -> next_tiled xs
         | _ :: xs -> after xs
         | [] ->
             failwith
               "Focused window isn't in output window list"
       in
-      after output.windows
+      after o.windows
     end
 
-let prev_window (output : output) =
-  match focused_window output with
+let prev_window (o : output) =
+  match focused_window o with
   | None -> None
   | Some f -> begin
       let rec after = function
         | w :: [] when w == f ->
-            List.rev output.windows |> prev_tiled
+            List.rev o.windows |> prev_tiled
         | w :: xs when w == f -> prev_tiled xs
         | _ :: xs -> after xs
         | [] ->
             failwith
               "Focused window isn't in output window list"
       in
-      List.rev output.windows |> after
+      List.rev o.windows |> after
     end
 
-let remove_window (window : window) =
-  match window.output with
+let remove_window (target : window) =
+  match target.output with
   | None -> ()
   | Some o -> begin
       o.windows <-
-        List.filter (fun w -> w != window) o.windows;
+        List.filter (fun w -> w != target) o.windows;
       o.focus_stack <-
-        List.filter (fun w -> w != window) o.focus_stack
+        List.filter (fun w -> w != target) o.focus_stack
     end
 
 let tag_to_index tags =
@@ -80,32 +80,67 @@ let tag_to_index tags =
   | true -> aux 0 tags
   | false -> 0
 
-let tag_data (output : output) =
-  assert (output.selected_tags <> 0l);
-  let i = tag_to_index output.selected_tags in
-  output.tag_state.(i)
+let tag_data (o : output) =
+  assert (o.selected_tags <> 0l);
+  let i = tag_to_index o.selected_tags in
+  o.tag_state.(i)
 
-let visible_window_count (output : output) =
+let visible_window_count (o : output) =
   List.fold_left
     (fun a w -> if Window.is_visible w then a + 1 else a)
-    0 output.windows
+    0 o.windows
 
-let visible_windows (output : output) =
-  List.filter Window.is_visible output.windows
+let visible_windows (o : output) =
+  List.filter Window.is_visible o.windows
 
-let tiled_window_count (output : output) =
+let tiled_window_count (o : output) =
   List.fold_left
     (fun a w ->
        if Window.is_visible w && Window.is_tiled w then
          a + 1
        else a)
-    0 output.windows
+    0 o.windows
 
-let tiled_windows (output : output) =
+let tiled_windows (o : output) =
   List.filter
     (fun w -> Window.is_visible w && Window.is_tiled w)
-    output.windows
+    o.windows
 
 let mark_dirty = function
   | None -> ()
   | Some (o : output) -> o.state <- O_dirty
+
+let fullscreen_is_visible (o : output) =
+  List.exists
+    (fun w -> Window.is_fullscreen w && Window.is_visible w)
+    o.focus_stack
+
+let move_window (w : window) (target : output) =
+  let take () =
+    target.windows <-
+      w :: List.filter (fun x -> x != w) target.windows;
+    target.focus_stack <-
+      w :: List.filter (fun x -> x != w) target.focus_stack;
+    w.output <- Some target
+  in
+  match w.output with
+  | Some o when o == target -> ()
+  | None -> take ()
+  | Some _ -> begin
+      remove_window w;
+      take ()
+    end
+
+let add_window (w : window) =
+  match w.output with
+  | None -> ()
+  | Some o -> begin
+      o.windows <- w :: o.windows;
+      o.focus_stack <-
+        begin match o.focus_stack with
+        | x :: xs when Window.is_fullscreen x ->
+            x :: w :: List.filter (Stdlib.( != ) w) xs
+        | _ ->
+            w :: List.filter (Stdlib.( != ) w) o.focus_stack
+        end
+    end

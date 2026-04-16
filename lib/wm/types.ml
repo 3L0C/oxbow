@@ -10,9 +10,9 @@ open Ocdwm_ipc.Types
 open Ocdwm_layout.Types
 
 type presentation =
-  | Tiled
-  | Floating
-  | Fullscreen of { restore : [ `Tiled | `Floating ] }
+  | P_tiled
+  | P_floating
+  | P_fullscreen of { restore : [ `Tiled | `Floating ] }
 
 type 'a size_hints = {
   min_w : 'a;

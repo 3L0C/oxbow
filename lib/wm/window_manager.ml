@@ -46,17 +46,17 @@ let render (wm : window_manager) (seat : seat) =
       Window.set_floating_position op_r.window ~x ~y
   end
 
-let handle_window_request
-      (wm : window_manager)
-      (window : window)
+let rec handle_window_request
+          (wm : window_manager)
+          (window : window)
   = function
   | Req_none -> ()
   | Req_move r ->
       begin match window.presentation with
-      | Fullscreen _ -> ()
+      | P_fullscreen _ -> ()
       | _ -> begin
-          if window.presentation = Tiled then begin
-            window.presentation <- Floating;
+          if window.presentation = P_tiled then begin
+            window.presentation <- P_floating;
             window.float_geom <- window.tile_geom;
             Output.mark_dirty window.output
           end;
@@ -65,10 +65,10 @@ let handle_window_request
       end
   | Req_resize r ->
       begin match window.presentation with
-      | Fullscreen _ -> ()
+      | P_fullscreen _ -> ()
       | _ -> begin
-          if window.presentation = Tiled then begin
-            window.presentation <- Floating;
+          if window.presentation = P_tiled then begin
+            window.presentation <- P_floating;
             window.float_geom <- window.tile_geom;
             Output.mark_dirty window.output
           end;
@@ -79,11 +79,57 @@ let handle_window_request
       Rwm.River_window_v1.inform_maximized window.obj
   | Req_unmaximize ->
       Rwm.River_window_v1.inform_unmaximized window.obj
-  | Req_fullscreen r ->
-      begin match r.output with
-      | _ -> ()
+  | Req_fullscreen r -> begin
+      let enter (restore : [ `Tiled | `Floating ]) =
+        match (r.output, window.output) with
+        | None, None -> ()
+        | Some o, _
+        | None, Some o -> begin
+            List.iter
+              (fun w ->
+                 if Window.is_fullscreen w then
+                   handle_window_request wm w
+                     Req_exit_fullscreen)
+              o.focus_stack;
+            List.iter
+              (fun (s : seat) ->
+                 match s.op with
+                 | Op_move op when op.window == window ->
+                     s.op <- Op_none
+                 | Op_resize op when op.window == window ->
+                     s.op <- Op_none
+                 | _ -> ())
+              wm.seats;
+            window.presentation <- P_fullscreen { restore };
+            Output.mark_dirty window.output;
+            Output.move_window window o;
+            Output.mark_dirty (Some o);
+            Window.fullscreen window
+          end
+      in
+      match window.presentation with
+      | P_tiled -> enter `Tiled
+      | P_floating -> enter `Floating
+      | P_fullscreen _ ->
+          begin match (r.output, window.output) with
+          | Some o1, Some o2 when o1 != o2 ->
+              Output.mark_dirty (Some o2);
+              Output.move_window window o1;
+              Output.mark_dirty (Some o1);
+              Window.fullscreen window
+          | _, _ -> ()
+          end
+    end
+  | Req_exit_fullscreen ->
+      begin match window.presentation with
+      | P_tiled
+      | P_floating ->
+          ()
+      | P_fullscreen { restore } -> begin
+          Window.exit_fullscreen window restore;
+          Output.mark_dirty window.output
+        end
       end
-  | Req_exit_fullscreen -> ()
 
 let action (wm : window_manager) (seat : seat) = function
   | No_action -> ()
@@ -120,10 +166,30 @@ let action (wm : window_manager) (seat : seat) = function
   | Exit_wm ->
       Rwm.River_window_manager_v1.exit_session
         wm.river_wm_v1
-  | Toggle_floating -> begin
-      Focus.focused_of seat |> Window.toggle_floating;
-      Output.mark_dirty seat.output
-    end
+  | Toggle_floating ->
+      begin match Focus.focused_of seat with
+      | None -> ()
+      | Some w ->
+          begin match w.presentation with
+          | P_fullscreen _ -> ()
+          | _ -> begin
+              Window.toggle_floating (Some w);
+              Output.mark_dirty seat.output
+            end
+          end
+      end
+  | Toggle_fullscreen ->
+      begin match Focus.focused_of seat with
+      | None -> ()
+      | Some w ->
+          begin match w.presentation with
+          | P_fullscreen _ ->
+              handle_window_request wm w Req_exit_fullscreen
+          | _ ->
+              handle_window_request wm w
+                (Req_fullscreen { output = w.output })
+          end
+      end
   | _ -> ()
 
 let manage_seat (wm : window_manager) (seat : seat) =
@@ -164,31 +230,26 @@ let clamp (w : window) (g : int rect) =
 
 let retile (wm : window_manager) = function
   | None -> ()
-  | Some (o : output) -> begin
-      let n = Output.tiled_window_count o in
-      let layouts =
-        Layout.tile (Output.tag_data o).layout_params
-          o.usable n
-      in
-      let windows = Output.tiled_windows o in
-      List.iter2
-        (fun w g -> clamp w g |> Window.set_tiled_geom w)
-        windows layouts
-    end
+  | Some (o : output) ->
+      if not @@ Output.fullscreen_is_visible o then begin
+        let windows = Output.tiled_windows o in
+        let layouts =
+          List.length windows
+          |> Layout.tile (Output.tag_data o).layout_params
+               o.usable
+        in
+        List.iter2
+          (fun w g -> clamp w g |> Window.set_tiled_geom w)
+          windows layouts
+      end
 
 let manage_window (wm : window_manager) (window : window) =
   begin match window.state with
   | W_new -> begin
-      begin match window.output with
-      | Some o -> begin
-          o.windows <- window :: o.windows;
-          o.focus_stack <- window :: o.focus_stack
-        end
-      | None -> ()
-      end;
+      Output.add_window window;
       Output.mark_dirty window.output;
       if window.is_fixed then
-        window.presentation <- Floating;
+        window.presentation <- P_floating;
       window.state <- W_active
     end
   | _ -> ()
@@ -410,7 +471,7 @@ let handle_window _ river_window (wm_box : wm_box) =
       output = wm.focused_output;
       is_fixed = false;
       is_urgent = false;
-      presentation = Tiled;
+      presentation = P_tiled;
       request = Req_none;
     }
   in
@@ -422,7 +483,7 @@ let handle_window _ river_window (wm_box : wm_box) =
 
       method on_dimensions _ ~width ~height =
         match window.presentation with
-        | Tiled ->
+        | P_tiled ->
             begin match
               window.tile_geom.w <> width
               || window.tile_geom.h <> height
@@ -430,7 +491,7 @@ let handle_window _ river_window (wm_box : wm_box) =
             | false -> ()
             | true -> Output.mark_dirty window.output
             end
-        | Floating ->
+        | P_floating ->
             begin match
               window.float_geom.w <> width
               || window.float_geom.h <> height

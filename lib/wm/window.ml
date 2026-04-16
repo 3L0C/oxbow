@@ -42,7 +42,7 @@ let is_visible (w : window) =
   | Some o -> Int32.logand w.tags o.selected_tags <> 0l
   | None -> false
 
-let is_tiled (w : window) = w.presentation = Tiled
+let is_tiled (w : window) = w.presentation = P_tiled
 
 let float (w : window) =
   match w.output with
@@ -69,19 +69,49 @@ let float (w : window) =
               }
         | _ -> w.float_geom
       in
-      w.presentation <- Floating;
+      w.presentation <- P_floating;
       set_floating_geom w geom
     end
 
 let tile (w : window) =
-  if not w.is_fixed then w.presentation <- Tiled
+  if not w.is_fixed then w.presentation <- P_tiled
 
 let toggle_floating = function
   | None -> ()
   | Some (w : window) ->
       begin if w.output <> None then
         match w.presentation with
-        | Tiled -> float w
-        | Floating -> tile w
-        | Fullscreen _ -> ()
+        | P_tiled -> float w
+        | P_floating -> tile w
+        | P_fullscreen _ -> ()
       end
+
+let is_fullscreen (w : window) =
+  match w.presentation with
+  | P_fullscreen _ -> true
+  | _ -> false
+
+let fullscreen (w : window) =
+  match w.output with
+  | None -> ()
+  | Some o -> begin
+      Rwm.River_window_v1.fullscreen w.obj ~output:o.obj;
+      Rwm.River_window_v1.inform_fullscreen w.obj
+    end
+
+let exit_fullscreen
+      (w : window)
+      (p : [ `Tiled | `Floating ])
+  =
+  match w.output with
+  | None -> ()
+  | Some _ -> begin
+      Rwm.River_window_v1.exit_fullscreen w.obj;
+      Rwm.River_window_v1.inform_not_fullscreen w.obj;
+      match p with
+      | `Tiled -> w.presentation <- P_tiled
+      | `Floating -> begin
+          w.presentation <- P_floating;
+          set_floating_geom w w.float_geom
+        end
+    end
