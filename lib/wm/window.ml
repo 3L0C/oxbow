@@ -73,7 +73,8 @@ let float (w : window) =
       set_floating_geom w geom
     end
 
-let tile (w : window) = w.presentation <- Tiled
+let tile (w : window) =
+  if not w.is_fixed then w.presentation <- Tiled
 
 let toggle_floating = function
   | None -> ()

@@ -98,6 +98,8 @@ let init (wm : window_manager) (seat : seat) =
         (K_j, Focus_window Dir_next);
         (K_k, Focus_window Dir_prev);
         (K_Escape, Exit_wm);
+        (K_space, Toggle_floating);
+        (K_v, Toggle_fullscreen);
       ]
   in
   let pointer_bindings =

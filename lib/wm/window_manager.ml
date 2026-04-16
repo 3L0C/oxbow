@@ -143,27 +143,37 @@ let manage_seat (wm : window_manager) (seat : seat) =
   seat.pending_action <- No_action;
   Seat.op wm seat
 
+let clamp_dim ~min_v ~max_v v =
+  v
+  |> (if min_v > 0l then Int32.max min_v else Fun.id)
+  |> if max_v > 0l then Int32.min max_v else Fun.id
+
+let clamp (w : window) (g : int rect) =
+  let h = w.size_hints in
+  Int32.
+    {
+      x = of_int g.x;
+      y = of_int g.y;
+      w =
+        of_int g.w
+        |> clamp_dim ~min_v:h.min_w ~max_v:h.max_w;
+      h =
+        of_int g.h
+        |> clamp_dim ~min_v:h.min_h ~max_v:h.max_h;
+    }
+
 let retile (wm : window_manager) = function
   | None -> ()
   | Some (o : output) -> begin
       let n = Output.tiled_window_count o in
-      let layout =
+      let layouts =
         Layout.tile (Output.tag_data o).layout_params
           o.usable n
       in
       let windows = Output.tiled_windows o in
       List.iter2
-        (fun g w ->
-           let g =
-             {
-               x = Int32.of_int g.x;
-               y = Int32.of_int g.y;
-               w = Int32.of_int g.w;
-               h = Int32.of_int g.h;
-             }
-           in
-           Window.set_tiled_geom w g)
-        layout windows
+        (fun w g -> clamp w g |> Window.set_tiled_geom w)
+        windows layouts
     end
 
 let manage_window (wm : window_manager) (window : window) =
@@ -177,6 +187,8 @@ let manage_window (wm : window_manager) (window : window) =
       | None -> ()
       end;
       Output.mark_dirty window.output;
+      if window.is_fixed then
+        window.presentation <- Floating;
       window.state <- W_active
     end
   | _ -> ()
@@ -452,6 +464,12 @@ let handle_window _ river_window (wm_box : wm_box) =
         ~min_height
         ~max_width
         ~max_height =
+        window.is_fixed <-
+          Int32.(
+            min_width > 0l
+            && min_height > 0l
+            && min_width = max_width
+            && min_height = max_height);
         window.size_hints <-
           {
             min_w = min_width;
