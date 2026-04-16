@@ -48,7 +48,8 @@ let prev_window (output : output) =
   | None -> None
   | Some f -> begin
       let rec after = function
-        | w :: [] when w == f -> prev_tiled output.windows
+        | w :: [] when w == f ->
+            List.rev output.windows |> prev_tiled
         | w :: xs when w == f -> prev_tiled xs
         | _ :: xs -> after xs
         | [] ->
