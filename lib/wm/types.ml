@@ -86,6 +86,8 @@ and window = {
   mutable unreliable_pid : int32 option;
   mutable parent : window_box option;
   mutable decoration_hint : window_decoration option;
+  mutable presentation_hint :
+    Rwm.River_output_v1.Presentation_mode.t option;
   (* Geometry *)
   mutable tile_geom : int32 rect;
   mutable float_geom : int32 rect;
@@ -97,11 +99,12 @@ and window = {
   (* State flags *)
   mutable is_fixed : bool;
   mutable is_urgent : bool;
+  mutable is_maximized : bool;
   mutable presentation : presentation;
   (* Pointer op state *)
   mutable request : window_request;
 }
-(* managed_window *)
+(* window *)
 
 and window_box = { mutable body : window option }
 

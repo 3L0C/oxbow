@@ -100,6 +100,7 @@ let init (wm : window_manager) (seat : seat) =
         (K_Escape, Exit_wm);
         (K_space, Toggle_floating);
         (K_v, Toggle_fullscreen);
+        (K_I, Toggle_maximize);
       ]
   in
   let pointer_bindings =

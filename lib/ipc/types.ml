@@ -26,6 +26,7 @@ type action =
   (* Window operations *)
   | Close_focused
   | Toggle_floating
+  | Toggle_maximize
   | Toggle_fullscreen
   | Move_interactive
   | Resize_interactive

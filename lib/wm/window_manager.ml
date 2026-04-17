@@ -15,6 +15,22 @@ let handle_unavailable _proxy =
 
 let handle_finished _ = raise Finished
 
+let set_presentation_mode (output : output) =
+  match Output.focused_window output with
+  | Some w when w.output <> None -> begin
+      let mode =
+        match w.presentation_hint with
+        | Some p -> p
+        | None ->
+            Rwm.River_output_v1.Presentation_mode.Vsync
+      in
+      Rwm.River_output_v1.set_presentation_mode output.obj
+        ~mode
+    end
+  | _ ->
+      Rwm.River_output_v1.set_presentation_mode output.obj
+        ~mode:Rwm.River_output_v1.Presentation_mode.Vsync
+
 let render (wm : window_manager) (seat : seat) =
   begin match seat.op with
   | Op_none -> ()
@@ -44,7 +60,8 @@ let render (wm : window_manager) (seat : seat) =
         else op_r.start_y
       in
       Window.set_floating_position op_r.window ~x ~y
-  end
+  end;
+  List.iter set_presentation_mode wm.outputs
 
 let rec handle_window_request
           (wm : window_manager)
@@ -75,10 +92,14 @@ let rec handle_window_request
           Seat.pointer_resize wm r.seat window r.edges
         end
       end
-  | Req_maximize ->
+  | Req_maximize -> begin
+      window.is_maximized <- true;
       Rwm.River_window_v1.inform_maximized window.obj
-  | Req_unmaximize ->
+    end
+  | Req_unmaximize -> begin
+      window.is_maximized <- false;
       Rwm.River_window_v1.inform_unmaximized window.obj
+    end
   | Req_fullscreen r -> begin
       let enter (restore : [ `Tiled | `Floating ]) =
         match (r.output, window.output) with
@@ -188,6 +209,18 @@ let action (wm : window_manager) (seat : seat) = function
           | _ ->
               handle_window_request wm w
                 (Req_fullscreen { output = w.output })
+          end
+      end
+  | Toggle_maximize ->
+      begin match Focus.focused_of seat with
+      | None -> ()
+      | Some w ->
+          begin match w.presentation with
+          | P_fullscreen _ -> ()
+          | _ ->
+              (if w.is_maximized then Req_unmaximize
+               else Req_maximize)
+              |> handle_window_request wm w
           end
       end
   | _ -> ()
@@ -463,6 +496,7 @@ let handle_window _ river_window (wm_box : wm_box) =
       unreliable_pid = None;
       parent = None;
       decoration_hint = None;
+      presentation_hint = None;
       tile_geom = { x = 0l; y = 0l; w = 0l; h = 0l };
       float_geom = { x = 0l; y = 0l; w = 0l; h = 0l };
       size_hints =
@@ -471,6 +505,7 @@ let handle_window _ river_window (wm_box : wm_box) =
       output = wm.focused_output;
       is_fixed = false;
       is_urgent = false;
+      is_maximized = false;
       presentation = P_tiled;
       request = Req_none;
     }
@@ -585,7 +620,9 @@ let handle_window _ river_window (wm_box : wm_box) =
       method on_exit_fullscreen_requested _ =
         window.request <- Req_exit_fullscreen
 
-      method on_presentation_hint _ ~hint = ()
+      method on_presentation_hint _ ~hint =
+        window.presentation_hint <- Some hint
+
       method on_show_window_menu_requested _ ~x ~y = ()
       method on_minimize_requested _ = ()
     end;
