@@ -279,6 +279,10 @@ let retile (wm : window_manager) = function
 let manage_window (wm : window_manager) (window : window) =
   begin match window.state with
   | W_new -> begin
+      Rwm.River_window_v1.set_capabilities window.obj
+        ~caps:
+          Rwm.River_window_v1.Capabilities.(
+            Int32.logor maximize fullscreen);
       Output.add_window window;
       Output.mark_dirty window.output;
       if window.is_fixed then
