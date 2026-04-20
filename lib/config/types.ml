@@ -7,8 +7,8 @@ open Ocdwm_core.Types
 open Ocdwm_layout.Types
 
 type tag_data = {
-  layout_data : layout_data;
   layout_params : layout_params;
+  mutable layout_entry : layout_entry;
 }
 
 type rule_pattern = {

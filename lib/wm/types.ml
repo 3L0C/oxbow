@@ -189,7 +189,7 @@ type window_manager = {
   config : config;
   mutable config_loaded : bool;
   (* Layout registry *)
-  layouts : layout_registry;
+  layout_registry : layout_registry;
   (* IPC state *)
   ipc : ipc_state;
 }

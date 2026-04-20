@@ -48,7 +48,7 @@ type action =
   | Window_tag_mask of tag_mask
   (* Layout *)
   | Layout_set of string
-  | Layout_cycle
+  | Layout_cycle of direction
   | Set_mfact of float delta
   | Set_nmaster of int delta
   | Set_gaps_inner of int delta

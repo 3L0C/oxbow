@@ -1,87 +1,101 @@
 (* ocdwm layout - layout helpers *)
+
 open Ocdwm_core.Types
 open Types
 
-let create_registry () = { entries = LayoutMap.empty }
+let entry_data = function
+  | L_builtin { data; _ }
+  | L_external { data; _ } ->
+      data
 
-let tile (data : layout_params) (geom : int rect) = function
-  | 0 -> []
-  | n -> begin
-      let c_count = Int.max 0 (n - data.nmaster) in
-      let m_count = Int.max 0 (n - c_count) in
-      let w =
-        geom.w
-        - (data.gaps_outer * 2)
-          (* Two gaps, one left and one right *)
-        - if c_count > 0 then data.gaps_inner else 0
-        (* No inner gaps if no clients *)
-      in
-      let mw =
-        match (m_count, c_count) with
-        | 0, _ -> 0
-        | _, 0 -> w
-        | _, _ ->
-            Float.of_int w
-            |> ( *. ) data.mfact
-            |> Int.of_float
-      in
-      let mh =
-        geom.h
-        - (data.gaps_outer * 2)
-          (* Two gaps, one left and one right *)
-        -
-        (* there are m - 1 gaps between windows in any stack (i.e., edges to nodes) *)
-        if m_count > 0 then data.gaps_inner * (m_count - 1)
-        else 0
-      in
-      let mwh = if m_count > 0 then mh / m_count else 0 in
-      let cw =
-        match (c_count, m_count) with
-        | 0, _ -> 0
-        | _, 0 -> w
-        | _, _ ->
-            Float.of_int w
-            |> ( *. ) (1.0 -. data.mfact)
-            |> Int.of_float
-      in
-      let ch =
-        geom.h
-        - (data.gaps_outer * 2)
-          (* Two gaps, one left and one right *)
-        -
-        (* there are m - 1 gaps between windows in any stack (i.e., edges to nodes) *)
-        if c_count > 0 then data.gaps_inner * (c_count - 1)
-        else 0
-      in
-      let cwh = if c_count > 0 then ch / c_count else 0 in
-      let cx =
-        data.gaps_outer
-        + mw
-        + if m_count > 0 then data.gaps_inner else 0
-      in
-      let masters =
-        List.init m_count (fun i ->
-          {
-            x = geom.x + data.gaps_outer;
-            y =
-              geom.y
-              + data.gaps_outer
-              + ((mwh + data.gaps_inner) * i);
-            w = mw;
-            h = mwh;
-          })
-      in
-      let clients =
-        List.init c_count (fun i ->
-          {
-            x = geom.x + cx;
-            y =
-              geom.y
-              + data.gaps_outer
-              + ((cwh + data.gaps_inner) * i);
-            w = cw;
-            h = cwh;
-          })
-      in
-      masters @ clients
-    end
+let entry_name = function
+  | L_builtin { data; _ }
+  | L_external { data; _ } ->
+      data.name
+
+let entry_symbol ~(ctx : symbol_ctx) = function
+  | L_builtin { data; _ }
+  | L_external { data; _ } ->
+      begin match data.symbol with
+      | S_static s -> s
+      | S_dynamic f -> f ctx
+      end
+
+let default_layout_entry ~(registry : layout_registry) =
+  match List.nth_opt registry.entries 0 with
+  | None -> failwith "No layouts registered"
+  | Some (_, e) -> e
+
+let default_layout_data ~(registry : layout_registry) =
+  match List.nth_opt registry.entries 0 with
+  | None -> failwith "No layouts registered"
+  | Some (_, e) -> entry_data e
+
+let register
+      ~(registry : layout_registry)
+      ~(entry : layout_entry)
+  =
+  let name =
+    match entry with
+    | L_builtin { data; _ }
+    | L_external { data; _ } ->
+        data.name
+  in
+  let dups, rest =
+    List.partition (fun (n, _) -> n = name) registry.entries
+  in
+  if dups <> [] then
+    Logs.warn (fun m ->
+      m "layout %S already registered, replacing" name);
+  registry.entries <- rest @ [ (name, entry) ]
+
+let create_registry () : layout_registry =
+  let registry = { entries = [] } in
+  let builtins =
+    [
+      (Tile.name, Tile.symbol, Tile.compute);
+      (Monocle.name, Monocle.symbol, Monocle.compute);
+      (Floating.name, Floating.symbol, Floating.compute);
+    ]
+  in
+  List.iter
+    (fun (name, symbol, compute) ->
+       register ~registry
+         ~entry:
+           (L_builtin { data = { name; symbol }; compute }))
+    builtins;
+  registry
+
+let find ~(registry : layout_registry) ~(name : string) =
+  List.assoc_opt name registry.entries
+
+let cycle
+      ~(registry : layout_registry)
+      ~(name : string)
+      ~(dir : direction)
+  =
+  let entries =
+    if dir = Dir_next then registry.entries
+    else List.rev registry.entries
+  in
+  let rec after = function
+    | (n, _) :: [] when n = name -> List.nth_opt entries 0
+    | (n, _) :: x :: _ when n = name -> Some x
+    | _ :: xs -> after xs
+    | [] -> begin
+        if entries <> [] then
+          Logs.err (fun m ->
+            m
+              "Unable to find %S in layout registry \
+               (removed mid search?)"
+               name);
+        None
+      end
+  in
+  after entries
+
+let compute ~(entry : layout_entry) =
+  match entry with
+  | L_builtin { compute; _ }
+  | L_external { compute; _ } ->
+      compute

@@ -57,8 +57,11 @@ let main ~net =
          inherit [_] Xkb.River_xkb_bindings_v1.v2
        end
   in
-  let config = Config.default () in
-  let layouts = Layout.create_registry () in
+  let layout_registry = Layout.create_registry () in
+  let config =
+    Layout.default_layout_entry ~registry:layout_registry
+    |> Config.default
+  in
   wm_box.body <-
     Some
       {
@@ -71,7 +74,7 @@ let main ~net =
         seats = [];
         config;
         config_loaded = true;
-        layouts;
+        layout_registry;
         ipc = Ipc_inactive;
       }
 

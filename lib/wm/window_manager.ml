@@ -1,5 +1,7 @@
 (* ocdwm window manager - state management *)
+
 module Layout = Ocdwm_layout.Layout
+module Config = Ocdwm_config.Config
 open Types
 open Ocdwm_core.Types
 open Ocdwm_ipc.Types
@@ -223,6 +225,39 @@ let action (wm : window_manager) (seat : seat) = function
               |> handle_window_request wm w
           end
       end
+  | Layout_set name ->
+      begin match
+        Layout.find ~registry:wm.layout_registry ~name
+      with
+      | None -> ()
+      | Some entry ->
+          begin match wm.focused_output with
+          | None -> ()
+          | Some o -> begin
+              Output.set_layout_entry o ~entry;
+              Output.mark_dirty (Some o)
+            end
+          end
+      end
+  | Layout_cycle dir ->
+      begin match wm.focused_output with
+      | None -> ()
+      | Some o -> begin
+          let name =
+            (Output.tag_data o).layout_entry
+            |> Layout.entry_name
+          in
+          match
+            Layout.cycle ~registry:wm.layout_registry ~name
+              ~dir
+          with
+          | None -> ()
+          | Some (_, entry) -> begin
+              Output.set_layout_entry o ~entry;
+              Output.mark_dirty (Some o)
+            end
+        end
+      end
   | _ -> ()
 
 let manage_seat (wm : window_manager) (seat : seat) =
@@ -266,14 +301,35 @@ let retile (wm : window_manager) = function
   | Some (o : output) ->
       if not @@ Output.fullscreen_is_visible o then begin
         let windows = Output.tiled_windows o in
-        let layouts =
-          List.length windows
-          |> Layout.tile (Output.tag_data o).layout_params
-               o.usable
+        let count = List.length windows in
+        let tag_data = Output.tag_data o in
+        let compute =
+          Layout.compute ~entry:tag_data.layout_entry
         in
-        List.iter2
-          (fun w g -> clamp w g |> Window.set_tiled_geom w)
-          windows layouts
+        let dimensions =
+          compute ~data:tag_data.layout_params
+            ~area:o.usable ~count
+        in
+        match (windows, dimensions) with
+        | _, [] when count <> 0 ->
+            List.iter
+              (fun w ->
+                 Window.set_floating_geom w w.float_geom)
+              windows
+        | _, d_xs when List.length d_xs <> count ->
+            let layout_name =
+              Layout.entry_name tag_data.layout_entry
+            in
+            Logs.warn (fun m ->
+              m
+                "Layout %S returned unexpected geometry \
+                 count"
+                 layout_name)
+        | w_xs, d_xs ->
+            List.iter2
+              (fun w g ->
+                 clamp w g |> Window.set_tiled_geom w)
+              w_xs d_xs
       end
 
 let manage_window (wm : window_manager) (window : window) =
@@ -386,17 +442,8 @@ let handle_output _ river_output (wm_box : wm_box) =
       previous_tags = 1l;
       tag_state =
         Array.init 32 (fun _ ->
-          {
-            layout_data = { name = "tile"; symbol = "[]=" };
-            layout_params =
-              {
-                mfact = 0.55;
-                nmaster = 1;
-                gaps_inner = 0;
-                gaps_outer = 0;
-                stack = Stack_even;
-              };
-          });
+          Config.create_tag_data
+            ~entry:wm.config.default_tag_config.layout_entry);
       focus_stack = [];
       windows = [];
     }

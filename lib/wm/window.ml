@@ -30,8 +30,32 @@ let river_sync_geom (w : window) (g : int32 rect) =
     ~height:g.h
 
 let set_floating_geom (w : window) (g : int32 rect) =
-  w.float_geom <- g;
-  river_sync_geom w g
+  match (w.output, g) with
+  | None, _ -> ()
+  | Some o, { x = 0l; y = 0l; w = 0l; h = 0l } -> begin
+      let usable =
+        Int32.
+          {
+            x = of_int o.usable.x;
+            y = of_int o.usable.y;
+            w = of_int o.usable.w;
+            h = of_int o.usable.h;
+          }
+      in
+      w.float_geom <-
+        Int32.
+          {
+            x = div usable.w 4l |> add usable.x;
+            y = div usable.h 4l |> add usable.y;
+            w = div usable.w 2l;
+            h = div usable.h 2l;
+          };
+
+      river_sync_geom w g
+    end
+  | Some o, _ ->
+      w.float_geom <- g;
+      river_sync_geom w g
 
 let set_tiled_geom (w : window) (g : int32 rect) =
   w.tile_geom <- g;

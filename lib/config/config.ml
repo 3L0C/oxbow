@@ -1,14 +1,28 @@
 (* ocdwm config - window rules and runtime settings *)
+open Ocdwm_layout.Types
 open Types
+module Layout = Ocdwm_layout.Layout
 
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
-let default () =
+let create_tag_data ~(entry : layout_entry) =
+  {
+    layout_params =
+      {
+        mfact = 0.55;
+        nmaster = 1;
+        gaps_inner = 0;
+        gaps_outer = 0;
+        stack = Stack_even;
+      };
+    layout_entry = entry;
+  }
+
+let default (entry : layout_entry) =
   {
     default_tag_config =
       {
-        layout_data = { name = "tile"; symbol = "[]=" };
         layout_params =
           {
             mfact = 0.55;
@@ -17,6 +31,7 @@ let default () =
             gaps_outer = 0;
             stack = Stack_even;
           };
+        layout_entry = entry;
       };
     borders =
       {

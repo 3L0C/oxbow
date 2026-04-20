@@ -5,6 +5,7 @@ module Rwm =
 module Utils = Ocdwm_core.Utils
 open Ocdwm_core.Types
 open Ocdwm_config.Types
+open Ocdwm_layout.Types
 open Types
 
 let destroy = Rwm.River_output_v1.destroy
@@ -144,3 +145,7 @@ let add_window (w : window) =
             w :: List.filter (Stdlib.( != ) w) o.focus_stack
         end
     end
+
+let set_layout_entry (o : output) ~(entry : layout_entry) =
+  let td = tag_data o in
+  td.layout_entry <- entry
