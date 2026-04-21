@@ -12,12 +12,13 @@ let focused_of (seat : seat) : window option =
   | None -> None
 
 let focus_window
+      ?(force : bool = false)
       (wm : window_manager)
       (seat : seat)
       (target : window)
   =
   match focused_of seat with
-  | Some w when w == target -> ()
+  | Some w when w == target && not force -> ()
   | _ -> begin
       seat.output <- target.output;
       wm.focused_output <- target.output;

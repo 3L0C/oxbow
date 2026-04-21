@@ -156,6 +156,11 @@ and seat_state =
   | S_active
   | S_closing
 
+and layer_focus =
+  | Lf_none
+  | Lf_non_exclusive
+  | Lf_exclusive
+
 and seat = {
   (* Wayland objects *)
   obj : [ `V4 ] Rwm.River_seat_v1.t;
@@ -165,6 +170,7 @@ and seat = {
   (* State *)
   mutable output : output option;
   mutable position : pointer_position;
+  mutable layer_focus : layer_focus;
   (* Keybindings *)
   mutable xkb_bindings : xkb_binding list;
   mutable pointer_bindings : pointer_binding list;

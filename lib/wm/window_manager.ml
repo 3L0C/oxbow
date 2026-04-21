@@ -700,14 +700,41 @@ let handle_window _ river_window (wm_box : wm_box) =
 
 let handle_seat _ river_seat (wm_box : wm_box) =
   let wm = Option.get wm_box.body in
+  let seat_box : seat_box = { body = None } in
   let layer_shell =
     Rlsh.River_layer_shell_v1.get_seat wm.river_lsh_v1
       ~seat:river_seat
     @@ object
          inherit [_] Rlsh.River_layer_shell_seat_v1.v1
-         method on_focus_none _ = ()
-         method on_focus_non_exclusive _ = ()
-         method on_focus_exclusive _ = ()
+         method user_data = Boxed_data (Seat_box seat_box)
+
+         method on_focus_none proxy =
+           let s =
+             match Wayland.Proxy.user_data proxy with
+             | Boxed_data (Seat_box { body = Some s }) -> s
+             | _ -> assert false
+           in
+           s.layer_focus <- Lf_none;
+           begin match Focus.focused_of s with
+           | Some w -> Focus.focus_window ~force:true wm s w
+           | None -> Focus.clear s
+           end
+
+         method on_focus_non_exclusive proxy =
+           let s =
+             match Wayland.Proxy.user_data proxy with
+             | Boxed_data (Seat_box { body = Some s }) -> s
+             | _ -> assert false
+           in
+           s.layer_focus <- Lf_non_exclusive
+
+         method on_focus_exclusive proxy =
+           let s =
+             match Wayland.Proxy.user_data proxy with
+             | Boxed_data (Seat_box { body = Some s }) -> s
+             | _ -> assert false
+           in
+           s.layer_focus <- Lf_exclusive
        end
   in
   let seat : seat =
@@ -717,6 +744,7 @@ let handle_seat _ river_seat (wm_box : wm_box) =
       state = S_new;
       output = wm.focused_output;
       position = { x = 0l; y = 0l };
+      layer_focus = Lf_none;
       xkb_bindings = [];
       pointer_bindings = [];
       pending_action = No_action;
@@ -725,6 +753,7 @@ let handle_seat _ river_seat (wm_box : wm_box) =
       op = Op_none;
     }
   in
+  seat_box.body <- Some seat;
   Wayland.Proxy.Handler.attach river_seat
     object
       inherit [_] Rwm.River_seat_v1.v4
