@@ -30,6 +30,7 @@ type output_state =
 type output = {
   (* Wayland objects *)
   obj : [ `V4 ] Rwm.River_output_v1.t;
+  layer_shell : [ `V1 ] Rlsh.River_layer_shell_output_v1.t;
   (* State *)
   mutable state : output_state;
   (* Identity *)
@@ -50,6 +51,8 @@ type output = {
   mutable windows : window list;
 }
 (* output *)
+
+and output_box = { mutable body : output option }
 
 and window_request =
   | Req_none
@@ -156,6 +159,7 @@ and seat_state =
 and seat = {
   (* Wayland objects *)
   obj : [ `V4 ] Rwm.River_seat_v1.t;
+  layer_shell : [ `V1 ] Rlsh.River_layer_shell_seat_v1.t;
   (* Lifecycle *)
   mutable state : seat_state;
   (* State *)
@@ -198,7 +202,14 @@ type window_manager = {
 
 and wm_box = { mutable body : window_manager option }
 
+type any_box =
+  | Output_box of output_box
+  | Window_box of window_box
+  | Wm_box of wm_box
+  | Seat_box of seat_box
+
 type (_, _) Wayland.S.user_data +=
+  | Boxed_data of any_box
   | Output_data of output
   | Window_data of window
   | Seat_data of seat

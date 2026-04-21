@@ -381,11 +381,26 @@ let close_seats (wm : window_manager) =
 
 let maybe_focus_first_output (wm : window_manager) =
   match wm.focused_output with
-  | None -> wm.focused_output <- List.nth_opt wm.outputs 0
+  | None ->
+      begin match wm.outputs with
+      | o :: _ -> begin
+          wm.focused_output <- Some o;
+          Rlsh.River_layer_shell_output_v1.set_default
+            o.layer_shell
+        end
+      | [] -> ()
+      end
   | Some o ->
       begin match List.memq o wm.outputs with
       | false ->
-          wm.focused_output <- List.nth_opt wm.outputs 0
+          begin match wm.outputs with
+          | o :: _ -> begin
+              wm.focused_output <- Some o;
+              Rlsh.River_layer_shell_output_v1.set_default
+                o.layer_shell
+            end
+          | [] -> ()
+          end
       | true -> ()
       end
 
@@ -419,9 +434,42 @@ let handle_session_unlocked _proxy = ()
 
 let handle_output _ river_output (wm_box : wm_box) =
   let wm = Option.get wm_box.body in
+  let output_box : output_box = { body = None } in
+  let layer_shell =
+    Rlsh.River_layer_shell_v1.get_output wm.river_lsh_v1
+      ~output:river_output
+    @@ object
+         inherit [_] Rlsh.River_layer_shell_output_v1.v1
+
+         method user_data =
+           Boxed_data (Output_box output_box)
+
+         method on_non_exclusive_area
+           proxy
+           ~x
+           ~y
+           ~width
+           ~height =
+           match Wayland.Proxy.user_data proxy with
+           | Boxed_data (Output_box { body = Some o }) ->
+           begin
+               o.usable <-
+                 Int32.
+                   {
+                     x = to_int x;
+                     y = to_int y;
+                     w = to_int width;
+                     h = to_int height;
+                   };
+               Output.mark_dirty (Some o)
+             end
+           | _ -> assert false
+       end
+  in
   let output : output =
     {
       obj = river_output;
+      layer_shell;
       state = O_active;
       name = None;
       geom = { x = 0l; y = 0l; w = 0l; h = 0l };
@@ -436,6 +484,7 @@ let handle_output _ river_output (wm_box : wm_box) =
       windows = [];
     }
   in
+  output_box.body <- Some output;
   Wayland.Proxy.Handler.attach river_output
     object
       inherit [_] Rwm.River_output_v1.v4
@@ -488,13 +537,15 @@ let handle_output _ river_output (wm_box : wm_box) =
       method on_position _ ~x ~y =
         output.geom <-
           { x; y; w = output.geom.w; h = output.geom.h };
-        output.usable <-
-          {
-            x = Int32.to_int output.geom.x;
-            y = Int32.to_int output.geom.y;
-            w = Int32.to_int output.geom.w;
-            h = Int32.to_int output.geom.h;
-          }
+        if output.usable.w = 0 || output.usable.h = 0 then
+          output.usable <-
+            Int32.
+              {
+                x = to_int output.geom.x;
+                y = to_int output.geom.y;
+                w = to_int output.geom.w;
+                h = to_int output.geom.h;
+              }
 
       method on_dimensions _ ~width ~height =
         output.geom <-
@@ -504,13 +555,15 @@ let handle_output _ river_output (wm_box : wm_box) =
             w = width;
             h = height;
           };
-        output.usable <-
-          {
-            x = Int32.to_int output.geom.x;
-            y = Int32.to_int output.geom.y;
-            w = Int32.to_int output.geom.w;
-            h = Int32.to_int output.geom.h;
-          }
+        if output.usable.w = 0 || output.usable.h = 0 then
+          output.usable <-
+            Int32.
+              {
+                x = to_int output.geom.x;
+                y = to_int output.geom.y;
+                w = to_int output.geom.w;
+                h = to_int output.geom.h;
+              }
     end;
   wm.outputs <- output :: wm.outputs;
   match List.length wm.outputs with
@@ -647,9 +700,20 @@ let handle_window _ river_window (wm_box : wm_box) =
 
 let handle_seat _ river_seat (wm_box : wm_box) =
   let wm = Option.get wm_box.body in
+  let layer_shell =
+    Rlsh.River_layer_shell_v1.get_seat wm.river_lsh_v1
+      ~seat:river_seat
+    @@ object
+         inherit [_] Rlsh.River_layer_shell_seat_v1.v1
+         method on_focus_none _ = ()
+         method on_focus_non_exclusive _ = ()
+         method on_focus_exclusive _ = ()
+       end
+  in
   let seat : seat =
     {
       obj = river_seat;
+      layer_shell;
       state = S_new;
       output = wm.focused_output;
       position = { x = 0l; y = 0l };

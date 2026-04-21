@@ -2,6 +2,7 @@
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
+module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Utils = Ocdwm_core.Utils
 open Ocdwm_core.Types
 open Ocdwm_config.Types
@@ -9,6 +10,8 @@ open Ocdwm_layout.Types
 open Types
 
 let destroy (o : output) =
+  Rlsh.River_layer_shell_output_v1.destroy o.layer_shell;
+  Wayland.Proxy.delete o.layer_shell;
   Rwm.River_output_v1.destroy o.obj;
   Wayland.Proxy.delete o.obj
 

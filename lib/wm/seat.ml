@@ -2,6 +2,7 @@
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
+module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 open Types
 open Ocdwm_ipc.Types
@@ -88,6 +89,8 @@ let pointer_binding_create
 let destroy seat =
   List.iter xkb_binding_destroy seat.xkb_bindings;
   List.iter pointer_binding_destroy seat.pointer_bindings;
+  Rlsh.River_layer_shell_seat_v1.destroy seat.layer_shell;
+  Wayland.Proxy.delete seat.layer_shell;
   Rwm.River_seat_v1.destroy seat.obj;
   Wayland.Proxy.delete seat.obj
 
