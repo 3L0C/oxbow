@@ -9,19 +9,8 @@ let destroy (w : window) =
   Rwm.River_window_v1.destroy w.obj;
   Rwm.River_node_v1.destroy w.node
 
-let set_floating_position
-      (w : window)
-      ~(x : int32)
-      ~(y : int32)
-  =
-  w.float_geom <-
-    { x; y; w = w.float_geom.w; h = w.float_geom.h };
-  Rwm.River_node_v1.set_position w.node ~x ~y
-
-let set_tile_position (w : window) ~(x : int32) ~(y : int32)
-  =
-  w.tile_geom <-
-    { x; y; w = w.tile_geom.w; h = w.tile_geom.h };
+let set_position (w : window) ~(x : int32) ~(y : int32) =
+  w.geom <- { x; y; w = w.geom.w; h = w.geom.h };
   Rwm.River_node_v1.set_position w.node ~x ~y
 
 let river_sync_geom (w : window) (g : int32 rect) =
@@ -29,36 +18,8 @@ let river_sync_geom (w : window) (g : int32 rect) =
   Rwm.River_window_v1.propose_dimensions w.obj ~width:g.w
     ~height:g.h
 
-let set_floating_geom (w : window) (g : int32 rect) =
-  match (w.output, g) with
-  | None, _ -> ()
-  | Some o, { x = 0l; y = 0l; w = 0l; h = 0l } -> begin
-      let usable =
-        Int32.
-          {
-            x = of_int o.usable.x;
-            y = of_int o.usable.y;
-            w = of_int o.usable.w;
-            h = of_int o.usable.h;
-          }
-      in
-      w.float_geom <-
-        Int32.
-          {
-            x = div usable.w 4l |> add usable.x;
-            y = div usable.h 4l |> add usable.y;
-            w = div usable.w 2l;
-            h = div usable.h 2l;
-          };
-
-      river_sync_geom w g
-    end
-  | Some o, _ ->
-      w.float_geom <- g;
-      river_sync_geom w g
-
-let set_tiled_geom (w : window) (g : int32 rect) =
-  w.tile_geom <- g;
+let set_geom (w : window) (g : int32 rect) =
+  w.geom <- g;
   river_sync_geom w g
 
 let is_visible (w : window) =
@@ -68,13 +29,50 @@ let is_visible (w : window) =
 
 let is_tiled (w : window) = w.presentation = P_tiled
 
-let float (w : window) =
+let remember_float (w : window) =
+  w.float_geom <- Some w.geom
+
+let tile (w : window) =
+  if w.presentation = P_floating then remember_float w;
+  w.presentation <- P_tiled
+
+let clamp_dim ~min_v ~max_v v =
+  v
+  |> (if min_v > 0l then Int32.max min_v else Fun.id)
+  |> if max_v > 0l then Int32.min max_v else Fun.id
+
+let clamp (w : window) (g : int rect) =
+  let h = w.size_hints in
+  Int32.
+    {
+      x = of_int g.x;
+      y = of_int g.y;
+      w =
+        of_int g.w
+        |> clamp_dim ~min_v:h.min_w ~max_v:h.max_w;
+      h =
+        of_int g.h
+        |> clamp_dim ~min_v:h.min_h ~max_v:h.max_h;
+    }
+
+let clamp32 (w : window) (g : int32 rect) =
+  let h = w.size_hints in
+  Int32.
+    {
+      x = g.x;
+      y = g.y;
+      w = clamp_dim ~min_v:h.min_w ~max_v:h.max_w g.w;
+      h = clamp_dim ~min_v:h.min_h ~max_v:h.max_h g.h;
+    }
+
+let restore_or_seed_float (w : window) =
   match w.output with
   | None -> ()
   | Some o -> begin
-      let geom =
+      let g =
         match w.float_geom with
-        | { x = 0l; y = 0l; w = 0l; h = 0l } ->
+        | Some g -> g
+        | None -> begin
             let usable =
               Int32.
                 {
@@ -91,14 +89,16 @@ let float (w : window) =
                 w = div usable.w 2l;
                 h = div usable.h 2l;
               }
-        | _ -> w.float_geom
+          end
       in
-      w.presentation <- P_floating;
-      set_floating_geom w geom
+      let g = clamp32 w g in
+      w.float_geom <- Some g;
+      set_geom w g
     end
 
-let tile (w : window) =
-  if not w.is_fixed then w.presentation <- P_tiled
+let float (w : window) =
+  w.presentation <- P_floating;
+  restore_or_seed_float w
 
 let toggle_floating = function
   | None -> ()
@@ -106,8 +106,10 @@ let toggle_floating = function
       begin if w.output <> None then
         match w.presentation with
         | P_tiled -> float w
-        | P_floating -> tile w
-        | P_fullscreen _ -> ()
+        | P_floating when not w.is_fixed -> tile w
+        | P_floating
+        | P_fullscreen _ ->
+            ()
       end
 
 let is_fullscreen (w : window) =
@@ -133,9 +135,6 @@ let exit_fullscreen
       Rwm.River_window_v1.exit_fullscreen w.obj;
       Rwm.River_window_v1.inform_not_fullscreen w.obj;
       match p with
-      | `Tiled -> w.presentation <- P_tiled
-      | `Floating -> begin
-          w.presentation <- P_floating;
-          set_floating_geom w w.float_geom
-        end
+      | `Tiled -> tile w
+      | `Floating -> float w
     end

@@ -94,14 +94,6 @@ let visible_window_count (o : output) =
 let visible_windows (o : output) =
   List.filter Window.is_visible o.windows
 
-let tiled_window_count (o : output) =
-  List.fold_left
-    (fun a w ->
-       if Window.is_visible w && Window.is_tiled w then
-         a + 1
-       else a)
-    0 o.windows
-
 let tiled_windows (o : output) =
   List.filter
     (fun w -> Window.is_visible w && Window.is_tiled w)
@@ -149,3 +141,11 @@ let add_window (w : window) =
 let set_layout_entry (o : output) ~(entry : layout_entry) =
   let td = tag_data o in
   td.layout_entry <- entry
+
+let current_layout_entry (o : output) =
+  let td = tag_data o in
+  td.layout_entry
+
+let current_layout_params (o : output) =
+  let td = tag_data o in
+  td.layout_params

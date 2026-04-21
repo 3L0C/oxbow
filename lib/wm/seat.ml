@@ -102,7 +102,7 @@ let init (wm : window_manager) (seat : seat) =
         (modkey, K_j, Focus_window Dir_next);
         (modkey, K_k, Focus_window Dir_prev);
         (modkey, K_Escape, Exit_wm);
-        (modkey, K_ISO_Left_Tab, Layout_cycle Dir_next);
+        (modkey, K_Tab, Layout_cycle Dir_next);
         ( Int32.(logor modkey shift),
           K_space,
           Toggle_floating );
@@ -136,8 +136,8 @@ let pointer_move
     Op_move
       {
         window;
-        start_x = window.float_geom.x;
-        start_y = window.float_geom.y;
+        start_x = window.geom.x;
+        start_y = window.geom.y;
         dx = 0l;
         dy = 0l;
         release = false;
@@ -157,10 +157,10 @@ let pointer_resize
       {
         window;
         edges;
-        start_x = window.float_geom.x;
-        start_y = window.float_geom.y;
-        start_w = window.float_geom.w;
-        start_h = window.float_geom.h;
+        start_x = window.geom.x;
+        start_y = window.geom.y;
+        start_w = window.geom.w;
+        start_h = window.geom.h;
         dx = 0l;
         dy = 0l;
         release = false;
@@ -175,11 +175,15 @@ let op (wm : window_manager) (seat : seat) =
   match seat.op with
   | Op_move op_m when op_m.release -> begin
       Rwm.River_seat_v1.op_end seat.obj;
+      if op_m.window.presentation = P_floating then
+        Window.remember_float op_m.window;
       seat.op <- Op_none
     end
   | Op_resize op_r when op_r.release -> begin
       Rwm.River_window_v1.inform_resize_end op_r.window.obj;
       Rwm.River_seat_v1.op_end seat.obj;
+      if op_r.window.presentation = P_floating then
+        Window.remember_float op_r.window;
       seat.op <- Op_none
     end
   | Op_resize op_r -> begin

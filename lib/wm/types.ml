@@ -89,8 +89,8 @@ and window = {
   mutable presentation_hint :
     Rwm.River_output_v1.Presentation_mode.t option;
   (* Geometry *)
-  mutable tile_geom : int32 rect;
-  mutable float_geom : int32 rect;
+  mutable geom : int32 rect;
+  mutable float_geom : int32 rect option;
   (* Size hints from dimensions_hint *)
   mutable size_hints : int32 size_hints;
   (* Tag and output assignment *)

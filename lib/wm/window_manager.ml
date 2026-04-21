@@ -37,7 +37,7 @@ let render (wm : window_manager) (seat : seat) =
   begin match seat.op with
   | Op_none -> ()
   | Op_move op_m ->
-      Window.set_floating_position op_m.window
+      Window.set_position op_m.window
         ~x:(Int32.add op_m.start_x op_m.dx)
         ~y:(Int32.add op_m.start_y op_m.dy)
   | Op_resize op_r ->
@@ -47,7 +47,7 @@ let render (wm : window_manager) (seat : seat) =
             Rwm.River_window_v1.Edges.left
           <> 0l
         then
-          Int32.sub op_r.start_w op_r.window.float_geom.w
+          Int32.sub op_r.start_w op_r.window.geom.w
           |> Int32.add op_r.start_x
         else op_r.start_x
       in
@@ -57,11 +57,11 @@ let render (wm : window_manager) (seat : seat) =
             Rwm.River_window_v1.Edges.top
           <> 0l
         then
-          Int32.sub op_r.start_h op_r.window.float_geom.h
+          Int32.sub op_r.start_h op_r.window.geom.h
           |> Int32.add op_r.start_y
         else op_r.start_y
       in
-      Window.set_floating_position op_r.window ~x ~y
+      Window.set_position op_r.window ~x ~y
   end;
   List.iter set_presentation_mode wm.outputs
 
@@ -76,7 +76,6 @@ let rec handle_window_request
       | _ -> begin
           if window.presentation = P_tiled then begin
             window.presentation <- P_floating;
-            window.float_geom <- window.tile_geom;
             Output.mark_dirty window.output
           end;
           Seat.pointer_move wm r.seat window
@@ -88,7 +87,6 @@ let rec handle_window_request
       | _ -> begin
           if window.presentation = P_tiled then begin
             window.presentation <- P_floating;
-            window.float_geom <- window.tile_geom;
             Output.mark_dirty window.output
           end;
           Seat.pointer_resize wm r.seat window r.edges
@@ -234,6 +232,13 @@ let action (wm : window_manager) (seat : seat) = function
           begin match wm.focused_output with
           | None -> ()
           | Some o -> begin
+              let old_name =
+                Output.current_layout_entry o
+                |> Layout.entry_name
+              in
+              if old_name = "floating" then
+                Output.tiled_windows o
+                |> List.iter Window.remember_float;
               Output.set_layout_entry o ~entry;
               Output.mark_dirty (Some o)
             end
@@ -244,7 +249,7 @@ let action (wm : window_manager) (seat : seat) = function
       | None -> ()
       | Some o -> begin
           let name =
-            (Output.tag_data o).layout_entry
+            Output.current_layout_entry o
             |> Layout.entry_name
           in
           match
@@ -253,6 +258,9 @@ let action (wm : window_manager) (seat : seat) = function
           with
           | None -> ()
           | Some (_, entry) -> begin
+              if name = "floating" then
+                Output.tiled_windows o
+                |> List.iter Window.remember_float;
               Output.set_layout_entry o ~entry;
               Output.mark_dirty (Some o)
             end
@@ -277,25 +285,6 @@ let manage_seat (wm : window_manager) (seat : seat) =
   seat.pending_action <- No_action;
   Seat.op wm seat
 
-let clamp_dim ~min_v ~max_v v =
-  v
-  |> (if min_v > 0l then Int32.max min_v else Fun.id)
-  |> if max_v > 0l then Int32.min max_v else Fun.id
-
-let clamp (w : window) (g : int rect) =
-  let h = w.size_hints in
-  Int32.
-    {
-      x = of_int g.x;
-      y = of_int g.y;
-      w =
-        of_int g.w
-        |> clamp_dim ~min_v:h.min_w ~max_v:h.max_w;
-      h =
-        of_int g.h
-        |> clamp_dim ~min_v:h.min_h ~max_v:h.max_h;
-    }
-
 let retile (wm : window_manager) = function
   | None -> ()
   | Some (o : output) ->
@@ -313,8 +302,7 @@ let retile (wm : window_manager) = function
         match (windows, dimensions) with
         | _, [] when count <> 0 ->
             List.iter
-              (fun w ->
-                 Window.set_floating_geom w w.float_geom)
+              (fun w -> Window.restore_or_seed_float w)
               windows
         | _, d_xs when List.length d_xs <> count ->
             let layout_name =
@@ -328,7 +316,7 @@ let retile (wm : window_manager) = function
         | w_xs, d_xs ->
             List.iter2
               (fun w g ->
-                 clamp w g |> Window.set_tiled_geom w)
+                 Window.clamp w g |> Window.set_geom w)
               w_xs d_xs
       end
 
@@ -548,8 +536,8 @@ let handle_window _ river_window (wm_box : wm_box) =
       parent = None;
       decoration_hint = None;
       presentation_hint = None;
-      tile_geom = { x = 0l; y = 0l; w = 0l; h = 0l };
-      float_geom = { x = 0l; y = 0l; w = 0l; h = 0l };
+      geom = { x = 0l; y = 0l; w = 0l; h = 0l };
+      float_geom = None;
       size_hints =
         { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l };
       tags = 1l;
@@ -568,33 +556,11 @@ let handle_window _ river_window (wm_box : wm_box) =
       method on_closed _ = window.state <- W_closing
 
       method on_dimensions _ ~width ~height =
-        match window.presentation with
-        | P_tiled ->
-            begin match
-              window.tile_geom.w <> width
-              || window.tile_geom.h <> height
-            with
-            | false -> ()
-            | true -> Output.mark_dirty window.output
-            end
-        | P_floating ->
-            begin match
-              window.float_geom.w <> width
-              || window.float_geom.h <> height
-            with
-            | false -> ()
-            | true -> begin
-                window.float_geom <-
-                  {
-                    x = window.float_geom.x;
-                    y = window.float_geom.y;
-                    w = width;
-                    h = height;
-                  };
-                Output.mark_dirty window.output
-              end
-            end
-        | _ -> ()
+        match
+          window.geom.w <> width || window.geom.h <> height
+        with
+        | false -> ()
+        | true -> Output.mark_dirty window.output
 
       method on_unreliable_pid _ ~unreliable_pid =
         window.unreliable_pid <- Some unreliable_pid
