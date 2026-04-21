@@ -1,6 +1,7 @@
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
+module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 module Window_manager = Ocdwm_wm.Window_manager
 module Exit = Ocdwm_core.Exit
@@ -57,6 +58,12 @@ let main ~net =
          inherit [_] Xkb.River_xkb_bindings_v1.v2
        end
   in
+  let river_lsh_v1 =
+    Wayland.Registry.bind registry
+    @@ object
+         inherit [_] Rlsh.River_layer_shell_v1.v1
+       end
+  in
   let layout_registry = Layout.create_registry () in
   let config =
     Layout.default_layout_entry ~registry:layout_registry
@@ -67,6 +74,7 @@ let main ~net =
       {
         river_wm_v1;
         river_xkb_v1;
+        river_lsh_v1;
         registry;
         focused_output = None;
         outputs = [];

@@ -5,6 +5,8 @@
  (modules
   river_window_management_v1_client
   river_window_management_v1_proto
+  river_layer_shell_v1_client
+  river_layer_shell_v1_proto
   river_xkb_bindings_v1_client
   river_xkb_bindings_v1_proto))
 
@@ -27,6 +29,22 @@
   river_xkb_bindings_v1_proto.ml
   river_xkb_bindings_v1_server.ml)
  (deps river-xkb-bindings-v1.xml)
+ (action
+  (chdir
+   %{workspace_root}/protocol
+   (run
+    wayland-scanner-ocaml
+    --open
+    River_window_management_v1_client
+    %{deps}))))
+
+(rule
+ (mode fallback)
+ (targets
+  river_layer_shell_v1_client.ml
+  river_layer_shell_v1_proto.ml
+  river_layer_shell_v1_server.ml)
+ (deps river-layer-shell-v1.xml)
  (action
   (chdir
    %{workspace_root}/protocol

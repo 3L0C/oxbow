@@ -3,6 +3,7 @@
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
+module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 open Ocdwm_config.Types
 open Ocdwm_core.Types
@@ -178,6 +179,7 @@ type window_manager = {
   (* Wayland objects *)
   river_wm_v1 : [ `V4 ] Rwm.River_window_manager_v1.t;
   river_xkb_v1 : [ `V2 ] Xkb.River_xkb_bindings_v1.t;
+  river_lsh_v1 : [ `V1 ] Rlsh.River_layer_shell_v1.t;
   registry : Wayland.Registry.t;
   (* State *)
   mutable focused_output : output option;
