@@ -7,6 +7,7 @@ module Rwm =
 
 let destroy (w : window) =
   Rwm.River_window_v1.destroy w.obj;
+  Wayland.Proxy.delete w.obj;
   Rwm.River_node_v1.destroy w.node
 
 let set_position (w : window) ~(x : int32) ~(y : int32) =

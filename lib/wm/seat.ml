@@ -88,7 +88,8 @@ let pointer_binding_create
 let destroy seat =
   List.iter xkb_binding_destroy seat.xkb_bindings;
   List.iter pointer_binding_destroy seat.pointer_bindings;
-  Rwm.River_seat_v1.destroy seat.obj
+  Rwm.River_seat_v1.destroy seat.obj;
+  Wayland.Proxy.delete seat.obj
 
 let init (wm : window_manager) (seat : seat) =
   let modkey = wm.config.modkey in

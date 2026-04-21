@@ -347,7 +347,7 @@ let remove_outputs (wm : window_manager) =
          | O_active ->
              true
          | O_removed -> begin
-             Output.destroy o.obj;
+             Output.destroy o;
              false
            end)
       wm.outputs

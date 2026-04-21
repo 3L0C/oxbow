@@ -8,7 +8,9 @@ open Ocdwm_config.Types
 open Ocdwm_layout.Types
 open Types
 
-let destroy = Rwm.River_output_v1.destroy
+let destroy (o : output) =
+  Rwm.River_output_v1.destroy o.obj;
+  Wayland.Proxy.delete o.obj
 
 let focus_window (target : window) =
   match target.output with
