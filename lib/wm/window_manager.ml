@@ -726,7 +726,11 @@ let handle_seat _ river_seat (wm_box : wm_box) =
              | Boxed_data (Seat_box { body = Some s }) -> s
              | _ -> assert false
            in
-           s.layer_focus <- Lf_non_exclusive
+           s.layer_focus <- Lf_non_exclusive;
+           begin match Focus.focused_of s with
+           | Some w -> Focus.focus_window ~force:true wm s w
+           | None -> Focus.clear s
+           end
 
          method on_focus_exclusive proxy =
            let s =
