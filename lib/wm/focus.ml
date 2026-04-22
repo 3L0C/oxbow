@@ -17,6 +17,7 @@ let focus_window
       (seat : seat)
       (target : window)
   =
+  let force = force || seat.layer_focus <> Lf_none in
   match focused_of seat with
   | Some w when w == target && not force -> ()
   | _ -> begin
