@@ -350,7 +350,8 @@ let remove_outputs (wm : window_manager) =
              Output.destroy o;
              false
            end)
-      wm.outputs
+      wm.outputs;
+  if wm.outputs = [] then wm.focused_output <- None
 
 let close_windows (wm : window_manager) =
   wm.windows <-
@@ -388,7 +389,7 @@ let maybe_focus_first_output (wm : window_manager) =
           Rlsh.River_layer_shell_output_v1.set_default
             o.layer_shell
         end
-      | [] -> ()
+      | [] -> wm.focused_output <- None
       end
   | Some o ->
       begin match List.memq o wm.outputs with
