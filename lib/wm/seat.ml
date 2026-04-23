@@ -96,6 +96,7 @@ let destroy seat =
 
 let init (wm : window_manager) (seat : seat) =
   let modkey = wm.config.modkey in
+  let alt = Rwm.River_seat_v1.Modifiers.mod1 in
   let shift = Rwm.River_seat_v1.Modifiers.shift in
   let xkb_bindings =
     Xkbcommon.Keysym.
@@ -106,7 +107,14 @@ let init (wm : window_manager) (seat : seat) =
         (modkey, K_j, Focus_window Dir_next);
         (modkey, K_k, Focus_window Dir_prev);
         (modkey, K_Escape, Exit_wm);
-        (modkey, K_Tab, Layout_cycle Dir_next);
+        (modkey, K_Tab, Tag_view_cycle Dir_next);
+        (modkey, K_ISO_Left_Tab, Tag_view_cycle Dir_prev);
+        ( Int32.(logor modkey alt),
+          K_Tab,
+          Layout_cycle Dir_next );
+        ( Int32.(logor modkey alt),
+          K_ISO_Left_Tab,
+          Layout_cycle Dir_prev );
         ( Int32.(logor modkey shift),
           K_space,
           Toggle_floating );
