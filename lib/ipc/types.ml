@@ -43,6 +43,7 @@ type action =
   | Tag_view_mask of tag_mask
   | Tag_toggle_view of int
   | Tag_view_previous
+  | Tag_view_cycle of direction
   | Window_tag of int
   | Window_toggle_tag of int
   | Window_tag_mask of tag_mask
