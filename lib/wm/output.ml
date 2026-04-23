@@ -25,14 +25,14 @@ let focus_window (target : window) =
   | None -> ()
 
 let focused_window o =
-  List.find_opt Window.is_visible o.focus_stack
+  List.find_opt Window.tag_visible o.focus_stack
 
 let next_tiled : window list -> window option =
-  Utils.wrapped_search Window.is_visible (fun w ->
+  Utils.wrapped_search Window.tag_visible (fun w ->
     (Option.get w.output).windows)
 
 let prev_tiled : window list -> window option =
-  Utils.wrapped_search Window.is_visible (fun w ->
+  Utils.wrapped_search Window.tag_visible (fun w ->
     (Option.get w.output).windows |> List.rev)
 
 let next_window (o : output) =
@@ -94,15 +94,15 @@ let tag_data (o : output) =
 
 let visible_window_count (o : output) =
   List.fold_left
-    (fun a w -> if Window.is_visible w then a + 1 else a)
+    (fun a w -> if Window.tag_visible w then a + 1 else a)
     0 o.windows
 
 let visible_windows (o : output) =
-  List.filter Window.is_visible o.windows
+  List.filter Window.tag_visible o.windows
 
 let tiled_windows (o : output) =
   List.filter
-    (fun w -> Window.is_visible w && Window.is_tiled w)
+    (fun w -> Window.tag_visible w && Window.is_tiled w)
     o.windows
 
 let mark_dirty = function
@@ -111,7 +111,8 @@ let mark_dirty = function
 
 let fullscreen_is_visible (o : output) =
   List.exists
-    (fun w -> Window.is_fullscreen w && Window.is_visible w)
+    (fun w ->
+       Window.is_fullscreen w && Window.tag_visible w)
     o.focus_stack
 
 let move_window (w : window) (target : output) =
@@ -120,14 +121,16 @@ let move_window (w : window) (target : output) =
       w :: List.filter (fun x -> x != w) target.windows;
     target.focus_stack <-
       w :: List.filter (fun x -> x != w) target.focus_stack;
-    w.output <- Some target
+    w.output <- Some target;
+    List.iter Window.sync target.windows
   in
   match w.output with
   | Some o when o == target -> ()
   | None -> take ()
-  | Some _ -> begin
+  | Some o -> begin
       remove_window w;
-      take ()
+      take ();
+      List.iter Window.sync o.windows
     end
 
 let add_window (w : window) =

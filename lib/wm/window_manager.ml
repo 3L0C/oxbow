@@ -93,6 +93,7 @@ let manage_window (wm : window_manager) (window : window) =
       Output.mark_dirty window.output;
       if window.is_fixed then
         window.presentation <- P_floating;
+      Window.sync window;
       window.state <- W_active
     end
   | _ -> ()
@@ -160,7 +161,11 @@ let handle_manage_start proxy (wm_box : wm_box) =
   List.iter (manage_window wm) wm.windows;
   List.iter (manage_seat wm) wm.seats;
   List.iter (manage_output wm) wm.outputs;
-  Rwm.River_window_manager_v1.manage_finish proxy
+  Rwm.River_window_manager_v1.manage_finish proxy;
+  List.iter
+    (fun (w : window) ->
+       assert (w.is_hidden = not (Window.is_rendered w)))
+    wm.windows
 
 let handle_render_start proxy (wm_box : wm_box) =
   let wm = Option.get wm_box.body in

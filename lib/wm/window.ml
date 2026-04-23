@@ -23,7 +23,7 @@ let set_geom (w : window) (g : int32 rect) =
   w.geom <- g;
   river_sync_geom w g
 
-let is_visible (w : window) =
+let tag_visible (w : window) =
   match w.output with
   | Some o -> Int32.logand w.tags o.selected_tags <> 0l
   | None -> false
@@ -139,3 +139,34 @@ let exit_fullscreen
       | `Tiled -> tile w
       | `Floating -> float w
     end
+
+(** [is_rendered w] is true if and only if [w] is [tag_visible] and no other
+  * window is tag visible and fullscreen *)
+let is_rendered (w : window) =
+  tag_visible w
+  &&
+  match w.output with
+  | None -> false
+  | Some o ->
+      not
+        (List.exists
+           (fun w' ->
+              w' != w && is_fullscreen w' && tag_visible w')
+           o.focus_stack)
+
+(** [sync w] ensures [w] is shown or hidden.
+  * [w] is shown if [is_rendered w] is [true] and [w.is_hidden] is [true].
+  * [w] is hidden if [is_rendered w ] is [false] and [w.is_hidden] is [false].
+  * Else, state is already synced in which case [sync w] is a no-op. *)
+let sync (w : window) =
+  let should_render = is_rendered w in
+  match (should_render, w.is_hidden) with
+  | true, true -> begin
+      Rwm.River_window_v1.show w.obj;
+      w.is_hidden <- false
+    end
+  | false, false -> begin
+      Rwm.River_window_v1.hide w.obj;
+      w.is_hidden <- true
+    end
+  | _, _ -> ()

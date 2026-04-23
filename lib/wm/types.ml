@@ -104,6 +104,7 @@ and window = {
   mutable is_fixed : bool;
   mutable is_urgent : bool;
   mutable is_maximized : bool;
+  mutable is_hidden : bool;
   mutable presentation : presentation;
   (* Pointer op state *)
   mutable request : window_request;

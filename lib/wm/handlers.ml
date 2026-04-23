@@ -173,6 +173,7 @@ let handle_window _ river_window (wm_box : wm_box) =
       is_fixed = false;
       is_urgent = false;
       is_maximized = false;
+      is_hidden = false;
       presentation = P_tiled;
       request = Req_none;
     }
