@@ -4,6 +4,7 @@ module Rwm =
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 module Window_manager = Ocdwm_wm.Window_manager
+module Handlers = Ocdwm_wm.Handlers
 module Exit = Ocdwm_core.Exit
 module Config = Ocdwm_config.Config
 module Layout = Ocdwm_layout.Layout
@@ -40,16 +41,13 @@ let main ~net =
            Window_manager.handle_session_unlocked
 
          method on_window proxy river_window =
-           Window_manager.handle_window proxy river_window
-             wm_box
+           Handlers.handle_window proxy river_window wm_box
 
          method on_output proxy river_output =
-           Window_manager.handle_output proxy river_output
-             wm_box
+           Handlers.handle_output proxy river_output wm_box
 
          method on_seat proxy river_seat =
-           Window_manager.handle_seat proxy river_seat
-             wm_box
+           Handlers.handle_seat proxy river_seat wm_box
        end
   in
   let river_xkb_v1 =

@@ -95,3 +95,28 @@ let focus_other_output
 let remove_window (wm : window_manager) (window : window) =
   Output.remove_window window;
   refresh_focus wm window.output
+
+let maybe_focus_first_output (wm : window_manager) =
+  match wm.focused_output with
+  | None ->
+      begin match wm.outputs with
+      | o :: _ -> begin
+          wm.focused_output <- Some o;
+          Rlsh.River_layer_shell_output_v1.set_default
+            o.layer_shell
+        end
+      | [] -> wm.focused_output <- None
+      end
+  | Some o ->
+      begin match List.memq o wm.outputs with
+      | false ->
+          begin match wm.outputs with
+          | o :: _ -> begin
+              wm.focused_output <- Some o;
+              Rlsh.River_layer_shell_output_v1.set_default
+                o.layer_shell
+            end
+          | [] -> ()
+          end
+      | true -> ()
+      end

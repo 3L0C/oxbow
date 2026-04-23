@@ -2,6 +2,7 @@
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
+module Layout = Ocdwm_layout.Layout
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Utils = Ocdwm_core.Utils
 open Ocdwm_core.Types
@@ -154,3 +155,38 @@ let current_layout_entry (o : output) =
 let current_layout_params (o : output) =
   let td = tag_data o in
   td.layout_params
+
+let retile (wm : window_manager) = function
+  | None -> ()
+  | Some (o : output) ->
+      if not @@ fullscreen_is_visible o then begin
+        let windows = tiled_windows o in
+        let count = List.length windows in
+        let tag_data = tag_data o in
+        let compute =
+          Layout.compute ~entry:tag_data.layout_entry
+        in
+        let dimensions =
+          compute ~data:tag_data.layout_params
+            ~area:o.usable ~count
+        in
+        match (windows, dimensions) with
+        | _, [] when count <> 0 ->
+            List.iter
+              (fun w -> Window.restore_or_seed_float w)
+              windows
+        | _, d_xs when List.length d_xs <> count ->
+            let layout_name =
+              Layout.entry_name tag_data.layout_entry
+            in
+            Logs.warn (fun m ->
+              m
+                "Layout %S returned unexpected geometry \
+                 count"
+                 layout_name)
+        | w_xs, d_xs ->
+            List.iter2
+              (fun w g ->
+                 Window.clamp w g |> Window.set_geom w)
+              w_xs d_xs
+      end
