@@ -1,9 +1,11 @@
 (* ocdwm window - window handlers *)
-open Ocdwm_core.Types
-open Types
 
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
+
+module Tag_set = Ocdwm_core.Tag_set
+open Ocdwm_core.Types
+open Types
 
 let destroy (w : window) =
   Rwm.River_window_v1.destroy w.obj;
@@ -25,7 +27,7 @@ let set_geom (w : window) (g : int32 rect) =
 
 let tag_visible (w : window) =
   match w.output with
-  | Some o -> Int32.logand w.tags o.selected_tags <> 0l
+  | Some o -> Tag_set.intersects w.tags o.selected_tags
   | None -> false
 
 let is_tiled (w : window) = w.presentation = P_tiled

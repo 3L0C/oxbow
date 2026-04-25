@@ -5,6 +5,7 @@ module Rwm =
 
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Config = Ocdwm_config.Config
+module Tag_set = Ocdwm_core.Tag_set
 open Types
 
 let handle_output _ river_output (wm_box : wm_box) =
@@ -49,8 +50,8 @@ let handle_output _ river_output (wm_box : wm_box) =
       name = None;
       geom = { x = 0l; y = 0l; w = 0l; h = 0l };
       usable = { x = 0; y = 0; w = 0; h = 0 };
-      selected_tags = 1l;
-      previous_tags = 1l;
+      selected_tags = Tag_set.singleton 1;
+      previous_tags = Tag_set.singleton 1;
       tag_state =
         Array.init 32 (fun _ ->
           Config.create_tag_data
@@ -168,7 +169,7 @@ let handle_window _ river_window (wm_box : wm_box) =
       float_geom = None;
       size_hints =
         { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l };
-      tags = 1l;
+      tags = Tag_set.singleton 1;
       output = wm.focused_output;
       is_fixed = false;
       is_urgent = false;

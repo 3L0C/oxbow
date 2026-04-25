@@ -19,8 +19,6 @@ type 'a delta =
   | Abs of 'a
   | Rel of 'a
 
-type tag_mask = int32
-
 type stack_kind =
   | Stack_even
   | Stack_diminish

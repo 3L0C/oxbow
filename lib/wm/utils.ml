@@ -1,13 +1,11 @@
+module Tag_set = Ocdwm_core.Tag_set
 open Types
-
-(** [is_visible] is true if [o_tags] and [w_tags] share any active bits in common *)
-let is_visible o_tags w_tags =
-  Int32.logand o_tags w_tags <> 0l
 
 (** [visible_windows] is a list of all the currently visible windows on [output]. *)
 let visible_windows output =
   List.filter
-    (fun w -> is_visible output.selected_tags w.tags)
+    (fun w ->
+       Tag_set.intersects output.selected_tags w.tags)
     output.windows
 
 (** [next_window] is the next visible window in the output after [current]. *)

@@ -3,6 +3,7 @@
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
+module Tag_set = Ocdwm_core.Tag_set
 open Ocdwm_core.Types
 open Ocdwm_layout.Types
 
@@ -17,7 +18,7 @@ type rule_pattern = {
 }
 
 type rule_apply = {
-  tags : tag_mask option;
+  tags : Tag_set.t option;
   floating : bool option;
   output_name : string option;
   fullscreen : bool option;

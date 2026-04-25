@@ -4,6 +4,7 @@ module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
 module Layout = Ocdwm_layout.Layout
+module Tag_set = Ocdwm_core.Tag_set
 open Types
 open Ocdwm_ipc.Types
 
@@ -210,6 +211,92 @@ let handle_action (wm : window_manager) (seat : seat)
               Output.set_layout_entry o ~entry;
               Output.mark_dirty (Some o)
             end
+        end
+      end
+  | Tag_view n when not (Tag_set.in_range n) ->
+      Logs.err (fun m ->
+        m "Tag_view %d: outside tag range 1-32" n)
+  | Tag_view n ->
+      begin match seat.output with
+      | None -> ()
+      | Some o -> begin
+          Tag_set.singleton n |> Output.switch_tags o;
+          Output.mark_dirty (Some o)
+        end
+      end
+  | Tag_view_mask s when Tag_set.is_empty s ->
+      Logs.err (fun m ->
+        m
+          "Tag_view_mask: Refusing zero mask (would leave \
+           no tags visible)")
+  | Tag_view_mask s ->
+      begin match seat.output with
+      | None -> ()
+      | Some o -> begin
+          Output.switch_tags o s;
+          Output.mark_dirty (Some o)
+        end
+      end
+  | Tag_toggle_view n when not (Tag_set.in_range n) ->
+      Logs.err (fun m ->
+        m "Tag_toggle_view %d: outside tag range 1-32" n)
+  | Tag_toggle_view n ->
+      begin match seat.output with
+      | None -> ()
+      | Some o -> begin
+          let new_tags =
+            Tag_set.(
+              singleton n |> symmetric_diff o.selected_tags)
+          in
+          if Tag_set.is_empty new_tags then
+            Logs.err (fun m ->
+              m
+                "Tag_toggle_view: refusing toggle (would \
+                 leave no tags visible)")
+          else begin
+            Output.switch_tags o new_tags;
+            Output.mark_dirty (Some o)
+          end
+        end
+      end
+  | Tag_view_previous ->
+      begin match seat.output with
+      | None -> ()
+      | Some o when Tag_set.is_empty o.previous_tags ->
+          Logs.warn (fun m ->
+            m
+              "Tag_view_previous: ignoring, no previous \
+               tags defined")
+      | Some o -> begin
+          Output.switch_tags o o.previous_tags;
+          Output.mark_dirty (Some o)
+        end
+      end
+  | Tag_view_cycle dir ->
+      begin match seat.output with
+      | None -> ()
+      | Some o -> begin
+          let target =
+            match dir with
+            | Dir_next -> begin
+                let occupied = Output.occupied_tags o in
+                Tag_set.next_occupied
+                  ~selected:o.selected_tags ~occupied
+              end
+            | Dir_prev -> begin
+                let occupied = Output.occupied_tags o in
+                Tag_set.prev_occupied
+                  ~selected:o.selected_tags ~occupied
+              end
+            | Dir_down
+            | Dir_right ->
+                Tag_set.next o.selected_tags
+            | Dir_up
+            | Dir_left ->
+                Tag_set.prev o.selected_tags
+          in
+          Output.switch_tags o target;
+          Output.mark_dirty (Some o)
         end
       end
   | _ -> ()

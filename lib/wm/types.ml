@@ -5,6 +5,7 @@ module Rwm =
 
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
+module Tag_set = Ocdwm_core.Tag_set
 open Ocdwm_config.Types
 open Ocdwm_core.Types
 open Ocdwm_ipc.Types
@@ -40,8 +41,8 @@ type output = {
   (* Usable area *)
   mutable usable : int rect;
   (* Tag state *)
-  mutable selected_tags : tag_mask;
-  mutable previous_tags : tag_mask;
+  mutable selected_tags : Tag_set.t;
+  mutable previous_tags : Tag_set.t;
   (* Per-tag layout configuration *)
   tag_state : tag_data array;
   (* Focus stack - most recently focused first *)
@@ -98,7 +99,7 @@ and window = {
   (* Size hints from dimensions_hint *)
   mutable size_hints : int32 size_hints;
   (* Tag and output assignment *)
-  mutable tags : tag_mask;
+  mutable tags : Tag_set.t;
   mutable output : output option;
   (* State flags *)
   mutable is_fixed : bool;

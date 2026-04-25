@@ -76,21 +76,10 @@ let remove_window (target : window) =
         List.filter (fun w -> w != target) o.focus_stack
     end
 
-let tag_to_index tags =
-  let rec aux i tags =
-    match Int32.logand tags 1l <> 0l with
-    | true -> i
-    | false ->
-        Int32.shift_right_logical tags 1 |> aux (i + 1)
-  in
-  match tags <> 0l with
-  | true -> aux 0 tags
-  | false -> 0
-
 let tag_data (o : output) =
-  assert (o.selected_tags <> 0l);
-  let i = tag_to_index o.selected_tags in
-  o.tag_state.(i)
+  assert (not (Tag_set.is_empty o.selected_tags));
+  let i = Tag_set.first o.selected_tags |> Option.get in
+  o.tag_state.(i - 1)
 
 let visible_window_count (o : output) =
   List.fold_left
@@ -191,3 +180,16 @@ let retile (wm : window_manager) = function
                  Window.clamp w g |> Window.set_geom w)
               w_xs d_xs
       end
+
+let switch_tags (o : output) = function
+  | tags when Tag_set.is_empty tags -> ()
+  | tags when Tag_set.equal tags o.selected_tags -> ()
+  | tags -> begin
+      o.previous_tags <- o.selected_tags;
+      o.selected_tags <- tags
+    end
+
+let occupied_tags (o : output) =
+  List.fold_left
+    (fun s w -> Tag_set.union s w.tags)
+    Tag_set.empty o.windows

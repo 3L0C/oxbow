@@ -1,5 +1,6 @@
 (* ocdwm ipc types - shared type definitions *)
 
+module Tag_set = Ocdwm_core.Tag_set
 open Ocdwm_core.Types
 
 type subscriber = {
@@ -40,13 +41,13 @@ type action =
   | Zoom
   (* Tags *)
   | Tag_view of int
-  | Tag_view_mask of tag_mask
+  | Tag_view_mask of Tag_set.t
   | Tag_toggle_view of int
   | Tag_view_previous
   | Tag_view_cycle of direction
   | Window_tag of int
   | Window_toggle_tag of int
-  | Window_tag_mask of tag_mask
+  | Window_tag_mask of Tag_set.t
   (* Layout *)
   | Layout_set of string
   | Layout_cycle of direction
