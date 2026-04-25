@@ -70,9 +70,7 @@ let rec handle_window_request
             Output.mark_dirty window.output;
             Output.move_window window o;
             Output.mark_dirty (Some o);
-            Window.fullscreen window;
-            (* Explicit sync because move_window may be a no-op *)
-            List.iter Window.sync o.windows
+            Window.fullscreen window
           end
       in
       match window.presentation with
@@ -95,10 +93,7 @@ let rec handle_window_request
           ()
       | P_fullscreen { restore } -> begin
           Window.exit_fullscreen window restore;
-          Output.mark_dirty window.output;
-          match window.output with
-          | None -> ()
-          | Some o -> List.iter Window.sync o.windows
+          Output.mark_dirty window.output
         end
       end
 

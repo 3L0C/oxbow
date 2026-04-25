@@ -121,16 +121,14 @@ let move_window (w : window) (target : output) =
       w :: List.filter (fun x -> x != w) target.windows;
     target.focus_stack <-
       w :: List.filter (fun x -> x != w) target.focus_stack;
-    w.output <- Some target;
-    List.iter Window.sync target.windows
+    w.output <- Some target
   in
   match w.output with
   | Some o when o == target -> ()
   | None -> take ()
   | Some o -> begin
       remove_window w;
-      take ();
-      List.iter Window.sync o.windows
+      take ()
     end
 
 let add_window (w : window) =
