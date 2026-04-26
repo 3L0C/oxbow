@@ -111,10 +111,10 @@ let init (wm : window_manager) (seat : seat) =
         (modkey, K_ISO_Left_Tab, Tag_view_cycle Dir_prev);
         ( Int32.(logor modkey alt),
           K_Tab,
-          Layout_cycle Dir_next );
+          Layout_cycle Dir_right );
         ( Int32.(logor modkey alt),
           K_ISO_Left_Tab,
-          Layout_cycle Dir_prev );
+          Layout_cycle Dir_left );
         ( Int32.(logor modkey shift),
           K_space,
           Toggle_floating );
