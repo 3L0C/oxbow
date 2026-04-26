@@ -122,6 +122,16 @@ let init (wm : window_manager) (seat : seat) =
         (modkey, K_I, Toggle_maximize);
       ]
   in
+  let num_keys =
+    Xkbcommon.Keysym.
+      [ K_1; K_2; K_3; K_4; K_5; K_6; K_7; K_8; K_9 ]
+  in
+  let num_bindings =
+    List.mapi
+      (fun i keysym -> (modkey, keysym, Tag_view (i + 1)))
+      num_keys
+  in
+  let xkb_bindings = num_bindings @ xkb_bindings in
   let pointer_bindings =
     Input_event.
       [
