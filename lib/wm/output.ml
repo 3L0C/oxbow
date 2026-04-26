@@ -94,9 +94,11 @@ let tiled_windows (o : output) =
     (fun w -> Window.tag_visible w && Window.is_tiled w)
     o.windows
 
-let mark_dirty = function
+let mark_dirty (o : output) = o.state <- O_dirty
+
+let mark_dirty_opt = function
   | None -> ()
-  | Some (o : output) -> o.state <- O_dirty
+  | Some (o : output) -> mark_dirty o
 
 let fullscreen_is_visible (o : output) =
   List.exists

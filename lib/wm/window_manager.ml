@@ -90,7 +90,7 @@ let manage_window (wm : window_manager) (window : window) =
           Rwm.River_window_v1.Capabilities.(
             Int32.logor maximize fullscreen);
       Output.add_window window;
-      Output.mark_dirty window.output;
+      Output.mark_dirty_opt window.output;
       if window.is_fixed then
         window.presentation <- P_floating;
       window.state <- W_active
@@ -124,7 +124,7 @@ let close_windows (wm : window_manager) =
              Seat.disconnect_seats wm.seats w;
              Focus.remove_window wm w;
              Window.destroy w;
-             Output.mark_dirty w.output;
+             Output.mark_dirty_opt w.output;
              false
            end
          | _ -> true)

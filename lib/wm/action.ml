@@ -19,7 +19,7 @@ let rec handle_window_request
       | _ -> begin
           if window.presentation = P_tiled then begin
             window.presentation <- P_floating;
-            Output.mark_dirty window.output
+            Output.mark_dirty_opt window.output
           end;
           Seat.pointer_move wm r.seat window
         end
@@ -30,7 +30,7 @@ let rec handle_window_request
       | _ -> begin
           if window.presentation = P_tiled then begin
             window.presentation <- P_floating;
-            Output.mark_dirty window.output
+            Output.mark_dirty_opt window.output
           end;
           Seat.pointer_resize wm r.seat window r.edges
         end
@@ -68,9 +68,9 @@ let rec handle_window_request
                  | _ -> ())
               wm.seats;
             window.presentation <- P_fullscreen { restore };
-            Output.mark_dirty window.output;
+            Output.mark_dirty_opt window.output;
             Output.move_window window o;
-            Output.mark_dirty (Some o);
+            Output.mark_dirty o;
             Window.fullscreen window
           end
       in
@@ -80,9 +80,9 @@ let rec handle_window_request
       | P_fullscreen _ ->
           begin match (r.output, window.output) with
           | Some o1, Some o2 when o1 != o2 ->
-              Output.mark_dirty (Some o2);
+              Output.mark_dirty o2;
               Output.move_window window o1;
-              Output.mark_dirty (Some o1);
+              Output.mark_dirty o1;
               Window.fullscreen window
           | _, _ -> ()
           end
@@ -94,7 +94,7 @@ let rec handle_window_request
           ()
       | P_fullscreen { restore } -> begin
           Window.exit_fullscreen window restore;
-          Output.mark_dirty window.output
+          Output.mark_dirty_opt window.output
         end
       end
 
@@ -142,7 +142,7 @@ let handle_action (wm : window_manager) (seat : seat)
           | P_fullscreen _ -> ()
           | _ -> begin
               Window.toggle_floating (Some w);
-              Output.mark_dirty seat.output
+              Output.mark_dirty_opt seat.output
             end
           end
       end
@@ -187,7 +187,7 @@ let handle_action (wm : window_manager) (seat : seat)
                 Output.tiled_windows o
                 |> List.iter Window.remember_float;
               Output.set_layout_entry o ~entry;
-              Output.mark_dirty (Some o)
+              Output.mark_dirty o
             end
           end
       end
@@ -209,7 +209,7 @@ let handle_action (wm : window_manager) (seat : seat)
                 Output.tiled_windows o
                 |> List.iter Window.remember_float;
               Output.set_layout_entry o ~entry;
-              Output.mark_dirty (Some o)
+              Output.mark_dirty o
             end
         end
       end
@@ -221,7 +221,7 @@ let handle_action (wm : window_manager) (seat : seat)
       | None -> ()
       | Some o -> begin
           Tag_set.singleton n |> Output.switch_tags o;
-          Output.mark_dirty (Some o)
+          Output.mark_dirty o
         end
       end
   | Tag_view_mask s when Tag_set.is_empty s ->
@@ -234,7 +234,7 @@ let handle_action (wm : window_manager) (seat : seat)
       | None -> ()
       | Some o -> begin
           Output.switch_tags o s;
-          Output.mark_dirty (Some o)
+          Output.mark_dirty o
         end
       end
   | Tag_toggle_view n when not (Tag_set.in_range n) ->
@@ -255,7 +255,7 @@ let handle_action (wm : window_manager) (seat : seat)
                  leave no tags visible)")
           else begin
             Output.switch_tags o new_tags;
-            Output.mark_dirty (Some o)
+            Output.mark_dirty o
           end
         end
       end
@@ -269,7 +269,7 @@ let handle_action (wm : window_manager) (seat : seat)
                tags defined")
       | Some o -> begin
           Output.switch_tags o o.previous_tags;
-          Output.mark_dirty (Some o)
+          Output.mark_dirty o
         end
       end
   | Tag_view_cycle dir ->
@@ -296,7 +296,7 @@ let handle_action (wm : window_manager) (seat : seat)
                 Tag_set.prev o.selected_tags
           in
           Output.switch_tags o target;
-          Output.mark_dirty (Some o)
+          Output.mark_dirty o
         end
       end
   | _ -> ()

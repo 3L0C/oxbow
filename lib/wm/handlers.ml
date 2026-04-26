@@ -37,7 +37,7 @@ let handle_output _ river_output (wm_box : wm_box) =
                      w = to_int width;
                      h = to_int height;
                    };
-               Output.mark_dirty (Some o)
+               Output.mark_dirty o
              end
            | _ -> assert false
        end
@@ -190,7 +190,7 @@ let handle_window _ river_window (wm_box : wm_box) =
           window.geom.w <> width || window.geom.h <> height
         with
         | false -> ()
-        | true -> Output.mark_dirty window.output
+        | true -> Output.mark_dirty_opt window.output
 
       method on_unreliable_pid _ ~unreliable_pid =
         window.unreliable_pid <- Some unreliable_pid
