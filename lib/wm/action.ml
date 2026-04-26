@@ -213,9 +213,11 @@ let handle_action (wm : window_manager) (seat : seat)
             end
         end
       end
-  | Tag_view n when not (Tag_set.in_range n) ->
+  | Tag_view n when not (Tag_set.in_range n) -> begin
       Logs.err (fun m ->
-        m "Tag_view %d: outside tag range 1-32" n)
+        m "Tag_view: %d outside range [%d..%d]" n
+          Tag_set.min_tag Tag_set.max_tag)
+    end
   | Tag_view n ->
       begin match seat.output with
       | None -> ()
@@ -297,6 +299,57 @@ let handle_action (wm : window_manager) (seat : seat)
           in
           Output.switch_tags o target;
           Output.mark_dirty o
+        end
+      end
+  | Window_tag n when not (Tag_set.in_range n) -> begin
+      Logs.err (fun m ->
+        m "Window_tag: %d outside range [%d..%d]" n
+          Tag_set.min_tag Tag_set.max_tag)
+    end
+  | Window_tag n ->
+      begin match Focus.focused_of seat with
+      | None -> ()
+      | Some w -> begin
+          w.tags <- Tag_set.singleton n;
+          Output.mark_dirty_opt w.output
+        end
+      end
+  | Window_toggle_tag n when not (Tag_set.in_range n) ->
+  begin
+      Logs.err (fun m ->
+        m "Window_toggle_tag: %d outside range [%d..%d]" n
+          Tag_set.min_tag Tag_set.max_tag)
+    end
+  | Window_toggle_tag n ->
+      begin match Focus.focused_of seat with
+      | None -> ()
+      | Some w -> begin
+          let new_tags =
+            Tag_set.(singleton n |> symmetric_diff w.tags)
+          in
+          if Tag_set.is_empty new_tags then
+            Logs.err (fun m ->
+              m
+                "Window_toggle_tag: refusing toggle (would \
+                 leave invisible)")
+          else begin
+            w.tags <- new_tags;
+            Output.mark_dirty_opt w.output
+          end
+        end
+      end
+  | Window_tag_mask s when Tag_set.is_empty s -> begin
+      Logs.err (fun m ->
+        m
+          "Window_tag_mask: Refusing zero mask (would \
+           leave window invisible)")
+    end
+  | Window_tag_mask s ->
+      begin match Focus.focused_of seat with
+      | None -> ()
+      | Some w -> begin
+          w.tags <- s;
+          Output.mark_dirty_opt w.output
         end
       end
   | _ -> ()
