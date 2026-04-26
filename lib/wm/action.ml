@@ -37,11 +37,11 @@ let rec handle_window_request
       end
   | Req_maximize -> begin
       window.is_maximized <- true;
-      Rwm.River_window_v1.inform_maximized window.obj
+      Rwm.River_window_v1.inform_fullscreen window.obj
     end
   | Req_unmaximize -> begin
       window.is_maximized <- false;
-      Rwm.River_window_v1.inform_unmaximized window.obj
+      Rwm.River_window_v1.inform_not_fullscreen window.obj
     end
   | Req_fullscreen r -> begin
       let enter (restore : [ `Tiled | `Floating ]) =
