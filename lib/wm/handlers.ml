@@ -169,7 +169,11 @@ let handle_window _ river_window (wm_box : wm_box) =
       float_geom = None;
       size_hints =
         { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l };
-      tags = Tag_set.singleton 1;
+      tags =
+        begin match wm.focused_output with
+        | None -> Tag_set.singleton 1
+        | Some o -> o.selected_tags
+        end;
       output = wm.focused_output;
       is_fixed = false;
       is_urgent = false;
