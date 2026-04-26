@@ -107,14 +107,16 @@ let init (wm : window_manager) (seat : seat) =
         (modkey, K_j, Focus_window Dir_next);
         (modkey, K_k, Focus_window Dir_prev);
         (modkey, K_Escape, Exit_wm);
-        (modkey, K_Tab, Tag_view_cycle Dir_next);
-        (modkey, K_ISO_Left_Tab, Tag_view_cycle Dir_prev);
+        (modkey, K_h, Tag_view_cycle Dir_prev);
+        (modkey, K_l, Tag_view_cycle Dir_next);
+        (modkey, K_Tab, Tag_view_cycle Dir_right);
+        (modkey, K_ISO_Left_Tab, Tag_view_cycle Dir_left);
         ( Int32.(logor modkey alt),
           K_Tab,
-          Layout_cycle Dir_right );
+          Layout_cycle Dir_next );
         ( Int32.(logor modkey alt),
           K_ISO_Left_Tab,
-          Layout_cycle Dir_left );
+          Layout_cycle Dir_prev );
         ( Int32.(logor modkey shift),
           K_space,
           Toggle_floating );
