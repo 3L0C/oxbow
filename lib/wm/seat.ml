@@ -4,20 +4,32 @@ module Rwm =
 
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
-open Types
+module Utils = Ocdwm_core.Utils
+open Ocdwm_core.Types
 open Ocdwm_ipc.Types
+open Types
 
 let disconnect_seats (seats : seat list) (window : window) =
   List.iter
-    (fun seat ->
-       begin match seat.op with
+    (fun s ->
+       begin match s.hovered with
+       | Some w when w == window -> s.hovered <- None
+       | _ -> ()
+       end;
+       begin match s.interacted with
+       | Some w when w == window -> s.interacted <- None
+       | _ -> ()
+       end;
+       begin match s.focus_request with
+       | Some w when w == window -> s.focus_request <- None
+       | _ -> ()
+       end;
+       begin match s.op with
        | Op_move { window = w; _ }
        | Op_resize { window = w; _ }
          when w == window -> begin
-           Rwm.River_seat_v1.op_end seat.obj;
-           seat.op <- Op_none;
-           seat.interacted <- None;
-           seat.hovered <- None
+           Rwm.River_seat_v1.op_end s.obj;
+           s.op <- Op_none
          end
        | _ -> ()
        end)
@@ -199,6 +211,23 @@ let op (wm : window_manager) (seat : seat) =
   match seat.op with
   | Op_move op_m when op_m.release -> begin
       Rwm.River_seat_v1.op_end seat.obj;
+      let w = op_m.window in
+      let cx = Int32.(div w.geom.w 2l |> add w.geom.x) in
+      let cy = Int32.(div w.geom.h 2l |> add w.geom.y) in
+      begin match
+        List.find_opt
+          (fun (o : output) ->
+             Utils.in_rect ~x:cx ~y:cy ~g:o.geom)
+          wm.outputs
+      with
+      | Some o when w.output <> Some o -> begin
+          let prev = w.output in
+          Output.move_window w o;
+          Output.mark_dirty_opt prev;
+          Output.mark_dirty o
+        end
+      | _ -> ()
+      end;
       if op_m.window.presentation = P_floating then
         Window.remember_float op_m.window;
       seat.op <- Op_none
@@ -254,3 +283,31 @@ let op (wm : window_manager) (seat : seat) =
   | Op_none
   | _ ->
       ()
+
+let handle_new (wm : window_manager) (seat : seat) =
+  match seat.state with
+  | S_new -> begin
+      init wm seat;
+      seat.state <- S_active
+    end
+  | _ -> ()
+
+let handle_focus_request (wm : window_manager) (seat : seat)
+  =
+  match seat.focus_request with
+  | Some w
+    when wm.config.focus_follows_pointer
+         && seat.op = Op_none
+         && seat.layer_focus = Lf_none -> begin
+      Focus.focus_window wm seat w;
+      seat.focus_request <- None
+    end
+  | _ -> ()
+
+let handle_interaction (wm : window_manager) (seat : seat) =
+  match seat.interacted with
+  | None -> ()
+  | Some w -> begin
+      Focus.focus_window wm seat w;
+      seat.interacted <- None
+    end

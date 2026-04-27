@@ -9,7 +9,7 @@ let all = (1 lsl max_tag) - 1
 let in_range i = i >= min_tag && i <= max_tag
 
 let singleton = function
-  | i when not (in_range i) ->
+  | i when not @@ in_range i ->
       Printf.sprintf "Tag_set: %d is outside bounds [1..32]"
         i
       |> invalid_arg
@@ -22,7 +22,7 @@ let is_empty s = s = empty
 
 let mem i s =
   match i with
-  | _ when not (in_range i) -> false
+  | _ when not @@ in_range i -> false
   | _ -> singleton i |> ( land ) s |> ( <> ) empty
 
 let equal s s' = s = s'
@@ -35,7 +35,7 @@ let symmetric_diff a b = a lxor b
 
 let first s =
   let rec aux = function
-    | i when not (in_range i) -> None
+    | i when not @@ in_range i -> None
     | i when singleton i |> intersects s -> Some i
     | i -> aux (i + 1)
   in
@@ -51,7 +51,7 @@ let last s =
 
 let cardinality s =
   let rec aux acc = function
-    | i when not (in_range i) -> acc
+    | i when not @@ in_range i -> acc
     | i when mem i s -> aux (acc + 1) (i + 1)
     | i -> aux acc (i + 1)
   in
@@ -59,7 +59,7 @@ let cardinality s =
 
 let fold f s init =
   let rec aux acc = function
-    | i when not (in_range i) -> acc
+    | i when not @@ in_range i -> acc
     | i when mem i s -> aux (f i acc) (i + 1)
     | i -> aux acc (i + 1)
   in
@@ -67,7 +67,7 @@ let fold f s init =
 
 let iter f s =
   let rec aux = function
-    | i when not (in_range i) -> ()
+    | i when not @@ in_range i -> ()
     | i when mem i s -> begin
         f i;
         aux (i + 1)
@@ -78,7 +78,7 @@ let iter f s =
 
 let to_list s =
   let rec aux acc = function
-    | i when not (in_range i) -> List.rev acc
+    | i when not @@ in_range i -> List.rev acc
     | i when mem i s -> aux (i :: acc) (i + 1)
     | i -> aux acc (i + 1)
   in
@@ -87,13 +87,13 @@ let to_list s =
 let next s =
   match first s with
   | None -> empty
-  | Some i when not (in_range (i + 1)) -> singleton min_tag
+  | Some i when not @@ in_range (i + 1) -> singleton min_tag
   | Some i -> singleton (i + 1)
 
 let prev s =
   match first s with
   | None -> empty
-  | Some i when not (in_range (i - 1)) -> singleton max_tag
+  | Some i when not @@ in_range (i - 1) -> singleton max_tag
   | Some i -> singleton (i - 1)
 
 let next_occupied ~selected ~occupied =
@@ -106,10 +106,10 @@ let next_occupied ~selected ~occupied =
       | Some i -> singleton i
       end
   | false, false -> begin
-      let selected_first = Option.get (first selected) in
-      let occupied_first = Option.get (first occupied) in
+      let selected_first = Option.get @@ first selected in
+      let occupied_first = Option.get @@ first occupied in
       let rec aux = function
-        | i when not (in_range i) ->
+        | i when not @@ in_range i ->
             singleton occupied_first
         | i when mem i occupied -> singleton i
         | i -> aux (i + 1)
@@ -127,10 +127,11 @@ let prev_occupied ~selected ~occupied =
       | Some i -> singleton i
       end
   | false, false -> begin
-      let selected_first = Option.get (first selected) in
-      let occupied_last = Option.get (last occupied) in
+      let selected_first = Option.get @@ first selected in
+      let occupied_last = Option.get @@ last occupied in
       let rec aux = function
-        | i when not (in_range i) -> singleton occupied_last
+        | i when not @@ in_range i ->
+            singleton occupied_last
         | i when mem i occupied -> singleton i
         | i -> aux (i - 1)
       in

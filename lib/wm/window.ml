@@ -177,3 +177,27 @@ let queue_request (w : window) (r : window_request) =
   w.requests <- r :: w.requests
 
 let clear_requests (w : window) = w.requests <- []
+
+let fit_to_output (w : window) =
+  match w.output with
+  | None -> ()
+  | Some o -> begin
+      let new_x =
+        if w.geom.w > o.geom.w then o.geom.x
+        else
+          let max_x =
+            Int32.(sub o.geom.w w.geom.w |> add o.geom.x)
+          in
+          Int32.(w.geom.x |> max o.geom.x |> min max_x)
+      in
+      let new_y =
+        if w.geom.h > o.geom.h then o.geom.y
+        else
+          let max_y =
+            Int32.(sub o.geom.h w.geom.h |> add o.geom.y)
+          in
+          Int32.(w.geom.y |> max o.geom.y |> min max_y)
+      in
+      if new_x <> w.geom.x || new_y <> w.geom.y then
+        set_position w ~x:new_x ~y:new_y
+    end

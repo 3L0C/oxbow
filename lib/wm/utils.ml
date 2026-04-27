@@ -13,7 +13,7 @@ let next_window output current =
   let windows = visible_windows output in
   let rec aux = function
     (* When current is the last element, focus the head. May be the same window as current *)
-    | x :: [] when x == current -> List.hd windows
+    | [ x ] when x == current -> List.hd windows
     (* Focus the next window in the stack *)
     | x :: xs when x == current -> List.hd xs
     (* Recurse *)

@@ -96,6 +96,22 @@ let rec handle_window_request
           Output.mark_dirty_opt window.output
         end
       end
+  | Req_dimensions d -> begin
+      window.geom <-
+        { window.geom with w = d.width; h = d.height };
+      let in_resize =
+        List.exists
+          (fun (s : seat) ->
+             match s.op with
+             | Op_resize { window = w; _ } when w == window
+               ->
+                 true
+             | _ -> false)
+          wm.seats
+      in
+      if window.presentation = P_floating && not in_resize
+      then Window.fit_to_output window
+    end
 
 let handle_action (wm : window_manager) (seat : seat)
   = function
@@ -212,7 +228,7 @@ let handle_action (wm : window_manager) (seat : seat)
             end
         end
       end
-  | Tag_view n when not (Tag_set.in_range n) -> begin
+  | Tag_view n when not @@ Tag_set.in_range n -> begin
       Logs.err (fun m ->
         m "Tag_view: %d outside range [%d..%d]" n
           Tag_set.min_tag Tag_set.max_tag)
@@ -238,7 +254,7 @@ let handle_action (wm : window_manager) (seat : seat)
           Output.mark_dirty o
         end
       end
-  | Tag_toggle_view n when not (Tag_set.in_range n) ->
+  | Tag_toggle_view n when not @@ Tag_set.in_range n ->
       Logs.err (fun m ->
         m "Tag_toggle_view %d: outside tag range 1-32" n)
   | Tag_toggle_view n ->
@@ -300,7 +316,7 @@ let handle_action (wm : window_manager) (seat : seat)
           Output.mark_dirty o
         end
       end
-  | Window_tag n when not (Tag_set.in_range n) -> begin
+  | Window_tag n when not @@ Tag_set.in_range n -> begin
       Logs.err (fun m ->
         m "Window_tag: %d outside range [%d..%d]" n
           Tag_set.min_tag Tag_set.max_tag)
@@ -313,7 +329,7 @@ let handle_action (wm : window_manager) (seat : seat)
           Output.mark_dirty_opt w.output
         end
       end
-  | Window_toggle_tag n when not (Tag_set.in_range n) ->
+  | Window_toggle_tag n when not @@ Tag_set.in_range n ->
   begin
       Logs.err (fun m ->
         m "Window_toggle_tag: %d outside range [%d..%d]" n

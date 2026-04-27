@@ -1,3 +1,5 @@
+open Types
+
 let move_to_top x xs = x :: List.filter (fun y -> y != x) xs
 
 let spawn cmd =
@@ -12,8 +14,14 @@ let rec wrapped_search
   =
   let rec aux (wrapped : bool) = function
     | x :: xs when p x -> Some x
-    | x :: [] when not wrapped -> l x |> aux true
+    | [ x ] when not wrapped -> l x |> aux true
     | x :: xs -> aux wrapped xs
     | [] -> None
   in
   aux false lst
+
+let in_rect ~(x : 'a) ~(y : 'a) ~(g : 'a rect) =
+  x >= g.x
+  && x < Int32.add g.x g.w
+  && y >= g.y
+  && y < Int32.add g.y g.h

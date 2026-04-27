@@ -19,19 +19,19 @@ val in_range : int -> bool
 
 val singleton : int -> t
 (** [singleton i] is the set containing only tag [i].
-    Raises [Invalid_argument] if [i] is outside [min_tag..max_tag]. *)
+  * Raises [Invalid_argument] if [i] is outside [min_tag..max_tag]. *)
 
 val of_indices : int list -> t
 (** [of_indices lst] is the set of tags whose indices appear in [lst].
-    Raises [Invalid_argument] if any element of [lst] is outside
-    [min_tag..max_tag]. *)
+  * Raises [Invalid_argument] if any element of [lst] is outside
+  * [min_tag..max_tag]. *)
 
 val is_empty : t -> bool
 (** [is_empty s] is [true] when [s] contains no tags. *)
 
 val mem : int -> t -> bool
 (** [mem i s] is [true] when tag [i] is in [s].
-    Raises [Invalid_argument] if [i] is outside [min_tag..max_tag]. *)
+  * Raises [Invalid_argument] if [i] is outside [min_tag..max_tag]. *)
 
 val equal : t -> t -> bool
 (** [equal a b] is [true] when [a] and [b] contain the same tags. *)
@@ -65,7 +65,7 @@ val cardinality : t -> int
 
 val fold : (int -> 'a -> 'a) -> t -> 'a -> 'a
 (** [fold f s init] is [f i_n (... (f i_1 init))] where [i_1..i_n] are
-    the tag indices in [s] in ascending order. *)
+  * the tag indices in [s] in ascending order. *)
 
 val iter : (int -> unit) -> t -> unit
 (** [iter f s] applies [f] to each tag index in [s] in ascending order. *)
@@ -75,27 +75,27 @@ val to_list : t -> int list
 
 val next : t -> t
 (** [next s] is [s] with its lowest set tag advanced by one position,
-    wrapping from [max_tag] to [min_tag], or [empty] if [s] is empty. *)
+  * wrapping from [max_tag] to [min_tag], or [empty] if [s] is empty. *)
 
 val prev : t -> t
 (** [prev s] is [s] with its lowest set tag moved back by one position,
-    wrapping from [min_tag] to [max_tag], or [empty] if [s] is empty. *)
+  * wrapping from [min_tag] to [max_tag], or [empty] if [s] is empty. *)
 
 val next_occupied : selected:t -> occupied:t -> t
 (** [next_occupied ~selected ~occupied] is the next tag in [occupied]
-    after the lowest set tag in [selected], wrapping at [max_tag]. If
-    [occupied] is empty, returns [selected] unchanged. If [selected] is
-    empty, returns the lowest tag in [occupied]. *)
+  * after the lowest set tag in [selected], wrapping at [max_tag]. If
+  * [occupied] is empty, returns [selected] unchanged. If [selected] is
+  * empty, returns the lowest tag in [occupied]. *)
 
 val prev_occupied : selected:t -> occupied:t -> t
 (** [prev_occupied ~selected ~occupied] is the previous tag in [occupied]
-    before the lowest set tag in [selected], wrapping at [min_tag]. If
-    [occupied] is empty, returns [selected] unchanged. If [selected] is
-    empty, returns the highest tag in [occupied]. *)
+  * before the lowest set tag in [selected], wrapping at [min_tag]. If
+  * [occupied] is empty, returns [selected] unchanged. If [selected] is
+  * empty, returns the highest tag in [occupied]. *)
 
 val to_int : t -> int
 (** [to_int s] is the underlying bitmask of [s] as a plain [int]. *)
 
 val of_int : int -> t
 (** [of_int n] is the set whose bits are those of [n], masked to
-    [min_tag..max_tag]. Bits outside that range are silently dropped. *)
+  * [min_tag..max_tag]. Bits outside that range are silently dropped. *)

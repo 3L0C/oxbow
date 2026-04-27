@@ -65,6 +65,10 @@ and window_request =
   | Req_unmaximize
   | Req_fullscreen of { output : output option }
   | Req_exit_fullscreen
+  | Req_dimensions of {
+      width : int32;
+      height : int32;
+    }
 
 and window_state =
   | W_new
@@ -179,6 +183,7 @@ and seat = {
   (* Pointer state *)
   mutable hovered : window option;
   mutable interacted : window option;
+  mutable focus_request : window option;
   (* Interactive op state *)
   mutable op : seat_op;
 }

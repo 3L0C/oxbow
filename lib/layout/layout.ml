@@ -79,7 +79,7 @@ let cycle
     else List.rev registry.entries
   in
   let rec after = function
-    | (n, _) :: [] when n = name -> List.nth_opt entries 0
+    | [ (n, _) ] when n = name -> List.nth_opt entries 0
     | (n, _) :: x :: _ when n = name -> Some x
     | _ :: xs -> after xs
     | [] -> begin

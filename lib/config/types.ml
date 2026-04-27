@@ -41,4 +41,5 @@ type config = {
   borders : border_config;
   mutable modkey : Rwm.River_seat_v1.Modifiers.t;
   mutable rules : window_rule list;
+  mutable focus_follows_pointer : bool;
 }

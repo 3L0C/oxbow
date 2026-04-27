@@ -42,4 +42,5 @@ let default (entry : layout_entry) =
       };
     modkey = Rwm.River_seat_v1.Modifiers.mod4;
     rules = [];
+    focus_follows_pointer = true;
   }

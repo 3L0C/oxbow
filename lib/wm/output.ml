@@ -40,7 +40,7 @@ let next_window (o : output) =
   | None -> None
   | Some f -> begin
       let rec after = function
-        | w :: [] when w == f -> next_tiled o.windows
+        | [ w ] when w == f -> next_tiled o.windows
         | w :: xs when w == f -> next_tiled xs
         | _ :: xs -> after xs
         | [] ->
@@ -55,7 +55,7 @@ let prev_window (o : output) =
   | None -> None
   | Some f -> begin
       let rec after = function
-        | w :: [] when w == f ->
+        | [ w ] when w == f ->
             List.rev o.windows |> prev_tiled
         | w :: xs when w == f -> prev_tiled xs
         | _ :: xs -> after xs
@@ -77,7 +77,7 @@ let remove_window (target : window) =
     end
 
 let tag_data (o : output) =
-  assert (not (Tag_set.is_empty o.selected_tags));
+  assert (not @@ Tag_set.is_empty o.selected_tags);
   let i = Tag_set.first o.selected_tags |> Option.get in
   o.tag_state.(i - 1)
 

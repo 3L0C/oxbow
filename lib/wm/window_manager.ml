@@ -66,18 +66,9 @@ let render (wm : window_manager) (seat : seat) =
   List.iter set_presentation_mode wm.outputs
 
 let manage_seat (wm : window_manager) (seat : seat) =
-  begin match seat.state with
-  | S_new -> begin
-      Seat.init wm seat;
-      seat.state <- S_active
-    end
-  | _ -> ()
-  end;
-  begin match seat.interacted with
-  | Some w -> Focus.focus_window wm seat w
-  | None -> ()
-  end;
-  seat.interacted <- None;
+  Seat.handle_new wm seat;
+  Seat.handle_focus_request wm seat;
+  Seat.handle_interaction wm seat;
   Action.handle_action wm seat seat.pending_action;
   seat.pending_action <- No_action;
   Seat.op wm seat

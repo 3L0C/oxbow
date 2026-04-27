@@ -6,6 +6,8 @@ module Rwm =
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Config = Ocdwm_config.Config
 module Tag_set = Ocdwm_core.Tag_set
+module Utils = Ocdwm_core.Utils
+open Ocdwm_core.Types
 open Types
 
 let handle_output _ river_output (wm_box : wm_box) =
@@ -190,11 +192,12 @@ let handle_window _ river_window (wm_box : wm_box) =
       method on_closed _ = window.state <- W_closing
 
       method on_dimensions _ ~width ~height =
-        match
-          window.geom.w <> width || window.geom.h <> height
-        with
-        | false -> ()
-        | true -> Output.mark_dirty_opt window.output
+        if window.geom.w <> width || window.geom.h <> height
+        then begin
+          Output.mark_dirty_opt window.output;
+          Req_dimensions { width; height }
+          |> Window.queue_request window
+        end
 
       method on_unreliable_pid _ ~unreliable_pid =
         window.unreliable_pid <- Some unreliable_pid
@@ -333,6 +336,7 @@ let handle_seat _ river_seat (wm_box : wm_box) =
       pending_action = No_action;
       hovered = None;
       interacted = None;
+      focus_request = None;
       op = Op_none;
     }
   in
@@ -345,7 +349,11 @@ let handle_seat _ river_seat (wm_box : wm_box) =
 
       method on_pointer_enter _ ~window =
         match Wayland.Proxy.user_data window with
-        | Window_data w -> seat.hovered <- Some w
+        | Window_data w -> begin
+            seat.hovered <- Some w;
+            if wm.config.focus_follows_pointer then
+              seat.focus_request <- Some w
+          end
         | _ -> assert false
 
       method on_pointer_leave _ = seat.hovered <- None
@@ -379,6 +387,19 @@ let handle_seat _ river_seat (wm_box : wm_box) =
         ()
 
       method on_pointer_position _ ~x ~y =
-        seat.position <- { x; y }
+        seat.position <- { x; y };
+        if wm.config.focus_follows_pointer then
+          begin match
+            List.find_opt
+              (fun (o : output) ->
+                 Utils.in_rect ~x ~y ~g:o.geom)
+              wm.outputs
+          with
+          | Some o when wm.focused_output <> Some o -> begin
+              wm.focused_output <- Some o;
+              seat.output <- Some o
+            end
+          | _ -> ()
+          end
     end;
   wm.seats <- seat :: wm.seats
