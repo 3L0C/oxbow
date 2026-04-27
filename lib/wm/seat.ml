@@ -19,8 +19,10 @@ let disconnect_seats (seats : seat list) (window : window) =
        | Some w when w == window -> s.interacted <- None
        | _ -> ()
        end;
-       begin match s.focus_request with
-       | Some w when w == window -> s.focus_request <- None
+       begin match s.focus_request.pending with
+       | Some w when w == window ->
+           s.focus_request <-
+             { s.focus_request with pending = None }
        | _ -> ()
        end;
        begin match s.op with
@@ -292,13 +294,19 @@ let handle_new (wm : window_manager) (seat : seat) =
 
 let handle_focus_request (wm : window_manager) (seat : seat)
   =
-  match seat.focus_request with
+  match seat.focus_request.pending with
   | Some w
     when wm.config.focus_follows_pointer
          && seat.op = Op_none
-         && seat.layer_focus = Lf_none -> begin
+         && seat.layer_focus = Lf_none
+         && (seat.position.x
+             <> seat.focus_request.reference_pos.x
+            || seat.position.y
+               <> seat.focus_request.reference_pos.y) ->
+  begin
       Focus.focus_window wm seat w ~force:true;
-      seat.focus_request <- None
+      seat.focus_request <-
+        { pending = None; reference_pos = seat.position }
     end
   | _ -> ()
 

@@ -166,6 +166,11 @@ and layer_focus =
   | Lf_non_exclusive
   | Lf_exclusive
 
+and focus_state = {
+  pending : window option;
+  reference_pos : pointer_position;
+}
+
 and seat = {
   (* Wayland objects *)
   obj : [ `V4 ] Rwm.River_seat_v1.t;
@@ -183,7 +188,7 @@ and seat = {
   (* Pointer state *)
   mutable hovered : window option;
   mutable interacted : window option;
-  mutable focus_request : window option;
+  mutable focus_request : focus_state;
   (* Interactive op state *)
   mutable op : seat_op;
 }

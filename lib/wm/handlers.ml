@@ -335,7 +335,11 @@ let handle_seat _ river_seat (wm_box : wm_box) =
       pending_action = No_action;
       hovered = None;
       interacted = None;
-      focus_request = None;
+      focus_request =
+        {
+          pending = None;
+          reference_pos = { x = 0l; y = 0l };
+        };
       op = Op_none;
     }
   in
@@ -351,7 +355,8 @@ let handle_seat _ river_seat (wm_box : wm_box) =
         | Window_data w -> begin
             seat.hovered <- Some w;
             if wm.config.focus_follows_pointer then
-              seat.focus_request <- Some w
+              seat.focus_request <-
+                { seat.focus_request with pending = Some w }
           end
         | _ -> assert false
 
@@ -387,7 +392,7 @@ let handle_seat _ river_seat (wm_box : wm_box) =
 
       method on_pointer_position _ ~x ~y =
         seat.position <- { x; y };
-        if wm.config.focus_follows_pointer then
+        if wm.config.focus_follows_pointer then begin
           begin match Output.at_point ~x ~y wm.outputs with
           | Some o
             when not
@@ -397,6 +402,17 @@ let handle_seat _ river_seat (wm_box : wm_box) =
               seat.output <- Some o
             end
           | _ -> ()
+          end;
+          begin match seat.focus_request.pending with
+          | None -> begin
+              seat.focus_request <-
+                {
+                  seat.focus_request with
+                  reference_pos = seat.position;
+                }
+            end
+          | _ -> ()
           end
+        end
     end;
   wm.seats <- seat :: wm.seats
