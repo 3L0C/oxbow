@@ -97,8 +97,9 @@ let manage_window (wm : window_manager) (window : window) =
     end
   | _ -> ()
   end;
-  Action.handle_window_request wm window window.request;
-  window.request <- Req_none
+  List.rev window.requests
+  |> List.iter (Action.handle_window_request wm window);
+  Window.clear_requests window
 
 let remove_outputs (wm : window_manager) =
   wm.outputs <-

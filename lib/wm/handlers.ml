@@ -180,7 +180,7 @@ let handle_window _ river_window (wm_box : wm_box) =
       is_maximized = false;
       is_hidden = false;
       presentation = P_tiled;
-      request = Req_none;
+      requests = [];
     }
   in
   Wayland.Proxy.Handler.attach river_window
@@ -240,36 +240,38 @@ let handle_window _ river_window (wm_box : wm_box) =
       method on_pointer_move_requested _ ~seat =
         match Wayland.Proxy.user_data seat with
         | Seat_data s ->
-            window.request <- Req_move { seat = s }
+            Req_move { seat = s }
+            |> Window.queue_request window
         | _ -> assert false
 
       method on_pointer_resize_requested _ ~seat ~edges =
         match Wayland.Proxy.user_data seat with
         | Seat_data s ->
-            window.request <- Req_resize { seat = s; edges }
+            Req_resize { seat = s; edges }
+            |> Window.queue_request window
         | _ -> assert false
 
       method on_maximize_requested _ =
-        window.request <- Req_maximize
+        Window.queue_request window Req_maximize
 
       method on_unmaximize_requested _ =
-        window.request <- Req_unmaximize
+        Window.queue_request window Req_unmaximize
 
       method on_fullscreen_requested _ ~output =
         match output with
         | Some o ->
             begin match Wayland.Proxy.user_data o with
             | Output_data o ->
-                window.request <-
-                  Req_fullscreen { output = Some o }
+                Req_fullscreen { output = Some o }
+                |> Window.queue_request window
             | _ -> assert false
             end
         | None ->
-            window.request <-
-              Req_fullscreen { output = None }
+            Req_fullscreen { output = None }
+            |> Window.queue_request window
 
       method on_exit_fullscreen_requested _ =
-        window.request <- Req_exit_fullscreen
+        Window.queue_request window Req_exit_fullscreen
 
       method on_presentation_hint _ ~hint =
         window.presentation_hint <- Some hint

@@ -12,7 +12,6 @@ let rec handle_window_request
           (wm : window_manager)
           (window : window)
   = function
-  | Req_none -> ()
   | Req_move r ->
       begin match window.presentation with
       | P_fullscreen _ -> ()

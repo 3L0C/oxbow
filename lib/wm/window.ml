@@ -157,9 +157,9 @@ let is_rendered (w : window) =
            o.focus_stack)
 
 (** [sync w] ensures [w] is shown or hidden.
-  * [w] is shown if [is_rendered w] is [true] and [w.is_hidden] is [true].
-  * [w] is hidden if [is_rendered w ] is [false] and [w.is_hidden] is [false].
-  * Else, state is already synced in which case [sync w] is a no-op. *)
+    [w] is shown if [is_rendered w] is [true] and [w.is_hidden] is [true].
+    [w] is hidden if [is_rendered w ] is [false] and [w.is_hidden] is [false].
+    Else, state is already synced in which case [sync w] is a no-op. *)
 let sync (w : window) =
   let should_render = is_rendered w in
   match (should_render, w.is_hidden) with
@@ -172,3 +172,8 @@ let sync (w : window) =
       w.is_hidden <- true
     end
   | _, _ -> ()
+
+let queue_request (w : window) (r : window_request) =
+  w.requests <- r :: w.requests
+
+let clear_requests (w : window) = w.requests <- []

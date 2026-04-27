@@ -56,7 +56,6 @@ type output = {
 and output_box = { mutable body : output option }
 
 and window_request =
-  | Req_none
   | Req_move of { seat : seat }
   | Req_resize of {
       seat : seat;
@@ -108,7 +107,7 @@ and window = {
   mutable is_hidden : bool;
   mutable presentation : presentation;
   (* Pointer op state *)
-  mutable request : window_request;
+  mutable requests : window_request list;
 }
 (* window *)
 
