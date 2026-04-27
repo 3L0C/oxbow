@@ -4,7 +4,6 @@ module Rwm =
 
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
-module Utils = Ocdwm_core.Utils
 open Ocdwm_core.Types
 open Ocdwm_ipc.Types
 open Types
@@ -215,12 +214,11 @@ let op (wm : window_manager) (seat : seat) =
       let cx = Int32.(div w.geom.w 2l |> add w.geom.x) in
       let cy = Int32.(div w.geom.h 2l |> add w.geom.y) in
       begin match
-        List.find_opt
-          (fun (o : output) ->
-             Utils.in_rect ~x:cx ~y:cy ~g:o.geom)
-          wm.outputs
+        Output.at_point ~x:cx ~y:cy wm.outputs
       with
-      | Some o when w.output <> Some o -> begin
+      | Some o
+        when not @@ Ocdwm_core.Utils.opt_holds w.output o ->
+      begin
           let prev = w.output in
           Output.move_window w o;
           Output.mark_dirty_opt prev;

@@ -4,7 +4,6 @@ module Rwm =
 
 module Layout = Ocdwm_layout.Layout
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
-module Utils = Ocdwm_core.Utils
 open Ocdwm_core.Types
 open Ocdwm_config.Types
 open Ocdwm_layout.Types
@@ -28,12 +27,12 @@ let focused_window o =
   List.find_opt Window.tag_visible o.focus_stack
 
 let next_tiled : window list -> window option =
-  Utils.wrapped_search Window.tag_visible (fun w ->
-    (Option.get w.output).windows)
+  Ocdwm_core.Utils.wrapped_search Window.tag_visible
+    (fun w -> (Option.get w.output).windows)
 
 let prev_tiled : window list -> window option =
-  Utils.wrapped_search Window.tag_visible (fun w ->
-    (Option.get w.output).windows |> List.rev)
+  Ocdwm_core.Utils.wrapped_search Window.tag_visible
+    (fun w -> (Option.get w.output).windows |> List.rev)
 
 let next_window (o : output) =
   match focused_window o with
@@ -195,3 +194,7 @@ let occupied_tags (o : output) =
   List.fold_left
     (fun s w -> Tag_set.union s w.tags)
     Tag_set.empty o.windows
+
+let at_point ~(x : int32) ~(y : int32) =
+  List.find_opt (fun (o : output) ->
+    Ocdwm_core.Utils.in_rect ~x ~y ~g:o.geom)

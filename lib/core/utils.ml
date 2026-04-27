@@ -25,3 +25,14 @@ let in_rect ~(x : 'a) ~(y : 'a) ~(g : 'a rect) =
   && x < Int32.add g.x g.w
   && y >= g.y
   && y < Int32.add g.y g.h
+
+let opts_are_equal (a : 'a option) (b : 'a option) =
+  match (a, b) with
+  | None, None -> true
+  | Some x, Some y -> x == y
+  | _ -> false
+
+let opt_holds (o : 'a option) (v : 'a) =
+  match o with
+  | Some x -> x == v
+  | None -> false

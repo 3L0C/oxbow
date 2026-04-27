@@ -6,7 +6,6 @@ module Rwm =
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Config = Ocdwm_config.Config
 module Tag_set = Ocdwm_core.Tag_set
-module Utils = Ocdwm_core.Utils
 open Ocdwm_core.Types
 open Types
 
@@ -389,13 +388,11 @@ let handle_seat _ river_seat (wm_box : wm_box) =
       method on_pointer_position _ ~x ~y =
         seat.position <- { x; y };
         if wm.config.focus_follows_pointer then
-          begin match
-            List.find_opt
-              (fun (o : output) ->
-                 Utils.in_rect ~x ~y ~g:o.geom)
-              wm.outputs
-          with
-          | Some o when wm.focused_output <> Some o -> begin
+          begin match Output.at_point ~x ~y wm.outputs with
+          | Some o
+            when not
+                 @@ Ocdwm_core.Utils.opt_holds
+                      wm.focused_output o -> begin
               wm.focused_output <- Some o;
               seat.output <- Some o
             end
