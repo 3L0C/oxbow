@@ -297,7 +297,7 @@ let handle_focus_request (wm : window_manager) (seat : seat)
     when wm.config.focus_follows_pointer
          && seat.op = Op_none
          && seat.layer_focus = Lf_none -> begin
-      Focus.focus_window wm seat w;
+      Focus.focus_window wm seat w ~force:true;
       seat.focus_request <- None
     end
   | _ -> ()
