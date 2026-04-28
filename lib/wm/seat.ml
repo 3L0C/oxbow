@@ -19,10 +19,14 @@ let disconnect_seats (seats : seat list) (window : window) =
        | Some w when w == window -> s.interacted <- None
        | _ -> ()
        end;
-       begin match s.focus_request.pending with
+       begin match s.focus_request with
+       | Focus_window w when w == window ->
+           s.cursor_target <- None
+       | _ -> ()
+       end;
+       begin match s.cursor_target with
        | Some w when w == window ->
-           s.focus_request <-
-             { s.focus_request with pending = None }
+           s.focus_request <- Focus_none
        | _ -> ()
        end;
        begin match s.op with
@@ -41,7 +45,7 @@ let xkb_binding_destroy (binding : xkb_binding) =
 
 let xkb_binding_create
       (wm : window_manager)
-      (seat : seat)
+      (s : seat)
       (mods : int32)
       (keysym : Xkbcommon.Keysym.t)
       (action : action)
@@ -53,28 +57,26 @@ let xkb_binding_create
     {
       obj =
         Xkb.River_xkb_bindings_v1.get_xkb_binding
-          wm.river_xkb_v1 ~seat:seat.obj
+          wm.river_xkb_v1 ~seat:s.obj
           object
             inherit [_] Xkb.River_xkb_binding_v1.v2
             method on_stop_repeat _ = ()
             method on_released _ = ()
-
-            method on_pressed _ =
-              seat.pending_action <- action
+            method on_pressed _ = s.pending_action <- action
           end
           ~keysym ~modifiers:mods;
-      seat;
+      seat = s;
       action;
     }
   in
   Xkb.River_xkb_binding_v1.enable binding.obj;
-  seat.xkb_bindings <- binding :: seat.xkb_bindings
+  s.xkb_bindings <- binding :: s.xkb_bindings
 
 let pointer_binding_destroy (pointer : pointer_binding) =
   Rwm.River_pointer_binding_v1.destroy pointer.obj
 
 let pointer_binding_create
-      (seat : seat)
+      (s : seat)
       (modifiers : int32)
       (ec : Input_event.code)
       (action : action)
@@ -82,32 +84,30 @@ let pointer_binding_create
   let binding : pointer_binding =
     {
       obj =
-        Rwm.River_seat_v1.get_pointer_binding seat.obj
+        Rwm.River_seat_v1.get_pointer_binding s.obj
           object
             inherit [_] Rwm.River_pointer_binding_v1.v4
             method on_released _ = ()
-
-            method on_pressed _ =
-              seat.pending_action <- action
+            method on_pressed _ = s.pending_action <- action
           end
           ~button:(Input_event.to_int32 ec)
           ~modifiers;
-      seat;
+      seat = s;
       action;
     }
   in
   Rwm.River_pointer_binding_v1.enable binding.obj;
-  seat.pointer_bindings <- binding :: seat.pointer_bindings
+  s.pointer_bindings <- binding :: s.pointer_bindings
 
-let destroy seat =
-  List.iter xkb_binding_destroy seat.xkb_bindings;
-  List.iter pointer_binding_destroy seat.pointer_bindings;
-  Rlsh.River_layer_shell_seat_v1.destroy seat.layer_shell;
-  Wayland.Proxy.delete seat.layer_shell;
-  Rwm.River_seat_v1.destroy seat.obj;
-  Wayland.Proxy.delete seat.obj
+let destroy (s : seat) =
+  List.iter xkb_binding_destroy s.xkb_bindings;
+  List.iter pointer_binding_destroy s.pointer_bindings;
+  Rlsh.River_layer_shell_seat_v1.destroy s.layer_shell;
+  Wayland.Proxy.delete s.layer_shell;
+  Rwm.River_seat_v1.destroy s.obj;
+  Wayland.Proxy.delete s.obj
 
-let init (wm : window_manager) (seat : seat) =
+let init (wm : window_manager) (s : seat) =
   let modkey = wm.config.modkey in
   let alt = Rwm.River_seat_v1.Modifiers.mod1 in
   let shift = Rwm.River_seat_v1.Modifiers.shift in
@@ -156,20 +156,20 @@ let init (wm : window_manager) (seat : seat) =
       ]
   in
   List.iter
-    (fun (m, k, a) -> xkb_binding_create wm seat m k a)
+    (fun (m, k, a) -> xkb_binding_create wm s m k a)
     xkb_bindings;
   List.iter
-    (fun (m, ec, a) -> pointer_binding_create seat m ec a)
+    (fun (m, ec, a) -> pointer_binding_create s m ec a)
     pointer_bindings
 
 let pointer_move
       (wm : window_manager)
-      (seat : seat)
+      (s : seat)
       (window : window)
   =
-  Focus.focus_window wm seat window;
-  Rwm.River_seat_v1.op_start_pointer seat.obj;
-  seat.op <-
+  Focus.focus_window wm s window;
+  Rwm.River_seat_v1.op_start_pointer s.obj;
+  s.op <-
     Op_move
       {
         window;
@@ -182,14 +182,14 @@ let pointer_move
 
 let pointer_resize
       (wm : window_manager)
-      (seat : seat)
+      (s : seat)
       (window : window)
       (edges : int32)
   =
-  Focus.focus_window wm seat window;
+  Focus.focus_window wm s window;
   Rwm.River_window_v1.inform_resize_start window.obj;
-  Rwm.River_seat_v1.op_start_pointer seat.obj;
-  seat.op <-
+  Rwm.River_seat_v1.op_start_pointer s.obj;
+  s.op <-
     Op_resize
       {
         window;
@@ -208,10 +208,10 @@ let spawn_kitty () =
   | 0 -> Unix.execvp "kitty" [||]
   | pid -> ()
 
-let op (wm : window_manager) (seat : seat) =
-  match seat.op with
+let op (wm : window_manager) (s : seat) =
+  match s.op with
   | Op_move op_m when op_m.release -> begin
-      Rwm.River_seat_v1.op_end seat.obj;
+      Rwm.River_seat_v1.op_end s.obj;
       let w = op_m.window in
       let cx = Int32.(div w.geom.w 2l |> add w.geom.x) in
       let cy = Int32.(div w.geom.h 2l |> add w.geom.y) in
@@ -230,14 +230,14 @@ let op (wm : window_manager) (seat : seat) =
       end;
       if op_m.window.presentation = P_floating then
         Window.remember_float op_m.window;
-      seat.op <- Op_none
+      s.op <- Op_none
     end
   | Op_resize op_r when op_r.release -> begin
       Rwm.River_window_v1.inform_resize_end op_r.window.obj;
-      Rwm.River_seat_v1.op_end seat.obj;
+      Rwm.River_seat_v1.op_end s.obj;
       if op_r.window.presentation = P_floating then
         Window.remember_float op_r.window;
-      seat.op <- Op_none
+      s.op <- Op_none
     end
   | Op_resize op_r -> begin
       let left =
@@ -284,31 +284,31 @@ let op (wm : window_manager) (seat : seat) =
   | _ ->
       ()
 
-let handle_new (wm : window_manager) (seat : seat) =
-  match seat.state with
+let handle_new (wm : window_manager) (s : seat) =
+  match s.state with
   | S_new -> begin
-      init wm seat;
-      seat.state <- S_active
+      init wm s;
+      s.state <- S_active
     end
   | _ -> ()
 
-let handle_focus_request (wm : window_manager) (seat : seat)
-  =
-  match seat.focus_request.pending with
-  | Some w
-    when wm.config.focus_follows_pointer
-         && seat.op = Op_none
-         && seat.layer_focus = Lf_none
-         && (seat.position.x
-             <> seat.focus_request.reference_pos.x
-            || seat.position.y
-               <> seat.focus_request.reference_pos.y) ->
-  begin
-      Focus.focus_window wm seat w ~force:true;
-      seat.focus_request <-
-        { pending = None; reference_pos = seat.position }
+let handle_focus_request (wm : window_manager) (s : seat) =
+  if
+    wm.config.focus_follows_pointer
+    && s.op = Op_none
+    && s.layer_focus = Lf_none
+  then
+    begin match s.focus_request with
+    | Focus_window w -> begin
+        Focus.focus_window wm s w ~force:true;
+        s.focus_request <- Focus_none
+      end
+    | Focus_clear -> begin
+        Focus.clear s;
+        s.focus_request <- Focus_none
+      end
+    | _ -> ()
     end
-  | _ -> ()
 
 let handle_interaction (wm : window_manager) (seat : seat) =
   match seat.interacted with
@@ -316,4 +316,13 @@ let handle_interaction (wm : window_manager) (seat : seat) =
   | Some w -> begin
       Focus.focus_window wm seat w;
       seat.interacted <- None
+    end
+
+let refresh_cursor_target (wm : window_manager) (s : seat) =
+  s.cursor_target <-
+    begin match s.output with
+    | Some o ->
+        Window.at_point ~x:s.position.x ~y:s.position.y
+          o.focus_stack
+    | None -> None
     end

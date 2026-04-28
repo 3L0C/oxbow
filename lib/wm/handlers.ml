@@ -335,11 +335,8 @@ let handle_seat _ river_seat (wm_box : wm_box) =
       pending_action = No_action;
       hovered = None;
       interacted = None;
-      focus_request =
-        {
-          pending = None;
-          reference_pos = { x = 0l; y = 0l };
-        };
+      focus_request = Focus_none;
+      cursor_target = None;
       op = Op_none;
     }
   in
@@ -352,12 +349,7 @@ let handle_seat _ river_seat (wm_box : wm_box) =
 
       method on_pointer_enter _ ~window =
         match Wayland.Proxy.user_data window with
-        | Window_data w -> begin
-            seat.hovered <- Some w;
-            if wm.config.focus_follows_pointer then
-              seat.focus_request <-
-                { seat.focus_request with pending = Some w }
-          end
+        | Window_data w -> seat.hovered <- Some w
         | _ -> assert false
 
       method on_pointer_leave _ = seat.hovered <- None
@@ -392,27 +384,32 @@ let handle_seat _ river_seat (wm_box : wm_box) =
 
       method on_pointer_position _ ~x ~y =
         seat.position <- { x; y };
-        if wm.config.focus_follows_pointer then begin
-          begin match Output.at_point ~x ~y wm.outputs with
-          | Some o
-            when not
-                 @@ Ocdwm_core.Utils.opt_holds
-                      wm.focused_output o -> begin
-              wm.focused_output <- Some o;
-              seat.output <- Some o
+        if wm.config.focus_follows_pointer then
+          match Output.at_point ~x ~y wm.outputs with
+          | None -> seat.cursor_target <- None
+          | Some o -> begin
+              if
+                not
+                @@ Ocdwm_core.Utils.opt_holds
+                     wm.focused_output o
+              then begin
+                wm.focused_output <- Some o;
+                seat.output <- Some o
+              end;
+              let new_target =
+                Window.at_point ~x ~y o.windows
+              in
+              begin match new_target with
+              | Some w
+                when not
+                     @@ Ocdwm_core.Utils.opt_holds
+                          seat.cursor_target w ->
+                  seat.focus_request <- Focus_window w
+              | None when seat.cursor_target <> None ->
+                  seat.focus_request <- Focus_clear
+              | _ -> ()
+              end;
+              seat.cursor_target <- new_target
             end
-          | _ -> ()
-          end;
-          begin match seat.focus_request.pending with
-          | None -> begin
-              seat.focus_request <-
-                {
-                  seat.focus_request with
-                  reference_pos = seat.position;
-                }
-            end
-          | _ -> ()
-          end
-        end
     end;
   wm.seats <- seat :: wm.seats

@@ -166,10 +166,10 @@ and layer_focus =
   | Lf_non_exclusive
   | Lf_exclusive
 
-and focus_state = {
-  pending : window option;
-  reference_pos : pointer_position;
-}
+and focus_request =
+  | Focus_none
+  | Focus_window of window
+  | Focus_clear
 
 and seat = {
   (* Wayland objects *)
@@ -188,7 +188,8 @@ and seat = {
   (* Pointer state *)
   mutable hovered : window option;
   mutable interacted : window option;
-  mutable focus_request : focus_state;
+  mutable focus_request : focus_request;
+  mutable cursor_target : window option;
   (* Interactive op state *)
   mutable op : seat_op;
 }

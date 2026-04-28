@@ -201,3 +201,8 @@ let fit_to_output (w : window) =
       if new_x <> w.geom.x || new_y <> w.geom.y then
         set_position w ~x:new_x ~y:new_y
     end
+
+let at_point ~(x : int32) ~(y : int32) =
+  List.find_opt (fun (w : window) ->
+    tag_visible w
+    && Ocdwm_core.Utils.in_rect ~x ~y ~g:w.geom)

@@ -67,6 +67,7 @@ let render (wm : window_manager) (seat : seat) =
 
 let manage_seat (wm : window_manager) (seat : seat) =
   Seat.handle_new wm seat;
+  Seat.refresh_cursor_target wm seat;
   Seat.handle_focus_request wm seat;
   Seat.handle_interaction wm seat;
   Action.handle_action wm seat seat.pending_action;
