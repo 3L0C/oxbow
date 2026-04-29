@@ -1,4 +1,5 @@
 (* ocdwm monocle layout - monocle algorithm and related functions *)
+[@@@landmark "auto"]
 
 open Ocdwm_core.Types
 open Types

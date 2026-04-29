@@ -1,4 +1,6 @@
 (* ocdwm output - output handlers *)
+[@@@landmark "auto"]
+
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 

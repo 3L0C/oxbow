@@ -1,4 +1,5 @@
 (* ocdwm focus - handles focus logic accross seat/output *)
+[@@@landmark "auto"]
 
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client

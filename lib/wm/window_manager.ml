@@ -1,4 +1,5 @@
 (* ocdwm window manager - state management *)
+[@@@landmark "auto"]
 
 module Layout = Ocdwm_layout.Layout
 module Config = Ocdwm_config.Config

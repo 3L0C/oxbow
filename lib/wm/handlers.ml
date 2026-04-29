@@ -383,33 +383,6 @@ let handle_seat _ river_seat (wm_box : wm_box) =
         ()
 
       method on_pointer_position _ ~x ~y =
-        seat.position <- { x; y };
-        if wm.config.focus_follows_pointer then
-          match Output.at_point ~x ~y wm.outputs with
-          | None -> seat.cursor_target <- None
-          | Some o -> begin
-              if
-                not
-                @@ Ocdwm_core.Utils.opt_holds
-                     wm.focused_output o
-              then begin
-                wm.focused_output <- Some o;
-                seat.output <- Some o
-              end;
-              let new_target =
-                Window.at_point ~x ~y o.windows
-              in
-              begin match new_target with
-              | Some w
-                when not
-                     @@ Ocdwm_core.Utils.opt_holds
-                          seat.cursor_target w ->
-                  seat.focus_request <- Focus_window w
-              | None when seat.cursor_target <> None ->
-                  seat.focus_request <- Focus_clear
-              | _ -> ()
-              end;
-              seat.cursor_target <- new_target
-            end
+        Seat.handle_pointer_position wm seat ~x ~y
     end;
   wm.seats <- seat :: wm.seats

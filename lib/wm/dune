@@ -1,3 +1,4 @@
+
 (library
  (name ocdwm_wm)
  (public_name ocdwm.wm)
@@ -10,4 +11,6 @@
    wayland
    eio
    logs
-   xkbcommon))
+   xkbcommon
+   landmarks)
+ (preprocess (pps landmarks-ppx --auto)))

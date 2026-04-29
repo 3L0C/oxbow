@@ -1,4 +1,5 @@
 (* ocdwm tile layout - tile algorithm and related functions *)
+[@@@landmark "auto"]
 
 open Ocdwm_core.Types
 open Types

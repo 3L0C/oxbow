@@ -17,6 +17,9 @@ ocamlPackages.buildDunePackage {
       yojson
       cmdliner
       xkbcommon
+      landmarks
+      landmarks-ppx
+      ppxlib
       ;
   };
 

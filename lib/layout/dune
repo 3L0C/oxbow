@@ -1,4 +1,6 @@
 (library
  (name ocdwm_layout)
  (public_name ocdwm.layout)
- (libraries ocdwm.core))
+ (libraries ocdwm.core landmarks)
+ (preprocess
+  (pps landmarks-ppx --auto)))
