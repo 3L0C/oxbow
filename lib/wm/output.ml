@@ -79,9 +79,9 @@ let remove_window (target : window) =
     end
 
 let tag_data (o : output) =
-  assert (not @@ Tag_set.is_empty o.selected_tags);
-  let i = Tag_set.first o.selected_tags |> Option.get in
-  o.tag_state.(i - 1)
+  match Tag_set.first o.selected_tags with
+  | Some i -> o.tag_state.(i - 1)
+  | None -> assert false
 
 let visible_window_count (o : output) =
   List.fold_left
