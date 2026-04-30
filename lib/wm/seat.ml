@@ -6,6 +6,7 @@ module Rwm =
 
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
+module Utils = Ocdwm_core.Utils
 open Ocdwm_core.Types
 open Ocdwm_ipc.Types
 open Types
@@ -220,8 +221,7 @@ let op (wm : window_manager) (s : seat) =
       begin match
         Output.at_point ~x:cx ~y:cy wm.outputs
       with
-      | Some o
-        when not @@ Ocdwm_core.Utils.opt_holds w.output o ->
+      | Some o when not @@ Utils.opt_holds w.output o ->
       begin
           let prev = w.output in
           Output.move_window w o;
@@ -340,19 +340,14 @@ let handle_pointer_position
     match Output.at_point ~x ~y wm.outputs with
     | None -> s.cursor_target <- None
     | Some o -> begin
-        if
-          not
-          @@ Ocdwm_core.Utils.opt_holds wm.focused_output o
-        then begin
+        if not @@ Utils.opt_holds wm.focused_output o then begin
           wm.focused_output <- Some o;
           s.output <- Some o
         end;
         let new_target = Window.at_point ~x ~y o.windows in
         begin match new_target with
         | Some w
-          when not
-               @@ Ocdwm_core.Utils.opt_holds s.cursor_target
-                    w ->
+          when not @@ Utils.opt_holds s.cursor_target w ->
             s.focus_request <- Focus_window w
         | None when s.cursor_target <> None ->
             s.focus_request <- Focus_clear

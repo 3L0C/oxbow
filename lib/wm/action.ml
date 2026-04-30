@@ -6,6 +6,7 @@ module Rwm =
 
 module Layout = Ocdwm_layout.Layout
 module Tag_set = Ocdwm_core.Tag_set
+module Utils = Ocdwm_core.Utils
 open Types
 open Ocdwm_ipc.Types
 
@@ -117,7 +118,7 @@ let rec handle_window_request
 let handle_action (wm : window_manager) (seat : seat)
   = function
   | No_action -> ()
-  | Spawn cmd -> Ocdwm_core.Utils.spawn cmd
+  | Spawn cmd -> Utils.spawn cmd
   | Close_focused ->
       begin match Focus.focused_of seat with
       | Some window -> Rwm.River_window_v1.close window.obj

@@ -5,6 +5,7 @@ module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
 module Tag_set = Ocdwm_core.Tag_set
+module Utils = Ocdwm_core.Utils
 open Ocdwm_core.Types
 open Types
 
@@ -205,5 +206,4 @@ let fit_to_output (w : window) =
 
 let at_point ~(x : int32) ~(y : int32) =
   List.find_opt (fun (w : window) ->
-    tag_visible w
-    && Ocdwm_core.Utils.in_rect ~x ~y ~g:w.geom)
+    tag_visible w && Utils.in_rect ~x ~y ~g:w.geom)
