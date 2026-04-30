@@ -4,6 +4,7 @@
 module Rwm =
   Ocdwm_protocol.River_window_management_v1_client
 
+module Utils = Ocdwm_core.Utils
 open Types
 open Ocdwm_core.Types
 
@@ -80,7 +81,40 @@ let focus_dir
       | _ -> ()
       end
 
-let focus_output (seat : seat) (dir : direction) = ()
+let focus_output
+      (wm : window_manager)
+      (seat : seat)
+      (dir : direction)
+  =
+  match seat.output with
+  | None -> ()
+  | Some o -> begin
+      let target =
+        match dir with
+        | Dir_next
+        | Dir_down
+        | Dir_right ->
+            Utils.after_or_first o wm.outputs
+        | Dir_prev
+        | Dir_up
+        | Dir_left ->
+            Utils.prev_or_last o wm.outputs
+      in
+      match target with
+      | Some t when t != o -> begin
+          Rlsh.River_layer_shell_output_v1.set_default
+            t.layer_shell;
+          match Output.focused_window t with
+          | Some w -> focus_window wm seat w
+          | None -> begin
+              seat.output <- target;
+              wm.focused_output <- target;
+              clear seat
+            end
+        end
+      | _ -> ()
+    end
+
 let get_output (lst : output list) = List.nth_opt lst 0
 
 let focus_other_output

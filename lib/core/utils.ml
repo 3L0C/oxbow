@@ -51,3 +51,17 @@ let opt_holds (o : 'a option) (v : 'a) =
   match o with
   | Some x -> x == v
   | None -> false
+
+let after_or_first (e : 'a) = function
+  | [] -> None
+  | first :: _ as lst ->
+      let rec aux = function
+        | x :: y :: xs when x == e -> Some y
+        | [ x ] when x == e -> Some first
+        | _ :: rest -> aux rest
+        | [] -> None
+      in
+      aux lst
+
+let prev_or_last (e : 'a) (lst : 'a list) =
+  List.rev lst |> after_or_first e
