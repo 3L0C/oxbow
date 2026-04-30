@@ -22,7 +22,7 @@ type ipc_state =
 type action =
   | No_action
   (* Process control *)
-  | Spawn of string array
+  | Spawn of string
   | Exit_wm
   (* Window operations *)
   | Close_focused

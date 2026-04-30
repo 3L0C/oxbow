@@ -84,12 +84,16 @@ let main ~net =
         ipc = Ipc_inactive;
       }
 
-let () =
+let setup () =
   Sys.catch_break true;
+  Sys.set_signal Sys.sigchld Sys.Signal_ignore;
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.(set_level (Some Info));
-  Printexc.record_backtrace true;
   (* Unix.putenv "WAYLAND_DEBUG" "1"; *)
+  Printexc.record_backtrace true
+
+let () =
+  setup ();
   try Eio_main.run @@ fun env -> main ~net:env#net with
   | Sys.Break -> Exit.ok ()
   | Failure s -> begin

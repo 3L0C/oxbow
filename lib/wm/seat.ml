@@ -118,7 +118,7 @@ let init (wm : window_manager) (s : seat) =
     Xkbcommon.Keysym.
       [
         (* mods, keysym,   action *)
-        (modkey, K_Return, Spawn [| "kitty" |]);
+        (modkey, K_Return, Spawn "kitty");
         (modkey, K_q, Close_focused);
         (modkey, K_j, Focus_window Dir_next);
         (modkey, K_k, Focus_window Dir_prev);
@@ -205,11 +205,6 @@ let pointer_resize
         dy = 0l;
         release = false;
       }
-
-let spawn_kitty () =
-  match Unix.fork () with
-  | 0 -> Unix.execvp "kitty" [||]
-  | pid -> ()
 
 let op (wm : window_manager) (s : seat) =
   match s.op with
