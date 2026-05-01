@@ -149,41 +149,7 @@ let handle_output _ river_output (wm_box : wm_box) =
 
 let handle_window _ river_window (wm_box : wm_box) =
   let wm = Option.get wm_box.body in
-  let node =
-    object
-      inherit [_] Rwm.River_node_v1.v4
-    end
-  in
-  let window : window =
-    {
-      obj = river_window;
-      node = Rwm.River_window_v1.get_node river_window node;
-      state = W_new;
-      app_id = None;
-      title = None;
-      identifier = None;
-      unreliable_pid = None;
-      parent = None;
-      decoration_hint = None;
-      presentation_hint = None;
-      geom = { x = 0l; y = 0l; w = 0l; h = 0l };
-      float_geom = None;
-      size_hints =
-        { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l };
-      tags =
-        begin match wm.focused_output with
-        | None -> Tag_set.singleton 1
-        | Some o -> o.selected_tags
-        end;
-      output = wm.focused_output;
-      is_fixed = false;
-      is_urgent = false;
-      is_maximized = false;
-      is_hidden = false;
-      presentation = P_tiled;
-      requests = [];
-    }
-  in
+  let window = Window.create wm river_window in
   Wayland.Proxy.Handler.attach river_window
     object
       inherit [_] Rwm.River_window_v1.v4

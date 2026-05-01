@@ -167,7 +167,7 @@ let retile (wm : window_manager) = function
         match (windows, dimensions) with
         | _, [] when count <> 0 ->
             List.iter
-              (fun w -> Window.restore_or_seed_float w)
+              (fun w -> Window.restore_or_seed_float wm w)
               windows
         | _, d_xs when List.length d_xs <> count ->
             let layout_name =
@@ -181,7 +181,7 @@ let retile (wm : window_manager) = function
         | w_xs, d_xs ->
             List.iter2
               (fun w g ->
-                 Window.clamp w g |> Window.set_geom w)
+                 Window.clamp w g |> Window.set_geom wm w)
               w_xs d_xs
       end
 

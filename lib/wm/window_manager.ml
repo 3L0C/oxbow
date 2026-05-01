@@ -8,9 +8,6 @@ open Ocdwm_core.Types
 open Ocdwm_ipc.Types
 open Ocdwm_config.Types
 
-exception Unavailable
-exception Finished
-
 let handle_unavailable _proxy =
   Printf.eprintf
     "error: another window manager is already running\n";
@@ -38,7 +35,7 @@ let render (wm : window_manager) (seat : seat) =
   begin match seat.op with
   | Op_none -> ()
   | Op_move op_m ->
-      Window.set_position op_m.window
+      Window.set_position wm op_m.window
         ~x:(Int32.add op_m.start_x op_m.dx)
         ~y:(Int32.add op_m.start_y op_m.dy)
   | Op_resize op_r ->
@@ -62,7 +59,7 @@ let render (wm : window_manager) (seat : seat) =
           |> Int32.add op_r.start_y
         else op_r.start_y
       in
-      Window.set_position op_r.window ~x ~y
+      Window.set_position wm op_r.window ~x ~y
   end;
   List.iter set_presentation_mode wm.outputs
 
@@ -147,20 +144,32 @@ let manage_output (wm : window_manager) (output : output) =
 
 let handle_manage_start proxy (wm_box : wm_box) =
   let wm = Option.get wm_box.body in
-  remove_outputs wm;
-  close_windows wm;
-  close_seats wm;
-  Focus.maybe_focus_first_output wm;
-  List.iter (manage_window wm) wm.windows;
-  List.iter (manage_seat wm) wm.seats;
-  List.iter (manage_output wm) wm.outputs;
-  List.iter Window.sync wm.windows;
-  Rwm.River_window_manager_v1.manage_finish proxy
+  wm.phase <- P_manage;
+  Fun.protect
+    ~finally:(fun () -> wm.phase <- P_idle)
+    (fun () ->
+       begin
+         remove_outputs wm;
+         close_windows wm;
+         close_seats wm;
+         Focus.maybe_focus_first_output wm;
+         List.iter (manage_window wm) wm.windows;
+         List.iter (manage_seat wm) wm.seats;
+         List.iter (manage_output wm) wm.outputs;
+         List.iter (Window.sync wm) wm.windows;
+         Rwm.River_window_manager_v1.manage_finish proxy
+       end)
 
 let handle_render_start proxy (wm_box : wm_box) =
   let wm = Option.get wm_box.body in
-  List.iter (render wm) wm.seats;
-  Rwm.River_window_manager_v1.render_finish proxy
+  wm.phase <- P_render;
+  Fun.protect
+    ~finally:(fun () -> wm.phase <- P_idle)
+    (fun () ->
+       begin
+         List.iter (render wm) wm.seats;
+         Rwm.River_window_manager_v1.render_finish proxy
+       end)
 
 let handle_session_locked _proxy = ()
 let handle_session_unlocked _proxy = ()

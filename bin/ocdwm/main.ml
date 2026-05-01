@@ -75,6 +75,7 @@ let main ~net =
         river_lsh_v1;
         registry;
         focused_output = None;
+        phase = P_idle;
         outputs = [];
         windows = [];
         seats = [];
@@ -100,5 +101,5 @@ let () =
       Printf.eprintf "%s\n" s;
       Exit.unavailable ()
     end
-  | Window_manager.Unavailable -> Exit.unavailable ()
-  | Window_manager.Finished -> Exit.ok ()
+  | Unavailable -> Exit.unavailable ()
+  | Finished -> Exit.ok ()

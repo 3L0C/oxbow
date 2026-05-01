@@ -11,6 +11,9 @@ open Ocdwm_core.Types
 open Ocdwm_ipc.Types
 open Ocdwm_layout.Types
 
+exception Unavailable
+exception Finished
+
 type presentation =
   | P_tiled
   | P_floating
@@ -88,6 +91,7 @@ and window = {
   (* Lifecycle *)
   mutable state : window_state;
   (* State *)
+  id : int;
   mutable app_id : string option;
   mutable title : string option;
   mutable identifier : string option;
@@ -197,7 +201,12 @@ and seat = {
 
 and seat_box = { mutable body : seat option }
 
-type window_manager = {
+type phase =
+  | P_manage
+  | P_render
+  | P_idle
+
+and window_manager = {
   (* Wayland objects *)
   river_wm_v1 : [ `V4 ] Rwm.River_window_manager_v1.t;
   river_xkb_v1 : [ `V2 ] Xkb.River_xkb_bindings_v1.t;
@@ -205,6 +214,7 @@ type window_manager = {
   registry : Wayland.Registry.t;
   (* State *)
   mutable focused_output : output option;
+  mutable phase : phase;
   (* Managed items *)
   mutable outputs : output list; (* Sorted by focus order *)
   mutable windows : window list;
