@@ -1,0 +1,2 @@
+exception Unavailable
+exception Finished

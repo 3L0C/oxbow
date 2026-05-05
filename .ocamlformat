@@ -1,20 +1,2 @@
 version = 0.29.0
-profile = default
-
-doc-comments = before
-
-break-cases = all
-break-fun-decl = fit-or-vertical
-break-infix = fit-or-vertical
-
-cases-exp-indent = 4
-
-margin = 60
-
-ocp-indent-compat = true
-
-parse-docstrings = false
-
-type-decl = sparse
-
-wrap-comments = false
+profile = janestreet

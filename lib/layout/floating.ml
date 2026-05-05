@@ -4,11 +4,5 @@ open Ocdwm_core.Types
 open Types
 
 let name = "floating"
-let symbol = S_static "><>"
-
-let compute
-      ~(data : layout_params)
-      ~(area : int rect)
-      ~(count : int)
-  =
-  []
+let symbol = Symbol.S_static "><>"
+let compute ~(data : Layout_params.t) ~(area : int Rect.t) ~(count : int) = []

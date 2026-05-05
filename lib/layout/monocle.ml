@@ -5,24 +5,17 @@ open Ocdwm_core.Types
 open Types
 
 let name = "monocle"
+let symbol = Symbol.S_dynamic (fun ctx -> Printf.sprintf "[%d]" ctx.focused_index)
 
-let symbol =
-  S_dynamic
-    (fun ctx -> Printf.sprintf "[%d]" ctx.focused_index)
-
-let compute
-      ~(data : layout_params)
-      ~(area : int rect)
-      ~(count : int)
-  =
+let compute ~(data : Layout_params.t) ~(area : int Rect.t) ~(count : int) =
   match count with
   | 0 -> []
-  | n -> begin
-      List.init n (fun i ->
-        {
-          x = area.x + data.gaps_outer;
-          y = area.y + data.gaps_outer;
-          w = area.w - (data.gaps_outer * 2);
-          h = area.h - (data.gaps_outer * 2);
+  | n ->
+    List.init n (fun i ->
+      Rect.
+        { x = area.x + data.gaps_outer
+        ; y = area.y + data.gaps_outer
+        ; w = area.w - (data.gaps_outer * 2)
+        ; h = area.h - (data.gaps_outer * 2)
         })
-    end
+;;

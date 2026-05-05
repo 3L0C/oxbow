@@ -1,157 +1,119 @@
 (* ocdwm focus - handles focus logic accross seat/output *)
 [@@@landmark "auto"]
 
-module Rwm =
-  Ocdwm_protocol.River_window_management_v1_client
-
+module Rwm = Ocdwm_protocol.River_window_management_v1_client
+module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Utils = Ocdwm_core.Utils
-open Types
 open Ocdwm_core.Types
+open Types
 
-let focused_of (seat : seat) : window option =
+let focused_of (seat : Seat_t.t) : Window_t.t option =
   match seat.output with
   | Some o -> Output.focused_window o
   | None -> None
+;;
 
 let focus_window
       ?(force : bool = false)
-      (wm : window_manager)
-      (seat : seat)
-      (target : window)
+      (ctx : Ctx.manage Ctx.t)
+      (seat : Seat_t.t)
+      (target : Window_t.t)
   =
   let force = force || seat.layer_focus <> Lf_none in
   match focused_of seat with
   | Some w when w == target && not force -> ()
-  | _ -> begin
-      seat.output <- target.output;
-      wm.focused_output <- target.output;
-      Output.focus_window target;
-      Rwm.River_seat_v1.focus_window seat.obj
-        ~window:target.obj;
-      Rwm.River_node_v1.place_top target.node
-    end
+  | _ ->
+    seat.output <- target.output;
+    Window_manager.focus_output ctx target.output;
+    Output.focus_window target;
+    Rwm.River_seat_v1.focus_window seat.obj ~window:target.obj;
+    Rwm.River_node_v1.place_top target.node
+;;
 
-let clear (seat : seat) =
+let clear (_ : Ctx.manage Ctx.t) (seat : Seat_t.t) =
   Rwm.River_seat_v1.clear_focus seat.obj
+;;
 
-let refresh_focus (wm : window_manager) = function
-  | None -> ()
-  | Some (o : output) ->
-      begin match Output.focused_window o with
-      | None -> begin
-          wm.focused_output <- Some o;
-          List.iter
-            (fun s ->
-               match s.output with
-               | Some so when so == o -> clear s
-               | _ -> ())
-            wm.seats
-        end
-      | Some w -> begin
-          wm.focused_output <- Some o;
-          List.iter
-            (fun s ->
-               match s.output with
-               | Some so when so == o -> begin
-                   Rwm.River_seat_v1.focus_window s.obj
-                     ~window:w.obj;
-                   Rwm.River_node_v1.place_top w.node
-                 end
-               | _ -> ())
-            wm.seats
-        end
-      end
+let refresh_focus (ctx : Ctx.manage Ctx.t) (output : Output_t.t) =
+  let wm = Ctx.wm ctx in
+  match Output.focused_window output with
+  | None ->
+    Window_manager.focus_output ctx @@ Some output;
+    List.iter
+      (fun (s : Seat_t.t) ->
+         match s.output with
+         | Some so when so == output -> clear ctx s
+         | _ -> ())
+      wm.seats
+  | Some w ->
+    Window_manager.focus_output ctx @@ Some output;
+    List.iter
+      (fun (s : Seat_t.t) ->
+         match s.output with
+         | Some so when so == output -> focus_window ~force:true ctx s w
+         | _ -> ())
+      wm.seats
+;;
 
-let focus_dir
-      (wm : window_manager)
-      (seat : seat)
-      (dir : direction)
-  =
-  match (focused_of seat, seat.output) with
+let focus_dir (ctx : Ctx.manage Ctx.t) (seat : Seat_t.t) (dir : Direction.t) =
+  match focused_of seat, seat.output with
   | Some w, _ when Window.is_fullscreen w -> ()
   | _, None -> ()
   | _, Some o ->
-      begin match dir with
-      | Dir_next ->
-          Output.next_window o
-          |> Option.iter (focus_window wm seat)
-      | Dir_prev ->
-          Output.prev_window o
-          |> Option.iter (focus_window wm seat)
-      | _ -> ()
-      end
+    (match dir with
+     | Dir_next -> Output.next_window o |> Option.iter (focus_window ctx seat)
+     | Dir_prev -> Output.prev_window o |> Option.iter (focus_window ctx seat)
+     | _ -> ())
+;;
 
-let focus_output
-      (wm : window_manager)
-      (seat : seat)
-      (dir : direction)
-  =
+let focus_output (ctx : Ctx.manage Ctx.t) (seat : Seat_t.t) (dir : Direction.t) =
+  let wm = Ctx.wm ctx in
   match seat.output with
   | None -> ()
-  | Some o -> begin
-      let target =
-        match dir with
-        | Dir_next
-        | Dir_down
-        | Dir_right ->
-            Utils.after_or_first o wm.outputs
-        | Dir_prev
-        | Dir_up
-        | Dir_left ->
-            Utils.prev_or_last o wm.outputs
-      in
-      match target with
-      | Some t when t != o -> begin
-          Rlsh.River_layer_shell_output_v1.set_default
-            t.layer_shell;
-          match Output.focused_window t with
-          | Some w -> focus_window wm seat w
-          | None -> begin
-              seat.output <- target;
-              wm.focused_output <- target;
-              clear seat
-            end
-        end
-      | _ -> ()
-    end
+  | Some o ->
+    let target =
+      match dir with
+      | Dir_next | Dir_down | Dir_right -> Utils.after_or_first o wm.outputs
+      | Dir_prev | Dir_up | Dir_left -> Utils.prev_or_last o wm.outputs
+    in
+    (match target with
+     | Some t when t != o ->
+       Rlsh.River_layer_shell_output_v1.set_default t.layer_shell;
+       (match Output.focused_window t with
+        | Some w -> focus_window ctx seat w
+        | None ->
+          seat.output <- target;
+          Window_manager.focus_output ctx target;
+          clear ctx seat)
+     | _ -> ())
+;;
 
-let get_output (lst : output list) = List.nth_opt lst 0
+let get_output (lst : Output_t.t list) = List.nth_opt lst 0
 
-let focus_other_output
-      (wm : window_manager)
-      (output : output)
-  =
+let focus_other_output (ctx : Ctx.manage Ctx.t) (output : Output_t.t) =
+  let wm = Ctx.wm ctx in
   match wm.focused_output with
   | Some o when o == output ->
-      wm.focused_output <-
-        List.find_opt (fun o -> o != output) wm.outputs
+    Window_manager.focus_output ctx @@ List.find_opt (fun o -> o != output) wm.outputs
   | _ -> ()
+;;
 
-let remove_window (wm : window_manager) (window : window) =
-  Output.remove_window window;
-  refresh_focus wm window.output
+let remove_window (ctx : Ctx.manage Ctx.t) (window : Window_t.t) =
+  Option.iter (Output.remove_window ~window) window.output;
+  Option.iter (refresh_focus ctx) window.output
+;;
 
-let maybe_focus_first_output (wm : window_manager) =
+let sync (ctx : Ctx.manage Ctx.t) =
+  let wm = Ctx.wm ctx in
   match wm.focused_output with
   | None ->
-      begin match wm.outputs with
-      | o :: _ -> begin
-          wm.focused_output <- Some o;
-          Rlsh.River_layer_shell_output_v1.set_default
-            o.layer_shell
-        end
-      | [] -> wm.focused_output <- None
-      end
+    (match wm.outputs with
+     | o :: _ -> Window_manager.focus_output ctx @@ Some o
+     | [] -> ())
   | Some o ->
-      begin match List.memq o wm.outputs with
-      | false ->
-          begin match wm.outputs with
-          | o :: _ -> begin
-              wm.focused_output <- Some o;
-              Rlsh.River_layer_shell_output_v1.set_default
-                o.layer_shell
-            end
-          | [] -> ()
-          end
-      | true -> ()
-      end
+    if not @@ List.memq o wm.outputs
+    then (
+      match wm.outputs with
+      | o :: _ -> Window_manager.focus_output ctx @@ Some o
+      | [] -> Window_manager.focus_output ctx None)
+;;
