@@ -320,6 +320,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
     { obj = river_seat
     ; layer_shell
     ; state = S_new
+    ; name = None
     ; output = wm.focused_output
     ; position = { x = 0l; y = 0l }
     ; layer_focus = Lf_none
@@ -369,7 +370,24 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
         | Op_resize d -> d.release <- true
         | Op_none -> ()
 
-      method on_wl_seat _ ~name = ()
+      method on_wl_seat _ ~name =
+        let _ =
+          Wayland.Wayland_client.Wl_registry.bind
+            (Wayland.Registry.wl_registry wm.registry)
+            ~name
+          @@ ( object
+                 inherit [_] Wayland.Wayland_client.Wl_seat.v10
+
+                 method on_name _ ~name =
+                   Logs.info (fun m -> m "{Seat: Name: %S}" name);
+                   seat.name <- Some name
+
+                 method on_capabilities _ ~capabilities = ()
+               end
+             , 10l )
+        in
+        ()
+
       method on_shell_surface_interaction _ ~shell_surface = ()
       method on_pointer_position _ ~x ~y = Seat.handle_pointer_position wm seat ~x ~y
     end;

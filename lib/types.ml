@@ -141,6 +141,8 @@ and Seat : sig
     ; layer_shell : [ `V1 ] Rlsh.River_layer_shell_seat_v1.t
     ; (* Lifecycle *)
       mutable state : Seat_state.t
+    ; (* Identity *)
+      mutable name : string option
     ; (* State *)
       mutable output : Output.t option
     ; mutable position : Pointer_position.t
