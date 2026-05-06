@@ -164,3 +164,11 @@ let occupied_tags (o : t) =
 let at_point ~(x : int32) ~(y : int32) =
   List.find_opt (fun (o : t) -> Utils.in_rect ~x ~y ~g:o.geom)
 ;;
+
+let is_floating (output : t option) =
+  match output with
+  | None -> false
+  | Some o ->
+    let name = current_layout_entry o |> Layout.entry_name in
+    name = Floating.name
+;;

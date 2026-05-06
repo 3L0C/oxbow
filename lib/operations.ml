@@ -15,12 +15,16 @@ let seat_op (ctx : Ctx.manage Ctx.t) (s : Seat.t) =
        Option.iter Output.mark_dirty prev;
        Output.mark_dirty o
      | _ -> ());
-    if op_m.window.presentation = P_floating then Window.remember_float op_m.window;
+    if op_m.window.presentation = P_floating && (not @@ Output.is_floating w.output)
+    then Window.remember_float op_m.window;
     s.op <- Op_none
   | Op_resize op_r when op_r.release ->
     Rwm.River_window_v1.inform_resize_end op_r.window.obj;
     Rwm.River_seat_v1.op_end s.obj;
-    if op_r.window.presentation = P_floating then Window.remember_float op_r.window;
+    if
+      op_r.window.presentation = P_floating
+      && (not @@ Output.is_floating op_r.window.output)
+    then Window.remember_float op_r.window;
     s.op <- Op_none
   | Op_resize op_r ->
     let left = Int32.logand op_r.edges Rwm.River_window_v1.Edges.left <> 0l in

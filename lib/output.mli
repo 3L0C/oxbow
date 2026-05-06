@@ -69,7 +69,7 @@ val switch_tags : t -> Tag_set.t -> unit
     windows. *)
 val occupied_tags : t -> Tag_set.t
 
-(** [current_layout_entry output] is the layout entry for the first selected tag
+(** [current_layout_entry output] is the layout entry of the first selected tag
     on [output]. *)
 val current_layout_entry : t -> Layout_entry.t
 
@@ -82,3 +82,7 @@ val tiled_windows : t -> Types.Window.t list
 
     {b Effects:} mutates WM state *)
 val set_layout_entry : t -> entry:Layout_entry.t -> unit
+
+(** [is_floating output] is true when the first selected tag is in the Floating
+    layout. *)
+val is_floating : t option -> bool

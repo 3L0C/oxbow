@@ -12,7 +12,7 @@ let rec window_request
     (match window.presentation with
      | P_fullscreen _ -> ()
      | _ ->
-       if window.presentation = P_tiled
+       if window.presentation = P_tiled && (not @@ Output.is_floating window.output)
        then (
          window.presentation <- P_floating;
          Option.iter Output.mark_dirty window.output);
@@ -21,7 +21,7 @@ let rec window_request
     (match window.presentation with
      | P_fullscreen _ -> ()
      | _ ->
-       if window.presentation = P_tiled
+       if window.presentation = P_tiled && (not @@ Output.is_floating window.output)
        then (
          window.presentation <- P_floating;
          Option.iter Output.mark_dirty window.output);
