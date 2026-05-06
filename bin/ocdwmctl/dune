@@ -2,7 +2,7 @@
  (name main)
  (public_name ocdwmctl)
  (libraries
-  ocdwm.core
+  ocdwm
   eio_main
   yojson
   cmdliner

@@ -1,13 +1,13 @@
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
-module Window_manager = Ocdwm_wm.Window_manager
-module Handlers = Ocdwm_wm.Handlers
-module Exit = Ocdwm_core.Exit
-module Config = Ocdwm_config.Config
-module Layout = Ocdwm_layout.Layout
-module Box = Ocdwm_wm.Types.Box
-module Wm_exceptions = Ocdwm_wm.Exceptions
+module Wayland_handlers = Ocdwm.Wayland_handlers
+module Types = Ocdwm.Types
+module Exit = Ocdwm.Exit
+module Config = Ocdwm.Config
+module Layout = Ocdwm.Layout
+module Box = Ocdwm.Box
+module Wm_exceptions = Ocdwm.Exceptions
 
 let main ~net =
   Eio.Switch.run
@@ -15,25 +15,28 @@ let main ~net =
   let transport = Wayland.Unix_transport.connect ~sw ~net () in
   let display = Wayland.Client.connect ~sw transport in
   let registry = Wayland.Registry.of_display display in
-  let wm_box : Window_manager.t Box.t = { body = None } in
+  let wm_box : Types.Window_manager.t Box.t = { body = None } in
   let river_wm_v1 =
     Wayland.Registry.bind registry
     @@ object
          inherit [_] Rwm.River_window_manager_v1.v4
-         method on_unavailable = Handlers.on_unavailable
-         method on_finished = Handlers.on_finished
-         method on_manage_start proxy = Handlers.on_manage_start proxy wm_box
-         method on_render_start proxy = Handlers.on_render_start proxy wm_box
-         method on_session_locked = Handlers.on_session_locked
-         method on_session_unlocked = Handlers.on_session_unlocked
-
-         method on_window proxy river_window =
-           Handlers.on_window proxy river_window wm_box
+         method on_finished = Wayland_handlers.on_finished
+         method on_manage_start proxy = Wayland_handlers.on_manage_start proxy wm_box
 
          method on_output proxy river_output =
-           Handlers.on_output proxy river_output wm_box
+           Wayland_handlers.on_output proxy river_output wm_box
 
-         method on_seat proxy river_seat = Handlers.on_seat proxy river_seat wm_box
+         method on_render_start proxy = Wayland_handlers.on_render_start proxy wm_box
+
+         method on_seat proxy river_seat =
+           Wayland_handlers.on_seat proxy river_seat wm_box
+
+         method on_session_locked = Wayland_handlers.on_session_locked
+         method on_session_unlocked = Wayland_handlers.on_session_unlocked
+         method on_unavailable = Wayland_handlers.on_unavailable
+
+         method on_window proxy river_window =
+           Wayland_handlers.on_window proxy river_window wm_box
        end
   in
   let river_xkb_v1 =

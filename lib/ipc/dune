@@ -1,4 +1,0 @@
-(library
- (name ocdwm_ipc)
- (public_name ocdwm.ipc)
- (libraries ocdwm.core))

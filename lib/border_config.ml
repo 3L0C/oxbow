@@ -1,0 +1,6 @@
+type t =
+  { mutable width : int
+  ; mutable focused_color : int32
+  ; mutable unfocused_color : int32
+  ; mutable urgent_color : int32
+  }
