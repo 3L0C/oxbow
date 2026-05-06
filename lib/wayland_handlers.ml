@@ -376,7 +376,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
             (Wayland.Registry.wl_registry wm.registry)
             ~name
           @@ ( object
-                 inherit [_] Wayland.Wayland_client.Wl_seat.v10
+                 inherit [_] Wayland.Wayland_client.Wl_seat.v9
 
                  method on_name _ ~name =
                    Logs.info (fun m -> m "{Seat: Name: %S}" name);
@@ -384,7 +384,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
 
                  method on_capabilities _ ~capabilities = ()
                end
-             , 10l )
+             , 9l )
         in
         ()
 
