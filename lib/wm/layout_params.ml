@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 type t =
   { mutable mfact : float
   ; mutable nmaster : int

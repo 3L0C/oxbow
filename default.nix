@@ -20,6 +20,7 @@ ocamlPackages.buildDunePackage {
       landmarks
       landmarks-ppx
       ppxlib
+      ppx_yojson_conv
       ;
   };
 

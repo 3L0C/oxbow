@@ -1,6 +1,7 @@
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
+open! Ocdwm_core
 
 module rec Output : sig
   type t =

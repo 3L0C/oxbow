@@ -1,5 +1,6 @@
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
+open! Ocdwm_core
 
 type (_, _) Wayland.S.user_data +=
   | Boxed_data of Any_box.t

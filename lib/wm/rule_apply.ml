@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 type t =
   { tags : Tag_set.t option
   ; floating : bool option

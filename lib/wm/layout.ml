@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 let entry_data = function
   | Layout_entry.L_builtin { data; _ } | Layout_entry.L_external { data; _ } -> data
 ;;

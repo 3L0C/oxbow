@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 (** [handle_window_request ctx window request] carries out [request] on [window].
 
     {b Effects:} mutates WM state; sends River request *)

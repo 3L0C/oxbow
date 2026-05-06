@@ -1,4 +1,5 @@
-open Types
+open! Ocdwm_core
+open! Types
 
 let move_to_top x xs = x :: List.filter (fun y -> y != x) xs
 

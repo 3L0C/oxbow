@@ -1,4 +1,5 @@
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
+open! Ocdwm_core
 
 type t = Types.Window.t
 

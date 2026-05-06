@@ -2,7 +2,8 @@
  (name main)
  (public_name ocdwm)
  (libraries
-  ocdwm
+  ocdwm.core
+  ocdwm.wm
   ocdwm.protocol
   eio_main
   logs

@@ -1,0 +1,4 @@
+(library
+ (name ocdwm_ctl)
+ (public_name ocdwm.ctl)
+ (libraries ocdwm.core cmdliner yojson))

@@ -2,8 +2,8 @@
  (name main)
  (public_name ocdwmctl)
  (libraries
-  ocdwm
-  eio_main
+  ocdwm.core
+  ocdwm.ctl
   yojson
   cmdliner
   fmt

@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 type t = Types.Output.t
 
 (** [focused_window output] is [Some window] when [output] has a focused visible

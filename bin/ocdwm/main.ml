@@ -1,13 +1,13 @@
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
-module Wayland_handlers = Ocdwm.Wayland_handlers
-module Types = Ocdwm.Types
-module Exit = Ocdwm.Exit
-module Config = Ocdwm.Config
-module Layout = Ocdwm.Layout
-module Box = Ocdwm.Box
-module Wm_exceptions = Ocdwm.Exceptions
+module Wayland_handlers = Ocdwm_wm.Wayland_handlers
+module Types = Ocdwm_wm.Types
+module Exit = Ocdwm_core.Exit
+module Config = Ocdwm_wm.Config
+module Layout = Ocdwm_wm.Layout
+module Box = Ocdwm_wm.Box
+module Wm_exceptions = Ocdwm_wm.Exceptions
 
 let main ~net =
   Eio.Switch.run

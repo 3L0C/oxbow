@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 (** [focus_window ?force ctx seat window] focuses [window] on [seat]. No-op when
     [window] is already focused on [seat] and neither [force] nor a layer focus
     on [seat] forces a refocus. Default [force] is [false].

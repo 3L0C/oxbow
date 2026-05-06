@@ -1,5 +1,6 @@
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
+open! Ocdwm_core
 
 let focused_of (seat : Types.Seat.t) : Types.Window.t option =
   match seat.output with
