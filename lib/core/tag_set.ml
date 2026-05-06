@@ -139,3 +139,11 @@ let prev_occupied ~selected ~occupied =
 
 let to_int s = s
 let of_int n = n land all
+let yojson_of_t (t : t) : Yojson.Safe.t = `Int (to_int t)
+
+let t_of_yojson (yo_t : Yojson.Safe.t) : t =
+  let open Ppx_yojson_conv_lib.Yojson_conv in
+  match yo_t with
+  | `Int n -> of_int n
+  | j -> raise @@ Of_yojson_error (Failure "Tag_set.t_of_yojson: expected integer", j)
+;;

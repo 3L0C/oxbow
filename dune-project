@@ -28,6 +28,8 @@
    (>= 1.2))
   (yojson
    (>= 2.0))
+  (ppx_yojson_conv
+   (>= 0.16))
   (cmdliner
    (>= 1.3))
   (xkbcommon

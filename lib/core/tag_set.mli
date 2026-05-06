@@ -97,3 +97,6 @@ val to_int : t -> int
 (** [of_int n] is the set whose bits are those of [n], masked to
   * [min_tag..max_tag]. Bits outside that range are silently dropped. *)
 val of_int : int -> t
+
+val yojson_of_t : t -> Yojson.Safe.t
+val t_of_yojson : Yojson.Safe.t -> t

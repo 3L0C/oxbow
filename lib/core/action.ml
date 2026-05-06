@@ -1,37 +1,40 @@
+open! Ppx_yojson_conv_lib.Yojson_conv
+
 type t =
-  | No_action
+  | No_action [@name "no_action"]
   (* Process control *)
-  | Spawn of string
-  | Exit_wm
+  | Spawn of string [@name "spawn"]
+  | Exit_wm [@name "exit_wm"]
   (* Window operations *)
-  | Close_focused
-  | Toggle_floating
-  | Toggle_maximize
-  | Toggle_fullscreen
-  | Move_interactive
-  | Resize_interactive
-  | Send_to_output of Direction.t (* keep own tags *)
-  | Send_to_output_tags of Direction.t (* take dest tags *)
+  | Close_focused [@name "close_focused"]
+  | Toggle_floating [@name "toggle_floating"]
+  | Toggle_maximize [@name "toggle_maximize"]
+  | Toggle_fullscreen [@name "toggle_fullscreen"]
+  | Move_interactive [@name "move_interactive"]
+  | Resize_interactive [@name "resize_interactive"]
+  | Send_to_output of Direction.t (* keep own tags *) [@name "send_to_output"]
+  | Send_to_output_tags of Direction.t (* take dest tags *) [@name "send_to_output_tags"]
   (* Focus *)
-  | Focus_window of Direction.t
-  | Focus_output of Direction.t
+  | Focus_window of Direction.t [@name "focus_window"]
+  | Focus_output of Direction.t [@name "focus_output"]
   (* Stack manipulation *)
-  | Swap_window of Direction.t
-  | Zoom
+  | Swap_window of Direction.t [@name "swap_window"]
+  | Zoom [@name "zoom"]
   (* Tags *)
-  | Tag_view of int
-  | Tag_view_mask of Tag_set.t
-  | Tag_toggle_view of int
-  | Tag_view_previous
-  | Tag_view_cycle of Direction.t
-  | Window_tag of int
-  | Window_toggle_tag of int
-  | Window_tag_mask of Tag_set.t
+  | Tag_view of int [@name "tag_view"]
+  | Tag_view_mask of Tag_set.t [@name "tag_view_mask"]
+  | Tag_toggle_view of int [@name "tag_toggle_view"]
+  | Tag_view_previous [@name "tag_view_previous"]
+  | Tag_view_cycle of Direction.t [@name "tag_view_cycle"]
+  | Window_tag of int [@name "window_tag"]
+  | Window_toggle_tag of int [@name "window_toggle_tag"]
+  | Window_tag_mask of Tag_set.t [@name "window_tag_mask"]
   (* Layout *)
-  | Layout_set of string
-  | Layout_cycle of Direction.t
-  | Set_mfact of float Delta.t
-  | Set_nmaster of int Delta.t
-  | Set_gaps_inner of int Delta.t
-  | Set_gaps_outer of int Delta.t
-  | Set_stack of Stack_kind.t
+  | Layout_set of string [@name "layout_set"]
+  | Layout_cycle of Direction.t [@name "layout_cycle"]
+  | Set_mfact of float Delta.t [@name "set_mfact"]
+  | Set_nmaster of int Delta.t [@name "set_nmaster"]
+  | Set_gaps_inner of int Delta.t [@name "set_gaps_inner"]
+  | Set_gaps_outer of int Delta.t [@name "set_gaps_outer"]
+  | Set_stack of Stack_kind.t [@name "set_stack"]
+[@@deriving yojson]
