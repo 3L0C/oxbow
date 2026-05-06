@@ -151,7 +151,7 @@ and Seat : sig
     ; (* Keybindings *)
       mutable xkb_bindings : Xkb_binding.t list
     ; mutable pointer_bindings : Pointer_binding.t list
-    ; mutable pending_action : Action.t
+    ; mutable pending_actions : Action.t Queue.t
     ; (* Pointer state *)
       mutable hovered : Window.t option
     ; mutable interacted : Window.t option

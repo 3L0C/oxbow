@@ -104,8 +104,8 @@ let manage_seat (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
   Seat.sync ctx seat;
   Requests.focus_request ctx seat;
   Requests.interaction ctx seat;
-  Requests.action ctx seat seat.pending_action;
-  seat.pending_action <- No_action;
+  Queue.iter (Requests.action ctx seat) seat.pending_actions;
+  Queue.clear seat.pending_actions;
   Operations.seat_op ctx seat
 ;;
 
@@ -327,7 +327,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
     ; layer_focus = Lf_none
     ; xkb_bindings = []
     ; pointer_bindings = []
-    ; pending_action = No_action
+    ; pending_actions = Queue.create ()
     ; hovered = None
     ; interacted = None
     ; focus_request = Focus_none
