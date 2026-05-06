@@ -16,7 +16,7 @@ let rec window_request
        if window.presentation = P_tiled && (not @@ Output.is_floating window.output)
        then (
          window.presentation <- P_floating;
-         Option.iter Output.mark_dirty window.output);
+         Option.iter (Output.mark_dirty wm) window.output);
        Input.pointer_move ctx r.seat window)
   | Req_resize r ->
     (match window.presentation with
@@ -25,7 +25,7 @@ let rec window_request
        if window.presentation = P_tiled && (not @@ Output.is_floating window.output)
        then (
          window.presentation <- P_floating;
-         Option.iter Output.mark_dirty window.output);
+         Option.iter (Output.mark_dirty wm) window.output);
        Input.pointer_resize ctx r.seat window r.edges)
   | Req_maximize ->
     window.is_maximized <- true;
@@ -50,9 +50,9 @@ let rec window_request
              | Op_resize op when op.window == window -> s.op <- Op_none
              | _ -> ())
           wm.seats;
-        Option.iter Output.mark_dirty window.output;
+        Option.iter (Output.mark_dirty wm) window.output;
         Output.move_window window o;
-        Output.mark_dirty o;
+        Output.mark_dirty wm o;
         Window.fullscreen ctx window restore
     in
     (match window.presentation with
@@ -61,9 +61,9 @@ let rec window_request
      | P_fullscreen d ->
        (match r.output, window.output with
         | Some o1, Some o2 when o1 != o2 ->
-          Output.mark_dirty o2;
+          Output.mark_dirty wm o2;
           Output.move_window window o1;
-          Output.mark_dirty o1;
+          Output.mark_dirty wm o1;
           Window.fullscreen ctx window d.restore
         | _, _ -> ()))
   | Req_exit_fullscreen ->
@@ -71,7 +71,7 @@ let rec window_request
      | P_tiled | P_floating -> ()
      | P_fullscreen { restore } ->
        Window.exit_fullscreen ctx window restore;
-       Option.iter Output.mark_dirty window.output)
+       Option.iter (Output.mark_dirty wm) window.output)
   | Req_dimensions d ->
     window.geom <- { window.geom with w = d.width; h = d.height };
     let in_resize =
@@ -128,7 +128,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
         | P_fullscreen _ -> ()
         | _ ->
           Window.toggle_floating ctx (Some w);
-          Option.iter Output.mark_dirty seat.output))
+          Option.iter (Output.mark_dirty wm) seat.output))
   | Toggle_maximize ->
     (match Focus.focused_of seat with
      | None -> ()
@@ -178,7 +178,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
      | None -> ()
      | Some o ->
        Tag_set.singleton n |> Output.switch_tags o;
-       Output.mark_dirty o)
+       Output.mark_dirty wm o)
   | Tag_view_mask s when Tag_set.is_empty s ->
     Logs.err (fun m ->
       m "Tag_view_mask refusing: zero mask (would leave no tags visible)")
@@ -187,7 +187,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
      | None -> ()
      | Some o ->
        Output.switch_tags o s;
-       Output.mark_dirty o)
+       Output.mark_dirty wm o)
   | Tag_toggle_view n when not @@ Tag_set.in_range n ->
     Logs.err (fun m -> m "Tag_toggle_view refusing: %d outside tag range 1-32" n)
   | Tag_toggle_view n ->
@@ -201,7 +201,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
            m "Tag_toggle_view refusing: toggle (would leave no tags visible)")
        else (
          Output.switch_tags o new_tags;
-         Output.mark_dirty o))
+         Output.mark_dirty wm o))
   | Tag_view_previous ->
     (match seat.output with
      | None -> ()
@@ -209,7 +209,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
        Logs.warn (fun m -> m "Tag_view_previous refusing: no previous tags defined")
      | Some o ->
        Output.switch_tags o o.previous_tags;
-       Output.mark_dirty o)
+       Output.mark_dirty wm o)
   | Tag_view_cycle dir ->
     (match seat.output with
      | None -> ()
@@ -226,7 +226,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
          | Dir_up | Dir_left -> Tag_set.prev o.selected_tags
        in
        Output.switch_tags o target;
-       Output.mark_dirty o)
+       Output.mark_dirty wm o)
   | Window_tag n when not @@ Tag_set.in_range n ->
     Logs.err (fun m ->
       m "Window_tag refusing: %d outside range [%d..%d]" n Tag_set.min_tag Tag_set.max_tag)
@@ -235,7 +235,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
      | None -> ()
      | Some w ->
        w.tags <- Tag_set.singleton n;
-       Option.iter Output.mark_dirty w.output)
+       Option.iter (Output.mark_dirty wm) w.output)
   | Window_toggle_tag n when not @@ Tag_set.in_range n ->
     Logs.err (fun m ->
       m
@@ -254,7 +254,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
            m "Window_toggle_tag refusing: toggle (would leave window invisible)")
        else (
          w.tags <- new_tags;
-         Option.iter Output.mark_dirty w.output))
+         Option.iter (Output.mark_dirty wm) w.output))
   | Window_tag_mask s when Tag_set.is_empty s ->
     Logs.err (fun m ->
       m "Window_tag_mask refusing: zero mask (would leave window invisible)")
@@ -263,7 +263,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
      | None -> ()
      | Some w ->
        w.tags <- s;
-       Option.iter Output.mark_dirty w.output)
+       Option.iter (Output.mark_dirty wm) w.output)
   | Layout_set name ->
     (match Layout.find ~registry:wm.layout_registry ~name with
      | None -> ()
@@ -275,7 +275,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
           if old_name = "floating"
           then Output.tiled_windows o |> List.iter Window.remember_float;
           Output.set_layout_entry o ~entry;
-          Output.mark_dirty o))
+          Output.mark_dirty wm o))
   | Layout_cycle dir ->
     (match wm.focused_output with
      | None -> ()

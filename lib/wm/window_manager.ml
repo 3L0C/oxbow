@@ -1,10 +1,12 @@
+module Rwm = Ocdwm_protocol.River_window_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 
 type t = Types.Window_manager.t
 
 let set_focused_output (wm : t) (output : Types.Output.t option) =
   wm.focused_output <- output;
-  wm.dirty <- true
+  wm.dirty <- true;
+  Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
 ;;
 
 let refresh_layer_shell_output (wm : t) =

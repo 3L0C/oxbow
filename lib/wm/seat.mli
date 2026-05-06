@@ -22,10 +22,10 @@ val destroy : t -> unit
     {b Effects:} mutates WM state *)
 val handle_pointer_position : Types.Window_manager.t -> t -> x:int32 -> y:int32 -> unit
 
-(** [mark_dirty seat] flags [seat] as dirty for pending layer focus operations.
+(** [mark_dirty wm seat] flags [seat] as dirty for pending layer focus operations.
 
-    {b Effects:} mutates WM state *)
-val mark_dirty : t -> unit
+    {b Effects:} mutates WM state; sends River request *)
+val mark_dirty : Types.Window_manager.t -> t -> unit
 
 (** [sync ctx seat] syncs [seat] and River state
 

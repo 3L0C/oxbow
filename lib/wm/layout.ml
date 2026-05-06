@@ -63,7 +63,7 @@ let cycle ~(registry : Layout_registry.t) ~(name : string) ~(dir : Direction.t) 
     | (n, _) :: x :: _ when n = name -> Some x
     | _ :: xs -> after xs
     | [] ->
-      if entries <> []
+      if not @@ List.is_empty entries
       then
         Logs.err (fun m ->
           m "Unable to find %S in layout registry (removed mid search?)" name);

@@ -145,7 +145,10 @@ let handle_pointer_position
       s.cursor_target <- new_target)
 ;;
 
-let mark_dirty (s : t) = s.state <- S_dirty { prev = s.state }
+let mark_dirty (wm : Types.Window_manager.t) (s : t) =
+  s.state <- S_dirty { prev = s.state };
+  Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
+;;
 
 let refresh_layer_focus (ctx : Ctx.manage Ctx.t) (s : t) =
   if s.layer_focus = Lf_none

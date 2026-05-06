@@ -79,7 +79,10 @@ let tiled_windows (o : t) =
   List.filter (fun w -> Window.tag_visible w && Window.is_tiled w) o.windows
 ;;
 
-let mark_dirty (o : t) = o.state <- O_dirty { prev = o.state }
+let mark_dirty (wm : Types.Window_manager.t) (o : t) =
+  o.state <- O_dirty { prev = o.state };
+  Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
+;;
 
 let fullscreen_is_visible (o : t) =
   List.exists (fun w -> Window.is_fullscreen w && Window.tag_visible w) o.focus_stack

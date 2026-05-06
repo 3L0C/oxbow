@@ -12,8 +12,8 @@ let seat_op (ctx : Ctx.manage Ctx.t) (s : Seat.t) =
      | Some o when not @@ Utils.opt_holds w.output o ->
        let prev = w.output in
        Output.move_window w o;
-       Option.iter Output.mark_dirty prev;
-       Output.mark_dirty o
+       Option.iter (Output.mark_dirty wm) prev;
+       Output.mark_dirty wm o
      | _ -> ());
     if op_m.window.presentation = P_floating && (not @@ Output.is_floating w.output)
     then Window.remember_float op_m.window;

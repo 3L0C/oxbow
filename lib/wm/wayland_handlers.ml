@@ -58,7 +58,7 @@ let close_windows (ctx : Ctx.manage Ctx.t) =
             disconnect_seats w wm.seats;
             Focus.remove_window ctx w;
             Window.destroy w;
-            Option.iter Output.mark_dirty w.output;
+            Option.iter (Output.mark_dirty wm) w.output;
             false
           | _ -> true)
        wm.windows
@@ -77,13 +77,14 @@ let close_seats (wm : Types.Window_manager.t) =
 ;;
 
 let manage_window (ctx : Ctx.manage Ctx.t) (window : Types.Window.t) =
+  let wm = Ctx.wm ctx in
   (match window.state with
    | W_new ->
      Rwm.River_window_v1.set_capabilities
        window.obj
        ~caps:Rwm.River_window_v1.Capabilities.(Int32.logor maximize fullscreen);
      Option.iter (Output.add_window ~window) window.output;
-     Option.iter Output.mark_dirty window.output;
+     Option.iter (Output.mark_dirty wm) window.output;
      if window.is_fixed then window.presentation <- P_floating;
      window.state <- W_active
    | _ -> ());
@@ -147,7 +148,7 @@ let on_output _ river_output (wm_box : Types.Window_manager.t Box.t) =
            | Boxed_data (Output_box { body = Some o }) ->
              o.usable
              <- Int32.{ x = to_int x; y = to_int y; w = to_int width; h = to_int height };
-             Output.mark_dirty o
+             Output.mark_dirty wm o
            | _ -> assert false
        end
   in
@@ -298,7 +299,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
              | _ -> assert false
            in
            s.layer_focus <- Layer_focus.Lf_none;
-           Seat.mark_dirty s
+           Seat.mark_dirty wm s
 
          method on_focus_non_exclusive proxy =
            let s =
@@ -380,7 +381,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
                  inherit [_] Wayland.Wayland_client.Wl_seat.v9
 
                  method on_name _ ~name =
-                   Logs.info (fun m -> m "{Seat: Name: %S}" name);
+                   Logs.info (fun m -> m "Seat: Name: %S" name);
                    seat.name <- Some name
 
                  method on_capabilities _ ~capabilities = ()
@@ -416,7 +417,7 @@ let on_window _ river_window (wm_box : Window_manager.t Box.t) =
       method on_dimensions _ ~width ~height =
         if window.geom.w <> width || window.geom.h <> height
         then (
-          Option.iter Output.mark_dirty window.output;
+          Option.iter (Output.mark_dirty wm) window.output;
           Req_dimensions { width; height } |> Window.queue_request window)
 
       method on_unreliable_pid _ ~unreliable_pid =

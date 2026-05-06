@@ -40,10 +40,10 @@ val at_point : x:int32 -> y:int32 -> t list -> t option
     {b Effects:} mutates WM state *)
 val move_window : Types.Window.t -> t -> unit
 
-(** [mark_dirty output] flags [output] as "dirty" for rendering purposes.
+(** [mark_dirty wm output] flags [output] as "dirty" for rendering purposes.
 
-    {b Effects:} mutates WM state *)
-val mark_dirty : t -> unit
+    {b Effects:} mutates WM state; sends River request *)
+val mark_dirty : Types.Window_manager.t -> t -> unit
 
 (** [add_window ~window output] adds [window] to [output]'s managed windows.
 
