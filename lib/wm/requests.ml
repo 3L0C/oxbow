@@ -287,10 +287,10 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
           if name = "floating"
           then Output.tiled_windows o |> List.iter Window.remember_float;
           Output.set_layout_entry o ~entry;
-          Output.mark_dirty o))
-  | Set_mfact d -> Logs.err (fun m -> m "Set_mfact: not implemented")
-  | Set_nmaster delta -> Logs.err (fun m -> m "Set_nmaster: not implemented")
-  | Set_gaps_inner delta -> Logs.err (fun m -> m "Set_gaps_inner: not implemented")
-  | Set_gaps_outer delta -> Logs.err (fun m -> m "Set_gaps_outer: not implemented")
-  | Set_stack stack_kind -> Logs.err (fun m -> m "Set_stack: not implemented")
+          Output.mark_dirty wm o))
+  | Set_mfact delta -> Option.iter (Output.set_mfact ~delta wm) seat.output
+  | Set_nmaster delta -> Option.iter (Output.set_nmaster ~delta wm) seat.output
+  | Set_gaps_inner delta -> Option.iter (Output.set_gaps_inner ~delta wm) seat.output
+  | Set_gaps_outer delta -> Option.iter (Output.set_gaps_outer ~delta wm) seat.output
+  | Set_stack kind -> Option.iter (Output.set_stack_kind ~kind wm) seat.output
 ;;

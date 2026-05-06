@@ -176,3 +176,53 @@ let is_floating (output : t option) =
     let name = current_layout_entry o |> Layout.entry_name in
     name = Floating.name
 ;;
+
+let set_mfact ~(delta : float Delta.t) (wm : Types.Window_manager.t) (o : t) =
+  let layout_params = current_layout_params o in
+  let mfact =
+    match delta with
+    | Delta.Abs a -> a
+    | Delta.Rel r -> layout_params.mfact +. r
+  in
+  layout_params.mfact <- Float.(max 0.05 mfact |> min 0.95);
+  mark_dirty wm o
+;;
+
+let set_nmaster ~(delta : int Delta.t) (wm : Types.Window_manager.t) (o : t) =
+  let layout_params = current_layout_params o in
+  let nmaster =
+    match delta with
+    | Delta.Abs a -> a
+    | Delta.Rel r -> layout_params.nmaster + r
+  in
+  layout_params.nmaster <- max 0 nmaster;
+  mark_dirty wm o
+;;
+
+let set_gaps_inner ~(delta : int Delta.t) (wm : Types.Window_manager.t) (o : t) =
+  let layout_params = current_layout_params o in
+  let gaps_inner =
+    match delta with
+    | Delta.Abs a -> a
+    | Delta.Rel r -> layout_params.gaps_inner + r
+  in
+  layout_params.gaps_inner <- max 0 gaps_inner;
+  mark_dirty wm o
+;;
+
+let set_gaps_outer ~(delta : int Delta.t) (wm : Types.Window_manager.t) (o : t) =
+  let layout_params = current_layout_params o in
+  let gaps_outer =
+    match delta with
+    | Delta.Abs a -> a
+    | Delta.Rel r -> layout_params.gaps_outer + r
+  in
+  layout_params.gaps_outer <- max 0 gaps_outer;
+  mark_dirty wm o
+;;
+
+let set_stack_kind ~(kind : Stack_kind.t) (wm : Types.Window_manager.t) (o : t) =
+  let layout_params = current_layout_params o in
+  layout_params.stack <- kind;
+  mark_dirty wm o
+;;

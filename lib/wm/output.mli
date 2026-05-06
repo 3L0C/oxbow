@@ -75,6 +75,10 @@ val occupied_tags : t -> Tag_set.t
     on [output]. *)
 val current_layout_entry : t -> Layout_entry.t
 
+(** [current_layout_params output] is the layout params of the first selected
+    tag on [output]. *)
+val current_layout_params : t -> Layout_params.t
+
 (** [tiled_windows output] is the list of tiled windows on the selected tags of
     [output]. *)
 val tiled_windows : t -> Types.Window.t list
@@ -88,3 +92,33 @@ val set_layout_entry : t -> entry:Layout_entry.t -> unit
 (** [is_floating output] is true when the first selected tag is in the Floating
     layout. *)
 val is_floating : t option -> bool
+
+(** [set_mfact ~delta output] set's the mfact according to [delta] for the first
+    selected tag on [output].
+
+   {b Effects:} mutates WM state; sends River request *)
+val set_mfact : delta:float Delta.t -> Types.Window_manager.t -> t -> unit
+
+(** [set_nmaster ~delta output] set's the nmaster according to [delta] for the first
+    selected tag on [output].
+
+   {b Effects:} mutates WM state; sends River request *)
+val set_nmaster : delta:int Delta.t -> Types.Window_manager.t -> t -> unit
+
+(** [set_gaps_inner ~delta output] set's the gaps_inner according to [delta] for the first
+    selected tag on [output].
+
+   {b Effects:} mutates WM state; sends River request *)
+val set_gaps_inner : delta:int Delta.t -> Types.Window_manager.t -> t -> unit
+
+(** [set_gaps_outer ~delta output] set's the gaps_outer according to [delta] for the first
+    selected tag on [output].
+
+   {b Effects:} mutates WM state; sends River request *)
+val set_gaps_outer : delta:int Delta.t -> Types.Window_manager.t -> t -> unit
+
+(** [set_stack_kind ~kind output] set's the stack kind according to [kind] for
+    the first selected tag on [output].
+
+   {b Effects:} mutates WM state; sends River request *)
+val set_stack_kind : kind:Stack_kind.t -> Types.Window_manager.t -> t -> unit
