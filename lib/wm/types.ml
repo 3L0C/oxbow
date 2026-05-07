@@ -173,7 +173,6 @@ and Window_manager : sig
     ; (* Lifecycle *)
       shutdown : Eio.Condition.t
     ; mutable shutdown_origin : [ `Local | `Compositor ] option
-    ; mutable finish_received : bool
     ; (* State *)
       mutable focused_output : Output.t option
     ; mutable dirty : bool
