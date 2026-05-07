@@ -53,22 +53,25 @@ let main ~net =
   in
   let layout_registry = Layout.create_registry () in
   let config = Layout.default_layout_entry ~registry:layout_registry |> Config.default in
-  wm_box.body
-  <- Some
-       { river_wm_v1
-       ; river_xkb_v1
-       ; river_lsh_v1
-       ; registry
-       ; focused_output = None
-       ; dirty = false
-       ; outputs = []
-       ; windows = []
-       ; seats = []
-       ; config
-       ; config_loaded = true
-       ; layout_registry
-       ; ipc = Ipc_inactive
-       }
+  let wm =
+    Types.Window_manager.
+      { river_wm_v1
+      ; river_xkb_v1
+      ; river_lsh_v1
+      ; registry
+      ; focused_output = None
+      ; dirty = false
+      ; outputs = []
+      ; windows = []
+      ; seats = []
+      ; config
+      ; config_loaded = true
+      ; layout_registry
+      ; ipc = Ipc_inactive
+      }
+  in
+  wm_box.body <- Some wm;
+  Ocdwm_wm.Ipc_server.start ~sw ~net ~wm
 ;;
 
 let setup () =
