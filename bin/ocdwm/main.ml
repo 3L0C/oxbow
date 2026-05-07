@@ -61,7 +61,8 @@ let main ~net ~clock =
       ; river_lsh_v1
       ; registry
       ; shutdown = Eio.Condition.create ()
-      ; shutdown_origin = ref None
+      ; shutdown_origin = None
+      ; finish_received = false
       ; focused_output = None
       ; dirty = false
       ; outputs = []
@@ -79,10 +80,17 @@ let main ~net ~clock =
   Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
   Ocdwm_wm.Ipc_server.start ~sw ~net ~wm;
   Window_manager.await_shutdown wm;
-  (match !(wm.shutdown_origin) with
+  (match wm.shutdown_origin with
    | Some `Local ->
      Rwm.River_window_manager_v1.exit_session wm.river_wm_v1;
-     Eio.Time.sleep clock 0.1
+     (try
+        Eio.Time.with_timeout_exn clock 1.0 (fun () ->
+          Eio.Condition.loop_no_mutex wm.shutdown (fun () ->
+            if wm.finish_received then Some () else None))
+      with
+      | Eio.Time.Timeout ->
+        Logs.warn (fun m ->
+          m "shutdown: compositor did not acknowledge exit_session within 1s"))
    | Some `Compositor -> ()
    | None -> ());
   Wayland.Client.stop display

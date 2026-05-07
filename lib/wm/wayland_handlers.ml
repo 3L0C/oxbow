@@ -11,7 +11,9 @@ type (_, _) Wayland.S.user_data +=
 let on_finished (wm_box : Types.Window_manager.t Box.t) =
   match wm_box.body with
   | None -> ()
-  | Some wm -> Window_manager.request_shutdown ~origin:`Compositor wm
+  | Some wm ->
+    wm.finish_received <- true;
+    Window_manager.request_shutdown ~origin:`Compositor wm
 ;;
 
 let remove_outputs (ctx : Ctx.manage Ctx.t) =

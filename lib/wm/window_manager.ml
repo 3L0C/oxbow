@@ -30,15 +30,15 @@ let sync (ctx : Ctx.manage Ctx.t) =
 ;;
 
 let request_shutdown ?(origin = `Local) (wm : t) =
-  (match !(wm.shutdown_origin) with
-   | None -> wm.shutdown_origin := Some origin
+  (match wm.shutdown_origin with
+   | None -> wm.shutdown_origin <- Some origin
    | Some _ -> ());
   Eio.Condition.broadcast wm.shutdown
 ;;
 
 let await_shutdown (wm : t) =
   Eio.Condition.loop_no_mutex wm.shutdown (fun () ->
-    match !(wm.shutdown_origin) with
+    match wm.shutdown_origin with
     | Some _ -> Some ()
     | None -> None)
 ;;
