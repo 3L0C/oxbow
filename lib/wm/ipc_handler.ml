@@ -1,3 +1,5 @@
+[@@@landmark "auto-off"]
+
 let run ~wm:_ flow =
   let buf = Eio.Buf_read.of_flow flow ~max_size:65536 in
   let _line = Eio.Buf_read.line buf in

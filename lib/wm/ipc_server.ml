@@ -1,3 +1,5 @@
+[@@@landmark "auto-off"]
+
 open! Ocdwm_core
 
 let accept_loop ~sw ~wm socket =
