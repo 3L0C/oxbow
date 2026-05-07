@@ -102,8 +102,8 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
       ; Int32.(logor modkey shift), K_space, Toggle_floating
       ; modkey, K_v, Toggle_fullscreen
       ; modkey, K_I, Toggle_maximize
-      ; modkey, K_H, Set_mfact Delta.(Rel 0.05)
-      ; modkey, K_L, Set_mfact Delta.(Rel (-0.05))
+      ; modkey, K_H, Set_mfact Delta.(Rel (-0.05))
+      ; modkey, K_L, Set_mfact Delta.(Rel 0.05)
       ; modkey, K_a, Set_mfact Delta.(Abs 0.55)
       ]
   in
