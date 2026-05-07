@@ -3,12 +3,25 @@
 open! Ocdwm_core
 
 let accept_loop ~sw ~wm socket =
-  while true do
-    let flow, _addr = Eio.Net.accept ~sw socket in
-    Eio.Fiber.fork ~sw (fun () ->
-      try Ipc_handler.run ~wm flow with
-      | exn -> Logs.warn (fun m -> m "ipc handler crashed: %s" (Printexc.to_string exn)))
-  done
+  let rec loop () =
+    let outcome =
+      Eio.Fiber.first
+        (fun () ->
+           Window_manager.await_shutdown wm;
+           `Shutdown)
+        (fun () ->
+           let flow, _addr = Eio.Net.accept ~sw socket in
+           `Conn flow)
+    in
+    match outcome with
+    | `Shutdown -> ()
+    | `Conn flow ->
+      Eio.Fiber.fork ~sw (fun () ->
+        try Ipc_handler.run ~wm flow with
+        | exn -> Logs.warn (fun m -> m "ipc handler crashed: %s" (Printexc.to_string exn)));
+      loop ()
+  in
+  loop ()
 ;;
 
 let start ~sw ~net ~wm =

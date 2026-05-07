@@ -16,3 +16,16 @@ val focus_output : Ctx.manage Ctx.t -> Types.Output.t option -> unit
 
     {b Effects:} mutates WM state; sends River request *)
 val sync : Ctx.manage Ctx.t -> unit
+
+(** [request_shutdown ?origin wm] set's [shutdown_origin] (default [`Local]) on
+    first call and broadcasts {!shutdown}. Subsequent calls re-broadcast. Safe
+    to call from a signal handler - performs only [Eio.Condition.broadcast].
+
+   {b Effects:} mutates WM state *)
+val request_shutdown : ?origin:[ `Local | `Compositor ] -> t -> unit
+
+(** [await_shutdown wm] blocks the current fiber until [request_shutdown] has
+    been called. Returns immediately if shutdown is already in progress.
+
+   {b Effects:} mutates WM state *)
+val await_shutdown : t -> unit

@@ -170,6 +170,9 @@ and Window_manager : sig
     ; river_xkb_v1 : [ `V2 ] Xkb.River_xkb_bindings_v1.t
     ; river_lsh_v1 : [ `V1 ] Rlsh.River_layer_shell_v1.t
     ; registry : Wayland.Registry.t
+    ; (* Lifecycle *)
+      shutdown : Eio.Condition.t
+    ; shutdown_origin : [ `Local | `Compositor ] option ref
     ; (* State *)
       mutable focused_output : Output.t option
     ; mutable dirty : bool

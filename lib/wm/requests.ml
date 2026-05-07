@@ -113,9 +113,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
   match action with
   | No_action -> ()
   | Spawn cmd -> Utils.spawn cmd
-  | Exit_wm ->
-    Rwm.River_window_manager_v1.exit_session wm.river_wm_v1;
-    raise Exceptions.Finished
+  | Exit_wm -> Window_manager.request_shutdown wm
   | Close_focused ->
     (match Focus.focused_of seat with
      | Some window -> Rwm.River_window_v1.close window.obj

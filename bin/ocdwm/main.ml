@@ -2,6 +2,7 @@ module Rwm = Ocdwm_protocol.River_window_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 module Wayland_handlers = Ocdwm_wm.Wayland_handlers
+module Window_manager = Ocdwm_wm.Window_manager
 module Types = Ocdwm_wm.Types
 module Exit = Ocdwm_core.Exit
 module Config = Ocdwm_wm.Config
@@ -9,7 +10,7 @@ module Layout = Ocdwm_wm.Layout
 module Box = Ocdwm_wm.Box
 module Wm_exceptions = Ocdwm_wm.Exceptions
 
-let main ~net =
+let main ~net ~clock =
   Eio.Switch.run
   @@ fun sw ->
   let transport = Wayland.Unix_transport.connect ~sw ~net () in
@@ -20,7 +21,7 @@ let main ~net =
     Wayland.Registry.bind registry
     @@ object
          inherit [_] Rwm.River_window_manager_v1.v4
-         method on_finished = Wayland_handlers.on_finished
+         method on_finished _ = Wayland_handlers.on_finished wm_box
          method on_manage_start proxy = Wayland_handlers.on_manage_start proxy wm_box
 
          method on_output proxy river_output =
@@ -59,6 +60,8 @@ let main ~net =
       ; river_xkb_v1
       ; river_lsh_v1
       ; registry
+      ; shutdown = Eio.Condition.create ()
+      ; shutdown_origin = ref None
       ; focused_output = None
       ; dirty = false
       ; outputs = []
@@ -70,12 +73,22 @@ let main ~net =
       ; ipc = Ipc_inactive
       }
   in
+  let on_signal _ = Window_manager.request_shutdown wm in
   wm_box.body <- Some wm;
-  Ocdwm_wm.Ipc_server.start ~sw ~net ~wm
+  Sys.set_signal Sys.sigint @@ Sys.Signal_handle on_signal;
+  Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
+  Ocdwm_wm.Ipc_server.start ~sw ~net ~wm;
+  Window_manager.await_shutdown wm;
+  (match !(wm.shutdown_origin) with
+   | Some `Local ->
+     Rwm.River_window_manager_v1.exit_session wm.river_wm_v1;
+     Eio.Time.sleep clock 0.1
+   | Some `Compositor -> ()
+   | None -> ());
+  Wayland.Client.stop display
 ;;
 
 let setup () =
-  Sys.catch_break true;
   Sys.set_signal Sys.sigchld Sys.Signal_ignore;
   Logs.set_reporter (Logs_fmt.reporter ());
   Logs.(set_level (Some Info));
@@ -85,11 +98,9 @@ let setup () =
 
 let () =
   setup ();
-  try Eio_main.run @@ fun env -> main ~net:env#net with
-  | Sys.Break -> Exit.ok ()
+  try Eio_main.run @@ fun env -> main ~net:env#net ~clock:env#clock with
   | Failure s ->
     Printf.eprintf "%s\n" s;
-    Exit.unavailable ()
+    Exit.software ()
   | Wm_exceptions.Unavailable -> Exit.unavailable ()
-  | Wm_exceptions.Finished -> Exit.ok ()
 ;;

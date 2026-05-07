@@ -1,11 +1,9 @@
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
 
-(** [on_finished river_wm_v1] handles the finished event.
+(** [on_finished wm_box] handles the finished event.
 
-    {b Effects:} mutates WM state
-
-    @raise Exceptions.Finished *)
-val on_finished : [ `V4 ] Rwm.River_window_manager_v1.t -> unit
+    {b Effects:} mutates WM state *)
+val on_finished : Types.Window_manager.t Box.t -> unit
 
 (** [on_manage_start river_wm_v1 wm_box] handles the manage cycle.
 
