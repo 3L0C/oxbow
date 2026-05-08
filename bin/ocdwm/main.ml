@@ -62,6 +62,7 @@ let main ~net ~clock =
       ; registry
       ; shutdown = Eio.Condition.create ()
       ; shutdown_origin = None
+      ; pending_exit_session = false
       ; focused_output = None
       ; dirty = false
       ; outputs = []
@@ -79,6 +80,20 @@ let main ~net ~clock =
   Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
   Ocdwm_wm.Ipc_server.start ~sw ~net ~wm;
   Window_manager.await_shutdown wm;
+  if wm.pending_exit_session
+  then (
+    try
+      Eio.Time.with_timeout_exn clock 1.0 (fun () ->
+        let rec wait () =
+          if Wayland.Proxy.transport_up wm.river_wm_v1
+          then (
+            Eio.Time.sleep clock 0.05;
+            wait ())
+        in
+        wait ())
+    with
+    | Eio.Time.Timeout ->
+      Logs.warn (fun m -> m "shutdown: river did not close after exit_session within 1s"));
   Wayland.Client.stop display
 ;;
 

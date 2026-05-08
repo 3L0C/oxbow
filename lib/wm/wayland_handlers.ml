@@ -125,17 +125,22 @@ let manage_output (ctx : Ctx.manage Ctx.t) (output : Types.Output.t) =
 
 let on_manage_start proxy (wm_box : Types.Window_manager.t Box.t) =
   let wm = Option.get wm_box.body in
-  Ctx.with_manage wm (fun ctx ->
-    Window_manager.sync ctx;
-    remove_outputs ctx;
-    close_windows ctx;
-    close_seats wm;
-    Focus.sync ctx;
-    List.iter (manage_window ctx) wm.windows;
-    List.iter (manage_seat ctx) wm.seats;
-    List.iter (manage_output ctx) wm.outputs;
-    List.iter (Window.sync ctx) wm.windows;
-    Rwm.River_window_manager_v1.manage_finish proxy)
+  if wm.pending_exit_session
+  then (
+    Rwm.River_window_manager_v1.exit_session wm.river_wm_v1;
+    Window_manager.request_shutdown wm)
+  else
+    Ctx.with_manage wm (fun ctx ->
+      Window_manager.sync ctx;
+      remove_outputs ctx;
+      close_windows ctx;
+      close_seats wm;
+      Focus.sync ctx;
+      List.iter (manage_window ctx) wm.windows;
+      List.iter (manage_seat ctx) wm.seats;
+      List.iter (manage_output ctx) wm.outputs;
+      List.iter (Window.sync ctx) wm.windows;
+      Rwm.River_window_manager_v1.manage_finish proxy)
 ;;
 
 let on_output _ river_output (wm_box : Types.Window_manager.t Box.t) =
