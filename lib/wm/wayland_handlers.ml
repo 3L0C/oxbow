@@ -87,7 +87,7 @@ let manage_window (ctx : Ctx.manage Ctx.t) (window : Types.Window.t) =
      Rwm.River_window_v1.set_capabilities
        window.obj
        ~caps:Rwm.River_window_v1.Capabilities.(Int32.logor maximize fullscreen);
-     Option.iter (Output.add_window ~window) window.output;
+     Option.iter (Output.push [ window ]) window.output;
      Option.iter (Output.mark_dirty wm) window.output;
      if window.is_fixed then window.presentation <- P_floating;
      window.state <- W_active

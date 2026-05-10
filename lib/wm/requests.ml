@@ -170,7 +170,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
   | Focus_window dir -> Focus.focus_dir ctx seat dir
   | Focus_output dir -> Focus.focus_output ctx seat dir
   | Swap_window dir -> Logs.err (fun m -> m "Swap_window: not implemented")
-  | Zoom -> Logs.err (fun m -> m "Zoom: not implemented")
+  | Zoom -> Focus.zoom ctx seat
   | Tag_view n when not @@ Tag_set.in_range n ->
     Logs.err (fun m ->
       m "Tag_view refusing: %d outside range [%d..%d]" n Tag_set.min_tag Tag_set.max_tag)

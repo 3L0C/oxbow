@@ -46,3 +46,10 @@ val focus_dir : Ctx.manage Ctx.t -> Types.Seat.t -> Direction.t -> unit
 
     {b Effects:} mutates WM state; sends River request *)
 val focus_output : Ctx.manage Ctx.t -> Types.Seat.t -> Direction.t -> unit
+
+(** [zoom ctx seat] promotes the focused window to the top of the stack if it is
+    not already the master. If it is the master, promote and swap with the  next
+    window.
+   
+   {b Effects:} mutates WM state; sends River request *)
+val zoom : Ctx.manage Ctx.t -> Types.Seat.t -> unit

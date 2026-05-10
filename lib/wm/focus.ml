@@ -112,3 +112,20 @@ let sync (ctx : Ctx.manage Ctx.t) =
       | o :: _ -> Window_manager.focus_output ctx @@ Some o
       | [] -> Window_manager.focus_output ctx None)
 ;;
+
+let zoom ctx (seat : Types.Seat.t) =
+  match seat.output, focused_of seat with
+  | Some o, Some w when w.presentation = P_tiled ->
+    (match Output.tiled_windows o with
+     | w' :: x :: _ when w' == w ->
+       Output.push [ x; w ] o;
+       focus_window ~force:true ctx seat x
+     | w' :: _ when w' != w ->
+       Output.push [ w; w' ] o;
+       focus_window ~force:true ctx seat w
+     | [] when Output.current_layout_entry o |> Layout.entry_name <> Floating.name ->
+       Logs.err
+       @@ fun m -> m "zoom: focused window is tiled but tiled window list is empty"
+     | _ -> ())
+  | _ -> ()
+;;

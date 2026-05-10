@@ -45,10 +45,11 @@ val move_window : Types.Window.t -> t -> unit
     {b Effects:} mutates WM state; sends River request *)
 val mark_dirty : Types.Window_manager.t -> t -> unit
 
-(** [add_window ~window output] adds [window] to [output]'s managed windows.
-
-    {b Effects:} mutates WM state *)
-val add_window : window:Types.Window.t -> t -> unit
+(** [push windows output] pushes [windows] to the top of the tile and focus stack
+    of [output].
+   
+   {b Effects:} mutates WM state *)
+val push : Types.Window.t list -> t -> unit
 
 (** [destroy output] destroys the underlying Wayland objects associated with
     [output].

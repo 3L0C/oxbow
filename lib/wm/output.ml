@@ -102,8 +102,19 @@ let move_window (w : Types.Window.t) (target : t) =
     take ()
 ;;
 
+let push (windows : Types.Window.t list) (o : t) =
+  let not_in lst w = not @@ List.memq w lst in
+  o.windows <- windows @ List.filter (not_in windows) o.windows;
+  o.focus_stack
+  <- (match o.focus_stack with
+      | x :: xs when Window.is_fullscreen x ->
+        let lst = List.filter (fun w -> w != x) windows in
+        (x :: lst) @ List.filter (not_in lst) xs
+      | _ -> windows @ List.filter (not_in windows) o.focus_stack)
+;;
+
 let add_window ~(window : Types.Window.t) (o : t) =
-  o.windows <- window :: o.windows;
+  o.windows <- window :: List.filter (fun w -> w != window) o.windows;
   o.focus_stack
   <- (match o.focus_stack with
       | x :: xs when Window.is_fullscreen x ->
