@@ -20,9 +20,7 @@ let focus_window
   | _ ->
     seat.output <- target.output;
     Window_manager.focus_output ctx target.output;
-    Output.focus_window target;
-    Rwm.River_seat_v1.focus_window seat.obj ~window:target.obj;
-    Rwm.River_node_v1.place_top target.node
+    Output.focus_window ctx seat target
 ;;
 
 let clear (_ : Ctx.manage Ctx.t) (seat : Types.Seat.t) =

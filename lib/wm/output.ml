@@ -4,6 +4,46 @@ open! Ocdwm_core
 
 type t = Types.Output.t
 
+module Focus_intent = struct
+  type t =
+    | Promote of
+        { ctx : Ctx.manage Ctx.t
+        ; window : Types.Window.t
+        ; seat : Types.Seat.t
+        }
+    | Push of Types.Window.t list
+    | Remove of Types.Window.t
+end
+
+let focused_window (o : t) = List.find_opt Window.tag_visible o.focus_stack
+
+let apply (intent : Focus_intent.t) (o : t) =
+  let not_in lst w = not @@ List.memq w lst in
+  let splice_focus_stack windows =
+    match o.focus_stack with
+    | w' :: xs when not_in windows w' && Window.is_fullscreen w' && Window.tag_visible w'
+      -> o.focus_stack <- (w' :: windows) @ List.filter (not_in windows) xs
+    | _ -> o.focus_stack <- windows @ List.filter (not_in windows) o.focus_stack
+  in
+  let sync (seat : Types.Seat.t) =
+    match focused_window o with
+    | None -> ()
+    | Some w ->
+      Rwm.River_seat_v1.focus_window seat.obj ~window:w.obj;
+      Rwm.River_node_v1.place_top w.node
+  in
+  match intent with
+  | Promote { window; seat; _ } ->
+    splice_focus_stack [ window ];
+    sync seat
+  | Push windows ->
+    o.windows <- windows @ List.filter (not_in windows) o.windows;
+    splice_focus_stack windows
+  | Remove w ->
+    o.windows <- List.filter (fun w' -> w' != w) o.windows;
+    o.focus_stack <- List.filter (fun w' -> w' != w) o.focus_stack
+;;
+
 let destroy (o : t) =
   Rlsh.River_layer_shell_output_v1.destroy o.layer_shell;
   Wayland.Proxy.delete o.layer_shell;
@@ -11,13 +51,9 @@ let destroy (o : t) =
   Wayland.Proxy.delete o.obj
 ;;
 
-let focus_window (target : Types.Window.t) =
-  match target.output with
-  | Some o -> o.focus_stack <- target :: List.filter (fun w -> w != target) o.focus_stack
-  | None -> ()
+let focus_window (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (window : Types.Window.t) =
+  Option.iter (apply @@ Promote { ctx; window; seat }) window.output
 ;;
-
-let focused_window (o : t) = List.find_opt Window.tag_visible o.focus_stack
 
 let next_tiled : Types.Window.t list -> Types.Window.t option =
   Utils.wrapped_search Window.tag_visible (fun w -> (Option.get w.output).windows)
@@ -58,10 +94,7 @@ let prev_window (o : t) =
     List.rev o.windows |> after
 ;;
 
-let remove_window ~(window : Types.Window.t) (o : t) =
-  o.windows <- List.filter (fun w -> w != window) o.windows;
-  o.focus_stack <- List.filter (fun w -> w != window) o.focus_stack
-;;
+let remove_window ~(window : Types.Window.t) (o : t) = apply (Remove window) o
 
 let tag_data (o : t) =
   match Tag_set.first o.selected_tags with
@@ -88,11 +121,12 @@ let fullscreen_is_visible (o : t) =
   List.exists (fun w -> Window.is_fullscreen w && Window.tag_visible w) o.focus_stack
 ;;
 
+let push (windows : Types.Window.t list) (o : t) = apply (Push windows) o
+
 let move_window (w : Types.Window.t) (target : t) =
   let take () =
-    target.windows <- w :: List.filter (fun x -> x != w) target.windows;
-    target.focus_stack <- w :: List.filter (fun x -> x != w) target.focus_stack;
-    w.output <- Some target
+    w.output <- Some target;
+    push [ w ] target
   in
   match w.output with
   | Some o when o == target -> ()
@@ -100,26 +134,6 @@ let move_window (w : Types.Window.t) (target : t) =
   | Some o ->
     Option.iter (remove_window ~window:w) w.output;
     take ()
-;;
-
-let push (windows : Types.Window.t list) (o : t) =
-  let not_in lst w = not @@ List.memq w lst in
-  o.windows <- windows @ List.filter (not_in windows) o.windows;
-  o.focus_stack
-  <- (match o.focus_stack with
-      | x :: xs when Window.is_fullscreen x ->
-        let lst = List.filter (fun w -> w != x) windows in
-        (x :: lst) @ List.filter (not_in lst) xs
-      | _ -> windows @ List.filter (not_in windows) o.focus_stack)
-;;
-
-let add_window ~(window : Types.Window.t) (o : t) =
-  o.windows <- window :: List.filter (fun w -> w != window) o.windows;
-  o.focus_stack
-  <- (match o.focus_stack with
-      | x :: xs when Window.is_fullscreen x ->
-        x :: window :: List.filter (Stdlib.( != ) window) xs
-      | _ -> window :: List.filter (Stdlib.( != ) window) o.focus_stack)
 ;;
 
 let set_layout_entry (o : t) ~(entry : Layout_entry.t) =

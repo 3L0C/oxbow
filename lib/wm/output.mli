@@ -6,10 +6,10 @@ type t = Types.Output.t
     window *)
 val focused_window : t -> Types.Window.t option
 
-(** [focus_window window] focuses [window].
+(** [focus_window ctx seat window] focuses [window].
 
-    {b Effects:} mutates WM state *)
-val focus_window : Types.Window.t -> unit
+    {b Effects:} mutates WM state; sends River request *)
+val focus_window : Ctx.manage Ctx.t -> Types.Seat.t -> Types.Window.t -> unit
 
 (** [next_window output] is the window after the currently focused window in
     [output]'s window stack. This may be equal to {!focused_window} if it is the
@@ -47,7 +47,7 @@ val mark_dirty : Types.Window_manager.t -> t -> unit
 
 (** [push windows output] pushes [windows] to the top of the tile and focus stack
     of [output].
-   
+
    {b Effects:} mutates WM state *)
 val push : Types.Window.t list -> t -> unit
 
