@@ -18,7 +18,7 @@ type t =
   | Focus_window of Direction.t [@name "focus_window"]
   | Focus_output of Direction.t [@name "focus_output"]
   (* Stack manipulation *)
-  | Swap_window of Direction.t [@name "swap_window"]
+  | Rotate_window of Direction.t [@name "rotate_window"]
   | Zoom [@name "zoom"]
   (* Tags *)
   | Tag_view of int [@name "tag_view"]

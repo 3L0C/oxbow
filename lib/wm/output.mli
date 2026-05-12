@@ -123,3 +123,9 @@ val set_gaps_outer : delta:int Delta.t -> Types.Window_manager.t -> t -> unit
 
    {b Effects:} mutates WM state; sends River request *)
 val set_stack_kind : kind:Stack_kind.t -> Types.Window_manager.t -> t -> unit
+
+(** [rotate_window dir output] moves the focused window in [dir] relative to its
+    current position in the tile stack.
+
+   {b Effects:} mutates WM state *)
+val rotate_window : Direction.t -> t -> unit

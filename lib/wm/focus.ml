@@ -48,7 +48,7 @@ let refresh_focus (ctx : Ctx.manage Ctx.t) (output : Types.Output.t) =
       wm.seats
 ;;
 
-let focus_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direction.t) =
+let focus_window_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direction.t) =
   match focused_of seat, seat.output with
   | Some w, _ when Window.is_fullscreen w -> ()
   | _, None -> ()
@@ -59,7 +59,7 @@ let focus_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direction.t)
      | _ -> ())
 ;;
 
-let focus_output (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direction.t) =
+let focus_output_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direction.t) =
   let wm = Ctx.wm ctx in
   match seat.output with
   | None -> ()

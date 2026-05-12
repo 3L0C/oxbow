@@ -37,19 +37,19 @@ val focused_of : Types.Seat.t -> Types.Window.t option
     {b Effects:} mutates WM state; sends River request *)
 val sync : Ctx.manage Ctx.t -> unit
 
-(** [focus_dir ctx seat dir] focuses the window in [dir] on [seat]'s output.
+(** [focus_window_dir ctx seat dir] focuses the window in [dir] on [seat]'s output.
 
     {b Effects:} mutates WM state; sends River request *)
-val focus_dir : Ctx.manage Ctx.t -> Types.Seat.t -> Direction.t -> unit
+val focus_window_dir : Ctx.manage Ctx.t -> Types.Seat.t -> Direction.t -> unit
 
-(** [focus_output ctx seat dir] focuses the output in [dir] on [seat].
+(** [focus_output_dir ctx seat dir] focuses the output in [dir] on [seat].
 
     {b Effects:} mutates WM state; sends River request *)
-val focus_output : Ctx.manage Ctx.t -> Types.Seat.t -> Direction.t -> unit
+val focus_output_dir : Ctx.manage Ctx.t -> Types.Seat.t -> Direction.t -> unit
 
 (** [zoom ctx seat] promotes the focused window to the top of the stack if it is
     not already the master. If it is the master, promote and swap with the  next
     window.
-   
+
    {b Effects:} mutates WM state; sends River request *)
 val zoom : Ctx.manage Ctx.t -> Types.Seat.t -> unit

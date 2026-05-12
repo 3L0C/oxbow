@@ -167,9 +167,11 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
   | Send_to_output dir -> Logs.err (fun m -> m "Send_to_output: not implemented")
   | Send_to_output_tags dir ->
     Logs.err (fun m -> m "Send_to_output_tags: not implemented")
-  | Focus_window dir -> Focus.focus_dir ctx seat dir
-  | Focus_output dir -> Focus.focus_output ctx seat dir
-  | Swap_window dir -> Logs.err (fun m -> m "Swap_window: not implemented")
+  | Focus_window dir -> Focus.focus_window_dir ctx seat dir
+  | Focus_output dir -> Focus.focus_output_dir ctx seat dir
+  | Rotate_window dir ->
+    Option.iter (Output.rotate_window dir) seat.output;
+    Option.iter (Output.mark_dirty wm) seat.output
   | Zoom -> Focus.zoom ctx seat
   | Tag_view n when not @@ Tag_set.in_range n ->
     Logs.err (fun m ->

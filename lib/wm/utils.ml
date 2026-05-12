@@ -30,12 +30,7 @@ let in_rect ~(x : 'a) ~(y : 'a) ~(g : 'a Rect.t) =
   x >= g.x && x < Int32.add g.x g.w && y >= g.y && y < Int32.add g.y g.h
 ;;
 
-let opts_are_equal (a : 'a option) (b : 'a option) =
-  match a, b with
-  | None, None -> true
-  | Some x, Some y -> x == y
-  | _ -> false
-;;
+let opts_are_equal (a : 'a option) (b : 'a option) = Option.equal ( == ) a b
 
 let opt_holds (o : 'a option) (v : 'a) =
   match o with
@@ -56,3 +51,15 @@ let after_or_first (e : 'a) = function
 ;;
 
 let prev_or_last (e : 'a) (lst : 'a list) = List.rev lst |> after_or_first e
+
+let rotate_right p l =
+  let rec aux acc = function
+    | [ x ] when p x -> x :: List.rev acc
+    | x :: y :: xs when p x -> (List.rev @@ (x :: y :: acc)) @ xs
+    | x :: xs -> aux (x :: acc) xs
+    | [] -> List.rev acc
+  in
+  aux [] l
+;;
+
+let rotate_left p l = List.rev @@ rotate_right p @@ List.rev l

@@ -251,3 +251,13 @@ let set_stack_kind ~(kind : Stack_kind.t) (wm : Types.Window_manager.t) (o : t) 
   layout_params.stack <- kind;
   mark_dirty wm o
 ;;
+
+let rotate_window (dir : Direction.t) (o : t) =
+  let open Direction in
+  match focused_window o, dir with
+  | None, _ -> ()
+  | Some w, Dir_next | Some w, Dir_down | Some w, Dir_right ->
+    o.windows <- Utils.rotate_right (( == ) w) o.windows
+  | Some w, Dir_prev | Some w, Dir_up | Some w, Dir_left ->
+    o.windows <- Utils.rotate_left (( == ) w) o.windows
+;;
