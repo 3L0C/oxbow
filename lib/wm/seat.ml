@@ -142,7 +142,7 @@ let handle_pointer_position
       then (
         Window_manager.set_focused_output wm @@ Some o;
         s.output <- Some o);
-      let new_target = Window.at_point ~x ~y o.windows in
+      let new_target = Window.at_point ~x ~y o.focus_stack in
       (match new_target with
        | Some w when not @@ Utils.opt_holds s.cursor_target w ->
          s.focus_request <- Focus_window w
