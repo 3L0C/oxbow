@@ -53,23 +53,32 @@ let resolve_seat (wm : Types.Window_manager.t) (req : Core.Request.t) =
       wm.primary_seat
 ;;
 
+let parse_json line =
+  try Ok (Yojson.Safe.from_string line) with
+  | Yojson.Json_error msg -> Error (Printf.sprintf "json parse: %s" msg)
+;;
+
+let parse_request json =
+  try Ok (Core.Request.t_of_yojson json) with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error _ -> Error "invalid request shape: %S"
+;;
+
+let dispatch ~(wm : Types.Window_manager.t) line =
+  let open Result.Syntax in
+  let* json = parse_json line in
+  let* req = parse_request json in
+  let* () = validate ~wm req.cmd in
+  let* seat = resolve_seat wm req in
+  Ok (req, seat)
+;;
+
 let handle_line ~(wm : Types.Window_manager.t) ~flow line =
-  match Yojson.Safe.from_string line with
-  | exception Yojson.Json_error msg ->
-    respond_err flow (Printf.sprintf "json parse: %s" msg)
-  | json ->
-    (match Core.Request.t_of_yojson json with
-     | exception _ -> respond_err flow "invalid request shape"
-     | req ->
-       (match validate ~wm req.cmd with
-        | Error e -> respond_err flow e
-        | Ok () ->
-          (match resolve_seat wm req with
-           | Error e -> respond_err flow e
-           | Ok seat ->
-             Queue.push req.cmd seat.pending_actions;
-             Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1;
-             respond_ok flow)))
+  match dispatch ~wm line with
+  | Error e -> respond_err flow e
+  | Ok (req, seat) ->
+    Queue.push req.cmd seat.pending_actions;
+    Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1;
+    respond_ok flow
 ;;
 
 let run ~(wm : Types.Window_manager.t) flow =
