@@ -64,6 +64,7 @@ let main ~net ~clock =
       ; shutdown_origin = None
       ; pending_exit_session = false
       ; focused_output = None
+      ; primary_seat = None
       ; dirty = false
       ; outputs = []
       ; windows = []

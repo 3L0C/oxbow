@@ -402,7 +402,8 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
       method on_shell_surface_interaction _ ~shell_surface = ()
       method on_pointer_position _ ~x ~y = Seat.handle_pointer_position wm seat ~x ~y
     end;
-  wm.seats <- seat :: wm.seats
+  wm.seats <- seat :: wm.seats;
+  if Option.is_none wm.primary_seat then wm.primary_seat <- Some seat
 ;;
 
 let on_session_locked _proxy = ()

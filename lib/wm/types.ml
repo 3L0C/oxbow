@@ -176,6 +176,7 @@ and Window_manager : sig
     ; mutable pending_exit_session : bool
     ; (* State *)
       mutable focused_output : Output.t option
+    ; mutable primary_seat : Seat.t option
     ; mutable dirty : bool
     ; (* Managed items *)
       mutable outputs : Output.t list (* Sorted by focus order *)
