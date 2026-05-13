@@ -173,31 +173,23 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
     Option.iter (Output.rotate_window dir) seat.output;
     Option.iter (Output.mark_dirty wm) seat.output
   | Zoom -> Focus.zoom ctx seat
-  | Tag_view n when not @@ Tag_set.in_range n ->
-    Logs.err (fun m ->
-      m "Tag_view refusing: %d outside range [%d..%d]" n Tag_set.min_tag Tag_set.max_tag)
-  | Tag_view n ->
+  | Tag_view arg ->
     (match seat.output with
      | None -> ()
      | Some o ->
-       Tag_set.singleton n |> Output.switch_tags o;
-       Output.mark_dirty wm o)
-  | Tag_view_mask s when Tag_set.is_empty s ->
-    Logs.err (fun m ->
-      m "Tag_view_mask refusing: zero mask (would leave no tags visible)")
-  | Tag_view_mask s ->
+       let s = Output.resolve_tag_arg arg o in
+       if Tag_set.is_empty s
+       then Logs.err @@ fun m -> m "Tag_view refusing: tag set is empty"
+       else (
+         Output.switch_tags o s;
+         Output.mark_dirty wm o))
+  | Tag_toggle_view s when Tag_set.is_empty s ->
+    Logs.err @@ fun m -> m "Tag_toggle_view refusing: tag set is empty"
+  | Tag_toggle_view s ->
     (match seat.output with
      | None -> ()
      | Some o ->
-       Output.switch_tags o s;
-       Output.mark_dirty wm o)
-  | Tag_toggle_view n when not @@ Tag_set.in_range n ->
-    Logs.err (fun m -> m "Tag_toggle_view refusing: %d outside tag range 1-32" n)
-  | Tag_toggle_view n ->
-    (match seat.output with
-     | None -> ()
-     | Some o ->
-       let new_tags = Tag_set.(singleton n |> symmetric_diff o.selected_tags) in
+       let new_tags = Tag_set.symmetric_diff o.selected_tags s in
        if Tag_set.is_empty new_tags
        then
          Logs.err (fun m ->
@@ -230,27 +222,29 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
        in
        Output.switch_tags o target;
        Output.mark_dirty wm o)
-  | Window_tag n when not @@ Tag_set.in_range n ->
-    Logs.err (fun m ->
-      m "Window_tag refusing: %d outside range [%d..%d]" n Tag_set.min_tag Tag_set.max_tag)
-  | Window_tag n ->
+  | Window_tag arg ->
+    (match Focus.focused_of seat with
+     | Some w ->
+       let s =
+         let open Tag_arg in
+         match w.output, arg with
+         | Some o, _ -> Output.resolve_tag_arg arg o
+         | None, Tags_concrete s -> s
+         | None, Tags_occupied -> Tag_set.empty
+       in
+       if Tag_set.is_empty s
+       then Logs.err @@ fun m -> m "Window_tag refusing: tag set is empty"
+       else (
+         w.tags <- s;
+         Option.iter (Output.mark_dirty wm) w.output)
+     | _ -> ())
+  | Window_toggle_tag s when Tag_set.is_empty s ->
+    Logs.err @@ fun m -> m "Window_toggle_tag refusing: tag set is empty"
+  | Window_toggle_tag s ->
     (match Focus.focused_of seat with
      | None -> ()
      | Some w ->
-       w.tags <- Tag_set.singleton n;
-       Option.iter (Output.mark_dirty wm) w.output)
-  | Window_toggle_tag n when not @@ Tag_set.in_range n ->
-    Logs.err (fun m ->
-      m
-        "Window_toggle_tag refusing: %d outside range [%d..%d]"
-        n
-        Tag_set.min_tag
-        Tag_set.max_tag)
-  | Window_toggle_tag n ->
-    (match Focus.focused_of seat with
-     | None -> ()
-     | Some w ->
-       let new_tags = Tag_set.(singleton n |> symmetric_diff w.tags) in
+       let new_tags = Tag_set.symmetric_diff w.tags s in
        if Tag_set.is_empty new_tags
        then
          Logs.err (fun m ->
@@ -258,15 +252,6 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
        else (
          w.tags <- new_tags;
          Option.iter (Output.mark_dirty wm) w.output))
-  | Window_tag_mask s when Tag_set.is_empty s ->
-    Logs.err (fun m ->
-      m "Window_tag_mask refusing: zero mask (would leave window invisible)")
-  | Window_tag_mask s ->
-    (match Focus.focused_of seat with
-     | None -> ()
-     | Some w ->
-       w.tags <- s;
-       Option.iter (Output.mark_dirty wm) w.output)
   | Layout_set name ->
     (match Layout.find ~registry:wm.layout_registry ~name with
      | None -> ()

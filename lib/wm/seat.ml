@@ -112,7 +112,11 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
   in
   let num_keys = Xkbcommon.Keysym.[ K_1; K_2; K_3; K_4; K_5; K_6; K_7; K_8; K_9 ] in
   let num_bindings =
-    List.mapi (fun i keysym -> modkey, keysym, Action.Tag_view (i + 1)) num_keys
+    let open Tag_arg in
+    List.mapi
+      (fun i keysym ->
+         modkey, keysym, Action.Tag_view (Tags_concrete (Tag_set.singleton (i + 1))))
+      num_keys
   in
   let xkb_bindings = num_bindings @ xkb_bindings in
   let pointer_bindings =

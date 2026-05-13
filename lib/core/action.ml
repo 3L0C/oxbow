@@ -21,14 +21,12 @@ type t =
   | Rotate_window of Direction.t [@name "rotate_window"]
   | Zoom [@name "zoom"]
   (* Tags *)
-  | Tag_view of int [@name "tag_view"]
-  | Tag_view_mask of Tag_set.t [@name "tag_view_mask"]
-  | Tag_toggle_view of int [@name "tag_toggle_view"]
+  | Tag_view of Tag_arg.t [@name "tag_view"]
+  | Tag_toggle_view of Tag_set.t [@name "tag_toggle_view"]
   | Tag_view_previous [@name "tag_view_previous"]
   | Tag_view_cycle of Direction.t [@name "tag_view_cycle"]
-  | Window_tag of int [@name "window_tag"]
-  | Window_toggle_tag of int [@name "window_toggle_tag"]
-  | Window_tag_mask of Tag_set.t [@name "window_tag_mask"]
+  | Window_tag of Tag_arg.t [@name "window_tag"]
+  | Window_toggle_tag of Tag_set.t [@name "window_toggle_tag"]
   (* Layout *)
   | Layout_set of string [@name "layout_set"]
   | Layout_cycle of Direction.t [@name "layout_cycle"]

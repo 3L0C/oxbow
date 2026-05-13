@@ -6,8 +6,7 @@ let () =
     ; Focus_window Dir_next
     ; Set_mfact (Delta.Rel 0.05)
     ; Set_mfact (Delta.Abs 0.55)
-    ; Tag_view 3
-    ; Tag_view_mask (Tag_set.singleton 1)
+    ; Tag_view (Tags_concrete (Tag_set.singleton 3))
     ]
   in
   let stacks : Stack_kind.t list = [ Stack_diminish; Stack_dwindle; Stack_even ] in

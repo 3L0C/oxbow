@@ -17,16 +17,6 @@ let respond_ok flow =
 
 let validate ~wm (a : Core.Action.t) : (unit, string) result =
   match a with
-  | Tag_view n | Tag_toggle_view n | Window_tag n | Window_toggle_tag n ->
-    if Core.Tag_set.in_range n
-    then Ok ()
-    else
-      Error
-        (Printf.sprintf
-           "tag %d outside [%d..%d]"
-           n
-           Core.Tag_set.min_tag
-           Core.Tag_set.max_tag)
   | Layout_set name ->
     (match Layout.find ~registry:wm.Types.Window_manager.layout_registry ~name with
      | Some _ -> Ok ()

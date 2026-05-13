@@ -261,3 +261,10 @@ let rotate_window (dir : Direction.t) (o : t) =
   | Some w, Dir_prev | Some w, Dir_up | Some w, Dir_left ->
     o.windows <- Utils.rotate_left (( == ) w) o.windows
 ;;
+
+let resolve_tag_arg (arg : Tag_arg.t) (o : t) =
+  let open Tag_arg in
+  match arg with
+  | Tags_concrete s -> s
+  | Tags_occupied -> occupied_tags o
+;;
