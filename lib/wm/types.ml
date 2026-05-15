@@ -172,8 +172,7 @@ and Window_manager : sig
     ; registry : Wayland.Registry.t
     ; (* Lifecycle *)
       shutdown : Eio.Condition.t
-    ; mutable shutdown_origin : [ `Local | `Compositor ] option
-    ; mutable pending_exit_session : bool
+    ; mutable state : Window_manager_state.t
     ; (* State *)
       mutable focused_output : Output.t option
     ; mutable primary_seat : Seat.t option

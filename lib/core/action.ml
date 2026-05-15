@@ -1,10 +1,10 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
 
 type t =
-  | No_action [@name "no_action"]
   (* Process control *)
   | Spawn of string [@name "spawn"]
-  | Exit_wm [@name "exit_wm"]
+  | Exit_session [@name "exit_session"]
+  | Close_wm [@name "close_wm"]
   (* Window operations *)
   | Close_focused [@name "close_focused"]
   | Toggle_floating [@name "toggle_floating"]

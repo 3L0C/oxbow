@@ -3,6 +3,7 @@ module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 module Wayland_handlers = Ocdwm_wm.Wayland_handlers
 module Window_manager = Ocdwm_wm.Window_manager
+module Window_manager_state = Ocdwm_wm.Window_manager_state
 module Types = Ocdwm_wm.Types
 module Exit = Ocdwm_core.Exit
 module Config = Ocdwm_wm.Config
@@ -61,8 +62,7 @@ let main ~net ~clock =
       ; river_lsh_v1
       ; registry
       ; shutdown = Eio.Condition.create ()
-      ; shutdown_origin = None
-      ; pending_exit_session = false
+      ; state = Wm_running
       ; focused_output = None
       ; primary_seat = None
       ; dirty = false
@@ -81,20 +81,28 @@ let main ~net ~clock =
   Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
   Ocdwm_wm.Ipc_server.start ~sw ~net ~wm;
   Window_manager.await_shutdown wm;
-  if wm.pending_exit_session
-  then (
-    try
-      Eio.Time.with_timeout_exn clock 1.0 (fun () ->
-        let rec wait () =
-          if Wayland.Proxy.transport_up wm.river_wm_v1
-          then (
-            Eio.Time.sleep clock 0.05;
-            wait ())
-        in
-        wait ())
-    with
-    | Eio.Time.Timeout ->
-      Logs.warn (fun m -> m "shutdown: river did not close after exit_session within 1s"));
+  (let open Window_manager_state in
+   match wm.state with
+   | Wm_exited ->
+     (try
+        Eio.Time.with_timeout_exn clock 1.0 (fun () ->
+          let rec wait () =
+            if Wayland.Proxy.transport_up wm.river_wm_v1
+            then (
+              Eio.Time.sleep clock 0.05;
+              wait ())
+          in
+          wait ())
+      with
+      | Eio.Time.Timeout ->
+        Logs.warn (fun m ->
+          m "shutdown: river did not close after exit_session within 1s"))
+   | Wm_pending_exit _ -> Logs.err @@ fun m -> m "exit triggered while in a pending state"
+   | Wm_pending_close ->
+     (Logs.err @@ fun m -> m "close triggered while in a pending state");
+     Rwm.River_window_manager_v1.destroy wm.river_wm_v1
+   | Wm_closed -> Rwm.River_window_manager_v1.destroy wm.river_wm_v1
+   | Wm_running -> Logs.err @@ fun m -> m "shutdown triggered while in running state");
   Wayland.Client.stop display
 ;;
 

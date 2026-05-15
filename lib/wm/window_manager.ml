@@ -29,16 +29,34 @@ let sync (ctx : Ctx.manage Ctx.t) =
     wm.dirty <- false)
 ;;
 
+let mark_dirty (wm : t) =
+  wm.dirty <- true;
+  Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
+;;
+
 let request_shutdown ?(origin = `Local) (wm : t) =
-  (match wm.shutdown_origin with
-   | None -> wm.shutdown_origin <- Some origin
-   | Some _ -> ());
-  Eio.Condition.broadcast wm.shutdown
+  let open Window_manager_state in
+  match wm.state with
+  | Wm_running ->
+    wm.state <- Wm_pending_exit origin;
+    mark_dirty wm
+  | Wm_pending_close -> Rwm.River_window_manager_v1.stop wm.river_wm_v1
+  | Wm_pending_exit _ ->
+    wm.state <- Wm_exited;
+    Rwm.River_window_manager_v1.exit_session wm.river_wm_v1;
+    Eio.Condition.broadcast wm.shutdown
+  | Wm_closed -> Eio.Condition.broadcast wm.shutdown
+  | Wm_exited ->
+    Logs.err
+    @@ fun m -> m "got shutdown request when wayland session should have exited..."
 ;;
 
 let await_shutdown (wm : t) =
   Eio.Condition.loop_no_mutex wm.shutdown (fun () ->
-    match wm.shutdown_origin with
-    | Some _ -> Some ()
-    | None -> None)
+    let open Window_manager_state in
+    match wm.state with
+    | Wm_closed | Wm_exited -> Some ()
+    | Wm_pending_close -> None
+    | Wm_pending_exit _ -> None
+    | Wm_running -> None)
 ;;

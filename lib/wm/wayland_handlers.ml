@@ -11,7 +11,21 @@ type (_, _) Wayland.S.user_data +=
 let on_finished (wm_box : Types.Window_manager.t Box.t) =
   match wm_box.body with
   | None -> ()
-  | Some wm -> Window_manager.request_shutdown ~origin:`Compositor wm
+  | Some wm ->
+    let open Window_manager_state in
+    (match wm.state with
+     | Wm_running ->
+       wm.state <- Wm_closed;
+       Eio.Condition.broadcast wm.shutdown
+     | Wm_pending_close ->
+       wm.state <- Wm_closed;
+       Window_manager.request_shutdown ~origin:`Compositor wm
+     | _ ->
+       Logs.err
+       @@ fun m ->
+       m
+         "received on_finished event in an unexpected state: %s"
+         (Window_manager_state.to_string wm.state))
 ;;
 
 let remove_outputs (ctx : Ctx.manage Ctx.t) =
@@ -125,11 +139,12 @@ let manage_output (ctx : Ctx.manage Ctx.t) (output : Types.Output.t) =
 
 let on_manage_start proxy (wm_box : Types.Window_manager.t Box.t) =
   let wm = Option.get wm_box.body in
-  if wm.pending_exit_session
-  then (
-    Rwm.River_window_manager_v1.exit_session wm.river_wm_v1;
-    Window_manager.request_shutdown wm)
-  else
+  let open Window_manager_state in
+  match wm.state with
+  | Wm_pending_exit _ | Wm_pending_close -> Window_manager.request_shutdown wm
+  | Wm_closed -> Logs.err @@ fun m -> m "window manager should be closed..."
+  | Wm_exited -> Logs.err @@ fun m -> m "wayland session should have exited..."
+  | Wm_running ->
     Ctx.with_manage wm (fun ctx ->
       Window_manager.sync ctx;
       remove_outputs ctx;

@@ -17,6 +17,11 @@ val focus_output : Ctx.manage Ctx.t -> Types.Output.t option -> unit
     {b Effects:} mutates WM state; sends River request *)
 val sync : Ctx.manage Ctx.t -> unit
 
+(** [mark_dirty wm] triggers a manage sequence.
+
+   {b Effects:} mutates WM state; sends River request *)
+val mark_dirty : t -> unit
+
 (** [request_shutdown ?origin wm] set's [shutdown_origin] (default [`Local]) on
     first call and broadcasts {!shutdown}. Subsequent calls re-broadcast. Safe
     to call from a signal handler - performs only [Eio.Condition.broadcast].

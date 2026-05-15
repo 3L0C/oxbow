@@ -92,7 +92,7 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
       ; modkey, K_q, Action.Close_focused
       ; modkey, K_j, Action.Focus_window Dir_next
       ; modkey, K_k, Action.Focus_window Dir_prev
-      ; modkey, K_Escape, Action.Exit_wm
+      ; modkey, K_Escape, Action.Exit_session
       ; modkey, K_h, Action.Tag_view_cycle Dir_prev
       ; modkey, K_l, Action.Tag_view_cycle Dir_next
       ; modkey, K_Tab, Action.Tag_view_cycle Dir_right
