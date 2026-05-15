@@ -75,34 +75,13 @@ let main ~net ~clock =
       ; ipc = Ipc_inactive
       }
   in
-  let on_signal _ = Window_manager.request_shutdown wm in
+  let on_signal _ = Window_manager.request_exit wm in
   wm_box.body <- Some wm;
   Sys.set_signal Sys.sigint @@ Sys.Signal_handle on_signal;
   Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
   Ocdwm_wm.Ipc_server.start ~sw ~net ~wm;
   Window_manager.await_shutdown wm;
-  (let open Window_manager_state in
-   match wm.state with
-   | Wm_exited ->
-     (try
-        Eio.Time.with_timeout_exn clock 1.0 (fun () ->
-          let rec wait () =
-            if Wayland.Proxy.transport_up wm.river_wm_v1
-            then (
-              Eio.Time.sleep clock 0.05;
-              wait ())
-          in
-          wait ())
-      with
-      | Eio.Time.Timeout ->
-        Logs.warn (fun m ->
-          m "shutdown: river did not close after exit_session within 1s"))
-   | Wm_pending_exit _ -> Logs.err @@ fun m -> m "exit triggered while in a pending state"
-   | Wm_pending_close ->
-     (Logs.err @@ fun m -> m "close triggered while in a pending state");
-     Rwm.River_window_manager_v1.destroy wm.river_wm_v1
-   | Wm_closed -> Rwm.River_window_manager_v1.destroy wm.river_wm_v1
-   | Wm_running -> Logs.err @@ fun m -> m "shutdown triggered while in running state");
+  Window_manager.teardown ~clock wm;
   Wayland.Client.stop display
 ;;
 

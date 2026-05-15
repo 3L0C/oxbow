@@ -112,11 +112,8 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
   let wm = Ctx.wm ctx in
   match action with
   | Spawn cmd -> Utils.spawn cmd
-  | Exit_session -> Window_manager.request_shutdown ~origin:`Local wm
-  | Close_wm ->
-    let open Window_manager_state in
-    wm.state <- Wm_pending_close;
-    Window_manager.mark_dirty wm
+  | Exit_session -> Window_manager.request_exit wm
+  | Close_wm -> Window_manager.request_close wm
   | Close_focused ->
     (match Focus.focused_of seat with
      | Some window -> Rwm.River_window_v1.close window.obj

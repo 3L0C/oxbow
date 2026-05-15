@@ -22,15 +22,36 @@ val sync : Ctx.manage Ctx.t -> unit
    {b Effects:} mutates WM state; sends River request *)
 val mark_dirty : t -> unit
 
-(** [request_shutdown ?origin wm] set's [shutdown_origin] (default [`Local]) on
-    first call and broadcasts {!shutdown}. Subsequent calls re-broadcast. Safe
-    to call from a signal handler - performs only [Eio.Condition.broadcast].
+(** [request_exit ?origin wm] indicates a request to end the session made by the
+    user, a process signal, or River itself. No-op when [wm.state <>
+    Wm_running].
 
    {b Effects:} mutates WM state *)
-val request_shutdown : ?origin:[ `Local | `Compositor ] -> t -> unit
+val request_exit : ?origin:[ `Local | `Compositor ] -> t -> unit
+
+(** [request_close wm] is a request to close ocdwm but not River. No-op when
+    [wm.state <> Wm_running].
+
+   {b Effects:} mutates WM state; sends River request *)
+val request_close : t -> unit
+
+(** [dispatch_pending wm] handles the pending exit/close state for [wm].
+
+   {b Effects:} mutates WM state; sends River request *)
+val dispatch_pending : t -> unit
+
+(** [notify_finished wm] broadcast ocdwm is closing.
+
+   {b Effects:} mutates WM state *)
+val notify_finished : t -> unit
 
 (** [await_shutdown wm] blocks the current fiber until [request_shutdown] has
     been called. Returns immediately if shutdown is already in progress.
 
    {b Effects:} mutates WM state *)
 val await_shutdown : t -> unit
+
+(** [teardown ~clock wm] handles [wm] cleanup.
+
+   {b Effects:} mutates WM state *)
+val teardown : clock:float Eio.Time.clock_ty Eio.Resource.t -> t -> unit

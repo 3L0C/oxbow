@@ -11,21 +11,7 @@ type (_, _) Wayland.S.user_data +=
 let on_finished (wm_box : Types.Window_manager.t Box.t) =
   match wm_box.body with
   | None -> ()
-  | Some wm ->
-    let open Window_manager_state in
-    (match wm.state with
-     | Wm_running ->
-       wm.state <- Wm_closed;
-       Eio.Condition.broadcast wm.shutdown
-     | Wm_pending_close ->
-       wm.state <- Wm_closed;
-       Window_manager.request_shutdown ~origin:`Compositor wm
-     | _ ->
-       Logs.err
-       @@ fun m ->
-       m
-         "received on_finished event in an unexpected state: %s"
-         (Window_manager_state.to_string wm.state))
+  | Some wm -> Window_manager.notify_finished wm
 ;;
 
 let remove_outputs (ctx : Ctx.manage Ctx.t) =
@@ -141,7 +127,9 @@ let on_manage_start proxy (wm_box : Types.Window_manager.t Box.t) =
   let wm = Option.get wm_box.body in
   let open Window_manager_state in
   match wm.state with
-  | Wm_pending_exit _ | Wm_pending_close -> Window_manager.request_shutdown wm
+  | Wm_pending_exit _ | Wm_pending_close -> Window_manager.dispatch_pending wm
+  | Wm_close_sent ->
+    Logs.info @@ fun m -> m "waiting for River to acknowledge close request..."
   | Wm_closed -> Logs.err @@ fun m -> m "window manager should be closed..."
   | Wm_exited -> Logs.err @@ fun m -> m "wayland session should have exited..."
   | Wm_running ->
