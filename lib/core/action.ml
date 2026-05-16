@@ -9,6 +9,7 @@ type t =
   | Close_focused [@name "close_focused"]
   | Toggle_floating [@name "toggle_floating"]
   | Toggle_maximize [@name "toggle_maximize"]
+  | Toggle_fake_fullscreen [@name "toggle_fake_fullscreen"]
   | Toggle_fullscreen [@name "toggle_fullscreen"]
   | Move_interactive [@name "move_interactive"]
   | Resize_interactive [@name "resize_interactive"]

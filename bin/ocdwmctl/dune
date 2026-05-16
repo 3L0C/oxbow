@@ -6,5 +6,7 @@
   ocdwm.ctl
   yojson
   cmdliner
+  logs
+  logs.fmt
   fmt
   fmt.tty))

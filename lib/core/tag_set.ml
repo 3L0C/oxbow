@@ -139,6 +139,61 @@ let prev_occupied ~selected ~occupied =
 
 let to_int s = s
 let of_int n = n land all
+
+let of_string s =
+  let s = String.trim s in
+  if s = ""
+  then Error "empty tag specification"
+  else if
+    String.length s >= 2
+    && s.[0] = '0'
+    &&
+    let c = Char.lowercase_ascii s.[1] in
+    c = 'x' || c = 'b' || c = 'o'
+  then (
+    match int_of_string_opt s with
+    | Some n -> Ok (of_int n)
+    | None -> Error (Printf.sprintf "bad bitmask: %s" s))
+  else (
+    let parts = String.split_on_char ',' s |> List.map String.trim in
+    let parse_range r =
+      match String.split_on_char '-' r |> List.map String.trim with
+      | [ start; stop ] ->
+        (match int_of_string_opt start, int_of_string_opt stop with
+         | Some i, Some j ->
+           let t_min = min i j in
+           let t_max = max i j in
+           if in_range t_min && in_range t_max
+           then Ok (List.init (t_max - t_min + 1) (fun i -> i + t_min))
+           else
+             Error
+               (Printf.sprintf
+                  "tag range outside [%d..%d], got: %d-%d"
+                  min_tag
+                  max_tag
+                  t_min
+                  t_max)
+         | _ -> Error (Printf.sprintf "tag malformed: %S" r))
+      | _ -> Error (Printf.sprintf "tag range malformed: %s" r)
+    in
+    let rec collect acc = function
+      | [] -> Ok acc
+      | x :: xs ->
+        if String.contains x '-'
+        then (
+          match parse_range x with
+          | Ok lst -> collect (lst @ acc) xs
+          | Error _ as e -> e)
+        else (
+          match int_of_string_opt x with
+          | Some n when in_range n -> collect (n :: acc) xs
+          | Some n -> Error (Printf.sprintf "tag %d outside [%d..%d]" n min_tag max_tag)
+          | None -> Error (Printf.sprintf "not a tag: %S" x))
+    in
+    Result.map of_indices (collect [] parts))
+;;
+
+let to_string (s : t) = to_list s |> List.map string_of_int |> String.concat ","
 let yojson_of_t (t : t) : Yojson.Safe.t = `Int (to_int t)
 
 let t_of_yojson (yo_t : Yojson.Safe.t) : t =
