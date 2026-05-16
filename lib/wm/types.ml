@@ -39,6 +39,8 @@ and Window_request : sig
         }
     | Req_maximize
     | Req_unmaximize
+    | Req_fake_fullscreen
+    | Req_exit_fake_fullscreen
     | Req_fullscreen of { output : Output.t option }
     | Req_exit_fullscreen
     | Req_dimensions of
@@ -83,7 +85,7 @@ and Window : sig
     ; (* State flags *)
       mutable is_fixed : bool
     ; mutable is_urgent : bool
-    ; mutable is_maximized : bool
+    ; mutable is_fake_fullscreen : bool
     ; mutable is_hidden : bool
     ; mutable presentation : Presentation.t
     ; (* Pointer op state *)

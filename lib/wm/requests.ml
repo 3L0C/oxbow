@@ -10,31 +10,46 @@ let rec window_request
   let wm = Ctx.wm ctx in
   match request with
   | Req_move r ->
+    let move () = Input.pointer_move ctx r.seat window in
     (match window.presentation with
      | P_fullscreen _ -> ()
-     | _ ->
-       if window.presentation = P_tiled && (not @@ Output.is_floating window.output)
+     | P_tiled ->
+       if not @@ Output.is_floating window.output
        then (
          window.presentation <- P_floating;
          Option.iter (Output.mark_dirty wm) window.output);
-       Input.pointer_move ctx r.seat window)
+       move ()
+     | P_maximized _ ->
+       window.presentation <- P_floating;
+       Rwm.River_window_v1.inform_unmaximized window.obj;
+       move ()
+     | P_floating -> move ())
   | Req_resize r ->
+    let resize () = Input.pointer_resize ctx r.seat window r.edges in
     (match window.presentation with
      | P_fullscreen _ -> ()
-     | _ ->
-       if window.presentation = P_tiled && (not @@ Output.is_floating window.output)
+     | P_tiled ->
+       if not @@ Output.is_floating window.output
        then (
          window.presentation <- P_floating;
          Option.iter (Output.mark_dirty wm) window.output);
-       Input.pointer_resize ctx r.seat window r.edges)
+       resize ()
+     | P_maximized _ ->
+       window.presentation <- P_floating;
+       Rwm.River_window_v1.inform_unmaximized window.obj;
+       resize ()
+     | P_floating -> resize ())
   | Req_maximize ->
-    window.is_maximized <- true;
-    Rwm.River_window_v1.inform_fullscreen window.obj
+    List.iter (Seat.op_end ctx) wm.seats;
+    Window.maximize ctx window;
+    Option.iter (Output.mark_dirty wm) window.output
   | Req_unmaximize ->
-    window.is_maximized <- false;
-    Rwm.River_window_v1.inform_not_fullscreen window.obj
+    Window.unmaximize ctx window;
+    Option.iter (Output.mark_dirty wm) window.output
+  | Req_fake_fullscreen -> Window.fake_fullscreen ctx window
+  | Req_exit_fake_fullscreen -> Window.exit_fake_fullscreen ctx window
   | Req_fullscreen r ->
-    let enter (restore : [ `Tiled | `Floating ]) =
+    let enter () =
       match r.output, window.output with
       | None, None -> ()
       | Some o, _ | None, Some o ->
@@ -43,34 +58,27 @@ let rec window_request
              if Window.tag_visible w && Window.is_fullscreen w
              then window_request ctx w Req_exit_fullscreen)
           o.focus_stack;
-        List.iter
-          (fun (s : Seat.t) ->
-             match s.op with
-             | Op_move op when op.window == window -> s.op <- Op_none
-             | Op_resize op when op.window == window -> s.op <- Op_none
-             | _ -> ())
-          wm.seats;
+        List.iter (Seat.op_end ctx) wm.seats;
         Option.iter (Output.mark_dirty wm) window.output;
         Output.move_window window o;
         Output.mark_dirty wm o;
-        Window.fullscreen ctx window restore
+        Window.fullscreen ctx window
     in
     (match window.presentation with
-     | P_tiled -> enter `Tiled
-     | P_floating -> enter `Floating
-     | P_fullscreen d ->
+     | P_tiled | P_floating | P_maximized _ -> enter ()
+     | P_fullscreen _ ->
        (match r.output, window.output with
         | Some o1, Some o2 when o1 != o2 ->
           Output.mark_dirty wm o2;
           Output.move_window window o1;
           Output.mark_dirty wm o1;
-          Window.fullscreen ctx window d.restore
+          Window.fullscreen ~force:true ctx window
         | _, _ -> ()))
   | Req_exit_fullscreen ->
     (match window.presentation with
-     | P_tiled | P_floating -> ()
-     | P_fullscreen { restore } ->
-       Window.exit_fullscreen ctx window restore;
+     | P_tiled | P_floating | P_maximized _ -> ()
+     | P_fullscreen _ ->
+       Window.exit_fullscreen ctx window;
        Option.iter (Output.mark_dirty wm) window.output)
   | Req_dimensions d ->
     window.geom <- { window.geom with w = d.width; h = d.height };
@@ -132,9 +140,18 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
      | None -> ()
      | Some w ->
        (match w.presentation with
+        | P_maximized _ -> window_request ctx w Req_unmaximize
+        | P_tiled | P_floating -> window_request ctx w Req_maximize
+        | P_fullscreen _ -> ()))
+  | Toggle_fake_fullscreen ->
+    (match Focus.focused_of seat with
+     | None -> ()
+     | Some w ->
+       (match w.presentation with
         | P_fullscreen _ -> ()
         | _ ->
-          Types.Window_request.(if w.is_maximized then Req_unmaximize else Req_maximize)
+          let open Types.Window_request in
+          (if w.is_fake_fullscreen then Req_exit_fake_fullscreen else Req_fake_fullscreen)
           |> window_request ctx w))
   | Toggle_fullscreen ->
     (match Focus.focused_of seat with

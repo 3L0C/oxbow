@@ -40,7 +40,7 @@ let create (wm : Types.Window_manager.t) (river_window : [ `V4 ] Rwm.River_windo
   ; output = wm.focused_output
   ; is_fixed = false
   ; is_urgent = false
-  ; is_maximized = false
+  ; is_fake_fullscreen = false
   ; is_hidden = false
   ; presentation = P_tiled
   ; requests = []
@@ -167,7 +167,7 @@ let toggle_floating (ctx : Ctx.manage Ctx.t) (window : t option) =
       match w.presentation with
       | P_tiled -> float ctx w
       | P_floating when not w.is_fixed -> tile w
-      | P_floating | P_fullscreen _ -> ())
+      | P_floating | P_maximized _ | P_fullscreen _ -> ())
 ;;
 
 let is_fullscreen (w : t) =
@@ -176,23 +176,73 @@ let is_fullscreen (w : t) =
   | _ -> false
 ;;
 
-let fullscreen (_ : Ctx.manage Ctx.t) (w : t) (r : [ `Tiled | `Floating ]) =
+let fullscreen ?(force : bool = false) (_ : Ctx.manage Ctx.t) (w : t) =
   match w.output with
   | None -> ()
   | Some o ->
-    w.presentation <- P_fullscreen { restore = r };
-    Rwm.River_window_v1.fullscreen w.obj ~output:o.obj;
-    Rwm.River_window_v1.inform_fullscreen w.obj
+    let enter restore =
+      w.presentation <- P_fullscreen { restore };
+      Rwm.River_window_v1.fullscreen w.obj ~output:o.obj;
+      Rwm.River_window_v1.inform_fullscreen w.obj
+    in
+    (match w.presentation with
+     | P_tiled -> enter `Tiled
+     | P_floating -> enter `Floating
+     | P_maximized { restore } ->
+       Rwm.River_window_v1.inform_unmaximized w.obj;
+       enter (`Maximized restore)
+     | P_fullscreen { restore } when force -> enter restore
+     | P_fullscreen _ -> ())
 ;;
 
-let exit_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) (p : [ `Tiled | `Floating ]) =
-  match w.output, w.presentation with
-  | Some _, P_fullscreen _ ->
-    Rwm.River_window_v1.exit_fullscreen w.obj;
-    Rwm.River_window_v1.inform_not_fullscreen w.obj;
-    (match p with
+let maximize ?restore (ctx : Ctx.manage Ctx.t) (w : t) =
+  let enter restore =
+    match w.output with
+    | None -> ()
+    | Some o ->
+      let g =
+        Rect.(
+          Int32.
+            { x = of_int o.usable.x
+            ; y = of_int o.usable.y
+            ; w = of_int o.usable.w
+            ; h = of_int o.usable.h
+            })
+      in
+      w.presentation <- P_maximized { restore };
+      set_geom ctx w g;
+      Rwm.River_window_v1.inform_maximized w.obj
+  in
+  match restore with
+  | None ->
+    (match w.presentation with
+     | P_tiled -> enter `Tiled
+     | P_floating ->
+       remember_float w;
+       enter `Floating
+     | P_fullscreen _ | P_maximized _ -> ())
+  | Some r -> enter r
+;;
+
+let unmaximize (ctx : Ctx.manage Ctx.t) (w : t) =
+  match w.presentation with
+  | P_tiled | P_floating | P_fullscreen _ -> ()
+  | P_maximized { restore } ->
+    Rwm.River_window_v1.inform_unmaximized w.obj;
+    (match restore with
      | `Tiled -> tile w
      | `Floating -> float ctx w)
+;;
+
+let exit_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
+  match w.output, w.presentation with
+  | Some _, P_fullscreen { restore } ->
+    Rwm.River_window_v1.exit_fullscreen w.obj;
+    Rwm.River_window_v1.inform_not_fullscreen w.obj;
+    (match restore with
+     | `Tiled -> tile w
+     | `Floating -> float ctx w
+     | `Maximized restore -> maximize ~restore ctx w)
   | _ -> ()
 ;;
 
@@ -244,4 +294,18 @@ let fit_to_output (ctx : 'p Ctx.t) (w : t) =
 
 let at_point ~(x : int32) ~(y : int32) =
   List.find_opt (fun (w : t) -> tag_visible w && Utils.in_rect ~x ~y ~g:w.geom)
+;;
+
+let fake_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
+  if not w.is_fake_fullscreen
+  then (
+    w.is_fake_fullscreen <- true;
+    Rwm.River_window_v1.inform_fullscreen w.obj)
+;;
+
+let exit_fake_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
+  if w.is_fake_fullscreen
+  then (
+    w.is_fake_fullscreen <- false;
+    Rwm.River_window_v1.inform_not_fullscreen w.obj)
 ;;

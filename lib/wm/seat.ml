@@ -101,7 +101,8 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
       ; Int32.(logor modkey alt), K_ISO_Left_Tab, Layout_cycle Dir_prev
       ; Int32.(logor modkey shift), K_space, Toggle_floating
       ; modkey, K_v, Toggle_fullscreen
-      ; modkey, K_I, Toggle_maximize
+      ; modkey, K_I, Toggle_fake_fullscreen
+      ; modkey, K_F, Toggle_maximize
       ; modkey, K_H, Set_mfact Delta.(Rel (-0.05))
       ; modkey, K_L, Set_mfact Delta.(Rel 0.05)
       ; modkey, K_a, Set_mfact Delta.(Abs 0.55)
@@ -183,4 +184,12 @@ let sync (ctx : Ctx.manage Ctx.t) (s : t) =
      s.state <- prev
    | _ -> ());
   refresh_cursor_target wm s
+;;
+
+let op_end (_ : Ctx.manage Ctx.t) (s : t) =
+  match s.op with
+  | Op_move _ | Op_resize _ ->
+    s.op <- Op_none;
+    Rwm.River_seat_v1.op_end s.obj
+  | Op_none -> ()
 ;;

@@ -61,17 +61,16 @@ val toggle_floating : Ctx.manage Ctx.t -> t option -> unit
 (** [is_fullscreen window] is [true] if [window] is fullscreen, [false] otherwise. *)
 val is_fullscreen : t -> bool
 
-(** [fullscreen ctx window restore] makes [window] fullscreen, and stores
-    [restore].
+(** [fullscreen ?force ctx window] makes [window] fullscreen.
 
     {b Effects:} mutates WM state; sends River request *)
-val fullscreen : Ctx.manage Ctx.t -> t -> [ `Tiled | `Floating ] -> unit
+val fullscreen : ?force:bool -> Ctx.manage Ctx.t -> t -> unit
 
-(** [exit_fullscreen ctx window presentation] transitions [window] to
-    [presentation] if [window] is fullscreen.
+(** [exit_fullscreen ctx window] exit fullscreen and restore [window] to
+    previous presentation states.
 
     {b Effects:} mutates WM state; sends River request *)
-val exit_fullscreen : Ctx.manage Ctx.t -> t -> [ `Tiled | `Floating ] -> unit
+val exit_fullscreen : Ctx.manage Ctx.t -> t -> unit
 
 (** [is_rendered window] is [true] when [tag_visible window] is [true] and
     [window] is not covered by a fullscreen window. [window] may be occluded by
@@ -104,3 +103,28 @@ val fit_to_output : Ctx.manage Ctx.t -> t -> unit
     visible (per {!tag_visible}) and whose [geom] rectangle contains
     the point ([x], [y]), or [None] if none does. *)
 val at_point : x:int32 -> y:int32 -> t list -> t option
+
+(** [fake_fullscreen ctx window] puts the [window] into the fake fullscreen
+    state.
+
+   {b Effects:} mutates WM state; sends River request *)
+val fake_fullscreen : Ctx.manage Ctx.t -> t -> unit
+
+(** [exit_fake_fullscreen ctx window] exits the fake fullscreen state for
+    [window].
+
+   {b Effects:} mutates WM state; sends River request *)
+val exit_fake_fullscreen : Ctx.manage Ctx.t -> t -> unit
+
+(** [maximize ?restore ctx window] informs [window] it is maximized. Saves the
+    previous presentation state or [restore] if present. No-op when [window] is
+    fullscreen.
+
+   {b Effects:} mutates WM state; sends River request *)
+val maximize : ?restore:Presentation.Tile_or_float.t -> Ctx.manage Ctx.t -> t -> unit
+
+(** [unmaximize ctx window] informs [window] it is unmaximized and restores
+    [window] to its previous presentation.
+
+   {b Effects:} mutates WM state; sends River request *)
+val unmaximize : Ctx.manage Ctx.t -> t -> unit

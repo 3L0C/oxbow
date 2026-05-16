@@ -31,3 +31,8 @@ val mark_dirty : Types.Window_manager.t -> t -> unit
 
     {b Effects:} mutates WM state; sends River request *)
 val sync : Ctx.manage Ctx.t -> t -> unit
+
+(** [op_end ctx seat] ends any operation on [seat].
+
+   {b Effects:} mutates WM state; sends River request *)
+val op_end : Ctx.manage Ctx.t -> t -> unit
