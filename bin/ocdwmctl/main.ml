@@ -7,6 +7,7 @@ let cmd =
   @@ [ Cmd_close_focused.cmd
      ; Cmd_close_wm.cmd
      ; Cmd_exit_session.cmd
+     ; Cmd_send_to.cmd
      ; Cmd_tag_view_previous.cmd
      ; Cmd_toggle_fake_fullscreen.cmd
      ; Cmd_toggle_floating.cmd
