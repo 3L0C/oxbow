@@ -178,11 +178,15 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
                   Rwm.River_window_v1.Edges.bottom
             })
      | _, _ -> ())
-  | Send_to_output dir -> Logs.err (fun m -> m "Send_to_output: not implemented")
+  | Send_to_output dir -> Logs.err @@ fun m -> m "Send_to_output: not implemented"
   | Send_to_output_tags dir ->
-    Logs.err (fun m -> m "Send_to_output_tags: not implemented")
-  | Focus_window dir -> Focus.focus_window_dir ctx seat dir
-  | Focus_output dir -> Focus.focus_output_dir ctx seat dir
+    Logs.err @@ fun m -> m "Send_to_output_tags: not implemented"
+  | Focus_window (By_direction dir) -> Focus.focus_window_dir ctx seat dir
+  | Focus_window (By_name n) ->
+    Logs.err @@ fun m -> m "Focus_window: By_name not implemented"
+  | Focus_output (By_direction dir) -> Focus.focus_output_dir ctx seat dir
+  | Focus_output (By_name n) ->
+    Logs.err @@ fun m -> m "Focus_output: By_name not implemented"
   | Rotate_window dir ->
     Option.iter (Output.rotate_window dir) seat.output;
     Option.iter (Output.mark_dirty wm) seat.output

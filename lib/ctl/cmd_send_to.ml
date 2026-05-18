@@ -2,36 +2,12 @@ open Ocdwm_core
 open Cmdliner
 open Cmdliner.Term.Syntax
 
-let output_target : Output_target.t Arg.Conv.t =
-  let open Direction in
-  let open Output_target in
-  let dirs =
-    [ "next", Dir_next
-    ; "prev", Dir_prev
-    ; "left", Dir_left
-    ; "right", Dir_right
-    ; "up", Dir_up
-    ; "down", Dir_down
-    ]
-  in
-  let parser s =
-    match List.assoc_opt s dirs with
-    | Some d -> Ok (Out_direction d)
-    | None -> Ok (Out_name s)
-  in
-  let pp ppf = function
-    | Out_direction d -> Format.fprintf ppf "%s" (Direction.to_string d)
-    | Out_name n -> Format.fprintf ppf "%s" n
-  in
-  Arg.Conv.make ~docv:"OUTPUT" ~parser ~pp ()
-;;
-
 let cmd =
   let term =
     let+ target =
       Arg.(
         required
-        & pos 0 (some output_target) None
+        & pos 0 (some Target_arg.conv) None
         & info
             []
             ~docv:"OUTPUT"

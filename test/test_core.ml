@@ -3,7 +3,7 @@ let () =
   let actions : Action.t list =
     [ Zoom
     ; Spawn "foot"
-    ; Focus_window Dir_next
+    ; Focus_window (By_direction Dir_next)
     ; Set_mfact (Delta.Rel 0.05)
     ; Set_mfact (Delta.Abs 0.55)
     ; Tag_view (Tags_concrete (Tag_set.singleton 3))

@@ -15,3 +15,13 @@ let to_string = function
   | Dir_up -> "up"
   | Dir_down -> "down"
 ;;
+
+let of_string = function
+  | "next" -> Some Dir_next
+  | "prev" -> Some Dir_prev
+  | "left" -> Some Dir_left
+  | "right" -> Some Dir_right
+  | "up" -> Some Dir_up
+  | "down" -> Some Dir_down
+  | _ -> None
+;;
