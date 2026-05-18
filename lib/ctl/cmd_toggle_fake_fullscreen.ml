@@ -1,7 +1,7 @@
 open Ocdwm_core
 
 let cmd =
-  Ctl_cli.simple_cmd
+  Ctl_cli.cmd
     ~name:"toggle-fake-fullscreen"
     ~doc:
       "Inform the focused window it has been fullscreened without actually making it \

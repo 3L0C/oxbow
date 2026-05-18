@@ -109,11 +109,59 @@ let dispatch ?seat ?socket action =
     exit_protocol_err
 ;;
 
-let simple_cmd ~name ~doc action =
+let cmd_with_arg ~name ~doc ~docv ~conv_arg action_of =
+  let open Cmdliner.Term.Syntax in
+  Cmd.v (Cmd.info name ~doc)
+  @@
+  let+ seat = seat
+  and+ socket = socket
+  and+ value = Arg.(required & pos 0 (some conv_arg) None & info [] ~docv) in
+  dispatch ?seat ?socket (action_of value)
+;;
+
+let cmd ~name ~doc action =
   let open Cmdliner.Term.Syntax in
   Cmd.v (Cmd.info name ~doc)
   @@
   let+ seat = seat
   and+ socket = socket in
+  dispatch ?seat ?socket action
+;;
+
+let cmd_with_string ~name ~doc ?(docv = "STRING") action_of =
+  cmd_with_arg ~name ~doc ~docv ~conv_arg:Arg.string action_of
+;;
+
+let cmd_with_dir ~name ~doc ?(docv = "DIRECTION") action_of =
+  cmd_with_arg ~name ~doc ~docv ~conv_arg:direction action_of
+;;
+
+let cmd_with_int_delta ~name ~doc ?(docv = "DELTA") action_of =
+  cmd_with_arg ~name ~doc ~docv ~conv_arg:int_delta action_of
+;;
+
+let cmd_with_float_delta ~name ~doc ?(docv = "DELTA") action_of =
+  cmd_with_arg ~name ~doc ~docv ~conv_arg:float_delta action_of
+;;
+
+let cmd_with_stack_kind ~name ~doc ?(docv = "KIND") action_of =
+  cmd_with_arg ~name ~doc ~docv ~conv_arg:stack_kind action_of
+;;
+
+let cmd_with_tag_set ~name ~doc ?(docv = "TAGS") action_of =
+  cmd_with_arg ~name ~doc ~docv ~conv_arg:tag_set action_of
+;;
+
+let cmd_with_tag_arg ~name ~doc ?(docv = "TAGS") action_of =
+  cmd_with_arg ~name ~doc ~docv ~conv_arg:tag_arg action_of
+;;
+
+let cmd_of_term ~name ~doc action_term =
+  let open Cmdliner.Term.Syntax in
+  Cmd.v (Cmd.info name ~doc)
+  @@
+  let+ seat = seat
+  and+ socket = socket
+  and+ action = action_term in
   dispatch ?seat ?socket action
 ;;
