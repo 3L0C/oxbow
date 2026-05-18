@@ -6,3 +6,12 @@ type t =
   | Dir_up [@name "up"]
   | Dir_down [@name "down"]
 [@@deriving yojson]
+
+let to_string = function
+  | Dir_next -> "next"
+  | Dir_prev -> "prev"
+  | Dir_left -> "left"
+  | Dir_right -> "right"
+  | Dir_up -> "up"
+  | Dir_down -> "down"
+;;

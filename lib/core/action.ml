@@ -13,8 +13,9 @@ type t =
   | Toggle_fullscreen [@name "toggle_fullscreen"]
   | Move_interactive [@name "move_interactive"]
   | Resize_interactive [@name "resize_interactive"]
-  | Send_to_output of Direction.t (* keep own tags *) [@name "send_to_output"]
-  | Send_to_output_tags of Direction.t (* take dest tags *) [@name "send_to_output_tags"]
+  | Send_to_output of Output_target.t [@name "send_to_output"] (* keep own tags *)
+  | Send_to_output_tags of Output_target.t [@name "send_to_output_tags"]
+  (* take dest tags *)
   (* Focus *)
   | Focus_window of Direction.t [@name "focus_window"]
   | Focus_output of Direction.t [@name "focus_output"]
