@@ -62,8 +62,8 @@ let destroy (w : t) =
     Wayland.Proxy.delete w.obj;
     Rwm.River_node_v1.destroy w.node
   | _ ->
-    Logs.warn (fun m ->
-      m "destroy refused: Window is %s not closing." (state_to_string w.state))
+    Logs.warn
+    @@ fun m -> m "destroy refused: Window is %s not closing." (state_to_string w.state)
 ;;
 
 let set_position (_ : 'p Ctx.t) (w : t) ~(x : int32) ~(y : int32) =

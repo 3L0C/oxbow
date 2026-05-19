@@ -73,7 +73,7 @@ let next_window (o : t) =
       | w :: xs when w == f -> next_tiled xs
       | _ :: xs -> after xs
       | [] ->
-        Logs.err (fun m -> m "Focused window isn't in output window list");
+        (Logs.err @@ fun m -> m "Focused window isn't in output window list");
         None
     in
     after o.windows
@@ -88,7 +88,7 @@ let prev_window (o : t) =
       | w :: xs when w == f -> prev_tiled xs
       | _ :: xs -> after xs
       | [] ->
-        Logs.err (fun m -> m "Focused window isn't in output window list");
+        (Logs.err @@ fun m -> m "Focused window isn't in output window list");
         None
     in
     List.rev o.windows |> after
@@ -164,13 +164,14 @@ let retile (ctx : Ctx.manage Ctx.t) (o : t) =
       List.iter (fun w -> Window.restore_or_seed_float ctx w) windows
     | _, d_xs when List.length d_xs <> count ->
       let layout_name = Layout.entry_name tag_data.layout_entry in
-      Logs.warn (fun m ->
-        m
-          "retile skipped: layout %S returned unexpected geometry count. Expected %d, \
-           got %d"
-          layout_name
-          count
-          (List.length d_xs))
+      Logs.warn
+      @@ fun m ->
+      m
+        "retile skipped: layout %S returned unexpected geometry count. Expected %d, got \
+         %d"
+        layout_name
+        count
+        (List.length d_xs)
     | w_xs, d_xs ->
       List.iter2 (fun w g -> Window.clamp w g |> Window.set_geom ctx w) w_xs d_xs)
 ;;

@@ -66,9 +66,18 @@ let handle_line ~(wm : Types.Window_manager.t) ~flow line =
   match dispatch ~wm line with
   | Error e -> respond_err flow e
   | Ok (req, seat) ->
-    Queue.push req.cmd seat.pending_actions;
-    Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1;
-    respond_ok flow
+    (match wm.state with
+     | Wm_running ->
+       let p, u = Eio.Promise.create () in
+       let open Pending_action in
+       let pending_action = { action = req.cmd; reply = Some u } in
+       Queue.push pending_action seat.pending_actions;
+       Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1;
+       (match Eio.Promise.await p with
+        | Ok () -> respond_ok flow
+        | Error msg -> respond_err flow msg)
+     | Wm_close_sent | Wm_closed | Wm_exited | Wm_pending_close | Wm_pending_exit _ ->
+       respond_err flow "wm shutting down")
 ;;
 
 let run ~(wm : Types.Window_manager.t) flow =

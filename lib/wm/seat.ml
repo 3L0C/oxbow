@@ -28,7 +28,9 @@ let xkb_binding_create
             inherit [_] Xkb.River_xkb_binding_v1.v2
             method on_stop_repeat _ = ()
             method on_released _ = ()
-            method on_pressed _ = Queue.push action s.pending_actions
+
+            method on_pressed _ =
+              Queue.push Pending_action.{ action; reply = None } s.pending_actions
           end
           ~keysym
           ~modifiers:mods
@@ -59,7 +61,9 @@ let pointer_binding_create
           object
             inherit [_] Rwm.River_pointer_binding_v1.v4
             method on_released _ = ()
-            method on_pressed _ = Queue.push action s.pending_actions
+
+            method on_pressed _ =
+              Queue.push Pending_action.{ action; reply = None } s.pending_actions
           end
           ~button:(Input_event.to_int32 ec)
           ~modifiers

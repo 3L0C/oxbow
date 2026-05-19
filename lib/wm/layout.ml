@@ -33,7 +33,8 @@ let register ~(registry : Layout_registry.t) ~(entry : Layout_entry.t) =
     | L_builtin { data; _ } | L_external { data; _ } -> data.name
   in
   let dups, rest = List.partition (fun (n, _) -> n = name) registry.entries in
-  if dups <> [] then Logs.warn (fun m -> m "layout %S already registered, replacing" name);
+  (if dups <> []
+   then Logs.warn @@ fun m -> m "layout %S already registered, replacing" name);
   registry.entries <- rest @ [ name, entry ]
 ;;
 
@@ -63,10 +64,10 @@ let cycle ~(registry : Layout_registry.t) ~(name : string) ~(dir : Direction.t) 
     | (n, _) :: x :: _ when n = name -> Some x
     | _ :: xs -> after xs
     | [] ->
-      if not @@ List.is_empty entries
-      then
-        Logs.err (fun m ->
-          m "Unable to find %S in layout registry (removed mid search?)" name);
+      (if not @@ List.is_empty entries
+       then
+         Logs.err
+         @@ fun m -> m "Unable to find %S in layout registry (removed mid search?)" name);
       None
   in
   after entries

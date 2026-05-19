@@ -116,7 +116,13 @@ let interaction (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
     seat.interacted <- None
 ;;
 
-let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
+let raise_no_focused_window () = Exceptions.action_failed "no focused window"
+
+let raise_seat_missing_output () =
+  Exceptions.action_failed "seat is not attached to any output"
+;;
+
+let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
   let wm = Ctx.wm ctx in
   match action with
   | Spawn cmd -> Utils.spawn cmd
@@ -124,38 +130,44 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
   | Close_wm -> Window_manager.request_close wm
   | Close_focused ->
     (match Focus.focused_of seat with
-     | Some window -> Rwm.River_window_v1.close window.obj
-     | None -> ())
+     | None -> raise_no_focused_window ()
+     | Some window -> Rwm.River_window_v1.close window.obj)
   | Toggle_floating ->
     (match Focus.focused_of seat with
-     | None -> ()
+     | None -> raise_no_focused_window ()
      | Some w ->
        (match w.presentation with
-        | P_fullscreen _ -> ()
+        | P_fullscreen _ ->
+          Exceptions.action_failed "cannot toggle float while window is fullscreen"
         | _ ->
           Window.toggle_floating ctx (Some w);
-          Option.iter (Output.mark_dirty wm) seat.output))
+          (match seat.output with
+           | None -> raise_seat_missing_output ()
+           | Some o -> Output.mark_dirty wm o)))
   | Toggle_maximize ->
     (match Focus.focused_of seat with
-     | None -> ()
+     | None -> raise_no_focused_window ()
      | Some w ->
        (match w.presentation with
         | P_maximized _ -> window_request ctx w Req_unmaximize
         | P_tiled | P_floating -> window_request ctx w Req_maximize
-        | P_fullscreen _ -> ()))
+        | P_fullscreen _ ->
+          Exceptions.action_failed "cannot toggle maximization while window is fullscreen"))
   | Toggle_fake_fullscreen ->
     (match Focus.focused_of seat with
-     | None -> ()
+     | None -> raise_no_focused_window ()
      | Some w ->
        (match w.presentation with
-        | P_fullscreen _ -> ()
+        | P_fullscreen _ ->
+          Exceptions.action_failed
+            "cannot toggle fake fullscreen when window is actually fullscreen"
         | _ ->
           let open Types.Window_request in
           (if w.is_fake_fullscreen then Req_exit_fake_fullscreen else Req_fake_fullscreen)
           |> window_request ctx w))
   | Toggle_fullscreen ->
     (match Focus.focused_of seat with
-     | None -> ()
+     | None -> raise_no_focused_window ()
      | Some w ->
        (match w.presentation with
         | P_fullscreen _ -> window_request ctx w Req_exit_fullscreen
@@ -163,7 +175,7 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
   | Move_interactive ->
     (match seat.op, seat.hovered with
      | Op_none, Some window -> window_request ctx window (Req_move { seat })
-     | _, _ -> ())
+     | _ -> Exceptions.action_failed "cannot begin move during an active operation")
   | Resize_interactive ->
     (match seat.op, seat.hovered with
      | Op_none, Some window ->
@@ -177,51 +189,52 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
                   Rwm.River_window_v1.Edges.right
                   Rwm.River_window_v1.Edges.bottom
             })
-     | _, _ -> ())
-  | Send_to_output dir -> Logs.err @@ fun m -> m "Send_to_output: not implemented"
+     | _ -> Exceptions.action_failed "cannot begin resize during an active operation")
+  | Send_to_output dir -> Exceptions.action_failed "Send_to_output: not implemented"
   | Send_to_output_tags dir ->
-    Logs.err @@ fun m -> m "Send_to_output_tags: not implemented"
+    Exceptions.action_failed "Send_to_output_tags: not implemented"
   | Focus_window target -> Focus.focus_window_target ctx seat target
   | Focus_output target -> Focus.focus_output_target ctx seat target
   | Rotate_window dir ->
-    Option.iter (Output.rotate_window dir) seat.output;
-    Option.iter (Output.mark_dirty wm) seat.output
+    (match seat.output with
+     | None -> raise_seat_missing_output ()
+     | Some o ->
+       Output.rotate_window dir o;
+       Output.mark_dirty wm o)
   | Zoom -> Focus.zoom ctx seat
   | Tag_view arg ->
     (match seat.output with
-     | None -> ()
+     | None -> raise_seat_missing_output ()
      | Some o ->
        let s = Output.resolve_tag_arg arg o in
        if Tag_set.is_empty s
-       then Logs.err @@ fun m -> m "Tag_view refusing: tag set is empty"
+       then Exceptions.action_failed "tag set is empty"
        else (
          Output.switch_tags o s;
          Output.mark_dirty wm o))
   | Tag_toggle_view s when Tag_set.is_empty s ->
-    Logs.err @@ fun m -> m "Tag_toggle_view refusing: tag set is empty"
+    Exceptions.action_failed "tag set is empty"
   | Tag_toggle_view s ->
     (match seat.output with
-     | None -> ()
+     | None -> raise_seat_missing_output ()
      | Some o ->
        let new_tags = Tag_set.symmetric_diff o.selected_tags s in
        if Tag_set.is_empty new_tags
-       then
-         Logs.err (fun m ->
-           m "Tag_toggle_view refusing: toggle (would leave no tags visible)")
+       then Exceptions.action_failed "toggle would leave no tags visible"
        else (
          Output.switch_tags o new_tags;
          Output.mark_dirty wm o))
   | Tag_view_previous ->
     (match seat.output with
-     | None -> ()
+     | None -> raise_seat_missing_output ()
      | Some o when Tag_set.is_empty o.previous_tags ->
-       Logs.warn (fun m -> m "Tag_view_previous refusing: no previous tags defined")
+       Exceptions.action_failed "no previous tags defined"
      | Some o ->
        Output.switch_tags o o.previous_tags;
        Output.mark_dirty wm o)
   | Tag_view_cycle dir ->
     (match seat.output with
-     | None -> ()
+     | None -> raise_seat_missing_output ()
      | Some o ->
        let target =
          match dir with
@@ -238,40 +251,40 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
        Output.mark_dirty wm o)
   | Window_tag arg ->
     (match Focus.focused_of seat with
+     | None -> raise_no_focused_window ()
      | Some w ->
        let s =
          let open Tag_arg in
          match w.output, arg with
          | Some o, _ -> Output.resolve_tag_arg arg o
          | None, Tags_concrete s -> s
-         | None, Tags_occupied -> Tag_set.empty
+         | None, Tags_occupied ->
+           Exceptions.action_failed "cannot use 'occupied' for window with no output"
        in
        if Tag_set.is_empty s
-       then Logs.err @@ fun m -> m "Window_tag refusing: tag set is empty"
+       then Exceptions.action_failed "tag set is empty"
        else (
          w.tags <- s;
-         Option.iter (Output.mark_dirty wm) w.output)
-     | _ -> ())
+         Option.iter (Output.mark_dirty wm) w.output))
   | Window_toggle_tag s when Tag_set.is_empty s ->
-    Logs.err @@ fun m -> m "Window_toggle_tag refusing: tag set is empty"
+    Exceptions.action_failed "tag set is empty"
   | Window_toggle_tag s ->
     (match Focus.focused_of seat with
-     | None -> ()
+     | None -> raise_no_focused_window ()
      | Some w ->
        let new_tags = Tag_set.symmetric_diff w.tags s in
        if Tag_set.is_empty new_tags
-       then
-         Logs.err (fun m ->
-           m "Window_toggle_tag refusing: toggle (would leave window invisible)")
+       then Exceptions.action_failed "toggle would leave window invisible"
        else (
          w.tags <- new_tags;
          Option.iter (Output.mark_dirty wm) w.output))
   | Layout_set name ->
     (match Layout.find ~registry:wm.layout_registry ~name with
-     | None -> ()
+     | None ->
+       Exceptions.action_failed @@ Printf.sprintf "no registered layout named: %S" name
      | Some entry ->
        (match wm.focused_output with
-        | None -> ()
+        | None -> Exceptions.action_failed "ocdwm does not have a focused output"
         | Some o ->
           let old_name = Output.current_layout_entry o |> Layout.entry_name in
           if old_name = "floating"
@@ -280,19 +293,54 @@ let action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Action.t) =
           Output.mark_dirty wm o))
   | Layout_cycle dir ->
     (match wm.focused_output with
-     | None -> ()
+     | None -> Exceptions.action_failed "ocdwm does not have a focused output"
      | Some o ->
        let name = Output.current_layout_entry o |> Layout.entry_name in
        (match Layout.cycle ~registry:wm.layout_registry ~name ~dir with
-        | None -> ()
+        | None -> Exceptions.action_failed "unable to cycle, no other layouts registered"
         | Some (_, entry) ->
           if name = "floating"
           then Output.tiled_windows o |> List.iter Window.remember_float;
           Output.set_layout_entry o ~entry;
           Output.mark_dirty wm o))
-  | Set_mfact delta -> Option.iter (Output.set_mfact ~delta wm) seat.output
-  | Set_nmaster delta -> Option.iter (Output.set_nmaster ~delta wm) seat.output
-  | Set_gaps_inner delta -> Option.iter (Output.set_gaps_inner ~delta wm) seat.output
-  | Set_gaps_outer delta -> Option.iter (Output.set_gaps_outer ~delta wm) seat.output
-  | Set_stack kind -> Option.iter (Output.set_stack_kind ~kind wm) seat.output
+  | Set_mfact delta ->
+    (match seat.output with
+     | None -> raise_seat_missing_output ()
+     | Some o -> Output.set_mfact ~delta wm o)
+  | Set_nmaster delta ->
+    (match seat.output with
+     | None -> raise_seat_missing_output ()
+     | Some o -> Output.set_nmaster ~delta wm o)
+  | Set_gaps_inner delta ->
+    (match seat.output with
+     | None -> raise_seat_missing_output ()
+     | Some o -> Output.set_gaps_inner ~delta wm o)
+  | Set_gaps_outer delta ->
+    (match seat.output with
+     | None -> raise_seat_missing_output ()
+     | Some o -> Output.set_gaps_outer ~delta wm o)
+  | Set_stack kind ->
+    (match seat.output with
+     | None -> raise_seat_missing_output ()
+     | Some o -> Output.set_stack_kind ~kind wm o)
+;;
+
+let action
+      (ctx : Ctx.manage Ctx.t)
+      (seat : Types.Seat.t)
+      ({ action; reply } : Pending_action.t)
+  =
+  let result =
+    try
+      handle_action ctx seat action;
+      Ok ()
+    with
+    | Exceptions.Finished -> raise Exceptions.Finished
+    | Exceptions.Action_failed msg -> Error msg
+    | exn -> Error (Printexc.to_string exn)
+  in
+  match result, reply with
+  | Ok _, None -> ()
+  | Error msg, None -> Logs.err @@ fun m -> m "%s" msg
+  | _, Some u -> Eio.Promise.resolve u result
 ;;

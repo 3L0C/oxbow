@@ -20,4 +20,4 @@ val interaction : Ctx.manage Ctx.t -> Types.Seat.t -> unit
     {b Effects:} mutates WM state; sends River request; I/O
 
     @raise [Exceptions.Finished]*)
-val action : Ctx.manage Ctx.t -> Types.Seat.t -> Action.t -> unit
+val action : Ctx.manage Ctx.t -> Types.Seat.t -> Pending_action.t -> unit

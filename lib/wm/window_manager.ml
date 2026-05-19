@@ -61,13 +61,26 @@ let request_close (wm : t) =
       (Window_manager_state.to_string wm.state)
 ;;
 
+let drain_pending_replies (wm : t) =
+  List.iter
+    (fun (seat : Types.Seat.t) ->
+       Queue.iter
+         (fun (p : Pending_action.t) ->
+            Option.iter (fun u -> Eio.Promise.resolve_error u "wm shutting down") p.reply)
+         seat.pending_actions;
+       Queue.clear seat.pending_actions)
+    wm.seats
+;;
+
 let dispatch_pending (wm : t) =
   match wm.state with
   | Wm_pending_exit _ ->
+    drain_pending_replies wm;
     wm.state <- Wm_exited;
     Rwm.River_window_manager_v1.exit_session wm.river_wm_v1;
     Eio.Condition.broadcast wm.shutdown
   | Wm_pending_close ->
+    drain_pending_replies wm;
     wm.state <- Wm_close_sent;
     Rwm.River_window_manager_v1.stop wm.river_wm_v1
   | Wm_running | Wm_exited | Wm_close_sent | Wm_closed ->
@@ -84,6 +97,7 @@ let notify_finished (wm : t) =
     wm.state <- Wm_closed;
     Eio.Condition.broadcast wm.shutdown
   | Wm_running ->
+    drain_pending_replies wm;
     wm.state <- Wm_closed;
     Eio.Condition.broadcast wm.shutdown
   | Wm_pending_exit _ | Wm_exited | Wm_pending_close | Wm_closed ->
@@ -116,7 +130,8 @@ let teardown ~(clock : float Eio.Time.clock_ty Eio.Resource.t) (wm : t) =
          wait ())
      with
      | Eio.Time.Timeout ->
-       Logs.warn (fun m -> m "teardown: river did not close after exit_session within 1s"))
+       Logs.warn
+       @@ fun m -> m "teardown: river did not close after exit_session within 1s")
   | Wm_closed -> Rwm.River_window_manager_v1.destroy wm.river_wm_v1
   | Wm_running | Wm_pending_exit _ | Wm_pending_close | Wm_close_sent ->
     Logs.err

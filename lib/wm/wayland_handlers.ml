@@ -105,12 +105,18 @@ let on_new_seat (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
 ;;
 
 let manage_seat (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
+  let rec drain_actions () =
+    match Queue.take_opt seat.pending_actions with
+    | None -> ()
+    | Some p ->
+      Requests.action ctx seat p;
+      drain_actions ()
+  in
   on_new_seat ctx seat;
   Seat.sync ctx seat;
   Requests.focus_request ctx seat;
   Requests.interaction ctx seat;
-  Queue.iter (Requests.action ctx seat) seat.pending_actions;
-  Queue.clear seat.pending_actions;
+  drain_actions ();
   Operations.seat_op ctx seat
 ;;
 
@@ -393,7 +399,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
                  inherit [_] Wayland.Wayland_client.Wl_seat.v9
 
                  method on_name _ ~name =
-                   Logs.info (fun m -> m "Seat: Name: %S" name);
+                   (Logs.info @@ fun m -> m "Seat: Name: %S" name);
                    seat.name <- Some name
 
                  method on_capabilities _ ~capabilities = ()
