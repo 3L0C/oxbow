@@ -10,6 +10,7 @@
   logs
   xkbcommon
   yojson
+  str
   landmarks)
  (preprocess
   (pps landmarks-ppx --auto)))

@@ -7,7 +7,7 @@ let cmd =
     let+ target =
       Arg.(
         required
-        & pos 0 (some Target_arg.conv) None
+        & pos 0 (some Output_target_arg.conv) None
         & info
             []
             ~docv:"OUTPUT"

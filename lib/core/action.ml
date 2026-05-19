@@ -13,12 +13,12 @@ type t =
   | Toggle_fullscreen [@name "toggle_fullscreen"]
   | Move_interactive [@name "move_interactive"]
   | Resize_interactive [@name "resize_interactive"]
-  | Send_to_output of Target.t [@name "send_to_output"] (* keep own tags *)
-  | Send_to_output_tags of Target.t [@name "send_to_output_tags"]
+  | Send_to_output of Output_target.t [@name "send_to_output"] (* keep own tags *)
+  | Send_to_output_tags of Output_target.t [@name "send_to_output_tags"]
   (* take dest tags *)
   (* Focus *)
-  | Focus_window of Target.t [@name "focus_window"]
-  | Focus_output of Target.t [@name "focus_output"]
+  | Focus_window of Window_target.t [@name "focus_window"]
+  | Focus_output of Output_target.t [@name "focus_output"]
   (* Stack manipulation *)
   | Rotate_window of Direction.t [@name "rotate_window"]
   | Zoom [@name "zoom"]
