@@ -4,13 +4,14 @@
 }:
 ocamlPackages.buildDunePackage {
   pname = "ocdwm";
-  version = "0.1.0-dev";
+  version = "0.1.0";
   duneVersion = "3";
   src = lib.cleanSource ./.;
 
   buildInputs = builtins.attrValues {
     inherit
       (ocamlPackages)
+      dune-build-info
       wayland
       eio
       eio_main

@@ -4,6 +4,7 @@
  (libraries
   ocdwm.core
   ocdwm.ctl
+  dune-build-info
   yojson
   cmdliner
   logs

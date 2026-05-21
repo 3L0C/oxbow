@@ -5,14 +5,22 @@ let seat =
   Arg.(
     value
     & opt (some string) None
-    & info [ "seat" ] ~docv:"NAME" ~doc:"Override primary-seat target")
+    & info
+        [ "seat" ]
+        ~docv:"NAME"
+        ~docs:Manpage.s_common_options
+        ~doc:"Override primary-seat target")
 ;;
 
 let socket =
   Arg.(
     value
     & opt (some string) None
-    & info [ "socket" ] ~docv:"PATH" ~doc:"Override $(b,XDG_RUNTIME_DIR) socket path")
+    & info
+        [ "socket" ]
+        ~docv:"PATH"
+        ~docs:Manpage.s_common_options
+        ~doc:"Override $(b,XDG_RUNTIME_DIR) socket path")
 ;;
 
 let direction =
@@ -92,73 +100,50 @@ let tag_arg : Core.Tag_arg.t Arg.Conv.t =
   Arg.Conv.make ~docv:"TAGS" ~parser ~pp ()
 ;;
 
-let exit_ok = Cmd.Exit.ok
-let exit_protocol_err = 1
-let exit_conn_failed = 2
+let code_protocol_err = 1
+let code_conn_failed = 2
+
+let exit_protocol_err =
+  Cmd.Exit.info code_protocol_err ~doc:"on protocol error from ocdwm"
+;;
+
+let exit_conn_failed =
+  Cmd.Exit.info code_conn_failed ~doc:"on failure to connect to the ocdwm socket"
+;;
+
+let exits = exit_protocol_err :: exit_conn_failed :: Cmd.Exit.defaults
+let info ?(exits = exits) ?version name ~doc = Cmd.info name ~doc ~exits ?version
 
 let dispatch ?seat ?socket action =
   Eio_main.run
   @@ fun env ->
   match Client.send ~env ?seat ?socket action with
-  | Ok () -> exit_ok
+  | Ok () -> Cmd.Exit.ok
   | Error (E_conn_failed msg) ->
-    Logs.err (fun m -> m "connection failed: %s" msg);
-    exit_conn_failed
+    (Logs.err @@ fun m -> m "connection failed: %s" msg);
+    code_conn_failed
   | Error (E_protocol msg) ->
-    Logs.err (fun m -> m "%s" msg);
-    exit_protocol_err
+    (Logs.err @@ fun m -> m "%s" msg);
+    code_protocol_err
 ;;
 
-let cmd_with_arg ~name ~doc ~docv ~conv_arg action_of =
-  let open Cmdliner.Term.Syntax in
-  Cmd.v (Cmd.info name ~doc)
-  @@
-  let+ seat = seat
-  and+ socket = socket
-  and+ value = Arg.(required & pos 0 (some conv_arg) None & info [] ~docv) in
-  dispatch ?seat ?socket (action_of value)
+let group ?version ~name ~doc =
+  let default = Term.(ret (const (`Help (`Auto, None)))) in
+  Cmd.group (info ?version name ~doc) ~default
 ;;
 
 let cmd ~name ~doc action =
   let open Cmdliner.Term.Syntax in
-  Cmd.v (Cmd.info name ~doc)
+  Cmd.v (info name ~doc)
   @@
   let+ seat = seat
   and+ socket = socket in
   dispatch ?seat ?socket action
 ;;
 
-let cmd_with_string ~name ~doc ?(docv = "STRING") action_of =
-  cmd_with_arg ~name ~doc ~docv ~conv_arg:Arg.string action_of
-;;
-
-let cmd_with_dir ~name ~doc ?(docv = "DIRECTION") action_of =
-  cmd_with_arg ~name ~doc ~docv ~conv_arg:direction action_of
-;;
-
-let cmd_with_int_delta ~name ~doc ?(docv = "DELTA") action_of =
-  cmd_with_arg ~name ~doc ~docv ~conv_arg:int_delta action_of
-;;
-
-let cmd_with_float_delta ~name ~doc ?(docv = "DELTA") action_of =
-  cmd_with_arg ~name ~doc ~docv ~conv_arg:float_delta action_of
-;;
-
-let cmd_with_stack_kind ~name ~doc ?(docv = "KIND") action_of =
-  cmd_with_arg ~name ~doc ~docv ~conv_arg:stack_kind action_of
-;;
-
-let cmd_with_tag_set ~name ~doc ?(docv = "TAGS") action_of =
-  cmd_with_arg ~name ~doc ~docv ~conv_arg:tag_set action_of
-;;
-
-let cmd_with_tag_arg ~name ~doc ?(docv = "TAGS") action_of =
-  cmd_with_arg ~name ~doc ~docv ~conv_arg:tag_arg action_of
-;;
-
 let cmd_of_term ~name ~doc action_term =
   let open Cmdliner.Term.Syntax in
-  Cmd.v (Cmd.info name ~doc)
+  Cmd.v (info name ~doc)
   @@
   let+ seat = seat
   and+ socket = socket

@@ -2,6 +2,8 @@
 
 (name ocdwm)
 
+(version 0.1.0)
+
 (generate_opam_files true)
 
 (source
@@ -21,6 +23,8 @@
   (ocaml
    (>= 5.4))
   (dune
+   (>= 3.21))
+  (dune-build-info
    (>= 3.21))
   (wayland
    (>= 2.2))
