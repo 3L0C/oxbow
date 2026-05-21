@@ -75,7 +75,7 @@ let focus_window_query (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (q : Windo
       | None -> false
     in
     let matches_fields =
-      match q.fields with
+      match q.field with
       | Any -> fun title app_id -> matches_opt title || matches_opt app_id
       | Title -> fun title _ -> matches_opt title
       | App_id -> fun _ app_id -> matches_opt app_id
@@ -94,14 +94,14 @@ let focus_window_query (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (q : Windo
     Option.iter (focus_window ctx seat) target
 ;;
 
-let focus_window_target
-      (ctx : Ctx.manage Ctx.t)
-      (seat : Types.Seat.t)
-      (target : Window_target.t)
-  =
-  match target with
-  | By_direction d -> focus_window_dir ctx seat d
-  | By_query q -> focus_window_query ctx seat q
+let focus_output (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (output : Types.Output.t) =
+  Rlsh.River_layer_shell_output_v1.set_default output.layer_shell;
+  match Output.focused_window output with
+  | Some w -> focus_window ctx seat w
+  | None ->
+    seat.output <- Some output;
+    Window_manager.focus_output ctx (Some output);
+    clear ctx seat
 ;;
 
 let focus_output_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direction.t) =
@@ -115,25 +115,24 @@ let focus_output_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direc
       | Dir_prev | Dir_up | Dir_left -> Utils.prev_or_last o wm.outputs
     in
     (match target with
-     | Some t when t != o ->
-       Rlsh.River_layer_shell_output_v1.set_default t.layer_shell;
-       (match Output.focused_window t with
-        | Some w -> focus_window ctx seat w
-        | None ->
-          seat.output <- target;
-          Window_manager.focus_output ctx target;
-          clear ctx seat)
+     | Some t when t != o -> focus_output ctx seat t
      | _ -> ())
 ;;
 
-let focus_output_target
-      (ctx : Ctx.manage Ctx.t)
-      (seat : Types.Seat.t)
-      (target : Output_target.t)
-  =
-  match target with
-  | By_direction d -> focus_output_dir ctx seat d
-  | By_name q -> Logs.err @@ fun m -> m "Focus_output_by_name: not yet implemented"
+let focus_output_name (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (name : string) =
+  let wm = Ctx.wm ctx in
+  match
+    List.find_opt
+      (fun (o : Types.Output.t) ->
+         Option.fold ~none:false ~some:(fun n -> n = name) o.name)
+      wm.outputs
+  with
+  | None -> ()
+  | Some o ->
+    (match seat.output with
+     | None -> focus_output ctx seat o
+     | Some o' when o != o' -> focus_output ctx seat o
+     | _ -> ())
 ;;
 
 let get_output (lst : Types.Output.t list) = List.nth_opt lst 0

@@ -94,8 +94,8 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
       [ (* mods, keysym,   action *)
         modkey, K_Return, Action.Spawn "kitty"
       ; modkey, K_q, Action.Close_focused
-      ; modkey, K_j, Action.Focus_window (By_direction Dir_next)
-      ; modkey, K_k, Action.Focus_window (By_direction Dir_prev)
+      ; modkey, K_j, Action.Focus_window_direction Dir_next
+      ; modkey, K_k, Action.Focus_window_direction Dir_prev
       ; modkey, K_Escape, Action.Exit_session
       ; modkey, K_h, Action.Tag_view_cycle Dir_prev
       ; modkey, K_l, Action.Tag_view_cycle Dir_next

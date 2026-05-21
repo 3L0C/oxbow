@@ -1,19 +1,23 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
 
-type pattern =
-  | Substring of string [@name "substring"]
-  | Regex of string [@name "regex"]
-[@@deriving yojson]
+module Pattern = struct
+  type t =
+    | Substring of string [@name "substring"]
+    | Regex of string [@name "regex"]
+  [@@deriving yojson]
+end
 
-type field =
-  | Any [@name "any"]
-  | Title [@name "title"]
-  | App_id [@name "app-id"]
-[@@deriving yojson]
+module Field = struct
+  type t =
+    | Any [@name "any"]
+    | Title [@name "title"]
+    | App_id [@name "app-id"]
+  [@@deriving yojson]
+end
 
 type t =
-  { query : pattern
-  ; fields : field
+  { query : Pattern.t
+  ; field : Field.t
   ; cycle : bool
   }
 [@@deriving yojson]
@@ -24,14 +28,14 @@ let to_string q =
     | Substring _ -> None
     | Regex _ -> Some "regex"
   in
-  let fields =
-    match q.fields with
+  let field =
+    match q.field with
     | Any -> None
     | Title -> Some "title"
     | App_id -> Some "app-id"
   in
   let cycle = if q.cycle then Some "cycle" else None in
-  let tags = List.filter_map Fun.id [ fields; cycle; regex ] in
+  let tags = List.filter_map Fun.id [ field; cycle; regex ] in
   let s =
     match q.query with
     | Substring s -> s
@@ -45,7 +49,9 @@ let to_string q =
   render s
 ;;
 
-let of_string ?(fields = Any) ?(cycle = false) s = { query = Substring s; fields; cycle }
+let of_string ?(field = Field.Any) ?(cycle = false) s =
+  { query = Substring s; field; cycle }
+;;
 
 let get_regex q =
   match q.query with

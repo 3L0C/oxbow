@@ -190,11 +190,14 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
                   Rwm.River_window_v1.Edges.bottom
             })
      | _ -> Exceptions.action_failed "cannot begin resize during an active operation")
-  | Send_to_output dir -> Exceptions.action_failed "Send_to_output: not implemented"
-  | Send_to_output_tags dir ->
-    Exceptions.action_failed "Send_to_output_tags: not implemented"
-  | Focus_window target -> Focus.focus_window_target ctx seat target
-  | Focus_output target -> Focus.focus_output_target ctx seat target
+  | Send_to_output_direction { dir; policy } ->
+    Exceptions.action_failed "Send_to_output_direction: not implemented"
+  | Send_to_output_name { name; policy } ->
+    Exceptions.action_failed "Send_to_output_name: not implemented"
+  | Focus_window_direction dir -> Focus.focus_window_dir ctx seat dir
+  | Focus_window_query q -> Focus.focus_window_query ctx seat q
+  | Focus_output_direction dir -> Focus.focus_output_dir ctx seat dir
+  | Focus_output_name name -> Focus.focus_output_name ctx seat name
   | Rotate_window dir ->
     (match seat.output with
      | None -> raise_seat_missing_output ()
