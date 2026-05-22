@@ -75,8 +75,22 @@ let main ~net ~clock =
       ; ipc = Ipc_inactive
       }
   in
-  let on_signal _ = Window_manager.request_exit wm in
+  let signaled = Eio.Condition.create () in
+  let on_signal _ = Eio.Condition.broadcast signaled in
   wm_box.body <- Some wm;
+  Eio.Fiber.fork ~sw (fun () ->
+    let outcome =
+      Eio.Fiber.first
+        (fun () ->
+           Eio.Condition.await_no_mutex signaled;
+           `Signal)
+        (fun () ->
+           Window_manager.await_shutdown wm;
+           `Shutdown)
+    in
+    match outcome with
+    | `Signal -> Window_manager.request_close wm
+    | `Shutdown -> ());
   Sys.set_signal Sys.sigint @@ Sys.Signal_handle on_signal;
   Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
   Ocdwm_wm.Ipc_server.start ~sw ~net ~wm;
