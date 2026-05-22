@@ -1,5 +1,6 @@
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
+module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 open Window_manager_state
 
 type t = Types.Window_manager.t
@@ -116,6 +117,12 @@ let await_shutdown (wm : t) =
   | Wm_running | Wm_pending_exit _ | Wm_pending_close | Wm_close_sent -> None
 ;;
 
+let destroy (wm : t) =
+  Rwm.River_window_manager_v1.destroy wm.river_wm_v1;
+  Xkb.River_xkb_bindings_v1.destroy wm.river_xkb_v1;
+  Rlsh.River_layer_shell_v1.destroy wm.river_lsh_v1
+;;
+
 let teardown ~(clock : float Eio.Time.clock_ty Eio.Resource.t) (wm : t) =
   match wm.state with
   | Wm_exited ->
@@ -132,7 +139,7 @@ let teardown ~(clock : float Eio.Time.clock_ty Eio.Resource.t) (wm : t) =
      | Eio.Time.Timeout ->
        Logs.warn
        @@ fun m -> m "teardown: river did not close after exit_session within 1s")
-  | Wm_closed -> Rwm.River_window_manager_v1.destroy wm.river_wm_v1
+  | Wm_closed -> destroy wm
   | Wm_running | Wm_pending_exit _ | Wm_pending_close | Wm_close_sent ->
     Logs.err
     @@ fun m ->

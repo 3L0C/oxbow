@@ -133,7 +133,10 @@ let on_manage_start proxy (wm_box : Types.Window_manager.t Box.t) =
   let wm = Option.get wm_box.body in
   let open Window_manager_state in
   match wm.state with
-  | Wm_pending_exit _ | Wm_pending_close -> Window_manager.dispatch_pending wm
+  | Wm_pending_exit _ -> Window_manager.dispatch_pending wm
+  | Wm_pending_close ->
+    Window_manager.dispatch_pending wm;
+    Rwm.River_window_manager_v1.manage_finish proxy
   | Wm_close_sent ->
     Logs.info @@ fun m -> m "waiting for River to acknowledge close request..."
   | Wm_closed -> Logs.err @@ fun m -> m "window manager should be closed..."

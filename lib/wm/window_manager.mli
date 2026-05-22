@@ -51,6 +51,11 @@ val notify_finished : t -> unit
    {b Effects:} mutates WM state *)
 val await_shutdown : t -> unit
 
+(** [destroy wm] destroys the Wayland objects underlying [wm].
+
+    {b Effects:} mutates WM state; sends River request *)
+val destroy : t -> unit
+
 (** [teardown ~clock wm] handles [wm] cleanup.
 
    {b Effects:} mutates WM state *)
