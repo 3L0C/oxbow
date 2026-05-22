@@ -92,7 +92,7 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
   let xkb_bindings =
     Xkbcommon.Keysym.
       [ (* mods, keysym,   action *)
-        modkey, K_Return, Action.Spawn "uwsm-app kitty"
+        modkey, K_Return, Action.Spawn "kitty"
       ; modkey, K_q, Action.Close_focused
       ; modkey, K_j, Action.Focus_window_direction Dir_next
       ; modkey, K_k, Action.Focus_window_direction Dir_prev
