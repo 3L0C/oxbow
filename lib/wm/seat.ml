@@ -51,7 +51,7 @@ let pointer_binding_create
       (_ : Ctx.manage Ctx.t)
       (s : t)
       (modifiers : int32)
-      (ec : Input_event.code)
+      (ec : Input_event.t)
       (action : Action.t)
   =
   let binding : Types.Pointer_binding.t =

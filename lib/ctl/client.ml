@@ -4,11 +4,11 @@ type send_error =
   | E_conn_failed of string
   | E_protocol of string
 
-let send ~env ?seat ?socket (action : Core.Action.t) : (unit, send_error) result =
+let send ~env ?seat ?socket (body : Core.Request_body.t) : (unit, send_error) result =
   let path = Core.Socket_path.resolve ?override:socket () in
   let net = Eio.Stdenv.net env in
   let addr = `Unix path in
-  let req = Core.Request.{ cmd = action; seat } in
+  let req = Core.Request.{ body; seat } in
   let req_str = Yojson.Safe.to_string (Core.Request.yojson_of_t req) ^ "\n" in
   try
     Eio.Switch.run

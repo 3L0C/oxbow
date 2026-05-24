@@ -1,4 +1,4 @@
-type code =
+type t =
   | Key_unknown
   | Btn_left
   | Btn_right

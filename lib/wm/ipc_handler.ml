@@ -15,14 +15,17 @@ let respond_ok flow =
   Eio.Flow.copy_string s flow
 ;;
 
-let validate ~wm (a : Core.Action.t) : (unit, string) result =
-  match a with
-  | Layout_set name ->
-    (match Layout.find ~registry:wm.Types.Window_manager.layout_registry ~name with
-     | Some _ -> Ok ()
-     | None -> Error (Printf.sprintf "unknown layout: %s" name))
-  | Spawn "" -> Error "spawn: empty command"
-  | _ -> Ok ()
+let validate ~wm (body : Core.Request_body.t) : (unit, string) result =
+  match body with
+  | Trigger a ->
+    (match a with
+     | Layout_set name ->
+       (match Layout.find ~registry:wm.Types.Window_manager.layout_registry ~name with
+        | Some _ -> Ok ()
+        | None -> Error (Printf.sprintf "unknown layout: %s" name))
+     | Spawn "" -> Error "spawn: empty command"
+     | _ -> Ok ())
+  | Setting _ -> Ok ()
 ;;
 
 let resolve_seat (wm : Types.Window_manager.t) (req : Core.Request.t) =
@@ -57,7 +60,7 @@ let dispatch ~(wm : Types.Window_manager.t) line =
   let open Result.Syntax in
   let* json = parse_json line in
   let* req = parse_request json in
-  let* () = validate ~wm req.cmd in
+  let* () = validate ~wm req.body in
   let* seat = resolve_seat wm req in
   Ok (req, seat)
 ;;
@@ -68,14 +71,17 @@ let handle_line ~(wm : Types.Window_manager.t) ~flow line =
   | Ok (req, seat) ->
     (match wm.state with
      | Wm_running ->
-       let p, u = Eio.Promise.create () in
-       let open Pending_action in
-       let pending_action = { action = req.cmd; reply = Some u } in
-       Queue.push pending_action seat.pending_actions;
-       Window_manager.mark_dirty wm;
-       (match Eio.Promise.await p with
-        | Ok () -> respond_ok flow
-        | Error msg -> respond_err flow msg)
+       (match req.body with
+        | Trigger action ->
+          let p, u = Eio.Promise.create () in
+          let open Pending_action in
+          let pending_action = { action; reply = Some u } in
+          Queue.push pending_action seat.pending_actions;
+          Window_manager.mark_dirty wm;
+          (match Eio.Promise.await p with
+           | Ok () -> respond_ok flow
+           | Error msg -> respond_err flow msg)
+        | Setting _ -> respond_err flow "settings not yet supported")
      | Wm_close_sent | Wm_closed | Wm_exited | Wm_pending_close | Wm_pending_exit _ ->
        respond_err flow "wm shutting down")
 ;;

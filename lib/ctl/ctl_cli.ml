@@ -117,7 +117,7 @@ let info ?(exits = exits) ?version name ~doc = Cmd.info name ~doc ~exits ?versio
 let dispatch ?seat ?socket action =
   Eio_main.run
   @@ fun env ->
-  match Client.send ~env ?seat ?socket action with
+  match Client.send ~env ?seat ?socket (Trigger action) with
   | Ok () -> Cmd.Exit.ok
   | Error (E_conn_failed msg) ->
     (Logs.err @@ fun m -> m "connection failed: %s" msg);
