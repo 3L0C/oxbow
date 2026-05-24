@@ -19,6 +19,7 @@ let create (wm : Types.Window_manager.t) (river_window : [ `V4 ] Rwm.River_windo
       inherit [_] Rwm.River_node_v1.v4
     end
   in
+  let output = Window_manager.default_output wm in
   { obj = river_window
   ; node = Rwm.River_window_v1.get_node river_window node
   ; state = W_new
@@ -34,10 +35,10 @@ let create (wm : Types.Window_manager.t) (river_window : [ `V4 ] Rwm.River_windo
   ; float_geom = None
   ; size_hints = { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l }
   ; tags =
-      (match wm.focused_output with
+      (match output with
        | None -> Tag_set.singleton 1
        | Some o -> o.selected_tags)
-  ; output = wm.focused_output
+  ; output
   ; is_fixed = false
   ; is_urgent = false
   ; is_fake_fullscreen = false

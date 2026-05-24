@@ -72,7 +72,7 @@ let handle_line ~(wm : Types.Window_manager.t) ~flow line =
        let open Pending_action in
        let pending_action = { action = req.cmd; reply = Some u } in
        Queue.push pending_action seat.pending_actions;
-       Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1;
+       Window_manager.mark_dirty wm;
        (match Eio.Promise.await p with
         | Ok () -> respond_ok flow
         | Error msg -> respond_err flow msg)

@@ -18,8 +18,7 @@ let focus_window
   match focused_of seat with
   | Some w when w == target && not force -> ()
   | _ ->
-    seat.output <- target.output;
-    Window_manager.focus_output ctx target.output;
+    Window_manager.focus_output ctx seat target.output;
     Output.focus_window ctx seat target
 ;;
 
@@ -29,23 +28,16 @@ let clear (_ : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
 
 let refresh_focus (ctx : Ctx.manage Ctx.t) (output : Types.Output.t) =
   let wm = Ctx.wm ctx in
-  match Output.focused_window output with
-  | None ->
-    Window_manager.focus_output ctx @@ Some output;
-    List.iter
-      (fun (s : Types.Seat.t) ->
-         match s.output with
-         | Some so when so == output -> clear ctx s
-         | _ -> ())
-      wm.seats
-  | Some w ->
-    Window_manager.focus_output ctx @@ Some output;
-    List.iter
-      (fun (s : Types.Seat.t) ->
-         match s.output with
-         | Some so when so == output -> focus_window ~force:true ctx s w
-         | _ -> ())
-      wm.seats
+  let target = Output.focused_window output in
+  List.iter
+    (fun (s : Types.Seat.t) ->
+       match s.output with
+       | Some o when o == output ->
+         (match target with
+          | Some w -> focus_window ~force:true ctx s w
+          | None -> clear ctx s)
+       | _ -> ())
+    wm.seats
 ;;
 
 let focus_window_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direction.t) =
@@ -95,13 +87,10 @@ let focus_window_query (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (q : Windo
 ;;
 
 let focus_output (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (output : Types.Output.t) =
-  Rlsh.River_layer_shell_output_v1.set_default output.layer_shell;
+  Window_manager.focus_output ctx seat @@ Some output;
   match Output.focused_window output with
   | Some w -> focus_window ctx seat w
-  | None ->
-    seat.output <- Some output;
-    Window_manager.focus_output ctx (Some output);
-    clear ctx seat
+  | None -> clear ctx seat
 ;;
 
 let focus_output_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direction.t) =
@@ -135,16 +124,6 @@ let focus_output_name (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (name : str
      | _ -> ())
 ;;
 
-let get_output (lst : Types.Output.t list) = List.nth_opt lst 0
-
-let focus_other_output (ctx : Ctx.manage Ctx.t) (output : Types.Output.t) =
-  let wm = Ctx.wm ctx in
-  match wm.focused_output with
-  | Some o when o == output ->
-    Window_manager.focus_output ctx @@ List.find_opt (fun o -> o != output) wm.outputs
-  | _ -> ()
-;;
-
 let remove_window (ctx : Ctx.manage Ctx.t) (window : Types.Window.t) =
   Option.iter (Output.remove_window ~window) window.output;
   Option.iter (refresh_focus ctx) window.output
@@ -152,17 +131,28 @@ let remove_window (ctx : Ctx.manage Ctx.t) (window : Types.Window.t) =
 
 let sync (ctx : Ctx.manage Ctx.t) =
   let wm = Ctx.wm ctx in
-  match wm.focused_output with
-  | None ->
-    (match wm.outputs with
-     | o :: _ -> Window_manager.focus_output ctx @@ Some o
-     | [] -> ())
-  | Some o ->
-    if not @@ List.memq o wm.outputs
-    then (
-      match wm.outputs with
-      | o :: _ -> Window_manager.focus_output ctx @@ Some o
-      | [] -> Window_manager.focus_output ctx None)
+  let default = Window_manager.default_output wm in
+  List.iter
+    (fun (s : Types.Seat.t) ->
+       match s.output with
+       | Some o when not @@ List.memq o wm.outputs ->
+         Window_manager.focus_output ctx s default
+       | None when not @@ List.is_empty wm.outputs ->
+         Window_manager.focus_output ctx s default
+       | _ -> ())
+    wm.seats;
+  List.iter
+    (fun (w : Types.Window.t) ->
+       match w.output with
+       | None when not @@ List.is_empty wm.outputs ->
+         w.output <- default;
+         Option.iter
+           (fun o ->
+              Output.push [ w ] o;
+              Output.mark_dirty wm o)
+           default
+       | _ -> ())
+    wm.windows
 ;;
 
 let zoom ctx (seat : Types.Seat.t) =

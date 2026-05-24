@@ -113,8 +113,11 @@ let tiled_windows (o : t) =
 ;;
 
 let mark_dirty (wm : Types.Window_manager.t) (o : t) =
-  o.state <- O_dirty { prev = o.state };
-  Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
+  match o.state with
+  | O_dirty _ -> ()
+  | _ ->
+    o.state <- O_dirty { prev = o.state };
+    Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
 ;;
 
 let fullscreen_is_visible (o : t) =

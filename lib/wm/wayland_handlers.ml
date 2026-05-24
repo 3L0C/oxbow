@@ -16,18 +16,29 @@ let on_finished (wm_box : Types.Window_manager.t Box.t) =
 
 let remove_outputs (ctx : Ctx.manage Ctx.t) =
   let wm = Ctx.wm ctx in
-  wm.outputs
-  <- List.filter
-       (fun (o : Types.Output.t) ->
-          match o.state with
-          | O_dirty _ | O_active -> true
-          | O_removed ->
-            Output.destroy o;
-            false)
-       wm.outputs;
-  match wm.outputs with
-  | [] -> Window_manager.focus_output ctx None
-  | _ -> ()
+  let removed, retained =
+    List.partition
+      (fun (o : Types.Output.t) ->
+         match o.state with
+         | O_removed -> true
+         | O_dirty _ | O_active -> false)
+      wm.outputs
+  in
+  let first = List.nth_opt retained 0 in
+  wm.outputs <- retained;
+  List.iter
+    (fun (s : Types.Seat.t) ->
+       match s.output with
+       | Some o when List.memq o removed -> Window_manager.focus_output ctx s first
+       | _ -> ())
+    wm.seats;
+  List.iter
+    (fun (w : Types.Window.t) ->
+       match w.output with
+       | Some o when List.memq o removed -> w.output <- None
+       | _ -> ())
+    wm.windows;
+  List.iter Output.destroy removed
 ;;
 
 let disconnect_seat (window : Types.Window.t) (seat : Types.Seat.t) =
@@ -252,9 +263,7 @@ let on_output _ river_output (wm_box : Types.Window_manager.t Box.t) =
                }
     end;
   wm.outputs <- output :: wm.outputs;
-  match List.length wm.outputs with
-  | 1 -> Window_manager.set_focused_output wm @@ Some output
-  | _ -> ()
+  List.iter (Window_manager.ensure_seat_output wm) wm.seats
 ;;
 
 let set_presentation_mode (output : Types.Output.t) =
@@ -344,7 +353,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
     ; layer_shell
     ; state = S_new
     ; name = None
-    ; output = wm.focused_output
+    ; output = None
     ; position = { x = 0l; y = 0l }
     ; layer_focus = Lf_none
     ; xkb_bindings = []
@@ -415,7 +424,8 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
       method on_pointer_position _ ~x ~y = Seat.handle_pointer_position wm seat ~x ~y
     end;
   wm.seats <- seat :: wm.seats;
-  if Option.is_none wm.primary_seat then wm.primary_seat <- Some seat
+  if Option.is_none wm.primary_seat then wm.primary_seat <- Some seat;
+  Window_manager.ensure_seat_output wm seat
 ;;
 
 let on_session_locked _proxy = ()

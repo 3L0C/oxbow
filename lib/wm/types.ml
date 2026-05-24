@@ -176,8 +176,7 @@ and Window_manager : sig
       shutdown : Eio.Condition.t
     ; mutable state : Window_manager_state.t
     ; (* State *)
-      mutable focused_output : Output.t option
-    ; mutable primary_seat : Seat.t option
+      mutable primary_seat : Seat.t option
     ; mutable dirty : bool
     ; (* Managed items *)
       mutable outputs : Output.t list (* Sorted by focus order *)

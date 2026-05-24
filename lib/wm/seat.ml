@@ -148,10 +148,8 @@ let handle_pointer_position
     match Output.at_point ~x ~y wm.outputs with
     | None -> s.cursor_target <- None
     | Some o ->
-      if not @@ Utils.opt_holds wm.focused_output o
-      then (
-        Window_manager.set_focused_output wm @@ Some o;
-        s.output <- Some o);
+      if not @@ Utils.opt_holds s.output o
+      then Window_manager.request_focus_output wm s @@ Some o;
       let new_target = Window.at_point ~x ~y o.focus_stack in
       (match new_target with
        | Some w when not @@ Utils.opt_holds s.cursor_target w ->
@@ -162,8 +160,11 @@ let handle_pointer_position
 ;;
 
 let mark_dirty (wm : Types.Window_manager.t) (s : t) =
-  s.state <- S_dirty { prev = s.state };
-  Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
+  match s.state with
+  | S_dirty _ -> ()
+  | _ ->
+    s.state <- S_dirty { prev = s.state };
+    Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
 ;;
 
 let refresh_layer_focus (ctx : Ctx.manage Ctx.t) (s : t) =

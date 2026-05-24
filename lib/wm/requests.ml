@@ -286,7 +286,7 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
      | None ->
        Exceptions.action_failed @@ Printf.sprintf "no registered layout named: %S" name
      | Some entry ->
-       (match wm.focused_output with
+       (match seat.output with
         | None -> Exceptions.action_failed "ocdwm does not have a focused output"
         | Some o ->
           let old_name = Output.current_layout_entry o |> Layout.entry_name in
@@ -295,7 +295,7 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
           Output.set_layout_entry o ~entry;
           Output.mark_dirty wm o))
   | Layout_cycle dir ->
-    (match wm.focused_output with
+    (match seat.output with
      | None -> Exceptions.action_failed "ocdwm does not have a focused output"
      | Some o ->
        let name = Output.current_layout_entry o |> Layout.entry_name in

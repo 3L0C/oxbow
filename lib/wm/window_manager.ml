@@ -5,22 +5,50 @@ open Window_manager_state
 
 type t = Types.Window_manager.t
 
-let set_focused_output (wm : t) (output : Types.Output.t option) =
-  wm.focused_output <- output;
-  wm.dirty <- true;
-  Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
+let mark_dirty (wm : t) =
+  if not wm.dirty
+  then (
+    wm.dirty <- true;
+    Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1)
+;;
+
+let request_focus_output (wm : t) (seat : Types.Seat.t) (output : Types.Output.t option) =
+  if not @@ Utils.opts_are_equal seat.output output
+  then (
+    seat.output <- output;
+    mark_dirty wm)
+;;
+
+let focused_output (wm : t) = Option.bind wm.primary_seat @@ fun s -> s.output
+
+let default_output (wm : t) =
+  match focused_output wm with
+  | Some _ as o -> o
+  | None -> List.nth_opt wm.outputs 0
+;;
+
+let ensure_seat_output (wm : t) (seat : Types.Seat.t) =
+  match seat.output with
+  | Some _ -> ()
+  | None -> default_output wm |> request_focus_output wm seat
 ;;
 
 let refresh_layer_shell_output (wm : t) =
-  match wm.focused_output with
+  match focused_output wm with
   | None -> ()
   | Some o -> Rlsh.River_layer_shell_output_v1.set_default o.layer_shell
 ;;
 
-let focus_output (ctx : Ctx.manage Ctx.t) (output : Types.Output.t option) =
+let focus_output
+      (ctx : Ctx.manage Ctx.t)
+      (seat : Types.Seat.t)
+      (output : Types.Output.t option)
+  =
   let wm = Ctx.wm ctx in
-  wm.focused_output <- output;
-  refresh_layer_shell_output wm
+  if not @@ Utils.opts_are_equal seat.output output
+  then (
+    seat.output <- output;
+    if Utils.opt_holds wm.primary_seat seat then refresh_layer_shell_output wm)
 ;;
 
 let sync (ctx : Ctx.manage Ctx.t) =
@@ -29,11 +57,6 @@ let sync (ctx : Ctx.manage Ctx.t) =
   then (
     refresh_layer_shell_output wm;
     wm.dirty <- false)
-;;
-
-let mark_dirty (wm : t) =
-  wm.dirty <- true;
-  Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
 ;;
 
 let request_exit ?(origin = `Local) (wm : t) =

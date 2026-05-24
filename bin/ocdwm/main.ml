@@ -63,7 +63,6 @@ let main ~net ~clock =
       ; registry
       ; shutdown = Eio.Condition.create ()
       ; state = Wm_running
-      ; focused_output = None
       ; primary_seat = None
       ; dirty = false
       ; outputs = []
