@@ -18,7 +18,7 @@ let xkb_binding_create
       (action : Action.t)
   =
   let wm = Ctx.wm ctx in
-  let keysym = Int32.of_int (Xkbcommon.Keysym.to_int keysym) in
+  let keysym_i32 = Int32.of_int (Xkbcommon.Keysym.to_int keysym) in
   let binding : Types.Xkb_binding.t =
     { obj =
         Xkb.River_xkb_bindings_v1.get_xkb_binding
@@ -32,10 +32,12 @@ let xkb_binding_create
             method on_pressed _ =
               Queue.push Pending_action.{ action; reply = None } s.pending_actions
           end
-          ~keysym
+          ~keysym:keysym_i32
           ~modifiers:mods
     ; seat = s
     ; action
+    ; mods
+    ; keysym
     }
   in
   Xkb.River_xkb_binding_v1.enable binding.obj;
@@ -50,8 +52,8 @@ let pointer_binding_destroy (pointer : Types.Pointer_binding.t) =
 let pointer_binding_create
       (_ : Ctx.manage Ctx.t)
       (s : t)
-      (modifiers : int32)
-      (ec : Input_event.t)
+      (mods : int32)
+      (button : Input_event.t)
       (action : Action.t)
   =
   let binding : Types.Pointer_binding.t =
@@ -65,10 +67,12 @@ let pointer_binding_create
             method on_pressed _ =
               Queue.push Pending_action.{ action; reply = None } s.pending_actions
           end
-          ~button:(Input_event.to_int32 ec)
-          ~modifiers
+          ~button:(Input_event.to_int32 button)
+          ~modifiers:mods
     ; seat = s
     ; action
+    ; mods
+    ; button
     }
   in
   Rwm.River_pointer_binding_v1.enable binding.obj;

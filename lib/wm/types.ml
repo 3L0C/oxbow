@@ -99,6 +99,8 @@ and Xkb_binding : sig
     { obj : [ `V2 ] Xkb.River_xkb_binding_v1.t
     ; seat : Seat.t
     ; action : Action.t
+    ; mods : int32
+    ; keysym : Xkbcommon.Keysym.t
     }
 end =
   Xkb_binding
@@ -108,6 +110,8 @@ and Pointer_binding : sig
     { obj : [ `V4 ] Rwm.River_pointer_binding_v1.t
     ; seat : Seat.t
     ; action : Action.t
+    ; mods : int32
+    ; button : Input_event.t
     }
 end =
   Pointer_binding
