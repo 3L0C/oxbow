@@ -79,13 +79,14 @@ let close_windows (ctx : Ctx.manage Ctx.t) =
        wm.windows
 ;;
 
-let close_seats (wm : Types.Window_manager.t) =
+let close_seats (ctx : Ctx.manage Ctx.t) =
+  let wm = Ctx.wm ctx in
   wm.seats
   <- List.filter
        (fun (s : Types.Seat.t) ->
           match s.state with
           | S_closing ->
-            Seat.destroy s;
+            Seat.destroy ctx s;
             false
           | _ -> true)
        wm.seats
@@ -116,18 +117,18 @@ let on_new_seat (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
 ;;
 
 let manage_seat (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
-  let rec drain_actions () =
-    match Queue.take_opt seat.pending_actions with
+  let rec drain () =
+    match Queue.take_opt seat.pending_requests with
     | None -> ()
-    | Some p ->
-      Requests.action ctx seat p;
-      drain_actions ()
+    | Some r ->
+      Requests.handle ctx seat r;
+      drain ()
   in
   on_new_seat ctx seat;
   Seat.sync ctx seat;
   Requests.focus_request ctx seat;
   Requests.interaction ctx seat;
-  drain_actions ();
+  drain ();
   Operations.seat_op ctx seat
 ;;
 
@@ -157,7 +158,7 @@ let on_manage_start proxy (wm_box : Types.Window_manager.t Box.t) =
       Window_manager.sync ctx;
       remove_outputs ctx;
       close_windows ctx;
-      close_seats wm;
+      close_seats ctx;
       Focus.sync ctx;
       List.iter (manage_window ctx) wm.windows;
       List.iter (manage_seat ctx) wm.seats;
@@ -358,7 +359,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
     ; layer_focus = Lf_none
     ; xkb_bindings = []
     ; pointer_bindings = []
-    ; pending_actions = Queue.create ()
+    ; pending_requests = Queue.create ()
     ; hovered = None
     ; interacted = None
     ; focus_request = Focus_none

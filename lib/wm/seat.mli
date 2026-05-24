@@ -1,5 +1,29 @@
 type t = Types.Seat.t
 
+(** [replace_xkb_binding ctx seat mods keysym action] replaces the existing
+    binding matching [mods] and [keysym] with [action].
+
+   {b Effects:} mutates WM state; sends River request *)
+val replace_xkb_binding
+  :  Ctx.manage Ctx.t
+  -> t
+  -> int32
+  -> Xkbcommon.Keysym.t
+  -> Ocdwm_core.Action.t
+  -> unit
+
+(** [replace_pointer_binding ctx seat mods button action] replaces the existing
+    binding matching [mods] and [button] with [action].
+
+   {b Effects:} mutates WM state; sends River request *)
+val replace_pointer_binding
+  :  Ctx.manage Ctx.t
+  -> t
+  -> int32
+  -> Input_event.t
+  -> Ocdwm_core.Action.t
+  -> unit
+
 (** [init ctx seat] initializes [seat] with default keybindings.
 
     {b Effects:} mutates WM state; sends River request *)
@@ -11,10 +35,10 @@ val init : Ctx.manage Ctx.t -> t -> unit
     {b Effects:} mutates WM state *)
 val refresh_cursor_target : Types.Window_manager.t -> t -> unit
 
-(** [destroy seat] destroys the Wayland objects underlying [seat].
+(** [destroy ctx seat] destroys the Wayland objects underlying [seat].
 
     {b Effects:} mutates WM state; sends River request *)
-val destroy : t -> unit
+val destroy : Ctx.manage Ctx.t -> t -> unit
 
 (** [handle_pointer_position wm seat x y] updates the pointer position of [seat]
     and syncs [seat]'s focus request when [focus_follows_pointer] is [true].

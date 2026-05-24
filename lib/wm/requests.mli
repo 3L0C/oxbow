@@ -15,9 +15,9 @@ val focus_request : Ctx.manage Ctx.t -> Types.Seat.t -> unit
     {b Effects:} mutates WM state; sends River request *)
 val interaction : Ctx.manage Ctx.t -> Types.Seat.t -> unit
 
-(** [action ctx seat action] carries out [action] on behalf of [seat].
+(** [handle ctx seat request] carries out [request] on behalf of [seat].
 
     {b Effects:} mutates WM state; sends River request; I/O
 
     @raise [Exceptions.Finished]*)
-val action : Ctx.manage Ctx.t -> Types.Seat.t -> Pending_action.t -> unit
+val handle : Ctx.manage Ctx.t -> Types.Seat.t -> Pending_request.t -> unit

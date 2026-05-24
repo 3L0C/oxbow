@@ -89,10 +89,10 @@ let drain_pending_replies (wm : t) =
   List.iter
     (fun (seat : Types.Seat.t) ->
        Queue.iter
-         (fun (p : Pending_action.t) ->
+         (fun (p : Pending_request.t) ->
             Option.iter (fun u -> Eio.Promise.resolve_error u "wm shutting down") p.reply)
-         seat.pending_actions;
-       Queue.clear seat.pending_actions)
+         seat.pending_requests;
+       Queue.clear seat.pending_requests)
     wm.seats
 ;;
 

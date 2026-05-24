@@ -5,7 +5,7 @@ open! Ocdwm_core
 
 type t = Types.Seat.t
 
-let xkb_binding_destroy (binding : Types.Xkb_binding.t) =
+let xkb_binding_destroy (_ : Ctx.manage Ctx.t) (binding : Types.Xkb_binding.t) =
   Xkb.River_xkb_binding_v1.destroy binding.obj;
   Wayland.Proxy.delete binding.obj
 ;;
@@ -18,6 +18,7 @@ let xkb_binding_create
       (action : Action.t)
   =
   let wm = Ctx.wm ctx in
+  let body = Request_body.Trigger action in
   let keysym_i32 = Int32.of_int (Xkbcommon.Keysym.to_int keysym) in
   let binding : Types.Xkb_binding.t =
     { obj =
@@ -30,7 +31,7 @@ let xkb_binding_create
             method on_released _ = ()
 
             method on_pressed _ =
-              Queue.push Pending_action.{ action; reply = None } s.pending_actions
+              Queue.push Pending_request.{ body; reply = None } s.pending_requests
           end
           ~keysym:keysym_i32
           ~modifiers:mods
@@ -44,7 +45,21 @@ let xkb_binding_create
   s.xkb_bindings <- binding :: s.xkb_bindings
 ;;
 
-let pointer_binding_destroy (pointer : Types.Pointer_binding.t) =
+let replace_xkb_binding
+      (ctx : Ctx.manage Ctx.t)
+      (s : t)
+      (mods : int32)
+      (keysym : Xkbcommon.Keysym.t)
+      (action : Ocdwm_core.Action.t)
+  =
+  let matches (b : Types.Xkb_binding.t) = b.mods = mods && b.keysym = keysym in
+  let to_destroy, to_keep = List.partition matches s.xkb_bindings in
+  List.iter (xkb_binding_destroy ctx) to_destroy;
+  s.xkb_bindings <- to_keep;
+  xkb_binding_create ctx s mods keysym action
+;;
+
+let pointer_binding_destroy (_ : Ctx.manage Ctx.t) (pointer : Types.Pointer_binding.t) =
   Rwm.River_pointer_binding_v1.destroy pointer.obj;
   Wayland.Proxy.delete pointer.obj
 ;;
@@ -56,6 +71,7 @@ let pointer_binding_create
       (button : Input_event.t)
       (action : Action.t)
   =
+  let body = Request_body.Trigger action in
   let binding : Types.Pointer_binding.t =
     { obj =
         Rwm.River_seat_v1.get_pointer_binding
@@ -65,7 +81,7 @@ let pointer_binding_create
             method on_released _ = ()
 
             method on_pressed _ =
-              Queue.push Pending_action.{ action; reply = None } s.pending_actions
+              Queue.push Pending_request.{ body; reply = None } s.pending_requests
           end
           ~button:(Input_event.to_int32 button)
           ~modifiers:mods
@@ -79,9 +95,23 @@ let pointer_binding_create
   s.pointer_bindings <- binding :: s.pointer_bindings
 ;;
 
-let destroy (s : t) =
-  List.iter xkb_binding_destroy s.xkb_bindings;
-  List.iter pointer_binding_destroy s.pointer_bindings;
+let replace_pointer_binding
+      (ctx : Ctx.manage Ctx.t)
+      (s : t)
+      (mods : int32)
+      (button : Input_event.t)
+      (action : Ocdwm_core.Action.t)
+  =
+  let matches (p : Types.Pointer_binding.t) = p.mods = mods && p.button = button in
+  let to_destroy, to_keep = List.partition matches s.pointer_bindings in
+  List.iter (pointer_binding_destroy ctx) to_destroy;
+  s.pointer_bindings <- to_keep;
+  pointer_binding_create ctx s mods button action
+;;
+
+let destroy (ctx : Ctx.manage Ctx.t) (s : t) =
+  List.iter (xkb_binding_destroy ctx) s.xkb_bindings;
+  List.iter (pointer_binding_destroy ctx) s.pointer_bindings;
   Rlsh.River_layer_shell_seat_v1.destroy s.layer_shell;
   Wayland.Proxy.delete s.layer_shell;
   Rwm.River_seat_v1.destroy s.obj;

@@ -71,17 +71,14 @@ let handle_line ~(wm : Types.Window_manager.t) ~flow line =
   | Ok (req, seat) ->
     (match wm.state with
      | Wm_running ->
-       (match req.body with
-        | Trigger action ->
-          let p, u = Eio.Promise.create () in
-          let open Pending_action in
-          let pending_action = { action; reply = Some u } in
-          Queue.push pending_action seat.pending_actions;
-          Window_manager.mark_dirty wm;
-          (match Eio.Promise.await p with
-           | Ok () -> respond_ok flow
-           | Error msg -> respond_err flow msg)
-        | Setting _ -> respond_err flow "settings not yet supported")
+       let p, u = Eio.Promise.create () in
+       let open Pending_request in
+       let pending_request = { body = req.body; reply = Some u } in
+       Queue.push pending_request seat.pending_requests;
+       Window_manager.mark_dirty wm;
+       (match Eio.Promise.await p with
+        | Ok () -> respond_ok flow
+        | Error msg -> respond_err flow msg)
      | Wm_close_sent | Wm_closed | Wm_exited | Wm_pending_close | Wm_pending_exit _ ->
        respond_err flow "wm shutting down")
 ;;
