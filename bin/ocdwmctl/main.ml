@@ -7,6 +7,23 @@ let version =
   | None -> "dev"
 ;;
 
+let bind_group =
+  Ctl_cli.group
+    ~name:"bind"
+    ~doc:"Bind a key or pointer button to a command"
+    [ Cmd_close_focused.bind_cmd
+    ; Cmd_close_wm.bind_cmd
+    ; Cmd_exit_session.bind_cmd
+    ; Cmd_focus.bind_cmd
+    ; Cmd_tag_view_previous.bind_cmd
+    ; Cmd_toggle_fake_fullscreen.bind_cmd
+    ; Cmd_toggle_floating.bind_cmd
+    ; Cmd_toggle_fullscreen.bind_cmd
+    ; Cmd_toggle_maximize.bind_cmd
+    ; Cmd_zoom.bind_cmd
+    ]
+;;
+
 let cmd =
   Ctl_cli.group
     ~version
@@ -22,6 +39,7 @@ let cmd =
     ; Cmd_toggle_fullscreen.cmd
     ; Cmd_toggle_maximize.cmd
     ; Cmd_zoom.cmd
+    ; bind_group
     ]
 ;;
 

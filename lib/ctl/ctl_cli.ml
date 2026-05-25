@@ -114,10 +114,10 @@ let exit_conn_failed =
 let exits = exit_protocol_err :: exit_conn_failed :: Cmd.Exit.defaults
 let info ?(exits = exits) ?version name ~doc = Cmd.info name ~doc ~exits ?version
 
-let dispatch ?seat ?socket action =
+let dispatch ?seat ?socket body =
   Eio_main.run
   @@ fun env ->
-  match Client.send ~env ?seat ?socket (Trigger action) with
+  match Client.send ~env ?seat ?socket body with
   | Ok () -> Cmd.Exit.ok
   | Error (E_conn_failed msg) ->
     (Logs.err @@ fun m -> m "connection failed: %s" msg);
@@ -132,21 +132,50 @@ let group ?version ~name ~doc =
   Cmd.group (info ?version name ~doc) ~default
 ;;
 
-let cmd ~name ~doc action =
-  let open Cmdliner.Term.Syntax in
-  Cmd.v (info name ~doc)
-  @@
-  let+ seat = seat
-  and+ socket = socket in
-  dispatch ?seat ?socket action
-;;
-
-let cmd_of_term ~name ~doc action_term =
+let cmd ~name ~doc body_term =
   let open Cmdliner.Term.Syntax in
   Cmd.v (info name ~doc)
   @@
   let+ seat = seat
   and+ socket = socket
-  and+ action = action_term in
-  dispatch ?seat ?socket action
+  and+ body = body_term in
+  dispatch ?seat ?socket body
+;;
+
+let trigger_term action_term =
+  let open Cmdliner.Term.Syntax in
+  let+ action = action_term in
+  Core.Request_body.Trigger action
+;;
+
+let bind_suffix =
+  let open Cmdliner.Term.Syntax in
+  let to_kw = Arg.enum [ "to", () ] in
+  let+ () =
+    Arg.(
+      required
+      & pos ~rev:true 1 (some to_kw) None
+      & info [] ~docv:"to" ~doc:"Literal $(b,to) separating action from keybind")
+  and+ keybind =
+    Arg.(
+      required
+      & pos ~rev:true 0 (some string) None
+      & info
+          []
+          ~docv:"KEYBIND"
+          ~doc:
+            "Modifiers, keysym, and/or button to bind to COMMAND. Modifiers include \
+             Shift, Control, Mod1/Alt, Mod3, Mod4/Super/Logo, Mod5, or None. Keysyms \
+             mirror xkbcommon-keysym.h without the 'K_' prefix, e.g., K_Return > Return. \
+             Buttons are prefixed with 'Btn_' followed by [0-9], left, right, middle, \
+             side, extra, forward, back, or task.")
+  in
+  keybind
+;;
+
+let bind_term action_term =
+  let open Cmdliner.Term.Syntax in
+  let+ action = action_term
+  and+ keybind = bind_suffix in
+  Core.Request_body.Setting (Bind { keybind; action })
 ;;

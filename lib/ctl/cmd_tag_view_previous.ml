@@ -1,8 +1,7 @@
 open Ocdwm_core
 
-let cmd =
-  Ctl_cli.cmd
-    ~name:"tag-view-previous"
-    ~doc:"View the previously selected set of tags"
-    Action.Tag_view_previous
-;;
+let action_term = Cmdliner.Term.const Action.Tag_view_previous
+let name = "tag-view-previous"
+let doc = "View the previously selected set of tags"
+let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.trigger_term action_term
+let bind_cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.bind_term action_term

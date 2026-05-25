@@ -10,7 +10,7 @@ val tag_set : Core.Tag_set.t Cmdliner.Arg.conv
 val tag_arg : Core.Tag_arg.t Cmdliner.Arg.conv
 
 (** [group ?version ~name ~doc cmds] is command that groups the subcommands
-    [cmds] *)
+    [cmds]. *)
 val group
   :  ?version:string
   -> name:string
@@ -18,12 +18,16 @@ val group
   -> 'a Cmdliner.Cmd.t list
   -> 'a Cmdliner.Cmd.t
 
-(** [cmd ~name ~doc action] is a simple command for [action] *)
-val cmd : name:string -> doc:string -> Core.Action.t -> int Cmdliner.Cmd.t
-
-(** [cmd_of_term ~name ~doc action_term] is a command with an arbitrary term *)
-val cmd_of_term
+(** [cmd ~name ~doc body_term] is a command with an arbitrary term. *)
+val cmd
   :  name:string
   -> doc:string
-  -> Core.Action.t Cmdliner.Term.t
+  -> Core.Request_body.t Cmdliner.Term.t
   -> int Cmdliner.Cmd.t
+
+(** [trigger_term action_term] maps the action into a [Trigger] body. *)
+val trigger_term : Core.Action.t Cmdliner.Term.t -> Core.Request_body.t Cmdliner.Term.t
+
+(** [bind_term action_term] composes the action with the [to KEYBIND] suffix and
+    wraps the result in [Setting (Bind { keybind; action })]. *)
+val bind_term : Core.Action.t Cmdliner.Term.t -> Core.Request_body.t Cmdliner.Term.t
