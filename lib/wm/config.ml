@@ -29,7 +29,7 @@ let create_tag_data ~(entry : Layout_entry.t) : Tag_data.t =
 let default (entry : Layout_entry.t) : t =
   { default_tag_config = { layout_params = default_layout_params; layout_entry = entry }
   ; borders = default_borders
-  ; modkey = Rwm.River_seat_v1.Modifiers.mod4
+  ; modkey = Rwm.River_seat_v1.Modifiers.(Int32.(logor mod4 ctrl))
   ; rules = []
   ; focus_follows_pointer = true
   }
