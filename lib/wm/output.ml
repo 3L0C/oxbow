@@ -46,7 +46,6 @@ let apply (intent : Focus_intent.t) (o : t) =
 
 let destroy (o : t) =
   Rlsh.River_layer_shell_output_v1.destroy o.layer_shell;
-  Wayland.Proxy.delete o.layer_shell;
   Rwm.River_output_v1.destroy o.obj;
   Wayland.Proxy.delete o.obj
 ;;

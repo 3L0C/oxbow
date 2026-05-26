@@ -6,8 +6,7 @@ open! Ocdwm_core
 type t = Types.Seat.t
 
 let xkb_binding_destroy (_ : Ctx.manage Ctx.t) (binding : Types.Xkb_binding.t) =
-  Xkb.River_xkb_binding_v1.destroy binding.obj;
-  Wayland.Proxy.delete binding.obj
+  Xkb.River_xkb_binding_v1.destroy binding.obj
 ;;
 
 let xkb_binding_create
@@ -60,8 +59,7 @@ let replace_xkb_binding
 ;;
 
 let pointer_binding_destroy (_ : Ctx.manage Ctx.t) (pointer : Types.Pointer_binding.t) =
-  Rwm.River_pointer_binding_v1.destroy pointer.obj;
-  Wayland.Proxy.delete pointer.obj
+  Rwm.River_pointer_binding_v1.destroy pointer.obj
 ;;
 
 let pointer_binding_create
@@ -113,7 +111,6 @@ let destroy (ctx : Ctx.manage Ctx.t) (s : t) =
   List.iter (xkb_binding_destroy ctx) s.xkb_bindings;
   List.iter (pointer_binding_destroy ctx) s.pointer_bindings;
   Rlsh.River_layer_shell_seat_v1.destroy s.layer_shell;
-  Wayland.Proxy.delete s.layer_shell;
   Rwm.River_seat_v1.destroy s.obj;
   Wayland.Proxy.delete s.obj
 ;;
