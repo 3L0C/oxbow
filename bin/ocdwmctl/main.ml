@@ -15,6 +15,7 @@ let bind_group =
     ; Cmd_close_wm.bind_cmd
     ; Cmd_exit_session.bind_cmd
     ; Cmd_focus.bind_cmd
+    ; Cmd_send_to.bind_cmd
     ; Cmd_tag_view_previous.bind_cmd
     ; Cmd_toggle_fake_fullscreen.bind_cmd
     ; Cmd_toggle_floating.bind_cmd
@@ -33,6 +34,7 @@ let cmd =
     ; Cmd_close_wm.cmd
     ; Cmd_exit_session.cmd
     ; Cmd_focus.cmd
+    ; Cmd_send_to.cmd
     ; Cmd_tag_view_previous.cmd
     ; Cmd_toggle_fake_fullscreen.cmd
     ; Cmd_toggle_floating.cmd

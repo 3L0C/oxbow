@@ -8,6 +8,8 @@ val int_delta : int Core.Delta.t Cmdliner.Arg.conv
 val float_delta : float Core.Delta.t Cmdliner.Arg.conv
 val tag_set : Core.Tag_set.t Cmdliner.Arg.conv
 val tag_arg : Core.Tag_arg.t Cmdliner.Arg.conv
+val policy_flag : Core.Tag_policy.t Cmdliner.Term.t
+val output_name_arg : string Cmdliner.Term.t
 
 (** [group ?version ~name ~doc cmds] is command that groups the subcommands
     [cmds]. *)

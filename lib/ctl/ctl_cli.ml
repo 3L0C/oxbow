@@ -100,6 +100,28 @@ let tag_arg : Core.Tag_arg.t Arg.Conv.t =
   Arg.Conv.make ~docv:"TAGS" ~parser ~pp ()
 ;;
 
+let policy_flag =
+  Arg.(
+    value
+    & vflag
+        Core.Tag_policy.Tag_keep
+        [ ( Core.Tag_policy.Tag_take
+          , info
+              [ "take" ]
+              ~doc:"Window takes the the active tags on the destination output" )
+        ])
+;;
+
+let output_name_arg =
+  Arg.(
+    required
+    & pos 0 (some string) None
+    & info
+        []
+        ~docv:"OUTPUT_NAME"
+        ~doc:"The name of the target output, e.g., HDMI-A-2, eDP-1, etc.")
+;;
+
 let code_protocol_err = 1
 let code_conn_failed = 2
 
