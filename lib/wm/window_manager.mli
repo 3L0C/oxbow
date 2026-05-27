@@ -48,7 +48,7 @@ val request_exit : ?origin:[ `Local | `Compositor ] -> t -> unit
 (** [request_close wm] is a request to close ocdwm but not River. No-op when
     [wm.state <> Wm_running].
 
-   {b Effects:} mutates WM state; sends River request *)
+   {b Effects:} mutates WM state *)
 val request_close : t -> unit
 
 (** [dispatch_pending wm] handles the pending exit/close state for [wm].
@@ -66,11 +66,6 @@ val notify_finished : t -> unit
 
    {b Effects:} mutates WM state *)
 val await_shutdown : t -> unit
-
-(** [destroy wm] destroys the Wayland objects underlying [wm].
-
-    {b Effects:} mutates WM state; sends River request *)
-val destroy : t -> unit
 
 (** [teardown ~clock wm] handles [wm] cleanup.
 

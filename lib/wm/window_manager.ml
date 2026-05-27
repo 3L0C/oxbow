@@ -1,6 +1,5 @@
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
-module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 open Window_manager_state
 
 type t = Types.Window_manager.t
@@ -64,24 +63,11 @@ let request_exit ?(origin = `Local) (wm : t) =
   | Wm_running ->
     wm.state <- Wm_pending_exit origin;
     mark_dirty wm
-  | Wm_pending_exit _ | Wm_pending_close | Wm_close_sent | Wm_exited | Wm_closed ->
+  | Wm_pending_exit _ | Wm_exited | Wm_close_requested ->
     Logs.warn
     @@ fun m ->
     m
       "ignoring exit request for non-running state: %s"
-      (Window_manager_state.to_string wm.state)
-;;
-
-let request_close (wm : t) =
-  match wm.state with
-  | Wm_running ->
-    wm.state <- Wm_pending_close;
-    mark_dirty wm
-  | Wm_pending_exit _ | Wm_pending_close | Wm_close_sent | Wm_exited | Wm_closed ->
-    Logs.warn
-    @@ fun m ->
-    m
-      "ignoring close request for non-running state: %s"
       (Window_manager_state.to_string wm.state)
 ;;
 
@@ -96,6 +82,20 @@ let drain_pending_replies (wm : t) =
     wm.seats
 ;;
 
+let request_close (wm : t) =
+  match wm.state with
+  | Wm_running ->
+    drain_pending_replies wm;
+    wm.state <- Wm_close_requested;
+    Eio.Condition.broadcast wm.shutdown
+  | Wm_pending_exit _ | Wm_exited | Wm_close_requested ->
+    Logs.warn
+    @@ fun m ->
+    m
+      "ignoring close request for non-running state: %s"
+      (Window_manager_state.to_string wm.state)
+;;
+
 let dispatch_pending (wm : t) =
   match wm.state with
   | Wm_pending_exit _ ->
@@ -103,11 +103,7 @@ let dispatch_pending (wm : t) =
     wm.state <- Wm_exited;
     Rwm.River_window_manager_v1.exit_session wm.river_wm_v1;
     Eio.Condition.broadcast wm.shutdown
-  | Wm_pending_close ->
-    drain_pending_replies wm;
-    wm.state <- Wm_close_sent;
-    Rwm.River_window_manager_v1.stop wm.river_wm_v1
-  | Wm_running | Wm_exited | Wm_close_sent | Wm_closed ->
+  | Wm_running | Wm_exited | Wm_close_requested ->
     Logs.err
     @@ fun m ->
     m
@@ -117,14 +113,11 @@ let dispatch_pending (wm : t) =
 
 let notify_finished (wm : t) =
   match wm.state with
-  | Wm_close_sent ->
-    wm.state <- Wm_closed;
-    Eio.Condition.broadcast wm.shutdown
   | Wm_running ->
     drain_pending_replies wm;
-    wm.state <- Wm_closed;
+    wm.state <- Wm_close_requested;
     Eio.Condition.broadcast wm.shutdown
-  | Wm_pending_exit _ | Wm_exited | Wm_pending_close | Wm_closed ->
+  | Wm_pending_exit _ | Wm_exited | Wm_close_requested ->
     Logs.err
     @@ fun m ->
     m
@@ -136,14 +129,8 @@ let await_shutdown (wm : t) =
   Eio.Condition.loop_no_mutex wm.shutdown
   @@ fun () ->
   match wm.state with
-  | Wm_closed | Wm_exited -> Some ()
-  | Wm_running | Wm_pending_exit _ | Wm_pending_close | Wm_close_sent -> None
-;;
-
-let destroy (wm : t) =
-  Rwm.River_window_manager_v1.destroy wm.river_wm_v1;
-  Xkb.River_xkb_bindings_v1.destroy wm.river_xkb_v1;
-  Rlsh.River_layer_shell_v1.destroy wm.river_lsh_v1
+  | Wm_exited | Wm_close_requested -> Some ()
+  | Wm_running | Wm_pending_exit _ -> None
 ;;
 
 let teardown ~(clock : float Eio.Time.clock_ty Eio.Resource.t) (wm : t) =
@@ -162,8 +149,8 @@ let teardown ~(clock : float Eio.Time.clock_ty Eio.Resource.t) (wm : t) =
      | Eio.Time.Timeout ->
        Logs.warn
        @@ fun m -> m "teardown: river did not close after exit_session within 1s")
-  | Wm_closed -> destroy wm
-  | Wm_running | Wm_pending_exit _ | Wm_pending_close | Wm_close_sent ->
+  | Wm_close_requested -> ()
+  | Wm_running | Wm_pending_exit _ ->
     Logs.err
     @@ fun m ->
     m

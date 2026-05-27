@@ -79,7 +79,7 @@ let handle_line ~(wm : Types.Window_manager.t) ~flow line =
        (match Eio.Promise.await p with
         | Ok () -> respond_ok flow
         | Error msg -> respond_err flow msg)
-     | Wm_close_sent | Wm_closed | Wm_exited | Wm_pending_close | Wm_pending_exit _ ->
+     | Wm_pending_exit _ | Wm_exited | Wm_close_requested ->
        respond_err flow "wm shutting down")
 ;;
 
