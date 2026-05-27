@@ -34,6 +34,7 @@ type t =
   | Tag_toggle_view of Tag_set.t [@name "tag_toggle_view"]
   | Tag_view_previous [@name "tag_view_previous"]
   | Tag_view_cycle of Direction.t [@name "tag_view_cycle"]
+  | Tag_view_cycle_occupied of Direction.t [@name "tag_view_cycle_occupied"]
   | Window_tag of Tag_arg.t [@name "window_tag"]
   | Window_toggle_tag of Tag_set.t [@name "window_toggle_tag"]
   (* Layout *)

@@ -25,14 +25,7 @@ let socket =
 
 let direction =
   let open Core.Direction in
-  Arg.enum
-    [ "next", Dir_next
-    ; "prev", Dir_prev
-    ; "left", Dir_left
-    ; "right", Dir_right
-    ; "up", Dir_up
-    ; "down", Dir_down
-    ]
+  Arg.enum [ "next", Next; "prev", Prev ]
 ;;
 
 let stack_kind =

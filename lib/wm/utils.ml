@@ -38,7 +38,7 @@ let opt_holds (o : 'a option) (v : 'a) =
   | None -> false
 ;;
 
-let after_or_first (e : 'a) = function
+let next_or_first (e : 'a) = function
   | [] -> None
   | first :: _ as lst ->
     let rec aux = function
@@ -50,7 +50,7 @@ let after_or_first (e : 'a) = function
     aux lst
 ;;
 
-let prev_or_last (e : 'a) (lst : 'a list) = List.rev lst |> after_or_first e
+let prev_or_last (e : 'a) (lst : 'a list) = List.rev lst |> next_or_first e
 
 let rotate_right p l =
   let rec aux acc = function

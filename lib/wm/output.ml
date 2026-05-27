@@ -259,10 +259,8 @@ let rotate_window (dir : Direction.t) (o : t) =
   let open Direction in
   match focused_window o, dir with
   | None, _ -> ()
-  | Some w, Dir_next | Some w, Dir_down | Some w, Dir_right ->
-    o.windows <- Utils.rotate_right (( == ) w) o.windows
-  | Some w, Dir_prev | Some w, Dir_up | Some w, Dir_left ->
-    o.windows <- Utils.rotate_left (( == ) w) o.windows
+  | Some w, Next -> o.windows <- Utils.rotate_right (( == ) w) o.windows
+  | Some w, Prev -> o.windows <- Utils.rotate_left (( == ) w) o.windows
 ;;
 
 let resolve_tag_arg (arg : Tag_arg.t) (o : t) =

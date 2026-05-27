@@ -125,16 +125,16 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
       [ (* mods, keysym,   action *)
         modkey, K_Return, Action.Spawn "kitty"
       ; modkey, K_q, Action.Close_focused
-      ; modkey, K_j, Action.Focus_window_direction Dir_next
-      ; modkey, K_k, Action.Focus_window_direction Dir_prev
+      ; modkey, K_j, Action.Focus_window_direction Next
+      ; modkey, K_k, Action.Focus_window_direction Prev
       ; modkey, K_Escape, Action.Close_wm
       ; Int32.(logor modkey shift), K_Escape, Action.Exit_session
-      ; modkey, K_h, Action.Tag_view_cycle Dir_prev
-      ; modkey, K_l, Action.Tag_view_cycle Dir_next
-      ; modkey, K_Tab, Action.Tag_view_cycle Dir_right
-      ; modkey, K_ISO_Left_Tab, Action.Tag_view_cycle Dir_left
-      ; Int32.(logor modkey alt), K_Tab, Layout_cycle Dir_next
-      ; Int32.(logor modkey alt), K_ISO_Left_Tab, Layout_cycle Dir_prev
+      ; modkey, K_h, Action.Tag_view_cycle Prev
+      ; modkey, K_l, Action.Tag_view_cycle Next
+      ; modkey, K_Tab, Action.Tag_view_cycle Next
+      ; modkey, K_ISO_Left_Tab, Action.Tag_view_cycle Prev
+      ; Int32.(logor modkey alt), K_Tab, Layout_cycle Next
+      ; Int32.(logor modkey alt), K_ISO_Left_Tab, Layout_cycle Prev
       ; Int32.(logor modkey shift), K_space, Toggle_floating
       ; modkey, K_v, Toggle_fullscreen
       ; modkey, K_I, Toggle_fake_fullscreen
@@ -143,8 +143,8 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
       ; modkey, K_L, Set_mfact Delta.(Rel 0.05)
       ; modkey, K_a, Set_mfact Delta.(Abs 0.55)
       ; modkey, K_space, Zoom
-      ; modkey, K_J, Rotate_window Dir_down
-      ; modkey, K_K, Rotate_window Dir_up
+      ; modkey, K_J, Rotate_window Next
+      ; modkey, K_K, Rotate_window Prev
       ]
   in
   let num_keys = Xkbcommon.Keysym.[ K_1; K_2; K_3; K_4; K_5; K_6; K_7; K_8; K_9 ] in

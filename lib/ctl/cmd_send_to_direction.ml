@@ -29,15 +29,6 @@ let make_bind { name; dir } =
   Ctl_cli.group ~name ~doc:(Printf.sprintf "Send in the %s direction" name) [ output ]
 ;;
 
-let targets =
-  [ { name = "next"; dir = Dir_next }
-  ; { name = "prev"; dir = Dir_prev }
-  ; { name = "left"; dir = Dir_left }
-  ; { name = "right"; dir = Dir_right }
-  ; { name = "up"; dir = Dir_up }
-  ; { name = "down"; dir = Dir_down }
-  ]
-;;
-
+let targets = [ { name = "next"; dir = Next }; { name = "prev"; dir = Prev } ]
 let cmds = List.map make_cmd targets
 let binds = List.map make_bind targets

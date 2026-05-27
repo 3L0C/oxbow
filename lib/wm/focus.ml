@@ -46,9 +46,8 @@ let focus_window_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direc
   | _, None -> ()
   | _, Some o ->
     (match dir with
-     | Dir_next -> Output.next_window o |> Option.iter (focus_window ctx seat)
-     | Dir_prev -> Output.prev_window o |> Option.iter (focus_window ctx seat)
-     | Dir_left | Dir_right | Dir_up | Dir_down -> ())
+     | Next -> Output.next_window o |> Option.iter (focus_window ctx seat)
+     | Prev -> Output.prev_window o |> Option.iter (focus_window ctx seat))
 ;;
 
 let focus_window_query (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (q : Window_query.t)
@@ -80,7 +79,7 @@ let focus_window_query (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (q : Windo
     let target =
       match focused_of seat with
       | Some w when q.cycle && matches_fields w.title w.app_id ->
-        Utils.after_or_first w windows
+        Utils.next_or_first w windows
       | _ -> List.nth_opt windows 0
     in
     Option.iter (focus_window ctx seat) target
@@ -100,8 +99,8 @@ let focus_output_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direc
   | Some o ->
     let target =
       match dir with
-      | Dir_next | Dir_down | Dir_right -> Utils.after_or_first o wm.outputs
-      | Dir_prev | Dir_up | Dir_left -> Utils.prev_or_last o wm.outputs
+      | Next -> Utils.next_or_first o wm.outputs
+      | Prev -> Utils.prev_or_last o wm.outputs
     in
     (match target with
      | Some t when t != o -> focus_output ctx seat t

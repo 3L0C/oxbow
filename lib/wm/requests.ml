@@ -241,14 +241,23 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
      | Some o ->
        let target =
          match dir with
-         | Dir_next ->
+         | Next -> Tag_set.next o.selected_tags
+         | Prev -> Tag_set.prev o.selected_tags
+       in
+       Output.switch_tags o target;
+       Output.mark_dirty wm o)
+  | Tag_view_cycle_occupied dir ->
+    (match seat.output with
+     | None -> raise_seat_missing_output ()
+     | Some o ->
+       let target =
+         match dir with
+         | Next ->
            let occupied = Output.occupied_tags o in
            Tag_set.next_occupied ~selected:o.selected_tags ~occupied
-         | Dir_prev ->
+         | Prev ->
            let occupied = Output.occupied_tags o in
            Tag_set.prev_occupied ~selected:o.selected_tags ~occupied
-         | Dir_down | Dir_right -> Tag_set.next o.selected_tags
-         | Dir_up | Dir_left -> Tag_set.prev o.selected_tags
        in
        Output.switch_tags o target;
        Output.mark_dirty wm o)

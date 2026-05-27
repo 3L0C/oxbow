@@ -58,7 +58,7 @@ let find ~(registry : Layout_registry.t) ~(name : string) =
 ;;
 
 let cycle ~(registry : Layout_registry.t) ~(name : string) ~(dir : Direction.t) =
-  let entries = if dir = Dir_next then registry.entries else List.rev registry.entries in
+  let entries = if dir = Next then registry.entries else List.rev registry.entries in
   let rec after = function
     | [ (n, _) ] when n = name -> List.nth_opt entries 0
     | (n, _) :: x :: _ when n = name -> Some x

@@ -29,12 +29,8 @@ let make_binds { name; ppf; dir } =
 ;;
 
 let targets =
-  [ { name = "next"; ppf = "Focus the next %s"; dir = Dir_next }
-  ; { name = "prev"; ppf = "Focus the previous %s"; dir = Dir_prev }
-  ; { name = "left"; ppf = "Focus the %s to the left"; dir = Dir_left }
-  ; { name = "right"; ppf = "Focus the %s to the right"; dir = Dir_right }
-  ; { name = "up"; ppf = "Focus the %s above"; dir = Dir_up }
-  ; { name = "down"; ppf = "Focus the %s below"; dir = Dir_down }
+  [ { name = "next"; ppf = "Focus the next %s"; dir = Next }
+  ; { name = "prev"; ppf = "Focus the previous %s"; dir = Prev }
   ]
 ;;
 
