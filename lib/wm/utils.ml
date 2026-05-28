@@ -52,7 +52,7 @@ let next_or_first (e : 'a) = function
 
 let prev_or_last (e : 'a) (lst : 'a list) = List.rev lst |> next_or_first e
 
-let rotate_right p l =
+let shift_right p l =
   let rec aux acc = function
     | [ x ] when p x -> x :: List.rev acc
     | x :: y :: xs when p x -> (List.rev @@ (x :: y :: acc)) @ xs
@@ -62,4 +62,4 @@ let rotate_right p l =
   aux [] l
 ;;
 
-let rotate_left p l = List.rev @@ rotate_right p @@ List.rev l
+let shift_left p l = List.rev @@ shift_right p @@ List.rev l

@@ -33,7 +33,7 @@ type t =
   | Focus_output_spatial of Physical_direction.t [@name "focus_output_spatial"]
   | Focus_output_name of string [@name "focus_output_name"]
   (* Stack manipulation *)
-  | Rotate_window of Direction.t [@name "rotate_window"]
+  | Shift of Direction.t [@name "shift"]
   | Zoom [@name "zoom"]
   (* Tags *)
   | Tag_view of Tag_arg.t [@name "tag_view"]

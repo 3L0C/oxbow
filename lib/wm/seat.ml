@@ -143,8 +143,8 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
       ; modkey, K_L, Set_mfact Delta.(Rel 0.05)
       ; modkey, K_a, Set_mfact Delta.(Abs 0.55)
       ; modkey, K_space, Zoom
-      ; modkey, K_J, Rotate_window Next
-      ; modkey, K_K, Rotate_window Prev
+      ; modkey, K_J, Shift Next
+      ; modkey, K_K, Shift Prev
       ]
   in
   let num_keys = Xkbcommon.Keysym.[ K_1; K_2; K_3; K_4; K_5; K_6; K_7; K_8; K_9 ] in

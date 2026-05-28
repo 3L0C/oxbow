@@ -255,12 +255,12 @@ let set_stack_kind ~(kind : Stack_kind.t) (wm : Types.Window_manager.t) (o : t) 
   mark_dirty wm o
 ;;
 
-let rotate_window (dir : Direction.t) (o : t) =
+let shift (dir : Direction.t) (o : t) =
   let open Direction in
   match focused_window o, dir with
   | None, _ -> ()
-  | Some w, Next -> o.windows <- Utils.rotate_right (( == ) w) o.windows
-  | Some w, Prev -> o.windows <- Utils.rotate_left (( == ) w) o.windows
+  | Some w, Next -> o.windows <- Utils.shift_right (( == ) w) o.windows
+  | Some w, Prev -> o.windows <- Utils.shift_left (( == ) w) o.windows
 ;;
 
 let resolve_tag_arg (arg : Tag_arg.t) (o : t) =

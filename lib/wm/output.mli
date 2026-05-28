@@ -124,11 +124,12 @@ val set_gaps_outer : delta:int Delta.t -> Types.Window_manager.t -> t -> unit
    {b Effects:} mutates WM state; sends River request *)
 val set_stack_kind : kind:Stack_kind.t -> Types.Window_manager.t -> t -> unit
 
-(** [rotate_window dir output] moves the focused window in [dir] relative to its
-    current position in the tile stack.
+(** [shift dir output] shifts the focused window one slot in [dir] through the
+    tile stack, wrapping at the head and tail. No-op when there is no focused
+    window.
 
    {b Effects:} mutates WM state *)
-val rotate_window : Direction.t -> t -> unit
+val shift : Direction.t -> t -> unit
 
 (** [resolve_tag_arg arg output] returns the set of tags according to [arg] *)
 val resolve_tag_arg : Tag_arg.t -> t -> Tag_set.t

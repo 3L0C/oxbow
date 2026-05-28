@@ -203,11 +203,11 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
   | Focus_output_direction dir -> Focus.focus_output_dir ctx seat dir
   | Focus_output_spatial dir -> Focus.focus_output_spatial ctx seat dir
   | Focus_output_name name -> Focus.focus_output_name ctx seat name
-  | Rotate_window dir ->
+  | Shift dir ->
     (match seat.output with
      | None -> raise_seat_missing_output ()
      | Some o ->
-       Output.rotate_window dir o;
+       Output.shift dir o;
        Output.mark_dirty wm o)
   | Zoom -> Focus.zoom ctx seat
   | Tag_view arg ->
