@@ -17,14 +17,20 @@ type t =
       { dir : Direction.t
       ; policy : Tag_policy.t
       } [@name "send_to_output_direction"]
+  | Send_to_output_spatial of
+      { dir : Physical_direction.t
+      ; policy : Tag_policy.t
+      } [@name "send_to_output_spatial"]
   | Send_to_output_name of
       { name : string
       ; policy : Tag_policy.t
       } [@name "send_to_output_name"]
   (* Focus *)
   | Focus_window_direction of Direction.t [@name "focus_window_direction"]
+  | Focus_window_spatial of Physical_direction.t [@name "focus_window_spatial"]
   | Focus_window_query of Window_query.t [@name "focus_window_query"]
   | Focus_output_direction of Direction.t [@name "focus_output_direction"]
+  | Focus_output_spatial of Physical_direction.t [@name "focus_output_spatial"]
   | Focus_output_name of string [@name "focus_output_name"]
   (* Stack manipulation *)
   | Rotate_window of Direction.t [@name "rotate_window"]

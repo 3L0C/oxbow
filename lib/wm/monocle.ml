@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 let name = "monocle"
 let symbol = Symbol.S_dynamic (fun ctx -> Printf.sprintf "[%d]" ctx.focused_index)
 

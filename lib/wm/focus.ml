@@ -50,6 +50,28 @@ let focus_window_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direc
      | Prev -> Output.prev_window o |> Option.iter (focus_window ctx seat))
 ;;
 
+let focus_window_spatial
+      (ctx : Ctx.manage Ctx.t)
+      (seat : Types.Seat.t)
+      (dir : Physical_direction.t)
+  =
+  match focused_of seat, seat.output with
+  | Some w, _ when Window.is_fullscreen w -> ()
+  | _, None -> ()
+  | None, Some _ -> ()
+  | Some current, Some o ->
+    let from = Vector.position_of_box (Rect.to_int current.geom) in
+    Vector.nearest_in_direction
+      ~from
+      ~dir
+      (fun (w : Types.Window.t) ->
+         if w == current || (not @@ Window.is_tiled w) || (not @@ Window.tag_visible w)
+         then None
+         else Some (Rect.to_int w.geom |> Vector.position_of_box))
+      o.windows
+    |> Option.iter (focus_window ctx seat)
+;;
+
 let focus_window_query (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (q : Window_query.t)
   =
   let wm = Ctx.wm ctx in
@@ -105,6 +127,25 @@ let focus_output_dir (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (dir : Direc
     (match target with
      | Some t when t != o -> focus_output ctx seat t
      | _ -> ())
+;;
+
+let focus_output_spatial
+      (ctx : Ctx.manage Ctx.t)
+      (seat : Types.Seat.t)
+      (dir : Physical_direction.t)
+  =
+  let wm = Ctx.wm ctx in
+  match seat.output with
+  | None -> ()
+  | Some current ->
+    let from = Vector.position_of_box (Rect.to_int current.geom) in
+    Vector.nearest_in_direction
+      ~from
+      ~dir
+      (fun (o : Types.Output.t) ->
+         if o == current then None else Some (Rect.to_int o.geom |> Vector.position_of_box))
+      wm.outputs
+    |> Option.iter (focus_output ctx seat)
 ;;
 
 let focus_output_name (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (name : string) =

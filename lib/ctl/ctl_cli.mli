@@ -1,8 +1,13 @@
 module Core = Ocdwm_core
 
+module Any_direction : sig
+  type t =
+    | Logical of Core.Direction.t
+    | Spatial of Core.Physical_direction.t
+end
+
 val seat : string option Cmdliner.Term.t
 val socket : string option Cmdliner.Term.t
-val direction : Core.Direction.t Cmdliner.Arg.conv
 val stack_kind : Core.Stack_kind.t Cmdliner.Arg.conv
 val int_delta : int Core.Delta.t Cmdliner.Arg.conv
 val float_delta : float Core.Delta.t Cmdliner.Arg.conv

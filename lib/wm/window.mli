@@ -20,7 +20,7 @@ val set_position : 'p Ctx.t -> t -> x:int32 -> y:int32 -> unit
     window to match the new state.
 
     {b Effects:} mutates WM state; sends River request *)
-val set_geom : Ctx.manage Ctx.t -> t -> int32 Rect.t -> unit
+val set_geom : Ctx.manage Ctx.t -> t -> int32 Ocdwm_core.Rect.t -> unit
 
 (** [tag_visible window] is [true] if [window] is assigned to an output whose
     selected tags intersect [window]'s. Is [false] otherwise. *)
@@ -42,7 +42,7 @@ val tile : t -> unit
 
 (** [clamp window geom] is [geom] clamped to [window]'s size hints, if any.
     Converts to [int32 rect] *)
-val clamp : t -> int Rect.t -> int32 Rect.t
+val clamp : t -> int Ocdwm_core.Rect.t -> int32 Ocdwm_core.Rect.t
 
 (** [restore_or_seed_float ctx window] positions and resizes [window] according
     to its last remembered float value. If no such value is stored, [window] is

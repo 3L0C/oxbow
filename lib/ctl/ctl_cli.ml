@@ -1,6 +1,12 @@
 module Core = Ocdwm_core
 open Cmdliner
 
+module Any_direction = struct
+  type t =
+    | Logical of Core.Direction.t
+    | Spatial of Core.Physical_direction.t
+end
+
 let seat =
   Arg.(
     value
@@ -21,11 +27,6 @@ let socket =
         ~docv:"PATH"
         ~docs:Manpage.s_common_options
         ~doc:"Override $(b,XDG_RUNTIME_DIR) socket path")
-;;
-
-let direction =
-  let open Core.Direction in
-  Arg.enum [ "next", Next; "prev", Prev ]
 ;;
 
 let stack_kind =

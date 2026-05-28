@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 let name = "tile"
 let symbol = Symbol.S_static "[]="
 

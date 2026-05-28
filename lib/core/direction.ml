@@ -1,3 +1,5 @@
+open! Ppx_yojson_conv_lib.Yojson_conv
+
 type t =
   | Next [@name "next"]
   | Prev [@name "prev"]
@@ -8,7 +10,8 @@ let to_string = function
   | Prev -> "prev"
 ;;
 
-let of_string = function
+let of_string s =
+  match String.lowercase_ascii s |> String.trim with
   | "next" -> Some Next
   | "prev" -> Some Prev
   | _ -> None
