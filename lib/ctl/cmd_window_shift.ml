@@ -5,16 +5,20 @@ let leaf mk_term (name, doc, dir) =
 ;;
 
 let targets =
-  let open Direction in
-  [ ( to_string Next
-    , "Shift focused window toward the tail of the stack. Wraps to the head if focused \
-       window is the tail"
-    , Next )
-  ; ( to_string Prev
-    , "Shift focused window toward the head of the stack. Wraps to the tail if focused \
-       window is the head"
-    , Prev )
-  ]
+  List.map
+    (fun (s, (d : Logical_direction.t)) ->
+       match d with
+       | Next ->
+         ( s
+         , "Shift focused window toward the tail of the stack. Wraps to the head if \
+            focused window is the tail"
+         , d )
+       | Prev ->
+         ( s
+         , "Shift focused window toward the head of the stack. Wraps to the tail if \
+            focused window is the head"
+         , d ))
+    Ctl_cli.logical_targets
 ;;
 
 let name = "shift"

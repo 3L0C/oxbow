@@ -37,40 +37,32 @@ val focused_of : Types.Seat.t -> Types.Window.t option
     {b Effects:} mutates WM state; sends River request *)
 val sync : Ctx.manage Ctx.t -> unit
 
-(** [focus_window_dir ctx seat dir] focuses the window in [dir] on [seat]'s
+(** [focus_window_logical ctx seat dir] focuses the window in [dir] on [seat]'s
     output.
 
     {b Effects:} mutates WM state; sends River request *)
-val focus_window_dir : Ctx.manage Ctx.t -> Types.Seat.t -> Direction.t -> unit
+val focus_window_logical : Ctx.manage Ctx.t -> Types.Seat.t -> Logical_direction.t -> unit
 
 (** [focus_window_spatial ctx seat dir] focuses the window in [dir] on [seat]'s
     output.
 
    {b Effects:} mutates WM state; sends River request *)
-val focus_window_spatial
-  :  Ctx.manage Ctx.t
-  -> Types.Seat.t
-  -> Physical_direction.t
-  -> unit
+val focus_window_spatial : Ctx.manage Ctx.t -> Types.Seat.t -> Spatial_direction.t -> unit
 
 (** [focus_window_query ctx seat query] focuses the window according to [query].
 
     {b Effects:} mutates WM state; sends River request *)
 val focus_window_query : Ctx.manage Ctx.t -> Types.Seat.t -> Window_query.t -> unit
 
-(** [focus_output_dir ctx seat dir] focuses the output in [dir] on [seat].
+(** [focus_output_logical ctx seat dir] focuses the output in [dir] on [seat].
 
     {b Effects:} mutates WM state; sends River request *)
-val focus_output_dir : Ctx.manage Ctx.t -> Types.Seat.t -> Direction.t -> unit
+val focus_output_logical : Ctx.manage Ctx.t -> Types.Seat.t -> Logical_direction.t -> unit
 
 (** [focus_output_spatial ctx seat dir] focuses the output in [dir] on [seat].
 
    {b Effects:} mutates WM state; sends River request *)
-val focus_output_spatial
-  :  Ctx.manage Ctx.t
-  -> Types.Seat.t
-  -> Physical_direction.t
-  -> unit
+val focus_output_spatial : Ctx.manage Ctx.t -> Types.Seat.t -> Spatial_direction.t -> unit
 
 (** [focus_output_name ctx seat name] focuses the output with [name].
 

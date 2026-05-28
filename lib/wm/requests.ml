@@ -191,16 +191,16 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
                   Rwm.River_window_v1.Edges.bottom
             })
      | _ -> dispatch_failed "cannot begin resize during an active operation")
-  | Send_to_output_direction { dir; policy } ->
-    dispatch_failed "Send_to_output_direction: not implemented"
+  | Send_to_output_logical { dir; policy } ->
+    dispatch_failed "Send_to_output_logical: not implemented"
   | Send_to_output_spatial { dir; policy } ->
     dispatch_failed "Send_to_output_spatial: not implemented"
   | Send_to_output_name { name; policy } ->
     dispatch_failed "Send_to_output_name: not implemented"
-  | Focus_window_direction dir -> Focus.focus_window_dir ctx seat dir
+  | Focus_window_logical dir -> Focus.focus_window_logical ctx seat dir
   | Focus_window_spatial dir -> Focus.focus_window_spatial ctx seat dir
   | Focus_window_query q -> Focus.focus_window_query ctx seat q
-  | Focus_output_direction dir -> Focus.focus_output_dir ctx seat dir
+  | Focus_output_logical dir -> Focus.focus_output_logical ctx seat dir
   | Focus_output_spatial dir -> Focus.focus_output_spatial ctx seat dir
   | Focus_output_name name -> Focus.focus_output_name ctx seat name
   | Shift dir ->

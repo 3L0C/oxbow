@@ -1,12 +1,6 @@
 module Core = Ocdwm_core
 open Cmdliner
 
-module Any_direction = struct
-  type t =
-    | Logical of Core.Direction.t
-    | Spatial of Core.Physical_direction.t
-end
-
 let seat =
   Arg.(
     value
@@ -29,33 +23,23 @@ let socket =
         ~doc:"Override $(b,XDG_RUNTIME_DIR) socket path")
 ;;
 
+let spatial_targets =
+  let open Core.Spatial_direction in
+  List.map (fun d -> to_string d, d) [ Up; Down; Left; Right ]
+;;
+
+let logical_targets =
+  let open Core.Logical_direction in
+  List.map (fun d -> to_string d, d) [ Next; Prev ]
+;;
+
 let direction_targets =
-  let open Any_direction in
-  let module Direction = Core.Direction in
-  let module Physical_direction = Core.Physical_direction in
-  let dirs =
-    [ Logical Direction.Next
-    ; Logical Direction.Prev
-    ; Spatial Physical_direction.Up
-    ; Spatial Physical_direction.Down
-    ; Spatial Physical_direction.Left
-    ; Spatial Physical_direction.Right
-    ]
-  in
-  List.map
-    (fun dir ->
-       match dir with
-       | Logical d -> Direction.to_string d, dir
-       | Spatial d -> Physical_direction.to_string d, dir)
-    dirs
+  let open Core.Any_direction in
+  List.map (fun (s, d) -> s, Logical d) logical_targets
+  @ List.map (fun (s, d) -> s, Spatial d) spatial_targets
 ;;
 
-let stack_kind =
-  let open Core.Stack_kind in
-  Arg.enum [ "even", Stack_even; "diminish", Stack_diminish; "dwindle", Stack_dwindle ]
-;;
-
-let int_delta =
+let int_delta_conv =
   let parser = function
     | "" -> Error "empty delta"
     | s when s.[0] = '+' || s.[0] = '-' ->
@@ -74,7 +58,17 @@ let int_delta =
   Arg.Conv.make ~docv:"DELTA" ~parser ~pp ()
 ;;
 
-let float_delta =
+let int_delta =
+  Arg.(
+    required
+    & pos 0 (some int_delta_conv) None
+    & info
+        []
+        ~docv:"INT_DELTA"
+        ~doc:"May be either an absolute value ($(b,6)), or an offset ($(b,-2))")
+;;
+
+let float_delta_conv =
   let parser = function
     | "" -> Error "empty delta"
     | s when s.[0] = '+' || s.[0] = '-' ->
@@ -93,14 +87,17 @@ let float_delta =
   Arg.Conv.make ~docv:"DELTA" ~parser ~pp ()
 ;;
 
-let tag_set : Core.Tag_set.t Arg.Conv.t =
-  let open Core in
-  let parser = Tag_set.of_string in
-  let pp ppf t = Format.fprintf ppf "%s" (Tag_set.to_string t) in
-  Arg.Conv.make ~docv:"TAGS" ~parser ~pp ()
+let float_delta =
+  Arg.(
+    required
+    & pos 0 (some float_delta_conv) None
+    & info
+        []
+        ~docv:"FLOAT_DELTA"
+        ~doc:"May be either an absolute value ($(b,0.55)), or an offset ($(b,-0.05))")
 ;;
 
-let tag_arg : Core.Tag_arg.t Arg.Conv.t =
+let tag_arg_conv =
   let open Core in
   let parser s =
     let s = String.trim s in
@@ -115,15 +112,43 @@ let tag_arg : Core.Tag_arg.t Arg.Conv.t =
   Arg.Conv.make ~docv:"TAGS" ~parser ~pp ()
 ;;
 
+let tag_shared_doc =
+  "Tags are numbered 1 to 32. They may be named directly as indices: a single tag \
+   ($(b,7)), a comma-separated list ($(b,1,3,8)), or a range ($(b,1-3,5)). They may also \
+   be given as a bitmask in hexadecimal ($(b,0xff)), binary ($(b,0b101)), or octal \
+   ($(b,0o17)), where each set bit selects one tag. Note that $(b,7) means tag 7, while \
+   $(b,0b111) means tags 1, 2, and 3."
+;;
+
+let tag_arg =
+  let doc =
+    tag_shared_doc
+    ^ " The string literal $(i,occupied) is allowed and represents all currently \
+       occupied tags."
+  in
+  Arg.(required & pos 0 (some tag_arg_conv) None & info [] ~docv:"TAGS" ~doc)
+;;
+
+let tag_set_conv =
+  let open Core in
+  let parser = Tag_set.of_string in
+  let pp ppf t = Format.fprintf ppf "%s" @@ Tag_set.to_string t in
+  Arg.Conv.make ~docv:"TAGS" ~parser ~pp ()
+;;
+
+let tag_set =
+  let doc = tag_shared_doc in
+  Arg.(required & pos 0 (some tag_set_conv) None & info [] ~docv:"TAGS" ~doc)
+;;
+
 let policy_flag =
   Arg.(
     value
     & vflag
         Core.Tag_policy.Tag_keep
         [ ( Core.Tag_policy.Tag_take
-          , info
-              [ "take" ]
-              ~doc:"Window takes the the active tags on the destination output" )
+          , info [ "take" ] ~doc:"Window takes the active tags on the destination output"
+          )
         ])
 ;;
 

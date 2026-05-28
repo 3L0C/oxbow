@@ -129,7 +129,7 @@ val set_stack_kind : kind:Stack_kind.t -> Types.Window_manager.t -> t -> unit
     window.
 
    {b Effects:} mutates WM state *)
-val shift : Direction.t -> t -> unit
+val shift : Logical_direction.t -> t -> unit
 
 (** [resolve_tag_arg arg output] returns the set of tags according to [arg] *)
 val resolve_tag_arg : Tag_arg.t -> t -> Tag_set.t

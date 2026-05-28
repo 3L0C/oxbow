@@ -99,7 +99,7 @@ val to_int : t -> int
 val of_int : int -> t
 
 (** [of_string s] is the set of tags represented by [s]. This may be in the form
-    of [0xff], [0b01], [0o17], [1,2,5], or [1-5,3]. Is [Error msg] if malformed. *)
+    of [0xff], [0b01], [0o17], [1,2,5], or [1-3,5]. Is [Error msg] if malformed. *)
 val of_string : string -> (t, string) result
 
 (** [to_string s] is the string representing [s]. *)

@@ -255,8 +255,8 @@ let set_stack_kind ~(kind : Stack_kind.t) (wm : Types.Window_manager.t) (o : t) 
   mark_dirty wm o
 ;;
 
-let shift (dir : Direction.t) (o : t) =
-  let open Direction in
+let shift (dir : Logical_direction.t) (o : t) =
+  let open Logical_direction in
   match focused_window o, dir with
   | None, _ -> ()
   | Some w, Next -> o.windows <- Utils.shift_right (( == ) w) o.windows

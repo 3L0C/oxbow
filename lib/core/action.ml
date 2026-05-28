@@ -13,12 +13,12 @@ type t =
   | Toggle_fullscreen [@name "toggle_fullscreen"]
   | Move_interactive [@name "move_interactive"]
   | Resize_interactive [@name "resize_interactive"]
-  | Send_to_output_direction of
-      { dir : Direction.t
+  | Send_to_output_logical of
+      { dir : Logical_direction.t
       ; policy : Tag_policy.t
-      } [@name "send_to_output_direction"]
+      } [@name "send_to_output_logical"]
   | Send_to_output_spatial of
-      { dir : Physical_direction.t
+      { dir : Spatial_direction.t
       ; policy : Tag_policy.t
       } [@name "send_to_output_spatial"]
   | Send_to_output_name of
@@ -26,26 +26,26 @@ type t =
       ; policy : Tag_policy.t
       } [@name "send_to_output_name"]
   (* Focus *)
-  | Focus_window_direction of Direction.t [@name "focus_window_direction"]
-  | Focus_window_spatial of Physical_direction.t [@name "focus_window_spatial"]
+  | Focus_window_logical of Logical_direction.t [@name "focus_window_logical"]
+  | Focus_window_spatial of Spatial_direction.t [@name "focus_window_spatial"]
   | Focus_window_query of Window_query.t [@name "focus_window_query"]
-  | Focus_output_direction of Direction.t [@name "focus_output_direction"]
-  | Focus_output_spatial of Physical_direction.t [@name "focus_output_spatial"]
+  | Focus_output_logical of Logical_direction.t [@name "focus_output_logical"]
+  | Focus_output_spatial of Spatial_direction.t [@name "focus_output_spatial"]
   | Focus_output_name of string [@name "focus_output_name"]
   (* Stack manipulation *)
-  | Shift of Direction.t [@name "shift"]
+  | Shift of Logical_direction.t [@name "shift"]
   | Zoom [@name "zoom"]
   (* Tags *)
   | Tag_view of Tag_arg.t [@name "tag_view"]
   | Tag_toggle_view of Tag_set.t [@name "tag_toggle_view"]
   | Tag_view_previous [@name "tag_view_previous"]
-  | Tag_view_cycle of Direction.t [@name "tag_view_cycle"]
-  | Tag_view_cycle_occupied of Direction.t [@name "tag_view_cycle_occupied"]
+  | Tag_view_cycle of Logical_direction.t [@name "tag_view_cycle"]
+  | Tag_view_cycle_occupied of Logical_direction.t [@name "tag_view_cycle_occupied"]
   | Window_tag of Tag_arg.t [@name "window_tag"]
   | Window_toggle_tag of Tag_set.t [@name "window_toggle_tag"]
   (* Layout *)
   | Layout_set of string [@name "layout_set"]
-  | Layout_cycle of Direction.t [@name "layout_cycle"]
+  | Layout_cycle of Logical_direction.t [@name "layout_cycle"]
   | Set_mfact of float Delta.t [@name "set_mfact"]
   | Set_nmaster of int Delta.t [@name "set_nmaster"]
   | Set_gaps_inner of int Delta.t [@name "set_gaps_inner"]

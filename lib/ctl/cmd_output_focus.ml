@@ -1,9 +1,9 @@
 open! Ocdwm_core
 
 let dir_action dir =
-  let open Ctl_cli.Any_direction in
+  let open Any_direction in
   match dir with
-  | Logical d -> Action.Focus_output_direction d
+  | Logical d -> Action.Focus_output_logical d
   | Spatial d -> Action.Focus_output_spatial d
 ;;
 

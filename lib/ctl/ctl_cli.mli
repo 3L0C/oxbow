@@ -1,23 +1,14 @@
 module Core = Ocdwm_core
 
-module Any_direction : sig
-  type t =
-    | Logical of Core.Direction.t
-    | Spatial of Core.Physical_direction.t
-end
-
 val seat : string option Cmdliner.Term.t
 val socket : string option Cmdliner.Term.t
-
-(** [direction_targets] is the association list of [(subcommand-name, direction)]
-    for next/prev/up/down/left/right.*)
-val direction_targets : (string * Any_direction.t) list
-
-val stack_kind : Core.Stack_kind.t Cmdliner.Arg.conv
-val int_delta : int Core.Delta.t Cmdliner.Arg.conv
-val float_delta : float Core.Delta.t Cmdliner.Arg.conv
-val tag_set : Core.Tag_set.t Cmdliner.Arg.conv
-val tag_arg : Core.Tag_arg.t Cmdliner.Arg.conv
+val logical_targets : (string * Core.Logical_direction.t) list
+val spatial_targets : (string * Core.Spatial_direction.t) list
+val direction_targets : (string * Core.Any_direction.t) list
+val int_delta : int Core.Delta.t Cmdliner.Term.t
+val float_delta : float Core.Delta.t Cmdliner.Term.t
+val tag_arg : Core.Tag_arg.t Cmdliner.Term.t
+val tag_set : Core.Tag_set.t Cmdliner.Term.t
 val policy_flag : Core.Tag_policy.t Cmdliner.Term.t
 val output_name_arg : string Cmdliner.Term.t
 
