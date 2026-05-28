@@ -1,9 +1,23 @@
-open Ocdwm_core
-open Cmdliner
-open Cmdliner.Term.Syntax
+open! Ocdwm_core
 
-let action_term =
+let dir_action dir =
+  let open Ctl_cli.Any_direction in
+  match dir with
+  | Logical d -> Action.Focus_window_direction d
+  | Spatial d -> Action.Focus_window_spatial d
+;;
+
+let dir_leaf mk_term (name, dir) =
+  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Focus the %s window" name)
+  @@ mk_term
+  @@ Cmdliner.Term.const
+  @@ dir_action dir
+;;
+
+let query_action_term =
   let open Window_query in
+  let open Cmdliner in
+  let open Cmdliner.Term.Syntax in
   let+ query =
     Arg.(
       required
@@ -41,7 +55,18 @@ let action_term =
      else { query = Substring query; field; cycle })
 ;;
 
-let name = "window"
-let doc = "Focus a window matching the search query"
-let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.trigger_term action_term
-let bind_cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.bind_term action_term
+let query_leaf mk_term =
+  Ctl_cli.cmd ~name:"query" ~doc:"Focus a window matching the search query"
+  @@ mk_term query_action_term
+;;
+
+let name = "focus"
+let doc = "Focus a window by direction or search query"
+
+let build mk_term =
+  Ctl_cli.group ~name ~doc
+  @@ (query_leaf mk_term :: List.map (dir_leaf mk_term) Ctl_cli.direction_targets)
+;;
+
+let cmd = build Ctl_cli.trigger_term
+let bind_cmd = build Ctl_cli.bind_term

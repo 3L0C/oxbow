@@ -11,18 +11,11 @@ let bind_group =
   Ctl_cli.group
     ~name:"bind"
     ~doc:"Bind a key or pointer button to a command"
-    [ Cmd_close_focused.bind_cmd
-    ; Cmd_close_wm.bind_cmd
-    ; Cmd_exit_session.bind_cmd
-    ; Cmd_focus.bind_cmd
-    ; Cmd_send_to.bind_cmd
-    ; Cmd_shift.bind_cmd
-    ; Cmd_tag_view_previous.bind_cmd
-    ; Cmd_toggle_fake_fullscreen.bind_cmd
-    ; Cmd_toggle_floating.bind_cmd
-    ; Cmd_toggle_fullscreen.bind_cmd
-    ; Cmd_toggle_maximize.bind_cmd
-    ; Cmd_zoom.bind_cmd
+    [ Cmd_output.bind_cmd
+    ; Cmd_session.bind_cmd
+    ; Cmd_tag.bind_cmd
+    ; Cmd_window.bind_cmd
+    ; Cmd_wm.bind_cmd
     ]
 ;;
 
@@ -31,18 +24,11 @@ let cmd =
     ~version
     ~name:"ocdwmctl"
     ~doc:"command-line interface for controlling ocdwm"
-    [ Cmd_close_focused.cmd
-    ; Cmd_close_wm.cmd
-    ; Cmd_exit_session.cmd
-    ; Cmd_focus.cmd
-    ; Cmd_send_to.cmd
-    ; Cmd_shift.cmd
-    ; Cmd_tag_view_previous.cmd
-    ; Cmd_toggle_fake_fullscreen.cmd
-    ; Cmd_toggle_floating.cmd
-    ; Cmd_toggle_fullscreen.cmd
-    ; Cmd_toggle_maximize.cmd
-    ; Cmd_zoom.cmd
+    [ Cmd_output.cmd
+    ; Cmd_session.cmd
+    ; Cmd_tag.cmd
+    ; Cmd_window.cmd
+    ; Cmd_wm.cmd
     ; bind_group
     ]
 ;;

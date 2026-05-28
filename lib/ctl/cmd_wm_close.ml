@@ -1,7 +1,7 @@
-open Ocdwm_core
+open! Ocdwm_core
 
-let action_term = Cmdliner.Term.const Action.Zoom
-let name = "zoom"
-let doc = "Promote focus to master"
+let action_term = Cmdliner.Term.const Action.Close_wm
+let name = "close"
+let doc = "Close ocdwm (leaves River running)"
 let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.trigger_term action_term
 let bind_cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.bind_term action_term

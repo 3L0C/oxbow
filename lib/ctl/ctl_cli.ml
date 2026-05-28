@@ -29,6 +29,27 @@ let socket =
         ~doc:"Override $(b,XDG_RUNTIME_DIR) socket path")
 ;;
 
+let direction_targets =
+  let open Any_direction in
+  let module Direction = Core.Direction in
+  let module Physical_direction = Core.Physical_direction in
+  let dirs =
+    [ Logical Direction.Next
+    ; Logical Direction.Prev
+    ; Spatial Physical_direction.Up
+    ; Spatial Physical_direction.Down
+    ; Spatial Physical_direction.Left
+    ; Spatial Physical_direction.Right
+    ]
+  in
+  List.map
+    (fun dir ->
+       match dir with
+       | Logical d -> Direction.to_string d, dir
+       | Spatial d -> Physical_direction.to_string d, dir)
+    dirs
+;;
+
 let stack_kind =
   let open Core.Stack_kind in
   Arg.enum [ "even", Stack_even; "diminish", Stack_diminish; "dwindle", Stack_dwindle ]

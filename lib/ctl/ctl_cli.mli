@@ -8,6 +8,11 @@ end
 
 val seat : string option Cmdliner.Term.t
 val socket : string option Cmdliner.Term.t
+
+(** [direction_targets] is the association list of [(subcommand-name, direction)]
+    for next/prev/up/down/left/right.*)
+val direction_targets : (string * Any_direction.t) list
+
 val stack_kind : Core.Stack_kind.t Cmdliner.Arg.conv
 val int_delta : int Core.Delta.t Cmdliner.Arg.conv
 val float_delta : float Core.Delta.t Cmdliner.Arg.conv
