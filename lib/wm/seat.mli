@@ -1,5 +1,11 @@
 type t = Types.Seat.t
 
+(** [unbind_xkb_binding ctx seat mods keysym] destroys the keybind matching
+    [mods]+[keysym], if it exists.
+
+   {b Effects:} mutates WM state; sends River request *)
+val unbind_xkb_binding : Ctx.manage Ctx.t -> t -> int32 -> Xkbcommon.Keysym.t -> unit
+
 (** [replace_xkb_binding ctx seat mods keysym action] replaces the existing
     binding matching [mods] and [keysym] with [action].
 
@@ -11,6 +17,12 @@ val replace_xkb_binding
   -> Xkbcommon.Keysym.t
   -> Ocdwm_core.Action.t
   -> unit
+
+(** [unbind_pointer_binding ctx seat mods button] destroys the keybind matching
+    [mods]+[button], if it exists.
+
+   {b Effects:} mutates WM state; sends River request *)
+val unbind_pointer_binding : Ctx.manage Ctx.t -> t -> int32 -> Input_event.t -> unit
 
 (** [replace_pointer_binding ctx seat mods button action] replaces the existing
     binding matching [mods] and [button] with [action].

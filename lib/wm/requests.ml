@@ -384,6 +384,12 @@ let handle_setting (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (setting : Set
        Seat.replace_xkb_binding ctx seat mods keysym bind.action
      | Ok { mods; key = Pointer button } ->
        Seat.replace_pointer_binding ctx seat mods button bind.action)
+  | Unbind keybind ->
+    (match Keybind.parse keybind with
+     | Error msg -> dispatch_failed msg
+     | Ok { mods; key = Keysym keysym } -> Seat.unbind_xkb_binding ctx seat mods keysym
+     | Ok { mods; key = Pointer button } ->
+       Seat.unbind_pointer_binding ctx seat mods button)
 ;;
 
 let handle

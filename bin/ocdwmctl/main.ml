@@ -33,6 +33,7 @@ let cmd =
     ; Cmd_set.cmd
     ; Cmd_spawn.cmd
     ; Cmd_tag.cmd
+    ; Cmd_unbind.cmd
     ; Cmd_window.cmd
     ; Cmd_wm.cmd
     ; bind_group

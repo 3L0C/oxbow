@@ -169,6 +169,22 @@ let extent_conv =
   Arg.Conv.make ~docv:"EXTENT" ~parser ~pp ()
 ;;
 
+let keybind_arg =
+  let open Cmdliner in
+  Arg.(
+    required
+    & pos ~rev:true 0 (some string) None
+    & info
+        []
+        ~docv:"KEYBIND"
+        ~doc:
+          "Modifiers, keysym, and/or button. Modifiers include Shift, Control, Mod1/Alt, \
+           Mod3, Mod4/Super/Logo, Mod5, or None. Keysyms mirror xkbcommon-keysym.h \
+           without the 'K_' prefix, (e.g. Return instead of K_Return). Buttons are \
+           prefixed with 'Btn_' followed by [0-9], left, right, middle, side, extra, \
+           forward, back, or task.")
+;;
+
 let code_protocol_err = 1
 let code_conn_failed = 2
 
@@ -225,20 +241,7 @@ let bind_suffix =
       required
       & pos ~rev:true 1 (some to_kw) None
       & info [] ~docv:"to" ~doc:"Literal $(b,to) separating action from keybind")
-  and+ keybind =
-    Arg.(
-      required
-      & pos ~rev:true 0 (some string) None
-      & info
-          []
-          ~docv:"KEYBIND"
-          ~doc:
-            "Modifiers, keysym, and/or button to bind to COMMAND. Modifiers include \
-             Shift, Control, Mod1/Alt, Mod3, Mod4/Super/Logo, Mod5, or None. Keysyms \
-             mirror xkbcommon-keysym.h without the 'K_' prefix, e.g., K_Return > Return. \
-             Buttons are prefixed with 'Btn_' followed by [0-9], left, right, middle, \
-             side, extra, forward, back, or task.")
-  in
+  and+ keybind = keybind_arg in
   keybind
 ;;
 

@@ -5,4 +5,5 @@ type t =
       { keybind : string
       ; action : Action.t
       } [@name "bind"]
+  | Unbind of string [@name "unbind"]
 [@@deriving yojson]

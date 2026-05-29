@@ -9,6 +9,18 @@ let xkb_binding_destroy (_ : Ctx.manage Ctx.t) (binding : Types.Xkb_binding.t) =
   Xkb.River_xkb_binding_v1.destroy binding.obj
 ;;
 
+let unbind_xkb_binding
+      (ctx : Ctx.manage Ctx.t)
+      (s : t)
+      (mods : int32)
+      (keysym : Xkbcommon.Keysym.t)
+  =
+  let matches (b : Types.Xkb_binding.t) = b.mods = mods && b.keysym = keysym in
+  let to_destroy, to_keep = List.partition matches s.xkb_bindings in
+  List.iter (xkb_binding_destroy ctx) to_destroy;
+  s.xkb_bindings <- to_keep
+;;
+
 let xkb_binding_create
       (ctx : Ctx.manage Ctx.t)
       (s : t)
@@ -51,15 +63,24 @@ let replace_xkb_binding
       (keysym : Xkbcommon.Keysym.t)
       (action : Ocdwm_core.Action.t)
   =
-  let matches (b : Types.Xkb_binding.t) = b.mods = mods && b.keysym = keysym in
-  let to_destroy, to_keep = List.partition matches s.xkb_bindings in
-  List.iter (xkb_binding_destroy ctx) to_destroy;
-  s.xkb_bindings <- to_keep;
+  unbind_xkb_binding ctx s mods keysym;
   xkb_binding_create ctx s mods keysym action
 ;;
 
 let pointer_binding_destroy (_ : Ctx.manage Ctx.t) (pointer : Types.Pointer_binding.t) =
   Rwm.River_pointer_binding_v1.destroy pointer.obj
+;;
+
+let unbind_pointer_binding
+      (ctx : Ctx.manage Ctx.t)
+      (s : t)
+      (mods : int32)
+      (button : Input_event.t)
+  =
+  let matches (p : Types.Pointer_binding.t) = p.mods = mods && p.button = button in
+  let to_destroy, to_keep = List.partition matches s.pointer_bindings in
+  List.iter (pointer_binding_destroy ctx) to_destroy;
+  s.pointer_bindings <- to_keep
 ;;
 
 let pointer_binding_create
@@ -100,10 +121,7 @@ let replace_pointer_binding
       (button : Input_event.t)
       (action : Ocdwm_core.Action.t)
   =
-  let matches (p : Types.Pointer_binding.t) = p.mods = mods && p.button = button in
-  let to_destroy, to_keep = List.partition matches s.pointer_bindings in
-  List.iter (pointer_binding_destroy ctx) to_destroy;
-  s.pointer_bindings <- to_keep;
+  unbind_pointer_binding ctx s mods button;
   pointer_binding_create ctx s mods button action
 ;;
 
