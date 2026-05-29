@@ -13,6 +13,22 @@ type t =
   | Toggle_fullscreen [@name "toggle_fullscreen"]
   | Move_interactive [@name "move_interactive"]
   | Resize_interactive [@name "resize_interactive"]
+  | Move_to of
+      { x : Extent.t
+      ; y : Extent.t
+      } [@name "move_to"]
+  | Move_spatial of
+      { dir : Spatial_direction.t
+      ; by : Extent.t
+      } [@name "move_spatial"]
+  | Resize_to of
+      { w : Extent.t
+      ; h : Extent.t
+      } [@name "resize_to"]
+  | Resize_spatial of
+      { dir : Spatial_direction.t
+      ; by : Extent.t
+      } [@name "resize_spatial"]
   | Send_to_output_logical of
       { dir : Logical_direction.t
       ; policy : Tag_policy.t

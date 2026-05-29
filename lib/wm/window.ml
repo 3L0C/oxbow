@@ -310,3 +310,95 @@ let exit_fake_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
     w.is_fake_fullscreen <- false;
     Rwm.River_window_v1.inform_not_fullscreen w.obj)
 ;;
+
+let float_in_place (w : t) =
+  match w.presentation with
+  | P_floating -> ()
+  | P_fullscreen _ -> Logs.err @@ fun m -> m "unable to float fullscreen window"
+  | P_tiled | P_maximized _ ->
+    remember_float w;
+    w.presentation <- P_floating
+;;
+
+let apply_float_geom ctx w g =
+  clamp w g |> set_geom ctx w;
+  remember_float w
+;;
+
+let move_to (ctx : Ctx.manage Ctx.t) (w : t) ~x ~y =
+  if is_fullscreen w
+  then Logs.err @@ fun m -> m "unable to move fullscreen window"
+  else (
+    match w.output with
+    | None -> ()
+    | Some o ->
+      float_in_place w;
+      let cur = Rect.to_int w.geom in
+      let g =
+        { cur with
+          x = o.usable.x + Extent.resolve x ~ref:o.usable.w
+        ; y = o.usable.y + Extent.resolve y ~ref:o.usable.h
+        }
+      in
+      apply_float_geom ctx w g)
+;;
+
+let move_spatial ctx (w : t) (dir : Spatial_direction.t) by =
+  if is_fullscreen w
+  then Logs.err @@ fun m -> m "unable to move fullscreen window"
+  else (
+    match w.output with
+    | None -> ()
+    | Some o ->
+      float_in_place w;
+      let cur = Rect.to_int w.geom in
+      let dx = Extent.resolve by ~ref:o.usable.w in
+      let dy = Extent.resolve by ~ref:o.usable.h in
+      let g =
+        match dir with
+        | Up -> { cur with y = cur.y - dy }
+        | Down -> { cur with y = cur.y + dy }
+        | Left -> { cur with x = cur.x - dx }
+        | Right -> { cur with x = cur.x + dx }
+      in
+      apply_float_geom ctx w g)
+;;
+
+let resize_to ctx (w : t) ~width ~height =
+  if is_fullscreen w
+  then Logs.err @@ fun m -> m "unable to resize fullscreen window"
+  else (
+    match w.output with
+    | None -> ()
+    | Some o ->
+      float_in_place w;
+      let cur = Rect.to_int w.geom in
+      let g =
+        { cur with
+          w = Extent.resolve width ~ref:o.usable.w
+        ; h = Extent.resolve height ~ref:o.usable.h
+        }
+      in
+      apply_float_geom ctx w g)
+;;
+
+let resize_spatial ctx (w : t) (dir : Spatial_direction.t) by =
+  if is_fullscreen w
+  then Logs.err @@ fun m -> m "unable to resize fullscreen window"
+  else (
+    match w.output with
+    | None -> ()
+    | Some o ->
+      float_in_place w;
+      let cur = Rect.to_int w.geom in
+      let dx = Extent.resolve by ~ref:o.usable.w in
+      let dy = Extent.resolve by ~ref:o.usable.h in
+      let g =
+        match dir with
+        | Up -> { cur with y = cur.y - dy; h = cur.h + dy }
+        | Down -> { cur with h = cur.h + dy }
+        | Left -> { cur with x = cur.x - dx; w = cur.w + dx }
+        | Right -> { cur with w = cur.w + dx }
+      in
+      apply_float_geom ctx w g)
+;;

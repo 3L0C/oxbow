@@ -11,6 +11,7 @@ val tag_arg : Core.Tag_arg.t Cmdliner.Term.t
 val tag_set : Core.Tag_set.t Cmdliner.Term.t
 val policy_flag : Core.Tag_policy.t Cmdliner.Term.t
 val output_name_arg : string Cmdliner.Term.t
+val extent_conv : Core.Extent.t Cmdliner.Arg.conv
 
 (** [group ?version ~name ~doc cmds] is command that groups the subcommands
     [cmds]. *)

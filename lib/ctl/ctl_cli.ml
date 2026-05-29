@@ -162,6 +162,13 @@ let output_name_arg =
         ~doc:"The name of the target output, e.g., HDMI-A-2, eDP-1, etc.")
 ;;
 
+let extent_conv =
+  let open Core in
+  let parser = Extent.of_string in
+  let pp ppf e = Format.fprintf ppf "%s" @@ Extent.to_string e in
+  Arg.Conv.make ~docv:"EXTENT" ~parser ~pp ()
+;;
+
 let code_protocol_err = 1
 let code_conn_failed = 2
 

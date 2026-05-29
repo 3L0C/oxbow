@@ -191,6 +191,42 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
                   Rwm.River_window_v1.Edges.bottom
             })
      | _ -> dispatch_failed "cannot begin resize during an active operation")
+  | Move_to { x; y } ->
+    (match Focus.focused_of seat with
+     | None -> raise_no_focused_window ()
+     | Some w ->
+       if Window.is_fullscreen w
+       then dispatch_failed "cannot move a fullscreen window"
+       else (
+         Window.move_to ctx w ~x ~y;
+         Option.iter (Output.mark_dirty wm) w.output))
+  | Move_spatial { dir; by } ->
+    (match Focus.focused_of seat with
+     | None -> raise_no_focused_window ()
+     | Some w ->
+       if Window.is_fullscreen w
+       then dispatch_failed "cannot move a fullscreen window"
+       else (
+         Window.move_spatial ctx w dir by;
+         Option.iter (Output.mark_dirty wm) w.output))
+  | Resize_to { w = width; h = height } ->
+    (match Focus.focused_of seat with
+     | None -> raise_no_focused_window ()
+     | Some w ->
+       if Window.is_fullscreen w
+       then dispatch_failed "cannot resize a fullscreen window"
+       else (
+         Window.resize_to ctx w ~width ~height;
+         Option.iter (Output.mark_dirty wm) w.output))
+  | Resize_spatial { dir; by } ->
+    (match Focus.focused_of seat with
+     | None -> raise_no_focused_window ()
+     | Some w ->
+       if Window.is_fullscreen w
+       then dispatch_failed "cannot resize a fullscreen window"
+       else (
+         Window.resize_spatial ctx w dir by;
+         Option.iter (Output.mark_dirty wm) w.output))
   | Send_to_output_logical { dir; policy } ->
     dispatch_failed "Send_to_output_logical: not implemented"
   | Send_to_output_spatial { dir; policy } ->

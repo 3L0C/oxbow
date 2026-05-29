@@ -128,3 +128,46 @@ val maximize : ?restore:Presentation.Tile_or_float.t -> Ctx.manage Ctx.t -> t ->
 
    {b Effects:} mutates WM state; sends River request *)
 val unmaximize : Ctx.manage Ctx.t -> t -> unit
+
+(** [move_to ctx window ~x ~y] moves [window] according to the extents [~x] and [~y].
+
+   {b Effects:} mutates WM state; sends River request *)
+val move_to
+  :  Ctx.manage Ctx.t
+  -> t
+  -> x:Ocdwm_core.Extent.t
+  -> y:Ocdwm_core.Extent.t
+  -> unit
+
+(** [move_spatial ctx window dir by] moves [window] in [dir] according to [by]
+    extent.
+
+   {b Effects:} mutates WM state; sends River request *)
+val move_spatial
+  :  Ctx.manage Ctx.t
+  -> t
+  -> Ocdwm_core.Spatial_direction.t
+  -> Ocdwm_core.Extent.t
+  -> unit
+
+(** [resize_to ctx window ~width ~height] resizes [window] according to the
+    extents [~width] and [~height].
+
+   {b Effects:} mutates WM state; sends River request *)
+val resize_to
+  :  Ctx.manage Ctx.t
+  -> t
+  -> width:Ocdwm_core.Extent.t
+  -> height:Ocdwm_core.Extent.t
+  -> unit
+
+(** [resize_spatial ctx window dir by] resizes [window] in [dir] according to
+    [by] extent.
+
+   {b Effects:} mutates WM state; sends River request *)
+val resize_spatial
+  :  Ctx.manage Ctx.t
+  -> t
+  -> Ocdwm_core.Spatial_direction.t
+  -> Ocdwm_core.Extent.t
+  -> unit

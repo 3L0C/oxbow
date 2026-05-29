@@ -15,6 +15,7 @@ let bind_group =
     ; Cmd_output.bind_cmd
     ; Cmd_session.bind_cmd
     ; Cmd_set.bind_cmd
+    ; Cmd_spawn.bind_cmd
     ; Cmd_tag.bind_cmd
     ; Cmd_window.bind_cmd
     ; Cmd_wm.bind_cmd
@@ -30,6 +31,7 @@ let cmd =
     ; Cmd_output.cmd
     ; Cmd_session.cmd
     ; Cmd_set.cmd
+    ; Cmd_spawn.cmd
     ; Cmd_tag.cmd
     ; Cmd_window.cmd
     ; Cmd_wm.cmd

@@ -1,0 +1,27 @@
+open! Ocdwm_core
+
+let action_term dir =
+  let open Cmdliner in
+  let open Cmdliner.Term.Syntax in
+  let+ by =
+    Arg.(
+      required
+      & pos 0 (some Ctl_cli.extent_conv) None
+      & info
+          []
+          ~docv:"N"
+          ~doc:
+            "The distance to move the window by. May be a pixel offset (e.g. $(b,100)) \
+             or a percentage of the usable width (e.g. $(b,25%))")
+  in
+  Action.Move_spatial { dir; by }
+;;
+
+let build mk_term (name, dir) =
+  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Move %s by N (px or %%, signed)" name)
+  @@ mk_term
+  @@ action_term dir
+;;
+
+let cmds = List.map (build Ctl_cli.trigger_term) Ctl_cli.spatial_targets
+let bind_cmds = List.map (build Ctl_cli.bind_term) Ctl_cli.spatial_targets
