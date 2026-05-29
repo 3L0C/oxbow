@@ -17,7 +17,7 @@
   river_xkb_config_v1_proto))
 
 (rule
- (mode fallback)
+ (mode promote)
  (targets
   river_input_management_v1_client.ml
   river_input_management_v1_proto.ml
@@ -29,7 +29,7 @@
    (run wayland-scanner-ocaml %{deps}))))
 
 (rule
- (mode fallback)
+ (mode promote)
  (targets
   river_layer_shell_v1_client.ml
   river_layer_shell_v1_proto.ml
@@ -41,7 +41,7 @@
    (run wayland-scanner-ocaml %{deps}))))
 
 (rule
- (mode fallback)
+ (mode promote)
  (targets
   river_libinput_config_v1_client.ml
   river_libinput_config_v1_proto.ml
@@ -50,14 +50,10 @@
  (action
   (chdir
    %{workspace_root}/protocol
-   (run
-    wayland-scanner-ocaml
-    --open
-    River_input_management_v1_proto
-    %{deps}))))
+   (run wayland-scanner-ocaml --open River_input_management_v1_proto %{deps}))))
 
 (rule
- (mode fallback)
+ (mode promote)
  (targets
   river_window_management_v1_client.ml
   river_window_management_v1_proto.ml
@@ -69,7 +65,7 @@
    (run wayland-scanner-ocaml %{deps}))))
 
 (rule
- (mode fallback)
+ (mode promote)
  (targets
   river_xkb_bindings_v1_client.ml
   river_xkb_bindings_v1_proto.ml
@@ -85,7 +81,7 @@
     %{deps}))))
 
 (rule
- (mode fallback)
+ (mode promote)
  (targets
   river_xkb_config_v1_client.ml
   river_xkb_config_v1_proto.ml
@@ -94,8 +90,4 @@
  (action
   (chdir
    %{workspace_root}/protocol
-   (run
-    wayland-scanner-ocaml
-    --open
-    River_input_management_v1_proto
-    %{deps}))))
+   (run wayland-scanner-ocaml --open River_input_management_v1_proto %{deps}))))
