@@ -42,12 +42,12 @@ let fork ~cmd =
        Printf.eprintf "ocdwm: [ERROR] Failed setsid during init script fork: %S\n" cmd);
     (try Unix.execv argv.(0) argv with
      | _ -> Printf.eprintf "ocdwm: [ERROR] Failed to exec init script: %S\n" cmd);
-    Exit.unavailable ()
+    Stdlib.exit Exit.unavailable
   | pid -> { pid }
 ;;
 
 let shutdown { pid } =
-  try Unix.kill (-pid) Sys.sigterm with
+  try Unix.kill pid Sys.sigterm with
   | Unix.Unix_error (Unix.ESRCH, _, _) -> ()
   | Unix.Unix_error (e, _, _) ->
     Logs.warn

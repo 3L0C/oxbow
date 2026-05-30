@@ -12,7 +12,7 @@ let spawn cmd =
        Printf.eprintf "Utils.spawn: setsid failed while trying to spawn %S\n" cmd);
     (try Unix.execv command.(0) command with
      | _ -> Printf.eprintf "Utils.spawn: failed to spawn %S\n" cmd);
-    Exit.unavailable ()
+    Stdlib.exit Exit.unavailable
   | _ -> ()
 ;;
 

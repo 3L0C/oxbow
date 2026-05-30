@@ -14,10 +14,12 @@ val output_name_arg : string Cmdliner.Term.t
 val extent_conv : Core.Extent.t Cmdliner.Arg.conv
 val keybind_arg : string Cmdliner.Term.t
 
-(** [group ?version ~name ~doc cmds] is command that groups the subcommands
-    [cmds]. *)
+(** [group ?man ?man_xrefs ?version ~name ~doc cmds] is command that groups the
+    subcommands [cmds]. *)
 val group
-  :  ?version:string
+  :  ?man:Cmdliner.Manpage.block list
+  -> ?man_xrefs:Cmdliner.Manpage.xref list
+  -> ?version:string
   -> name:string
   -> doc:string
   -> 'a Cmdliner.Cmd.t list

@@ -196,8 +196,7 @@ let exit_conn_failed =
   Cmd.Exit.info code_conn_failed ~doc:"on failure to connect to the ocdwm socket"
 ;;
 
-let exits = exit_protocol_err :: exit_conn_failed :: Cmd.Exit.defaults
-let info ?(exits = exits) ?version name ~doc = Cmd.info name ~doc ~exits ?version
+let exits = exit_protocol_err :: exit_conn_failed :: Core.Exit.exits
 
 let dispatch ?seat ?socket body =
   Eio_main.run
@@ -212,14 +211,11 @@ let dispatch ?seat ?socket body =
     code_protocol_err
 ;;
 
-let group ?version ~name ~doc =
-  let default = Term.(ret (const (`Help (`Auto, None)))) in
-  Cmd.group (info ?version name ~doc) ~default
-;;
+let group = Core.Cli.group
 
 let cmd ~name ~doc body_term =
   let open Cmdliner.Term.Syntax in
-  Cmd.v (info name ~doc)
+  Core.Cli.cmd ~exits ~name ~doc
   @@
   let+ seat = seat
   and+ socket = socket

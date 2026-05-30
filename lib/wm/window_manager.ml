@@ -134,6 +134,7 @@ let await_shutdown (wm : t) =
 ;;
 
 let teardown ~(clock : float Eio.Time.clock_ty Eio.Resource.t) (wm : t) =
+  Option.iter Init_script.shutdown wm.init_handle;
   match wm.state with
   | Wm_exited ->
     (try

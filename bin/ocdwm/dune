@@ -5,6 +5,8 @@
   ocdwm.core
   ocdwm.wm
   ocdwm.protocol
+  dune-build-info
+  cmdliner
   eio_main
   logs
   logs.fmt

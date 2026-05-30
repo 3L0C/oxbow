@@ -188,7 +188,8 @@ and Window_manager : sig
     ; mutable seats : Seat.t list
     ; (* User configuration *)
       config : Config.t
-    ; mutable config_loaded : bool
+    ; init_command : string option
+    ; mutable init_handle : Init_script.t option
     ; (* Layout registry *)
       layout_registry : Layout_registry.t
     ; (* IPC state *)

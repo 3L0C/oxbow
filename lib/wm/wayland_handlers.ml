@@ -112,7 +112,14 @@ let on_new_seat (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
   match seat.state with
   | S_new ->
     Seat.init ctx seat;
-    seat.state <- S_active
+    seat.state <- S_active;
+    let wm = Ctx.wm ctx in
+    (match wm.init_handle, wm.init_command with
+     | None, Some cmd when Utils.opt_holds wm.primary_seat seat ->
+       let init_handle = Init_script.fork ~cmd in
+       wm.init_handle <- Some init_handle;
+       Logs.debug @@ fun m -> m "init script forked: pid=%d" init_handle.pid
+     | _ -> ())
   | _ -> ()
 ;;
 

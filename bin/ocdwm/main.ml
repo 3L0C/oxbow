@@ -1,17 +1,25 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
+module Box = Ocdwm_wm.Box
+module Cli = Ocdwm_core.Cli
+module Config = Ocdwm_wm.Config
+module Exit = Ocdwm_core.Exit
+module Init_script = Ocdwm_wm.Init_script
+module Layout = Ocdwm_wm.Layout
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
-module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
+module Rwm = Ocdwm_protocol.River_window_management_v1_client
+module Types = Ocdwm_wm.Types
 module Wayland_handlers = Ocdwm_wm.Wayland_handlers
 module Window_manager = Ocdwm_wm.Window_manager
 module Window_manager_state = Ocdwm_wm.Window_manager_state
-module Types = Ocdwm_wm.Types
-module Exit = Ocdwm_core.Exit
-module Config = Ocdwm_wm.Config
-module Layout = Ocdwm_wm.Layout
-module Box = Ocdwm_wm.Box
 module Wm_exceptions = Ocdwm_wm.Exceptions
+module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 
-let main ~net ~clock =
+let version =
+  match Build_info.V1.version () with
+  | Some v -> Build_info.V1.Version.to_string v
+  | None -> "dev"
+;;
+
+let loop ~init_command ~net ~clock =
   Eio.Switch.run
   @@ fun sw ->
   let transport = Wayland.Unix_transport.connect ~sw ~net () in
@@ -69,7 +77,8 @@ let main ~net ~clock =
       ; windows = []
       ; seats = []
       ; config
-      ; config_loaded = true
+      ; init_command
+      ; init_handle = None
       ; layout_registry
       ; ipc = Ipc_inactive
       }
@@ -95,22 +104,90 @@ let main ~net ~clock =
   Ocdwm_wm.Ipc_server.start ~sw ~net ~wm;
   Window_manager.await_shutdown wm;
   Window_manager.teardown ~clock wm;
-  Wayland.Client.stop display
+  Wayland.Client.stop display;
+  Exit.ok
 ;;
 
-let setup () =
+let setup ~log_level =
+  Logs.set_reporter @@ Logs_fmt.reporter ();
+  Logs.(set_level (Some log_level));
   Sys.set_signal Sys.sigchld Sys.Signal_ignore;
-  Logs.set_reporter (Logs_fmt.reporter ());
-  Logs.(set_level (Some Info));
-  (* Unix.putenv "WAYLAND_DEBUG" "1"; *)
   Printexc.record_backtrace true
 ;;
 
-let () =
-  setup ();
-  try Eio_main.run @@ fun env -> main ~net:env#net ~clock:env#clock with
+let run ~init_command ~log_level () =
+  setup ~log_level;
+  try Eio_main.run @@ fun env -> loop ~init_command ~net:env#net ~clock:env#clock with
   | Failure s ->
     Printf.eprintf "%s\n" s;
-    Exit.software ()
-  | Wm_exceptions.Unavailable -> Exit.unavailable ()
+    Exit.software
+  | Wm_exceptions.Unavailable -> Exit.unavailable
 ;;
+
+let man =
+  let open Cmdliner in
+  [ `S Manpage.s_synopsis
+  ; `S Manpage.s_options
+  ; `S Manpage.s_common_options
+  ; `S "CONFIGURATION"
+  ; `P
+      "On startup $(mname) runs an init script that issues $(b,ocdwmctl)(1) commands to \
+       set keybindings, layouts, and window rules. The script is located by checking, in \
+       order:"
+  ; `I
+      ( "1."
+      , "The $(b,-c) $(i,SHELL_COMMAND) argument. If given, $(i,SHELL_COMMAND) is run \
+         literally via $(b,/bin/sh -c) with no path search;" )
+  ; `Noblank
+  ; `I ("2.", "$(b,\\$XDG_CONFIG_HOME/ocdwm/init), if executable;")
+  ; `Noblank
+  ; `I ("3.", "$(b,\\$HOME/.config/ocdwm/init), if executable;")
+  ; `P "If none are found or executable, $(mname) starts with only built-in keybindings."
+  ; `P
+      "The script runs in its own session via $(b,setsid)(2), after the river protocols \
+       are bound, so $(b,ocdwmctl) commands work without racing the WM."
+  ; `P
+      "On shutdown $(mname) sends $(b,SIGTERM) to the script process. Children that were \
+       backgrounded by the script reparent to PID 1 and survive WM restarts. To kill all \
+       script descendants on exit (river-classic behavior), add $(b,trap 'kill 0' EXIT) \
+       to the top of the script."
+  ; `P "Example $(b,~/.config/ocdwm/init):"
+  ; `Pre
+      "  #!/usr/bin/env bash\n\
+      \  ocdwmctl bind spawn \"kitty\" to Super+Return\n\
+      \  ocdwmctl bind window close to Super+q\n\
+      \  ocdwmctl set layout floating\n\
+      \  pgrep -x waybar >/dev/null || waybar &"
+  ; `S Manpage.s_exit_status
+  ; `S Manpage.s_see_also
+  ]
+;;
+
+let cmd =
+  let open Cmdliner in
+  let open Cmdliner.Term.Syntax in
+  Cli.cmd
+    ~man
+    ~man_xrefs:[ `Tool "ocdwmctl"; `Tool "river" ]
+    ~version
+    ~name:"ocdwm"
+    ~doc:"ocdwm - dwm-like window manager for river 0.4.x, written in OCaml"
+  @@
+  let+ override_path =
+    Arg.(
+      value
+      & opt (some string) None
+      & info
+          [ "c" ]
+          ~docv:"SHELL_COMMAND"
+          ~doc:
+            "Override the default search paths for an init executable: instead \
+             $(i,SHELL_COMMAND) will be run with /bin/sh -c. See the CONFIGURATION \
+             section for more details.")
+  and+ log_level = Cli.log_level_arg in
+  let init_command = Init_script.resolve ?override_path () in
+  run ~init_command ~log_level ()
+;;
+
+let main () = Cmdliner.Cmd.eval' cmd
+let () = if !Sys.interactive then () else main () |> exit
