@@ -67,4 +67,7 @@ type t =
   | Set_gaps_inner of int Delta.t [@name "set_gaps_inner"]
   | Set_gaps_outer of int Delta.t [@name "set_gaps_outer"]
   | Set_stack of Stack_kind.t [@name "set_stack"]
+  (* Config settings *)
+  | Set_focus_follows_pointer of bool [@name "set_focus_follows_pointer"]
+  | Toggle_focus_follows_pointer [@name "toggle_focus_follows_pointer"]
 [@@deriving yojson]

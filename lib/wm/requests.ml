@@ -373,6 +373,9 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
     (match seat.output with
      | None -> raise_seat_missing_output ()
      | Some o -> Output.set_stack_kind ~kind wm o)
+  | Set_focus_follows_pointer b -> wm.config.focus_follows_pointer <- b
+  | Toggle_focus_follows_pointer ->
+    wm.config.focus_follows_pointer <- not wm.config.focus_follows_pointer
 ;;
 
 let handle_setting (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (setting : Setting.t) =
