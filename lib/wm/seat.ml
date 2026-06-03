@@ -182,7 +182,10 @@ let init (ctx : Ctx.manage Ctx.t) (s : t) =
       ]
   in
   List.iter (fun (m, k, a) -> xkb_binding_create ctx s m k a) xkb_bindings;
-  List.iter (fun (m, ec, a) -> pointer_binding_create ctx s m ec a) pointer_bindings
+  List.iter (fun (m, ec, a) -> pointer_binding_create ctx s m ec a) pointer_bindings;
+  match wm.config.cursor_theme with
+  | None -> ()
+  | Some (name, size) -> Cursor_config.apply s ~name ~size
 ;;
 
 let handle_pointer_position

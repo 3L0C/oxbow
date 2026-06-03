@@ -233,12 +233,24 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
     dispatch_failed "Send_to_output_spatial: not implemented"
   | Send_to_output_name { name; policy } ->
     dispatch_failed "Send_to_output_name: not implemented"
-  | Focus_window_logical dir -> Focus.focus_window_logical ctx seat dir
-  | Focus_window_spatial dir -> Focus.focus_window_spatial ctx seat dir
-  | Focus_window_query q -> Focus.focus_window_query ctx seat q
-  | Focus_output_logical dir -> Focus.focus_output_logical ctx seat dir
-  | Focus_output_spatial dir -> Focus.focus_output_spatial ctx seat dir
-  | Focus_output_name name -> Focus.focus_output_name ctx seat name
+  | Focus_window_logical dir ->
+    Focus.focus_window_logical ctx seat dir;
+    Pointer_warp.warp_to_focus ctx seat
+  | Focus_window_spatial dir ->
+    Focus.focus_window_spatial ctx seat dir;
+    Pointer_warp.warp_to_focus ctx seat
+  | Focus_window_query q ->
+    Focus.focus_window_query ctx seat q;
+    Pointer_warp.warp_to_focus ctx seat
+  | Focus_output_logical dir ->
+    Focus.focus_output_logical ctx seat dir;
+    Pointer_warp.warp_to_focus ctx seat
+  | Focus_output_spatial dir ->
+    Focus.focus_output_spatial ctx seat dir;
+    Pointer_warp.warp_to_focus ctx seat
+  | Focus_output_name name ->
+    Focus.focus_output_name ctx seat name;
+    Pointer_warp.warp_to_focus ctx seat
   | Shift dir ->
     (match seat.output with
      | None -> raise_seat_missing_output ()
@@ -381,6 +393,10 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
     (match Keyboard_config.set_layout_file wm ~path with
      | Ok () -> ()
      | Error msg -> dispatch_failed msg)
+  | Set_warp_on_focus b -> wm.config.warp_on_focus <- b
+  | Toggle_warp_on_focus -> wm.config.warp_on_focus <- not wm.config.warp_on_focus
+  | Set_cursor_theme { name; size } ->
+    Cursor_config.set_theme wm seat ~name ~size:(Int32.of_int size)
 ;;
 
 let handle_setting (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (setting : Setting.t) =

@@ -3,7 +3,7 @@ type t =
   ; y : int
   }
 
-(** [position_of_box r] is the geometric centre of [r]. *)
+(** [position_of_box r] is the geometric center of [r]. *)
 val position_of_box : int Rect.t -> t
 
 (** [diff a b] is [b - a]. *)
@@ -18,7 +18,7 @@ val length_squared : t -> int
 
 (** [nearest_in_direction ~from ~dir project xs] is the element of [xs]
     closest to [from] in direction [dir], or [None] if none qualifies.
-    [project x] returns [Some] then candidate's centre, or [None] to
+    [project x] returns [Some] then candidate's center, or [None] to
     exclude [x] from the search. *)
 val nearest_in_direction
   :  from:t

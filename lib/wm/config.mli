@@ -3,9 +3,11 @@ module Rwm = Ocdwm_protocol.River_window_management_v1_client
 type t =
   { default_tag_config : Tag_data.t
   ; borders : Border_config.t
+  ; mutable cursor_theme : (string * int32) option
   ; mutable modkey : Rwm.River_seat_v1.Modifiers.t
   ; mutable rules : Window_rule.t list
   ; mutable focus_follows_pointer : bool
+  ; mutable warp_on_focus : bool
   ; mutable repeat_rate : int
   ; mutable repeat_delay : int
   }

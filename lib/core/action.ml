@@ -75,4 +75,10 @@ type t =
       ; delay : int
       } [@name "set_keyboard_repeat"]
   | Set_keyboard_layout_file of string [@name "set_keyboard_layout_file"]
+  | Set_warp_on_focus of bool [@name "set_warp_on_focus"]
+  | Toggle_warp_on_focus [@name "toggle_warp_on_focus"]
+  | Set_cursor_theme of
+      { name : string
+      ; size : int
+      } [@name "set_cursor_theme"]
 [@@deriving yojson]
