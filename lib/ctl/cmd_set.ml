@@ -8,6 +8,7 @@ let cmd =
     [ Cmd_set_focus_follows_pointer.cmd
     ; Cmd_set_gaps_inner.cmd
     ; Cmd_set_gaps_outer.cmd
+    ; Cmd_set_keyboard.cmd
     ; Cmd_set_layout.cmd
     ; Cmd_set_mfact.cmd
     ; Cmd_set_nmaster.cmd
@@ -22,6 +23,7 @@ let bind_cmd =
     [ Cmd_set_focus_follows_pointer.bind_cmd
     ; Cmd_set_gaps_inner.bind_cmd
     ; Cmd_set_gaps_outer.bind_cmd
+    ; Cmd_set_keyboard.bind_cmd
     ; Cmd_set_layout.bind_cmd
     ; Cmd_set_mfact.bind_cmd
     ; Cmd_set_nmaster.bind_cmd

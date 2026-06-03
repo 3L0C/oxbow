@@ -6,6 +6,8 @@ type t =
   ; mutable modkey : Rwm.River_seat_v1.Modifiers.t
   ; mutable rules : Window_rule.t list
   ; mutable focus_follows_pointer : bool
+  ; mutable repeat_rate : int
+  ; mutable repeat_delay : int
   }
 
 let default_layout_params =
@@ -32,5 +34,7 @@ let default (entry : Layout_entry.t) : t =
   ; modkey = Rwm.River_seat_v1.Modifiers.(Int32.(logor mod4 ctrl))
   ; rules = []
   ; focus_follows_pointer = true
+  ; repeat_rate = 50
+  ; repeat_delay = 300
   }
 ;;

@@ -376,6 +376,11 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
   | Set_focus_follows_pointer b -> wm.config.focus_follows_pointer <- b
   | Toggle_focus_follows_pointer ->
     wm.config.focus_follows_pointer <- not wm.config.focus_follows_pointer
+  | Set_keyboard_repeat { rate; delay } -> Keyboard_config.set_repeat wm ~rate ~delay
+  | Set_keyboard_layout_file path ->
+    (match Keyboard_config.set_layout_file wm ~path with
+     | Ok () -> ()
+     | Error msg -> dispatch_failed msg)
 ;;
 
 let handle_setting (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (setting : Setting.t) =

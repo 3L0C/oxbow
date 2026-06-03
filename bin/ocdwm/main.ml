@@ -4,8 +4,10 @@ module Config = Ocdwm_wm.Config
 module Exit = Ocdwm_core.Exit
 module Init_script = Ocdwm_wm.Init_script
 module Layout = Ocdwm_wm.Layout
+module Rinput = Ocdwm_protocol.River_input_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
+module Rxkb = Ocdwm_protocol.River_xkb_config_v1_client
 module Types = Ocdwm_wm.Types
 module Wayland_handlers = Ocdwm_wm.Wayland_handlers
 module Window_manager = Ocdwm_wm.Window_manager
@@ -61,6 +63,22 @@ let loop ~init_command ~net ~clock =
          inherit [_] Rlsh.River_layer_shell_v1.v1
        end
   in
+  let river_input_v1 =
+    Wayland.Registry.bind registry
+    @@ object
+         inherit [_] Rinput.River_input_manager_v1.v2
+         method on_input_device _ device = Wayland_handlers.on_input_device device wm_box
+         method on_finished = ignore
+       end
+  in
+  let river_xkb_config_v1 =
+    Wayland.Registry.bind registry
+    @@ object
+         inherit [_] Rxkb.River_xkb_config_v1.v2
+         method on_xkb_keyboard _ xkb = Wayland_handlers.on_xkb_keyboard xkb wm_box
+         method on_finished = ignore
+       end
+  in
   let layout_registry = Layout.create_registry () in
   let config = Layout.default_layout_entry ~registry:layout_registry |> Config.default in
   let wm =
@@ -68,6 +86,8 @@ let loop ~init_command ~net ~clock =
       { river_wm_v1
       ; river_xkb_v1
       ; river_lsh_v1
+      ; river_input_v1
+      ; river_xkb_config_v1
       ; registry
       ; shutdown = Eio.Condition.create ()
       ; state = Wm_running
@@ -76,6 +96,9 @@ let loop ~init_command ~net ~clock =
       ; outputs = []
       ; windows = []
       ; seats = []
+      ; input_devices = []
+      ; current_keymap = None
+      ; desired_keymap_path = None
       ; config
       ; init_command
       ; init_handle = None

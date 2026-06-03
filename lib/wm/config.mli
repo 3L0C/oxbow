@@ -6,6 +6,8 @@ type t =
   ; mutable modkey : Rwm.River_seat_v1.Modifiers.t
   ; mutable rules : Window_rule.t list
   ; mutable focus_follows_pointer : bool
+  ; mutable repeat_rate : int
+  ; mutable repeat_delay : int
   }
 
 (** [create_tag_data entry] is the [Tag_data.t] created from [entry]. *)

@@ -70,4 +70,9 @@ type t =
   (* Config settings *)
   | Set_focus_follows_pointer of bool [@name "set_focus_follows_pointer"]
   | Toggle_focus_follows_pointer [@name "toggle_focus_follows_pointer"]
+  | Set_keyboard_repeat of
+      { rate : int
+      ; delay : int
+      } [@name "set_keyboard_repeat"]
+  | Set_keyboard_layout_file of string [@name "set_keyboard_layout_file"]
 [@@deriving yojson]

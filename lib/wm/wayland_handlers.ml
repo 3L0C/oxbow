@@ -1,5 +1,7 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
+module Rinput = Ocdwm_protocol.River_input_management_v1_client
 module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
+module Rwm = Ocdwm_protocol.River_window_management_v1_client
+module Rxkb = Ocdwm_protocol.River_xkb_config_v1_client
 open! Ocdwm_core
 
 type (_, _) Wayland.S.user_data +=
@@ -518,4 +520,69 @@ let on_window _ river_window (wm_box : Window_manager.t Box.t) =
       method on_minimize_requested _ = ()
     end;
   wm.windows <- window :: wm.windows
+;;
+
+let on_input_device device (wm_box : Types.Window_manager.t Box.t) =
+  let wm = Option.get wm_box.body in
+  let entry : Types.Keyboard.t = { device; kind = None; name = ""; xkb = None } in
+  wm.input_devices <- entry :: wm.input_devices;
+  Wayland.Proxy.Handler.attach device
+  @@ object
+       inherit [_] Rinput.River_input_device_v1.v2
+       method on_type _ ~type_ = entry.kind <- Some type_
+       method on_name _ ~name = entry.name <- name
+
+       method on_done _ =
+         match entry.kind with
+         | Some Rinput.River_input_device_v1.Type.Keyboard ->
+           Rinput.River_input_device_v1.set_repeat_info
+             entry.device
+             ~rate:(Int32.of_int wm.config.repeat_rate)
+             ~delay:(Int32.of_int wm.config.repeat_delay)
+         | _ -> ()
+
+       method on_removed _ =
+         wm.input_devices <- List.filter (fun e -> e != entry) wm.input_devices;
+         Rinput.River_input_device_v1.destroy entry.device;
+         Wayland.Proxy.delete entry.device
+     end
+;;
+
+let on_xkb_keyboard xkb (wm_box : Types.Window_manager.t Box.t) =
+  let wm = Option.get wm_box.body in
+  Wayland.Proxy.Handler.attach xkb
+  @@ object
+       inherit [_] Rxkb.River_xkb_keyboard_v1.v2
+
+       method on_input_device _ ~device =
+         match
+           List.find_opt
+             (fun (e : Types.Keyboard.t) ->
+                Int32.equal (Wayland.Proxy.id e.device) (Wayland.Proxy.id device))
+             wm.input_devices
+         with
+         | None -> Logs.warn @@ fun m -> m "xkb keyboard for unknown device"
+         | Some entry ->
+           entry.xkb <- Some xkb;
+           (match wm.current_keymap with
+            | Some keymap -> Rxkb.River_xkb_keyboard_v1.set_keymap xkb ~keymap
+            | None -> ())
+
+       method on_removed _ =
+         List.iter
+           (fun (e : Types.Keyboard.t) ->
+              match e.xkb with
+              | Some x when x == xkb -> e.xkb <- None
+              | _ -> ())
+           wm.input_devices;
+         Rxkb.River_xkb_keyboard_v1.destroy xkb;
+         Wayland.Proxy.delete xkb
+
+       method on_numlock_enabled _ = ()
+       method on_numlock_disabled _ = ()
+       method on_layout _ ~index ~name = ()
+       method on_done _ = ()
+       method on_capslock_enabled _ = ()
+       method on_capslock_disabled _ = ()
+     end
 ;;

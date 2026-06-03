@@ -1,4 +1,6 @@
+module Rinput = Ocdwm_protocol.River_input_management_v1_client
 module Rwm = Ocdwm_protocol.River_window_management_v1_client
+module Rxkb = Ocdwm_protocol.River_xkb_config_v1_client
 
 (** [on_finished wm_box] handles the finished event.
 
@@ -62,5 +64,21 @@ val on_unavailable : [ `V4 ] Rwm.River_window_manager_v1.t -> unit
 val on_window
   :  [ `V4 ] Rwm.River_window_manager_v1.t
   -> [ `V4 ] Rwm.River_window_v1.t
+  -> Types.Window_manager.t Box.t
+  -> unit
+
+(** [on_input_device device wm_box] handles newly added input devices.
+
+   {b Effects:} mutates WM state; sends River request *)
+val on_input_device
+  :  [ `V2 ] Rinput.River_input_device_v1.t
+  -> Types.Window_manager.t Box.t
+  -> unit
+
+(** [on_xkb_keyboard xkb wm_box] handles newly added xkb keybords.
+
+   {b Effects:} mutates WM state; sends River request *)
+val on_xkb_keyboard
+  :  [ `V2 ] Rxkb.River_xkb_keyboard_v1.t
   -> Types.Window_manager.t Box.t
   -> unit
