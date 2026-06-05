@@ -226,11 +226,17 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
          Window.resize_spatial ctx w dir by;
          Option.iter (Output.mark_dirty wm) w.output))
   | Send_to_output_logical { dir; policy } ->
-    dispatch_failed "Send_to_output_logical: not implemented"
+    (match Focus.focused_of seat with
+     | None -> raise_no_focused_window ()
+     | Some w -> Output.send_to_logical ctx w dir policy)
   | Send_to_output_spatial { dir; policy } ->
-    dispatch_failed "Send_to_output_spatial: not implemented"
+    (match Focus.focused_of seat with
+     | None -> raise_no_focused_window ()
+     | Some w -> Output.send_to_spatial ctx w dir policy)
   | Send_to_output_name { name; policy } ->
-    dispatch_failed "Send_to_output_name: not implemented"
+    (match Focus.focused_of seat with
+     | None -> raise_no_focused_window ()
+     | Some w -> Output.send_to_name ctx w name policy)
   | Focus_window_logical dir ->
     Focus.focus_window_logical ctx seat dir;
     Pointer_warp.warp_to_focus ctx seat

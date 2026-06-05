@@ -123,10 +123,16 @@ let fullscreen_is_visible (o : t) =
 
 let push (windows : Types.Window.t list) (o : t) = apply (Push windows) o
 
-let move_window (w : Types.Window.t) (target : t) =
+let move_window ?(policy = Tag_policy.Tag_keep) (w : Types.Window.t) (target : t) =
   let take () =
     w.output <- Some target;
-    push [ w ] target
+    push [ w ] target;
+    match policy with
+    | Tag_keep -> ()
+    | Tag_take ->
+      w.tags
+      <- Tag_set.first target.selected_tags
+         |> Option.fold ~none:w.tags ~some:Tag_set.singleton
   in
   match w.output with
   | Some o when o == target -> ()
@@ -266,4 +272,97 @@ let resolve_tag_arg (arg : Tag_arg.t) (o : t) =
   match arg with
   | Tags_concrete s -> s
   | Tags_occupied -> occupied_tags o
+;;
+
+let to_vector (o : t) = Rect.to_int o.geom |> Vector.position_of_box
+
+let send_to
+      (ctx : Ctx.manage Ctx.t)
+      (src : t)
+      (dst : t)
+      (window : Types.Window.t)
+      (policy : Tag_policy.t)
+  =
+  let wm = Ctx.wm ctx in
+  move_window ~policy window dst;
+  (match window.presentation with
+   | P_tiled -> ()
+   | P_floating ->
+     let dx = Int32.sub dst.geom.x src.geom.x in
+     let dy = Int32.sub dst.geom.y src.geom.y in
+     Window.set_position
+       ctx
+       window
+       ~x:(Int32.add window.geom.x dx)
+       ~y:(Int32.add window.geom.y dy);
+     Window.fit_to_output ctx window;
+     Window.remember_float window
+   | P_maximized { restore } -> Window.maximize ~restore ctx window
+   | P_fullscreen _ -> Window.fullscreen ~force:true ctx window);
+  mark_dirty wm src;
+  mark_dirty wm dst
+;;
+
+let resolve_output_logical (dir : Logical_direction.t) current l =
+  match dir with
+  | Next -> Utils.next_or_first current l
+  | Prev -> Utils.prev_or_last current l
+;;
+
+let send_to_logical
+      (ctx : Ctx.manage Ctx.t)
+      (window : Types.Window.t)
+      (dir : Logical_direction.t)
+      (policy : Tag_policy.t)
+  =
+  let wm = Ctx.wm ctx in
+  match window.output with
+  | None -> ()
+  | Some current ->
+    let target = resolve_output_logical dir current wm.outputs in
+    (match target with
+     | Some o when o != current -> send_to ctx current o window policy
+     | _ -> ())
+;;
+
+let resolve_output_spatial ~from ~dir ~current =
+  Vector.nearest_in_direction ~from ~dir (fun (o : t) ->
+    if o == current then None else Some (to_vector o))
+;;
+
+let send_to_spatial
+      (ctx : Ctx.manage Ctx.t)
+      (window : Types.Window.t)
+      (dir : Spatial_direction.t)
+      (policy : Tag_policy.t)
+  =
+  let wm = Ctx.wm ctx in
+  match window.output with
+  | None -> ()
+  | Some current ->
+    let from = to_vector current in
+    let target = resolve_output_spatial ~from ~dir ~current wm.outputs in
+    (match target with
+     | Some o when o != current -> send_to ctx current o window policy
+     | _ -> ())
+;;
+
+let matches_name name (o : t) = Option.fold ~none:false ~some:(fun s -> s = name) o.name
+let resolve_output_name ~name = List.find_opt (matches_name name)
+
+let send_to_name
+      (ctx : Ctx.manage Ctx.t)
+      (window : Types.Window.t)
+      (name : string)
+      (policy : Tag_policy.t)
+  =
+  let wm = Ctx.wm ctx in
+  match window.output with
+  | None -> ()
+  | Some current when matches_name name current -> ()
+  | Some current ->
+    let target = resolve_output_name ~name wm.outputs in
+    (match target with
+     | Some o when o != current -> send_to ctx current o window policy
+     | _ -> ())
 ;;

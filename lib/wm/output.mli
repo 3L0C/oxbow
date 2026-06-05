@@ -33,12 +33,12 @@ val remove_window : window:Types.Window.t -> t -> unit
     [y]).  Returns [None] when the point is output of bounds. *)
 val at_point : x:int32 -> y:int32 -> t list -> t option
 
-(** [move_window window output] removes [window] from its current output, if
-    any, and moves it to [output]. No-op when [window] is already owned by
-    [output].
+(** [move_window ?policy window output] removes [window] from its current output,
+    if any, and moves it to [output]. No-op when [window] is already owned by
+    [output]. If [policy] is not given, [window]'s tags are unchanged.
 
     {b Effects:} mutates WM state *)
-val move_window : Types.Window.t -> t -> unit
+val move_window : ?policy:Tag_policy.t -> Types.Window.t -> t -> unit
 
 (** [mark_dirty wm output] flags [output] as "dirty" for rendering purposes.
 
@@ -131,5 +131,36 @@ val set_stack_kind : kind:Stack_kind.t -> Types.Window_manager.t -> t -> unit
    {b Effects:} mutates WM state *)
 val shift : Logical_direction.t -> t -> unit
 
-(** [resolve_tag_arg arg output] returns the set of tags according to [arg] *)
+(** [resolve_tag_arg arg output] returns the set of tags according to [arg]. *)
 val resolve_tag_arg : Tag_arg.t -> t -> Tag_set.t
+
+(** [to_vector output] is the vector of output. *)
+val to_vector : t -> Vector.t
+
+(** [send_to_logical ctx window dir policy] moves [window] in [dir]. [window]
+    will be assigned tags according to [policy].
+
+   {b Effects:} mutates WM state; sends River request *)
+val send_to_logical
+  :  Ctx.manage Ctx.t
+  -> Types.Window.t
+  -> Logical_direction.t
+  -> Tag_policy.t
+  -> unit
+
+(** [send_to_spatial ctx window dir policy] moves [window] in [dir]. [window]
+    will be assigned tags according to [policy].
+
+   {b Effects:} mutates WM state; sends River request *)
+val send_to_spatial
+  :  Ctx.manage Ctx.t
+  -> Types.Window.t
+  -> Spatial_direction.t
+  -> Tag_policy.t
+  -> unit
+
+(** [send_to_name ctx window name policy] moves [window] to the output matching
+    [name]. [window] will be assigned tags according to [policy].
+
+   {b Effects:} mutates WM state; sends River request *)
+val send_to_name : Ctx.manage Ctx.t -> Types.Window.t -> string -> Tag_policy.t -> unit

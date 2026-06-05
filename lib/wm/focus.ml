@@ -144,12 +144,12 @@ let focus_output_spatial
   match seat.output with
   | None -> ()
   | Some current ->
-    let from = Vector.position_of_box (Rect.to_int current.geom) in
+    let from = Output.to_vector current in
     Vector.nearest_in_direction
       ~from
       ~dir
       (fun (o : Types.Output.t) ->
-         if o == current then None else Some (Rect.to_int o.geom |> Vector.position_of_box))
+         if o == current then None else Some (Output.to_vector o))
       wm.outputs
     |> Option.iter (focus_output ctx seat)
 ;;
