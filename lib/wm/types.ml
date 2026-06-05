@@ -7,10 +7,10 @@ open! Ocdwm_core
 
 module rec Keyboard : sig
   type t =
-    { device : [ `V2 ] Rinput.River_input_device_v1.t
+    { device : [ `V1 ] Rinput.River_input_device_v1.t
     ; mutable kind : Rinput.River_input_device_v1.Type.t option
     ; mutable name : string
-    ; mutable xkb : [ `V2 ] Rxkb.River_xkb_keyboard_v1.t option
+    ; mutable xkb : [ `V1 ] Rxkb.River_xkb_keyboard_v1.t option
     }
 end =
   Keyboard
@@ -187,8 +187,8 @@ and Window_manager : sig
       river_wm_v1 : [ `V4 ] Rwm.River_window_manager_v1.t
     ; river_xkb_v1 : [ `V2 ] Xkb.River_xkb_bindings_v1.t
     ; river_lsh_v1 : [ `V1 ] Rlsh.River_layer_shell_v1.t
-    ; river_input_v1 : [ `V2 ] Rinput.River_input_manager_v1.t
-    ; river_xkb_config_v1 : [ `V2 ] Rxkb.River_xkb_config_v1.t
+    ; river_input_v1 : [ `V1 ] Rinput.River_input_manager_v1.t
+    ; river_xkb_config_v1 : [ `V1 ] Rxkb.River_xkb_config_v1.t
     ; registry : Wayland.Registry.t
     ; (* Lifecycle *)
       shutdown : Eio.Condition.t
@@ -201,7 +201,7 @@ and Window_manager : sig
     ; mutable windows : Window.t list
     ; mutable seats : Seat.t list
     ; mutable input_devices : Keyboard.t list
-    ; mutable current_keymap : [ `V2 ] Rxkb.River_xkb_keymap_v1.t option
+    ; mutable current_keymap : [ `V1 ] Rxkb.River_xkb_keymap_v1.t option
     ; mutable desired_keymap_path : string option
     ; (* User configuration *)
       config : Config.t

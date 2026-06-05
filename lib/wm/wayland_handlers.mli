@@ -71,7 +71,7 @@ val on_window
 
    {b Effects:} mutates WM state; sends River request *)
 val on_input_device
-  :  [ `V2 ] Rinput.River_input_device_v1.t
+  :  [ `V1 ] Rinput.River_input_device_v1.t
   -> Types.Window_manager.t Box.t
   -> unit
 
@@ -79,6 +79,6 @@ val on_input_device
 
    {b Effects:} mutates WM state; sends River request *)
 val on_xkb_keyboard
-  :  [ `V2 ] Rxkb.River_xkb_keyboard_v1.t
+  :  [ `V1 ] Rxkb.River_xkb_keyboard_v1.t
   -> Types.Window_manager.t Box.t
   -> unit

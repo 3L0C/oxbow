@@ -66,7 +66,7 @@ let loop ~init_command ~net ~clock =
   let river_input_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] Rinput.River_input_manager_v1.v2
+         inherit [_] Rinput.River_input_manager_v1.v1
          method on_input_device _ device = Wayland_handlers.on_input_device device wm_box
          method on_finished = ignore
        end
@@ -74,7 +74,7 @@ let loop ~init_command ~net ~clock =
   let river_xkb_config_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] Rxkb.River_xkb_config_v1.v2
+         inherit [_] Rxkb.River_xkb_config_v1.v1
          method on_xkb_keyboard _ xkb = Wayland_handlers.on_xkb_keyboard xkb wm_box
          method on_finished = ignore
        end

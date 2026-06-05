@@ -528,7 +528,7 @@ let on_input_device device (wm_box : Types.Window_manager.t Box.t) =
   wm.input_devices <- entry :: wm.input_devices;
   Wayland.Proxy.Handler.attach device
   @@ object
-       inherit [_] Rinput.River_input_device_v1.v2
+       inherit [_] Rinput.River_input_device_v1.v1
        method on_type _ ~type_ = entry.kind <- Some type_
        method on_name _ ~name = entry.name <- name
 
@@ -552,7 +552,7 @@ let on_xkb_keyboard xkb (wm_box : Types.Window_manager.t Box.t) =
   let wm = Option.get wm_box.body in
   Wayland.Proxy.Handler.attach xkb
   @@ object
-       inherit [_] Rxkb.River_xkb_keyboard_v1.v2
+       inherit [_] Rxkb.River_xkb_keyboard_v1.v1
 
        method on_input_device _ ~device =
          match

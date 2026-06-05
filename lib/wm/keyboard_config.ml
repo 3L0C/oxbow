@@ -27,9 +27,10 @@ let set_layout_file (wm : Types.Window_manager.t) ~(path : string) =
       Rxkb.River_xkb_config_v1.create_keymap
         wm.river_xkb_config_v1
         object
-          inherit [_] Rxkb.River_xkb_keymap_v1.v2
+          inherit [_] Rxkb.River_xkb_keymap_v1.v1
 
-          method on_success self =
+          method on_success proxy =
+            let self = Wayland.Proxy.cast_version proxy in
             match wm.desired_keymap_path with
             | Some p when String.equal p request_path ->
               let old = wm.current_keymap in
