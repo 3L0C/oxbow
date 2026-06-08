@@ -1,9 +1,10 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-
 type t = Types.Window.t
 
 (** [create wm river_window] is a unique window. *)
-val create : Types.Window_manager.t -> [ `V4 ] Rwm.River_window_v1.t -> t
+val create
+  :  Types.Window_manager.t
+  -> River.V.Window_management.t River.Window_management.River_window_v1.t
+  -> t
 
 (** [destroy window] destroys the Wayland objects backing [window].
     No-op unless [window.state = W_closing].

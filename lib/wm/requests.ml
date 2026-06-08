@@ -1,5 +1,3 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 open! Ocdwm_core
 
 exception Dispatch_failed of string
@@ -25,7 +23,7 @@ let rec window_request
        move ()
      | P_maximized _ ->
        window.presentation <- P_floating;
-       Rwm.River_window_v1.inform_unmaximized window.obj;
+       River.Window_management.River_window_v1.inform_unmaximized window.obj;
        move ()
      | P_floating -> move ())
   | Req_resize r ->
@@ -40,7 +38,7 @@ let rec window_request
        resize ()
      | P_maximized _ ->
        window.presentation <- P_floating;
-       Rwm.River_window_v1.inform_unmaximized window.obj;
+       River.Window_management.River_window_v1.inform_unmaximized window.obj;
        resize ()
      | P_floating -> resize ())
   | Req_maximize ->
@@ -132,7 +130,7 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
   | Close_focused ->
     (match Focus.focused_of seat with
      | None -> raise_no_focused_window ()
-     | Some window -> Rwm.River_window_v1.close window.obj)
+     | Some window -> River.Window_management.River_window_v1.close window.obj)
   | Toggle_floating ->
     (match Focus.focused_of seat with
      | None -> raise_no_focused_window ()
@@ -187,8 +185,8 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
             { seat
             ; edges =
                 Int32.logor
-                  Rwm.River_window_v1.Edges.right
-                  Rwm.River_window_v1.Edges.bottom
+                  River.Window_management.River_window_v1.Edges.right
+                  River.Window_management.River_window_v1.Edges.bottom
             })
      | _ -> dispatch_failed "cannot begin resize during an active operation")
   | Move_to { x; y } ->

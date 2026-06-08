@@ -1,5 +1,3 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 open! Ocdwm_core
 
 let focused_of (seat : Types.Seat.t) : Types.Window.t option =
@@ -23,7 +21,7 @@ let focus_window
 ;;
 
 let clear (_ : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
-  Rwm.River_seat_v1.clear_focus seat.obj
+  River.Window_management.River_seat_v1.clear_focus seat.obj
 ;;
 
 let refresh_focus (ctx : Ctx.manage Ctx.t) (output : Types.Output.t) =

@@ -1,4 +1,3 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
 open! Ocdwm_core
 
 type t = Types.Window.t
@@ -11,17 +10,20 @@ let fresh_id () =
   id
 ;;
 
-let create (wm : Types.Window_manager.t) (river_window : [ `V4 ] Rwm.River_window_v1.t)
+let create
+      (wm : Types.Window_manager.t)
+      (river_window :
+        River.V.Window_management.t River.Window_management.River_window_v1.t)
   : t
   =
   let node =
     object
-      inherit [_] Rwm.River_node_v1.v4
+      inherit [_] River.Window_management.River_node_v1.v4
     end
   in
   let output = Window_manager.default_output wm in
   { obj = river_window
-  ; node = Rwm.River_window_v1.get_node river_window node
+  ; node = River.Window_management.River_window_v1.get_node river_window node
   ; state = W_new
   ; id = fresh_id ()
   ; app_id = None
@@ -59,9 +61,9 @@ let state_to_string (state : Window_state.t) =
 let destroy (w : t) =
   match w.state with
   | W_closing ->
-    Rwm.River_window_v1.destroy w.obj;
+    River.Window_management.River_window_v1.destroy w.obj;
     Wayland.Proxy.delete w.obj;
-    Rwm.River_node_v1.destroy w.node
+    River.Window_management.River_node_v1.destroy w.node
   | _ ->
     Logs.warn
     @@ fun m -> m "destroy refused: Window is %s not closing" (state_to_string w.state)
@@ -69,12 +71,12 @@ let destroy (w : t) =
 
 let set_position (_ : 'p Ctx.t) (w : t) ~(x : int32) ~(y : int32) =
   w.geom <- { w.geom with x; y };
-  Rwm.River_node_v1.set_position w.node ~x ~y
+  River.Window_management.River_node_v1.set_position w.node ~x ~y
 ;;
 
 let river_sync_geom (_ : Ctx.manage Ctx.t) (w : t) (g : int32 Rect.t) =
-  Rwm.River_node_v1.set_position w.node ~x:g.x ~y:g.y;
-  Rwm.River_window_v1.propose_dimensions w.obj ~width:g.w ~height:g.h
+  River.Window_management.River_node_v1.set_position w.node ~x:g.x ~y:g.y;
+  River.Window_management.River_window_v1.propose_dimensions w.obj ~width:g.w ~height:g.h
 ;;
 
 let set_geom (ctx : Ctx.manage Ctx.t) (w : t) (g : int32 Rect.t) =
@@ -183,14 +185,14 @@ let fullscreen ?(force : bool = false) (_ : Ctx.manage Ctx.t) (w : t) =
   | Some o ->
     let enter restore =
       w.presentation <- P_fullscreen { restore };
-      Rwm.River_window_v1.fullscreen w.obj ~output:o.obj;
-      Rwm.River_window_v1.inform_fullscreen w.obj
+      River.Window_management.River_window_v1.fullscreen w.obj ~output:o.obj;
+      River.Window_management.River_window_v1.inform_fullscreen w.obj
     in
     (match w.presentation with
      | P_tiled -> enter `Tiled
      | P_floating -> enter `Floating
      | P_maximized { restore } ->
-       Rwm.River_window_v1.inform_unmaximized w.obj;
+       River.Window_management.River_window_v1.inform_unmaximized w.obj;
        enter (`Maximized restore)
      | P_fullscreen { restore } when force -> enter restore
      | P_fullscreen _ -> ())
@@ -212,7 +214,7 @@ let maximize ?restore (ctx : Ctx.manage Ctx.t) (w : t) =
       in
       w.presentation <- P_maximized { restore };
       set_geom ctx w g;
-      Rwm.River_window_v1.inform_maximized w.obj
+      River.Window_management.River_window_v1.inform_maximized w.obj
   in
   match restore with
   | None ->
@@ -229,7 +231,7 @@ let unmaximize (ctx : Ctx.manage Ctx.t) (w : t) =
   match w.presentation with
   | P_tiled | P_floating | P_fullscreen _ -> ()
   | P_maximized { restore } ->
-    Rwm.River_window_v1.inform_unmaximized w.obj;
+    River.Window_management.River_window_v1.inform_unmaximized w.obj;
     (match restore with
      | `Tiled -> tile w
      | `Floating -> float ctx w)
@@ -238,8 +240,8 @@ let unmaximize (ctx : Ctx.manage Ctx.t) (w : t) =
 let exit_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
   match w.output, w.presentation with
   | Some _, P_fullscreen { restore } ->
-    Rwm.River_window_v1.exit_fullscreen w.obj;
-    Rwm.River_window_v1.inform_not_fullscreen w.obj;
+    River.Window_management.River_window_v1.exit_fullscreen w.obj;
+    River.Window_management.River_window_v1.inform_not_fullscreen w.obj;
     (match restore with
      | `Tiled -> tile w
      | `Floating -> float ctx w
@@ -261,10 +263,10 @@ let sync (_ : 'p Ctx.t) (w : t) =
   let should_render = is_rendered w in
   match should_render, w.is_hidden with
   | true, true ->
-    Rwm.River_window_v1.show w.obj;
+    River.Window_management.River_window_v1.show w.obj;
     w.is_hidden <- false
   | false, false ->
-    Rwm.River_window_v1.hide w.obj;
+    River.Window_management.River_window_v1.hide w.obj;
     w.is_hidden <- true
   | _, _ -> ()
 ;;
@@ -301,14 +303,14 @@ let fake_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
   if not w.is_fake_fullscreen
   then (
     w.is_fake_fullscreen <- true;
-    Rwm.River_window_v1.inform_fullscreen w.obj)
+    River.Window_management.River_window_v1.inform_fullscreen w.obj)
 ;;
 
 let exit_fake_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
   if w.is_fake_fullscreen
   then (
     w.is_fake_fullscreen <- false;
-    Rwm.River_window_v1.inform_not_fullscreen w.obj)
+    River.Window_management.River_window_v1.inform_not_fullscreen w.obj)
 ;;
 
 let float_in_place (w : t) =

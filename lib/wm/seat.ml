@@ -1,12 +1,9 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
-module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 open! Ocdwm_core
 
 type t = Types.Seat.t
 
 let xkb_binding_destroy (_ : Ctx.manage Ctx.t) (binding : Types.Xkb_binding.t) =
-  Xkb.River_xkb_binding_v1.destroy binding.obj
+  River.Xkb_bindings.River_xkb_binding_v1.destroy binding.obj
 ;;
 
 let unbind_xkb_binding
@@ -33,11 +30,11 @@ let xkb_binding_create
   let keysym_i32 = Int32.of_int (Xkbcommon.Keysym.to_int keysym) in
   let binding : Types.Xkb_binding.t =
     { obj =
-        Xkb.River_xkb_bindings_v1.get_xkb_binding
+        River.Xkb_bindings.River_xkb_bindings_v1.get_xkb_binding
           wm.river_xkb_v1
           ~seat:s.obj
           object
-            inherit [_] Xkb.River_xkb_binding_v1.v2
+            inherit [_] River.Xkb_bindings.River_xkb_binding_v1.v2
             method on_stop_repeat _ = ()
             method on_released _ = ()
 
@@ -52,7 +49,7 @@ let xkb_binding_create
     ; keysym
     }
   in
-  Xkb.River_xkb_binding_v1.enable binding.obj;
+  River.Xkb_bindings.River_xkb_binding_v1.enable binding.obj;
   s.xkb_bindings <- binding :: s.xkb_bindings
 ;;
 
@@ -68,7 +65,7 @@ let replace_xkb_binding
 ;;
 
 let pointer_binding_destroy (_ : Ctx.manage Ctx.t) (pointer : Types.Pointer_binding.t) =
-  Rwm.River_pointer_binding_v1.destroy pointer.obj
+  River.Window_management.River_pointer_binding_v1.destroy pointer.obj
 ;;
 
 let unbind_pointer_binding
@@ -93,10 +90,10 @@ let pointer_binding_create
   let body = Request_body.Trigger action in
   let binding : Types.Pointer_binding.t =
     { obj =
-        Rwm.River_seat_v1.get_pointer_binding
+        River.Window_management.River_seat_v1.get_pointer_binding
           s.obj
           object
-            inherit [_] Rwm.River_pointer_binding_v1.v4
+            inherit [_] River.Window_management.River_pointer_binding_v1.v4
             method on_released _ = ()
 
             method on_pressed _ =
@@ -110,7 +107,7 @@ let pointer_binding_create
     ; button
     }
   in
-  Rwm.River_pointer_binding_v1.enable binding.obj;
+  River.Window_management.River_pointer_binding_v1.enable binding.obj;
   s.pointer_bindings <- binding :: s.pointer_bindings
 ;;
 
@@ -128,16 +125,16 @@ let replace_pointer_binding
 let destroy (ctx : Ctx.manage Ctx.t) (s : t) =
   List.iter (xkb_binding_destroy ctx) s.xkb_bindings;
   List.iter (pointer_binding_destroy ctx) s.pointer_bindings;
-  Rlsh.River_layer_shell_seat_v1.destroy s.layer_shell;
-  Rwm.River_seat_v1.destroy s.obj;
+  River.Layer_shell.River_layer_shell_seat_v1.destroy s.layer_shell;
+  River.Window_management.River_seat_v1.destroy s.obj;
   Wayland.Proxy.delete s.obj
 ;;
 
 let init (ctx : Ctx.manage Ctx.t) (s : t) =
   let wm = Ctx.wm ctx in
   let modkey = wm.config.modkey in
-  let alt = Rwm.River_seat_v1.Modifiers.mod1 in
-  let shift = Rwm.River_seat_v1.Modifiers.shift in
+  let alt = River.Window_management.River_seat_v1.Modifiers.mod1 in
+  let shift = River.Window_management.River_seat_v1.Modifiers.shift in
   let xkb_bindings =
     Xkbcommon.Keysym.
       [ (* mods, keysym,   action *)
@@ -216,7 +213,7 @@ let mark_dirty (wm : Types.Window_manager.t) (s : t) =
   | S_dirty _ -> ()
   | _ ->
     s.state <- S_dirty { prev = s.state };
-    Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
+    River.Window_management.River_window_manager_v1.manage_dirty wm.river_wm_v1
 ;;
 
 let refresh_layer_focus (ctx : Ctx.manage Ctx.t) (s : t) =
@@ -248,6 +245,6 @@ let op_end (_ : Ctx.manage Ctx.t) (s : t) =
   match s.op with
   | Op_move _ | Op_resize _ ->
     s.op <- Op_none;
-    Rwm.River_seat_v1.op_end s.obj
+    River.Window_management.River_seat_v1.op_end s.obj
   | Op_none -> ()
 ;;

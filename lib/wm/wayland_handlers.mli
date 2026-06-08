@@ -1,7 +1,3 @@
-module Rinput = Ocdwm_protocol.River_input_management_v1_client
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-module Rxkb = Ocdwm_protocol.River_xkb_config_v1_client
-
 (** [on_finished wm_box] handles the finished event.
 
     {b Effects:} mutates WM state *)
@@ -11,7 +7,7 @@ val on_finished : Types.Window_manager.t Box.t -> unit
 
     {b Effects:} mutates WM state; sends River request *)
 val on_manage_start
-  :  [ `V4 ] Rwm.River_window_manager_v1.t
+  :  River.V.Window_management.t River.Window_management.River_window_manager_v1.t
   -> Types.Window_manager.t Box.t
   -> unit
 
@@ -19,8 +15,8 @@ val on_manage_start
 
     {b Effects:} mutates WM state; sends River request *)
 val on_output
-  :  [ `V4 ] Rwm.River_window_manager_v1.t
-  -> [ `V4 ] Rwm.River_output_v1.t
+  :  River.V.Window_management.t River.Window_management.River_window_manager_v1.t
+  -> River.V.Window_management.t River.Window_management.River_output_v1.t
   -> Types.Window_manager.t Box.t
   -> unit
 
@@ -28,7 +24,7 @@ val on_output
 
     {b Effects:} mutates WM state; sends River request *)
 val on_render_start
-  :  [ `V4 ] Rwm.River_window_manager_v1.t
+  :  River.V.Window_management.t River.Window_management.River_window_manager_v1.t
   -> Types.Window_manager.t Box.t
   -> unit
 
@@ -36,34 +32,40 @@ val on_render_start
 
     {b Effects:} mutates WM state; sends River request *)
 val on_seat
-  :  [ `V4 ] Rwm.River_window_manager_v1.t
-  -> [ `V4 ] Rwm.River_seat_v1.t
+  :  River.V.Window_management.t River.Window_management.River_window_manager_v1.t
+  -> River.V.Window_management.t River.Window_management.River_seat_v1.t
   -> Types.Window_manager.t Box.t
   -> unit
 
 (** [on_session_locked river_wm_v1] handles the session lock request.
 
     {b Effects:} mutates WM state; sends River request *)
-val on_session_locked : [ `V4 ] Rwm.River_window_manager_v1.t -> unit
+val on_session_locked
+  :  River.V.Window_management.t River.Window_management.River_window_manager_v1.t
+  -> unit
 
 (** [on_session_unlocked river_wm_v1] handles the session unlock request.
 
     {b Effects:} mutates WM state; sends River request *)
-val on_session_unlocked : [ `V4 ] Rwm.River_window_manager_v1.t -> unit
+val on_session_unlocked
+  :  River.V.Window_management.t River.Window_management.River_window_manager_v1.t
+  -> unit
 
 (** [on_unavailable river_wm_v1] handles the unavailable event.
 
     {b Effects:} mutates WM state
 
     @raise Exceptions.Unavailable *)
-val on_unavailable : [ `V4 ] Rwm.River_window_manager_v1.t -> unit
+val on_unavailable
+  :  River.V.Window_management.t River.Window_management.River_window_manager_v1.t
+  -> unit
 
 (** [on_window river_wm_v1 river_window wm_box] handles new window creation.
 
     {b Effects:} mutates WM state; sends River request *)
 val on_window
-  :  [ `V4 ] Rwm.River_window_manager_v1.t
-  -> [ `V4 ] Rwm.River_window_v1.t
+  :  River.V.Window_management.t River.Window_management.River_window_manager_v1.t
+  -> River.V.Window_management.t River.Window_management.River_window_v1.t
   -> Types.Window_manager.t Box.t
   -> unit
 
@@ -71,7 +73,7 @@ val on_window
 
    {b Effects:} mutates WM state; sends River request *)
 val on_input_device
-  :  [ `V1 ] Rinput.River_input_device_v1.t
+  :  River.V.Input_management.t River.Input_management.River_input_device_v1.t
   -> Types.Window_manager.t Box.t
   -> unit
 
@@ -79,6 +81,6 @@ val on_input_device
 
    {b Effects:} mutates WM state; sends River request *)
 val on_xkb_keyboard
-  :  [ `V1 ] Rxkb.River_xkb_keyboard_v1.t
+  :  River.V.Xkb_config.t River.Xkb_config.River_xkb_keyboard_v1.t
   -> Types.Window_manager.t Box.t
   -> unit

@@ -1,6 +1,4 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
-open Window_manager_state
+open! Window_manager_state
 
 type t = Types.Window_manager.t
 
@@ -8,7 +6,7 @@ let mark_dirty (wm : t) =
   if not wm.dirty
   then (
     wm.dirty <- true;
-    Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1)
+    River.Window_management.River_window_manager_v1.manage_dirty wm.river_wm_v1)
 ;;
 
 let request_focus_output (wm : t) (seat : Types.Seat.t) (output : Types.Output.t option) =
@@ -35,7 +33,7 @@ let ensure_seat_output (wm : t) (seat : Types.Seat.t) =
 let refresh_layer_shell_output (wm : t) =
   match focused_output wm with
   | None -> ()
-  | Some o -> Rlsh.River_layer_shell_output_v1.set_default o.layer_shell
+  | Some o -> River.Layer_shell.River_layer_shell_output_v1.set_default o.layer_shell
 ;;
 
 let focus_output
@@ -101,7 +99,7 @@ let dispatch_pending (wm : t) =
   | Wm_pending_exit _ ->
     drain_pending_replies wm;
     wm.state <- Wm_exited;
-    Rwm.River_window_manager_v1.exit_session wm.river_wm_v1;
+    River.Window_management.River_window_manager_v1.exit_session wm.river_wm_v1;
     Eio.Condition.broadcast wm.shutdown
   | Wm_running | Wm_exited | Wm_close_requested ->
     Logs.err

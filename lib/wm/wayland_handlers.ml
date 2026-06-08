@@ -1,7 +1,3 @@
-module Rinput = Ocdwm_protocol.River_input_management_v1_client
-module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-module Rxkb = Ocdwm_protocol.River_xkb_config_v1_client
 open! Ocdwm_core
 
 type (_, _) Wayland.S.user_data +=
@@ -58,7 +54,7 @@ let disconnect_seat (window : Types.Window.t) (seat : Types.Seat.t) =
    | _ -> ());
   match seat.op with
   | (Op_move { window = w; _ } | Op_resize { window = w; _ }) when w == window ->
-    Rwm.River_seat_v1.op_end seat.obj;
+    River.Window_management.River_seat_v1.op_end seat.obj;
     seat.op <- Op_none
   | _ -> ()
 ;;
@@ -98,9 +94,11 @@ let manage_window (ctx : Ctx.manage Ctx.t) (window : Types.Window.t) =
   let wm = Ctx.wm ctx in
   (match window.state with
    | W_new ->
-     Rwm.River_window_v1.set_capabilities
+     River.Window_management.River_window_v1.set_capabilities
        window.obj
-       ~caps:Rwm.River_window_v1.Capabilities.(Int32.logor maximize fullscreen);
+       ~caps:
+         River.Window_management.River_window_v1.Capabilities.(
+           Int32.logor maximize fullscreen);
      Option.iter (Output.push [ window ]) window.output;
      Option.iter (Output.mark_dirty wm) window.output;
      if window.is_fixed then window.presentation <- P_floating;
@@ -155,7 +153,8 @@ let on_manage_start proxy (wm_box : Types.Window_manager.t Box.t) =
   let open Window_manager_state in
   match wm.state with
   | Wm_pending_exit _ -> Window_manager.dispatch_pending wm
-  | Wm_close_requested -> Rwm.River_window_manager_v1.manage_finish proxy
+  | Wm_close_requested ->
+    River.Window_management.River_window_manager_v1.manage_finish proxy
   | Wm_exited -> Logs.err @@ fun m -> m "wayland session should have exited..."
   | Wm_running ->
     Ctx.with_manage wm (fun ctx ->
@@ -168,16 +167,16 @@ let on_manage_start proxy (wm_box : Types.Window_manager.t Box.t) =
       List.iter (manage_seat ctx) wm.seats;
       List.iter (manage_output ctx) wm.outputs;
       List.iter (Window.sync ctx) wm.windows;
-      Rwm.River_window_manager_v1.manage_finish proxy)
+      River.Window_management.River_window_manager_v1.manage_finish proxy)
 ;;
 
 let on_output _ river_output (wm_box : Types.Window_manager.t Box.t) =
   let wm = Option.get wm_box.body in
   let output_box : Types.Output.t Box.t = { body = None } in
   let layer_shell =
-    Rlsh.River_layer_shell_v1.get_output wm.river_lsh_v1 ~output:river_output
+    River.Layer_shell.River_layer_shell_v1.get_output wm.river_lsh_v1 ~output:river_output
     @@ object
-         inherit [_] Rlsh.River_layer_shell_output_v1.v1
+         inherit [_] River.Layer_shell.River_layer_shell_output_v1.v1
          method user_data = Boxed_data (Output_box output_box)
 
          method on_non_exclusive_area proxy ~x ~y ~width ~height =
@@ -209,7 +208,7 @@ let on_output _ river_output (wm_box : Types.Window_manager.t Box.t) =
   Wayland.Proxy.Handler.attach
     river_output
     object
-      inherit [_] Rwm.River_output_v1.v4
+      inherit [_] River.Window_management.River_output_v1.v4
       method user_data = Output_data output
       method on_removed _ = output.state <- O_removed
 
@@ -277,13 +276,13 @@ let set_presentation_mode (output : Types.Output.t) =
     let mode =
       match w.presentation_hint with
       | Some p -> p
-      | None -> Rwm.River_output_v1.Presentation_mode.Vsync
+      | None -> River.Window_management.River_output_v1.Presentation_mode.Vsync
     in
-    Rwm.River_output_v1.set_presentation_mode output.obj ~mode
+    River.Window_management.River_output_v1.set_presentation_mode output.obj ~mode
   | _ ->
-    Rwm.River_output_v1.set_presentation_mode
+    River.Window_management.River_output_v1.set_presentation_mode
       output.obj
-      ~mode:Rwm.River_output_v1.Presentation_mode.Vsync
+      ~mode:River.Window_management.River_output_v1.Presentation_mode.Vsync
 ;;
 
 let render (ctx : Ctx.render Ctx.t) (seat : Types.Seat.t) =
@@ -298,12 +297,12 @@ let render (ctx : Ctx.render Ctx.t) (seat : Types.Seat.t) =
        ~y:(Int32.add op_m.start_y op_m.dy)
    | Op_resize op_r ->
      let x =
-       if Int32.logand op_r.edges Rwm.River_window_v1.Edges.left <> 0l
+       if Int32.logand op_r.edges River.Window_management.River_window_v1.Edges.left <> 0l
        then Int32.sub op_r.start_w op_r.window.geom.w |> Int32.add op_r.start_x
        else op_r.start_x
      in
      let y =
-       if Int32.logand op_r.edges Rwm.River_window_v1.Edges.top <> 0l
+       if Int32.logand op_r.edges River.Window_management.River_window_v1.Edges.top <> 0l
        then Int32.sub op_r.start_h op_r.window.geom.h |> Int32.add op_r.start_y
        else op_r.start_y
      in
@@ -315,16 +314,16 @@ let on_render_start proxy (wm_box : Types.Window_manager.t Box.t) =
   let wm = Option.get wm_box.body in
   Ctx.with_render wm (fun ctx ->
     List.iter (render ctx) wm.seats;
-    Rwm.River_window_manager_v1.render_finish proxy)
+    River.Window_management.River_window_manager_v1.render_finish proxy)
 ;;
 
 let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
   let wm = Option.get wm_box.body in
   let seat_box : Types.Seat.t Box.t = { body = None } in
   let layer_shell =
-    Rlsh.River_layer_shell_v1.get_seat wm.river_lsh_v1 ~seat:river_seat
+    River.Layer_shell.River_layer_shell_v1.get_seat wm.river_lsh_v1 ~seat:river_seat
     @@ object
-         inherit [_] Rlsh.River_layer_shell_seat_v1.v1
+         inherit [_] River.Layer_shell.River_layer_shell_seat_v1.v1
          method user_data = Boxed_data (Seat_box seat_box)
 
          method on_focus_none proxy =
@@ -375,7 +374,7 @@ let on_seat _ river_seat (wm_box : Types.Window_manager.t Box.t) =
   Wayland.Proxy.Handler.attach
     river_seat
     object
-      inherit [_] Rwm.River_seat_v1.v4
+      inherit [_] River.Window_management.River_seat_v1.v4
       method user_data = Seat_data seat
       method on_removed _ = seat.state <- S_closing
 
@@ -447,7 +446,7 @@ let on_window _ river_window (wm_box : Window_manager.t Box.t) =
   Wayland.Proxy.Handler.attach
     river_window
     object
-      inherit [_] Rwm.River_window_v1.v4
+      inherit [_] River.Window_management.River_window_v1.v4
       method user_data = Window_data window
       method on_closed _ = window.state <- W_closing
 
@@ -479,7 +478,7 @@ let on_window _ river_window (wm_box : Window_manager.t Box.t) =
            }
 
       method on_decoration_hint _ ~hint =
-        Rwm.River_window_v1.Decoration_hint.(
+        River.Window_management.River_window_v1.Decoration_hint.(
           window.decoration_hint
           <- Some
                (match hint with
@@ -528,14 +527,14 @@ let on_input_device device (wm_box : Types.Window_manager.t Box.t) =
   wm.input_devices <- entry :: wm.input_devices;
   Wayland.Proxy.Handler.attach device
   @@ object
-       inherit [_] Rinput.River_input_device_v1.v1
+       inherit [_] River.Input_management.River_input_device_v1.v1
        method on_type _ ~type_ = entry.kind <- Some type_
        method on_name _ ~name = entry.name <- name
 
        method on_done _ =
          match entry.kind with
-         | Some Rinput.River_input_device_v1.Type.Keyboard ->
-           Rinput.River_input_device_v1.set_repeat_info
+         | Some River.Input_management.River_input_device_v1.Type.Keyboard ->
+           River.Input_management.River_input_device_v1.set_repeat_info
              entry.device
              ~rate:(Int32.of_int wm.config.repeat_rate)
              ~delay:(Int32.of_int wm.config.repeat_delay)
@@ -543,7 +542,7 @@ let on_input_device device (wm_box : Types.Window_manager.t Box.t) =
 
        method on_removed _ =
          wm.input_devices <- List.filter (fun e -> e != entry) wm.input_devices;
-         Rinput.River_input_device_v1.destroy entry.device;
+         River.Input_management.River_input_device_v1.destroy entry.device;
          Wayland.Proxy.delete entry.device
      end
 ;;
@@ -552,7 +551,7 @@ let on_xkb_keyboard xkb (wm_box : Types.Window_manager.t Box.t) =
   let wm = Option.get wm_box.body in
   Wayland.Proxy.Handler.attach xkb
   @@ object
-       inherit [_] Rxkb.River_xkb_keyboard_v1.v1
+       inherit [_] River.Xkb_config.River_xkb_keyboard_v1.v1
 
        method on_input_device _ ~device =
          match
@@ -565,7 +564,7 @@ let on_xkb_keyboard xkb (wm_box : Types.Window_manager.t Box.t) =
          | Some entry ->
            entry.xkb <- Some xkb;
            (match wm.current_keymap with
-            | Some keymap -> Rxkb.River_xkb_keyboard_v1.set_keymap xkb ~keymap
+            | Some keymap -> River.Xkb_config.River_xkb_keyboard_v1.set_keymap xkb ~keymap
             | None -> ())
 
        method on_removed _ =
@@ -575,7 +574,7 @@ let on_xkb_keyboard xkb (wm_box : Types.Window_manager.t Box.t) =
               | Some x when x == xkb -> e.xkb <- None
               | _ -> ())
            wm.input_devices;
-         Rxkb.River_xkb_keyboard_v1.destroy xkb;
+         River.Xkb_config.River_xkb_keyboard_v1.destroy xkb;
          Wayland.Proxy.delete xkb
 
        method on_numlock_enabled _ = ()

@@ -4,16 +4,12 @@ module Config = Ocdwm_wm.Config
 module Exit = Ocdwm_core.Exit
 module Init_script = Ocdwm_wm.Init_script
 module Layout = Ocdwm_wm.Layout
-module Rinput = Ocdwm_protocol.River_input_management_v1_client
-module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-module Rxkb = Ocdwm_protocol.River_xkb_config_v1_client
+module River = Ocdwm_wm.River
 module Types = Ocdwm_wm.Types
 module Wayland_handlers = Ocdwm_wm.Wayland_handlers
 module Window_manager = Ocdwm_wm.Window_manager
 module Window_manager_state = Ocdwm_wm.Window_manager_state
 module Wm_exceptions = Ocdwm_wm.Exceptions
-module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 
 let version =
   match Build_info.V1.version () with
@@ -31,7 +27,7 @@ let loop ~init_command ~net ~clock =
   let river_wm_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] Rwm.River_window_manager_v1.v4
+         inherit [_] River.Window_management.River_window_manager_v1.v4
          method on_finished _ = Wayland_handlers.on_finished wm_box
          method on_manage_start proxy = Wayland_handlers.on_manage_start proxy wm_box
 
@@ -54,19 +50,19 @@ let loop ~init_command ~net ~clock =
   let river_xkb_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] Xkb.River_xkb_bindings_v1.v2
+         inherit [_] River.Xkb_bindings.River_xkb_bindings_v1.v2
        end
   in
   let river_lsh_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] Rlsh.River_layer_shell_v1.v1
+         inherit [_] River.Layer_shell.River_layer_shell_v1.v1
        end
   in
   let river_input_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] Rinput.River_input_manager_v1.v1
+         inherit [_] River.Input_management.River_input_manager_v1.v1
          method on_input_device _ device = Wayland_handlers.on_input_device device wm_box
          method on_finished = ignore
        end
@@ -74,7 +70,7 @@ let loop ~init_command ~net ~clock =
   let river_xkb_config_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] Rxkb.River_xkb_config_v1.v1
+         inherit [_] River.Xkb_config.River_xkb_config_v1.v1
          method on_xkb_keyboard _ xkb = Wayland_handlers.on_xkb_keyboard xkb wm_box
          method on_finished = ignore
        end

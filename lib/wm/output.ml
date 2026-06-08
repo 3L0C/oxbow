@@ -1,5 +1,3 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
 open! Ocdwm_core
 
 type t = Types.Output.t
@@ -29,8 +27,8 @@ let apply (intent : Focus_intent.t) (o : t) =
     match focused_window o with
     | None -> ()
     | Some w ->
-      Rwm.River_seat_v1.focus_window seat.obj ~window:w.obj;
-      Rwm.River_node_v1.place_top w.node
+      River.Window_management.River_seat_v1.focus_window seat.obj ~window:w.obj;
+      River.Window_management.River_node_v1.place_top w.node
   in
   match intent with
   | Promote { window; seat; _ } ->
@@ -45,8 +43,8 @@ let apply (intent : Focus_intent.t) (o : t) =
 ;;
 
 let destroy (o : t) =
-  Rlsh.River_layer_shell_output_v1.destroy o.layer_shell;
-  Rwm.River_output_v1.destroy o.obj;
+  River.Layer_shell.River_layer_shell_output_v1.destroy o.layer_shell;
+  River.Window_management.River_output_v1.destroy o.obj;
   Wayland.Proxy.delete o.obj
 ;;
 
@@ -116,7 +114,7 @@ let mark_dirty (wm : Types.Window_manager.t) (o : t) =
   | O_dirty _ -> ()
   | _ ->
     o.state <- O_dirty { prev = o.state };
-    Rwm.River_window_manager_v1.manage_dirty wm.river_wm_v1
+    River.Window_management.River_window_manager_v1.manage_dirty wm.river_wm_v1
 ;;
 
 let fullscreen_is_visible (o : t) =

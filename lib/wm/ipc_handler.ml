@@ -1,7 +1,6 @@
 [@@@landmark "auto-off"]
 
 module Core = Ocdwm_core
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
 
 let respond_err flow msg =
   let r = Core.Response.{ ok = false; err = Some msg } in

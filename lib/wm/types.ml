@@ -1,16 +1,11 @@
-module Rinput = Ocdwm_protocol.River_input_management_v1_client
-module Rlsh = Ocdwm_protocol.River_layer_shell_v1_client
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-module Rxkb = Ocdwm_protocol.River_xkb_config_v1_client
-module Xkb = Ocdwm_protocol.River_xkb_bindings_v1_client
 open! Ocdwm_core
 
 module rec Keyboard : sig
   type t =
-    { device : [ `V1 ] Rinput.River_input_device_v1.t
-    ; mutable kind : Rinput.River_input_device_v1.Type.t option
+    { device : River.V.Input_management.t River.Input_management.River_input_device_v1.t
+    ; mutable kind : River.Input_management.River_input_device_v1.Type.t option
     ; mutable name : string
-    ; mutable xkb : [ `V1 ] Rxkb.River_xkb_keyboard_v1.t option
+    ; mutable xkb : River.V.Xkb_config.t River.Xkb_config.River_xkb_keyboard_v1.t option
     }
 end =
   Keyboard
@@ -18,8 +13,8 @@ end =
 and Output : sig
   type t =
     { (* Wayland objects *)
-      obj : [ `V4 ] Rwm.River_output_v1.t
-    ; layer_shell : [ `V1 ] Rlsh.River_layer_shell_output_v1.t
+      obj : River.V.Window_management.t River.Window_management.River_output_v1.t
+    ; layer_shell : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_output_v1.t
     ; (* State *)
       mutable state : Output_state.t
     ; (* Identity *)
@@ -73,8 +68,8 @@ end =
 and Window : sig
   type t =
     { (* Wayland objects *)
-      obj : [ `V4 ] Rwm.River_window_v1.t
-    ; node : [ `V4 ] Rwm.River_node_v1.t
+      obj : River.V.Window_management.t River.Window_management.River_window_v1.t
+    ; node : River.V.Window_management.t River.Window_management.River_node_v1.t
     ; (* Lifecycle *)
       mutable state : Window_state.t
     ; (* State *)
@@ -85,7 +80,8 @@ and Window : sig
     ; mutable unreliable_pid : int32 option
     ; mutable parent : Window.t Box.t
     ; mutable decoration_hint : Window_decoration.t option
-    ; mutable presentation_hint : Rwm.River_output_v1.Presentation_mode.t option
+    ; mutable presentation_hint :
+        River.Window_management.River_output_v1.Presentation_mode.t option
     ; (* Geometry *)
       mutable geom : int32 Rect.t
     ; mutable float_geom : int32 Rect.t option
@@ -108,7 +104,7 @@ end =
 
 and Xkb_binding : sig
   type t =
-    { obj : [ `V2 ] Xkb.River_xkb_binding_v1.t
+    { obj : River.V.Xkb_bindings.t River.Xkb_bindings.River_xkb_binding_v1.t
     ; seat : Seat.t
     ; action : Action.t
     ; mods : int32
@@ -119,7 +115,7 @@ end =
 
 and Pointer_binding : sig
   type t =
-    { obj : [ `V4 ] Rwm.River_pointer_binding_v1.t
+    { obj : River.V.Window_management.t River.Window_management.River_pointer_binding_v1.t
     ; seat : Seat.t
     ; action : Action.t
     ; mods : int32
@@ -156,8 +152,8 @@ end =
 and Seat : sig
   type t =
     { (* Wayland objects *)
-      obj : [ `V4 ] Rwm.River_seat_v1.t
-    ; layer_shell : [ `V1 ] Rlsh.River_layer_shell_seat_v1.t
+      obj : River.V.Window_management.t River.Window_management.River_seat_v1.t
+    ; layer_shell : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_seat_v1.t
     ; (* Lifecycle *)
       mutable state : Seat_state.t
     ; (* Identity *)
@@ -184,11 +180,13 @@ end =
 and Window_manager : sig
   type t =
     { (* Wayland objects *)
-      river_wm_v1 : [ `V4 ] Rwm.River_window_manager_v1.t
-    ; river_xkb_v1 : [ `V2 ] Xkb.River_xkb_bindings_v1.t
-    ; river_lsh_v1 : [ `V1 ] Rlsh.River_layer_shell_v1.t
-    ; river_input_v1 : [ `V1 ] Rinput.River_input_manager_v1.t
-    ; river_xkb_config_v1 : [ `V1 ] Rxkb.River_xkb_config_v1.t
+      river_wm_v1 :
+        River.V.Window_management.t River.Window_management.River_window_manager_v1.t
+    ; river_xkb_v1 : River.V.Xkb_bindings.t River.Xkb_bindings.River_xkb_bindings_v1.t
+    ; river_lsh_v1 : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_v1.t
+    ; river_input_v1 :
+        River.V.Input_management.t River.Input_management.River_input_manager_v1.t
+    ; river_xkb_config_v1 : River.V.Xkb_config.t River.Xkb_config.River_xkb_config_v1.t
     ; registry : Wayland.Registry.t
     ; (* Lifecycle *)
       shutdown : Eio.Condition.t
@@ -201,7 +199,8 @@ and Window_manager : sig
     ; mutable windows : Window.t list
     ; mutable seats : Seat.t list
     ; mutable input_devices : Keyboard.t list
-    ; mutable current_keymap : [ `V1 ] Rxkb.River_xkb_keymap_v1.t option
+    ; mutable current_keymap :
+        River.V.Xkb_config.t River.Xkb_config.River_xkb_keymap_v1.t option
     ; mutable desired_keymap_path : string option
     ; (* User configuration *)
       config : Config.t

@@ -1,4 +1,3 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
 open! Ocdwm_core
 
 let center (g : int32 Rect.t) = Int32.(add g.x (div g.w 2l), add g.y (div g.h 2l))
@@ -16,5 +15,5 @@ let warp_to_focus (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
     | None -> ()
     | Some g ->
       let x, y = center g in
-      Rwm.River_seat_v1.pointer_warp seat.obj ~x ~y)
+      River.Window_management.River_seat_v1.pointer_warp seat.obj ~x ~y)
 ;;

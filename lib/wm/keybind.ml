@@ -1,5 +1,4 @@
-module Modifiers =
-  Ocdwm_protocol.River_window_management_v1_client.River_seat_v1.Modifiers
+module Modifiers = River.Window_management.River_seat_v1.Modifiers
 
 type key =
   | Keysym of Xkbcommon.Keysym.t

@@ -1,8 +1,6 @@
-module Rwm = Ocdwm_protocol.River_window_management_v1_client
-
 let pointer_move (ctx : Ctx.manage Ctx.t) (s : Types.Seat.t) (window : Types.Window.t) =
   Focus.focus_window ctx s window;
-  Rwm.River_seat_v1.op_start_pointer s.obj;
+  River.Window_management.River_seat_v1.op_start_pointer s.obj;
   s.op
   <- Op_move
        { window
@@ -21,8 +19,8 @@ let pointer_resize
       (edges : int32)
   =
   Focus.focus_window ctx s window;
-  Rwm.River_window_v1.inform_resize_start window.obj;
-  Rwm.River_seat_v1.op_start_pointer s.obj;
+  River.Window_management.River_window_v1.inform_resize_start window.obj;
+  River.Window_management.River_seat_v1.op_start_pointer s.obj;
   s.op
   <- Op_resize
        { window
