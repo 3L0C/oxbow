@@ -199,13 +199,12 @@ let handle_pointer_position
     | Some o ->
       if not @@ Utils.opt_holds s.output o
       then Window_manager.request_focus_output wm s @@ Some o;
-      let new_target = Window.at_point ~x ~y o.focus_stack in
-      (match new_target with
+      (match s.hovered with
        | Some w when not @@ Utils.opt_holds s.cursor_target w ->
          s.focus_request <- Focus_window w
        | None when Option.is_some s.cursor_target -> s.focus_request <- Focus_clear
        | _ -> ());
-      s.cursor_target <- new_target)
+      s.cursor_target <- s.hovered)
 ;;
 
 let mark_dirty (wm : Types.Window_manager.t) (s : t) =
