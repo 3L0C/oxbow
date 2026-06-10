@@ -41,12 +41,6 @@ val replace_pointer_binding
     {b Effects:} mutates WM state; sends River request *)
 val init : Ctx.manage Ctx.t -> t -> unit
 
-(** [refresh_cursor_target ctx seat] updates [seat.cursor_target] based
-    on the last known cursor position.
-
-    {b Effects:} mutates WM state *)
-val refresh_cursor_target : Types.Window_manager.t -> t -> unit
-
 (** [destroy ctx seat] destroys the Wayland objects underlying [seat].
 
     {b Effects:} mutates WM state; sends River request *)

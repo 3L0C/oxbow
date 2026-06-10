@@ -201,10 +201,9 @@ let handle_pointer_position
       then Window_manager.request_focus_output wm s @@ Some o;
       (match s.hovered with
        | Some w when not @@ Utils.opt_holds s.cursor_target w ->
-         s.focus_request <- Focus_window w
-       | None when Option.is_some s.cursor_target -> s.focus_request <- Focus_clear
-       | _ -> ());
-      s.cursor_target <- s.hovered)
+         s.focus_request <- Focus_window w;
+         s.cursor_target <- s.hovered
+       | _ -> ()))
 ;;
 
 let mark_dirty (wm : Types.Window_manager.t) (s : t) =
@@ -223,21 +222,19 @@ let refresh_layer_focus (ctx : Ctx.manage Ctx.t) (s : t) =
     | None -> Focus.clear ctx s)
 ;;
 
-let refresh_cursor_target (wm : Types.Window_manager.t) (s : t) =
-  s.cursor_target
-  <- (match s.output with
-      | Some o -> Window.at_point ~x:s.position.x ~y:s.position.y o.focus_stack
-      | None -> None)
+let refresh_cursor_target (s : t) =
+  match s.hovered with
+  | Some _ -> s.cursor_target <- s.hovered
+  | _ -> ()
 ;;
 
 let sync (ctx : Ctx.manage Ctx.t) (s : t) =
-  let wm = Ctx.wm ctx in
   (match s.state with
    | S_dirty { prev } ->
      refresh_layer_focus ctx s;
      s.state <- prev
    | _ -> ());
-  refresh_cursor_target wm s
+  refresh_cursor_target s
 ;;
 
 let op_end (_ : Ctx.manage Ctx.t) (s : t) =
