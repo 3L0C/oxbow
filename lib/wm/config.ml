@@ -17,7 +17,7 @@ let default_layout_params =
 
 let default_borders =
   Border_config.
-    { width = 4
+    { width = 4l
     ; focused_color = 0xFFFFFFl
     ; unfocused_color = 0xFFFFFFl
     ; urgent_color = 0xFFFFFFl

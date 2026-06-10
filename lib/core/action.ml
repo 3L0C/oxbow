@@ -81,4 +81,9 @@ type t =
       { name : string
       ; size : int
       } [@name "set_cursor_theme"]
+  | Set_border_width of int32 [@name "set_border_width"]
+  | Set_border_color of
+      { which : Border_target.t
+      ; color : int32
+      } [@name "set_border_color"]
 [@@deriving yojson]

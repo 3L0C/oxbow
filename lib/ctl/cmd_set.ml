@@ -5,7 +5,8 @@ let cmd =
   Ctl_cli.group
     ~name
     ~doc
-    [ Cmd_set_cursor.cmd
+    [ Cmd_set_border.cmd
+    ; Cmd_set_cursor.cmd
     ; Cmd_set_focus_follows_pointer.cmd
     ; Cmd_set_gaps_inner.cmd
     ; Cmd_set_gaps_outer.cmd
@@ -22,7 +23,8 @@ let bind_cmd =
   Ctl_cli.group
     ~name
     ~doc
-    [ Cmd_set_cursor.bind_cmd
+    [ Cmd_set_border.bind_cmd
+    ; Cmd_set_cursor.bind_cmd
     ; Cmd_set_focus_follows_pointer.bind_cmd
     ; Cmd_set_gaps_inner.bind_cmd
     ; Cmd_set_gaps_outer.bind_cmd

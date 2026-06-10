@@ -401,6 +401,13 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
   | Toggle_warp_on_focus -> wm.config.warp_on_focus <- not wm.config.warp_on_focus
   | Set_cursor_theme { name; size } ->
     Cursor_config.set_theme wm seat ~name ~size:(Int32.of_int size)
+  | Set_border_width width -> wm.config.borders.width <- width
+  | Set_border_color { which; color } ->
+    (match which with
+     | Focused -> wm.config.borders.focused_color <- color
+     | Unfocused -> wm.config.borders.unfocused_color <- color
+     | Urgent -> wm.config.borders.urgent_color <- color);
+    List.iter (Output.mark_dirty wm) wm.outputs
 ;;
 
 let handle_setting (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (setting : Setting.t) =

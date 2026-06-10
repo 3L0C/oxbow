@@ -105,7 +105,8 @@ let manage_window (ctx : Ctx.manage Ctx.t) (window : Types.Window.t) =
      window.state <- W_active
    | _ -> ());
   List.rev window.requests |> List.iter (Requests.window_request ctx window);
-  Window.clear_requests window
+  Window.clear_requests window;
+  Decoration.apply ctx window
 ;;
 
 let on_new_seat (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
@@ -307,7 +308,8 @@ let render (ctx : Ctx.render Ctx.t) (seat : Types.Seat.t) =
        else op_r.start_y
      in
      Window.set_position ctx op_r.window ~x ~y);
-  List.iter set_presentation_mode wm.outputs
+  List.iter set_presentation_mode wm.outputs;
+  List.iter (Border.paint ctx) wm.outputs
 ;;
 
 let on_render_start proxy (wm_box : Types.Window_manager.t Box.t) =
@@ -482,10 +484,10 @@ let on_window _ river_window (wm_box : Window_manager.t Box.t) =
           window.decoration_hint
           <- Some
                (match hint with
-                | Only_supports_csd -> W_only_csd
-                | Prefers_csd -> W_prefer_csd
-                | Prefers_ssd -> W_prefer_ssd
-                | No_preference -> W_no_preference))
+                | Only_supports_csd -> Only_csd
+                | Prefers_csd -> Prefer_csd
+                | Prefers_ssd -> Prefer_ssd
+                | No_preference -> No_preference))
 
       method on_app_id _ ~app_id = window.app_id <- app_id
 
