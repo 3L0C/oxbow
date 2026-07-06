@@ -17,9 +17,18 @@
         types = ["ocaml"];
       };
 
-      check-merge-conflicts.enable = true;
-      end-of-file-fixer.enable = true;
-      trim-trailing-whitespace.enable = true;
+      check-merge-conflicts = {
+        enable = true;
+        excludes = ["^protocol/.*\\.ml$"];
+      };
+      end-of-file-fixer = {
+        enable = true;
+        excludes = ["^protocol/.*\\.ml$"];
+      };
+      trim-trailing-whitespace = {
+        enable = true;
+        excludes = ["^protocol/.*\\.ml$"];
+      };
     };
   };
 }
