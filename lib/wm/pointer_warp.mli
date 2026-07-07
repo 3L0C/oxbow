@@ -3,5 +3,5 @@
     has no focused window,  warps to the center of its focused output instead.
     No-op when [warp_on_focus] is [false].
 
-   {b Effects:} sends River request *)
+    {b Effects:} sends River request *)
 val warp_to_focus : Ctx.manage Ctx.t -> Types.Seat.t -> unit

@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 type t =
   { default_tag_config : Tag_data.t
   ; borders : Border_config.t

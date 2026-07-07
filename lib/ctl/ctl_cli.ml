@@ -152,6 +152,20 @@ let policy_flag =
         ])
 ;;
 
+let app_id_flag =
+  Arg.(
+    value
+    & opt (some string) None
+    & info [ "app-id" ] ~docv:"REGEX" ~doc:"Match REGEX against the window's app-id")
+;;
+
+let title_flag =
+  Arg.(
+    value
+    & opt (some string) None
+    & info [ "title" ] ~docv:"REGEX" ~doc:"Match REGEX against the window's title")
+;;
+
 let output_name_arg =
   Arg.(
     required
@@ -202,7 +216,10 @@ let dispatch ?seat ?socket body =
   Eio_main.run
   @@ fun env ->
   match Client.send ~env ?seat ?socket body with
-  | Ok () -> Cmd.Exit.ok
+  | Ok (Some data) ->
+    (Logs.app @@ fun m -> m "%s" (Yojson.Safe.pretty_to_string data));
+    Cmd.Exit.ok
+  | Ok None -> Cmd.Exit.ok
   | Error (E_conn_failed msg) ->
     (Logs.err @@ fun m -> m "connection failed: %s" msg);
     code_conn_failed
@@ -213,19 +230,19 @@ let dispatch ?seat ?socket body =
 
 let group = Core.Cli.group
 
-let cmd ~name ~doc body_term =
+let cmd ~name ~doc term =
   let open Cmdliner.Term.Syntax in
   Core.Cli.cmd ~exits ~name ~doc
   @@
   let+ seat = seat
   and+ socket = socket
-  and+ body = body_term in
+  and+ body = term in
   dispatch ?seat ?socket body
 ;;
 
-let trigger_term action_term =
+let trigger_term term =
   let open Cmdliner.Term.Syntax in
-  let+ action = action_term in
+  let+ action = term in
   Core.Request_body.Trigger action
 ;;
 
@@ -241,9 +258,15 @@ let bind_suffix =
   keybind
 ;;
 
-let bind_term action_term =
+let bind_term term =
   let open Cmdliner.Term.Syntax in
-  let+ action = action_term
+  let+ action = term
   and+ keybind = bind_suffix in
   Core.Request_body.Setting (Bind { keybind; action })
+;;
+
+let query_term term =
+  let open Cmdliner.Term.Syntax in
+  let+ query = term in
+  Core.Request_body.Query query
 ;;

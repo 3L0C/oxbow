@@ -53,6 +53,11 @@ val clamp : t -> int Ocdwm_core.Rect.t -> int32 Ocdwm_core.Rect.t
     {b Effects:} mutates WM state; sends River request *)
 val restore_or_seed_float : Ctx.manage Ctx.t -> t -> unit
 
+(** [float ctx window] puts [window] in the floating state.
+
+    {b Effects:} mutates WM state; sends River request *)
+val float : Ctx.manage Ctx.t -> t -> unit
+
 (** [toggle_floating ctx window] floats [window] if tiled and tiles if floating,
     when [window] is not [None].
 
@@ -108,31 +113,31 @@ val at_point : x:int32 -> y:int32 -> t list -> t option
 (** [fake_fullscreen ctx window] puts the [window] into the fake fullscreen
     state.
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val fake_fullscreen : Ctx.manage Ctx.t -> t -> unit
 
 (** [exit_fake_fullscreen ctx window] exits the fake fullscreen state for
     [window].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val exit_fake_fullscreen : Ctx.manage Ctx.t -> t -> unit
 
 (** [maximize ?restore ctx window] informs [window] it is maximized. Saves the
     previous presentation state or [restore] if present. No-op when [window] is
     fullscreen.
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val maximize : ?restore:Presentation.Tile_or_float.t -> Ctx.manage Ctx.t -> t -> unit
 
 (** [unmaximize ctx window] informs [window] it is unmaximized and restores
     [window] to its previous presentation.
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val unmaximize : Ctx.manage Ctx.t -> t -> unit
 
 (** [move_to ctx window ~x ~y] moves [window] according to the extents [~x] and [~y].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val move_to
   :  Ctx.manage Ctx.t
   -> t
@@ -143,7 +148,7 @@ val move_to
 (** [move_spatial ctx window dir by] moves [window] in [dir] according to [by]
     extent.
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val move_spatial
   :  Ctx.manage Ctx.t
   -> t
@@ -154,7 +159,7 @@ val move_spatial
 (** [resize_to ctx window ~width ~height] resizes [window] according to the
     extents [~width] and [~height].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val resize_to
   :  Ctx.manage Ctx.t
   -> t
@@ -165,7 +170,7 @@ val resize_to
 (** [resize_spatial ctx window dir by] resizes [window] in [dir] according to
     [by] extent.
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val resize_spatial
   :  Ctx.manage Ctx.t
   -> t

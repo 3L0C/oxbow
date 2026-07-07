@@ -31,7 +31,7 @@ and Output : sig
     ; (* Focus stack - most recently focused first *)
       mutable focus_stack : Window.t list
     ; (* All windows on this output. Ordered in tiling order when filtered by
-     selected_tags *)
+         selected_tags *)
       mutable windows : Window.t list
     }
 end =
@@ -54,6 +54,13 @@ and Window_request : sig
         { width : int32
         ; height : int32
         }
+    | Req_set_tags of Tag_arg.t
+    | Req_send_to_output_name of
+        { name : string
+        ; policy : Tag_policy.t
+        }
+    | Req_float
+    | Req_tile
 end =
   Window_request
 
@@ -82,6 +89,7 @@ and Window : sig
     ; mutable decoration_hint : Window_decoration.t option
     ; mutable presentation_hint :
         River.Window_management.River_output_v1.Presentation_mode.t option
+    ; mutable rules_applied : bool
     ; (* Geometry *)
       mutable geom : int32 Rect.t
     ; mutable float_geom : int32 Rect.t option

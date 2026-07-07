@@ -11,7 +11,9 @@ let () =
   in
   let stacks : Stack_kind.t list = [ Stack_diminish; Stack_dwindle; Stack_even ] in
   let responses : Response.t list =
-    [ { ok = true; err = None }; { ok = false; err = Some "Had an error" } ]
+    [ { ok = true; err = None; data = None }
+    ; { ok = false; err = Some "Had an error"; data = None }
+    ]
   in
   List.iter
     (fun a ->

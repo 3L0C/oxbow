@@ -104,6 +104,7 @@ let manage_window (ctx : Ctx.manage Ctx.t) (window : Types.Window.t) =
      if window.is_fixed then window.presentation <- P_floating;
      window.state <- W_active
    | _ -> ());
+  if not window.rules_applied then Rules.apply_for ctx window;
   List.rev window.requests |> List.iter (Requests.window_request ctx window);
   Window.clear_requests window;
   Decoration.apply ctx window
@@ -462,7 +463,16 @@ let on_window _ river_window (wm_box : Window_manager.t Box.t) =
         window.unreliable_pid <- Some unreliable_pid
 
       method on_parent _ ~parent = ()
-      method on_title _ ~title = window.title <- title
+
+      method on_title _ ~title =
+        (* FIXME this logic isn't correct. We want to set `rules_applied` to
+           `false` only on the first None -> Some transition. If an app were to
+           ever go from  Some -> None -> Some we would want to ignore those
+           future None -> Some changes *)
+        if Option.is_none window.title && Option.is_some title
+        then window.rules_applied <- false;
+        window.title <- title
+
       method on_identifier _ ~identifier = window.identifier <- Some identifier
 
       method on_dimensions_hint _ ~min_width ~min_height ~max_width ~max_height =
@@ -489,7 +499,9 @@ let on_window _ river_window (wm_box : Window_manager.t Box.t) =
                 | Prefers_ssd -> Prefer_ssd
                 | No_preference -> No_preference))
 
-      method on_app_id _ ~app_id = window.app_id <- app_id
+      method on_app_id _ ~app_id =
+        window.app_id <- app_id;
+        window.rules_applied <- false
 
       method on_pointer_move_requested _ ~seat =
         match Wayland.Proxy.user_data seat with

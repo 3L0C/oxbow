@@ -1,3 +1,4 @@
+open! Ppx_yojson_conv_lib.Yojson_conv
 open! Ocdwm_core
 
 exception Dispatch_failed of string
@@ -94,6 +95,18 @@ let rec window_request
     in
     if window.presentation = P_floating && not in_resize
     then Window.fit_to_output ctx window
+  | Req_set_tags arg ->
+    let set_tags s =
+      window.tags <- s;
+      Option.iter (Output.mark_dirty wm) window.output
+    in
+    (match window.output, arg with
+     | Some o, _ -> Output.resolve_tag_arg arg o |> set_tags
+     | None, Tags_concrete s -> set_tags s
+     | None, Tags_occupied -> ())
+  | Req_send_to_output_name { name; policy } -> Output.send_to_name ctx window name policy
+  | Req_float -> Window.float ctx window
+  | Req_tile -> Window.tile window
 ;;
 
 let focus_request (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) =
@@ -408,6 +421,15 @@ let handle_action (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (action : Actio
      | Unfocused -> wm.config.borders.unfocused_color <- color
      | Urgent -> wm.config.borders.urgent_color <- color);
     List.iter (Output.mark_dirty wm) wm.outputs
+  | Add_rule rule ->
+    if List.exists (Window_rule.equal rule) wm.config.rules
+    then dispatch_failed "duplicate rule"
+    else wm.config.rules <- wm.config.rules @ [ rule ]
+  | Remove_rule rule ->
+    if not @@ List.exists (Window_rule.equal rule) wm.config.rules
+    then dispatch_failed "no such rule"
+    else
+      wm.config.rules <- List.filter (Fun.negate (Window_rule.equal rule)) wm.config.rules
 ;;
 
 let handle_setting (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (setting : Setting.t) =
@@ -427,6 +449,11 @@ let handle_setting (ctx : Ctx.manage Ctx.t) (seat : Types.Seat.t) (setting : Set
        Seat.unbind_pointer_binding ctx seat mods button)
 ;;
 
+let handle_query (wm : Types.Window_manager.t) (seat : Types.Seat.t) (query : Query.t) =
+  match query with
+  | Rules -> Some ([%yojson_of: Window_rule.t list] wm.config.rules)
+;;
+
 let handle
       (ctx : Ctx.manage Ctx.t)
       (seat : Types.Seat.t)
@@ -434,10 +461,15 @@ let handle
   =
   let result =
     try
-      (match body with
-       | Trigger action -> handle_action ctx seat action
-       | Setting setting -> handle_setting ctx seat setting);
-      Ok ()
+      Ok
+        (match body with
+         | Trigger action ->
+           handle_action ctx seat action;
+           None
+         | Setting setting ->
+           handle_setting ctx seat setting;
+           None
+         | Query query -> handle_query (Ctx.wm ctx) seat query)
     with
     | Exceptions.Finished -> raise Exceptions.Finished
     | Dispatch_failed msg -> Error msg

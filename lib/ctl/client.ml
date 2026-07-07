@@ -4,7 +4,9 @@ type send_error =
   | E_conn_failed of string
   | E_protocol of string
 
-let send ~env ?seat ?socket (body : Core.Request_body.t) : (unit, send_error) result =
+let send ~env ?seat ?socket (body : Core.Request_body.t)
+  : (Yojson.Safe.t option, send_error) result
+  =
   let path = Core.Socket_path.resolve ?override:socket () in
   let net = Eio.Stdenv.net env in
   let addr = `Unix path in
@@ -20,7 +22,7 @@ let send ~env ?seat ?socket (body : Core.Request_body.t) : (unit, send_error) re
     let line = Eio.Buf_read.line buf in
     let resp = Core.Response.t_of_yojson @@ Yojson.Safe.from_string line in
     if resp.ok
-    then Ok ()
+    then Ok resp.data
     else Error (E_protocol (Option.value ~default:"unspecified" resp.err))
   with
   | Eio.Io _ as ex -> Error (E_conn_failed (Format.asprintf "%a" Eio.Exn.pp ex))

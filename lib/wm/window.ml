@@ -33,6 +33,7 @@ let create
   ; parent = { body = None }
   ; decoration_hint = None
   ; presentation_hint = None
+  ; rules_applied = false
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
   ; float_geom = None
   ; size_hints = { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l }

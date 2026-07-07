@@ -3,13 +3,13 @@
 module Core = Ocdwm_core
 
 let respond_err flow msg =
-  let r = Core.Response.{ ok = false; err = Some msg } in
+  let r = Core.Response.{ ok = false; err = Some msg; data = None } in
   let s = Yojson.Safe.to_string (Core.Response.yojson_of_t r) ^ "\n" in
   Eio.Flow.copy_string s flow
 ;;
 
-let respond_ok flow =
-  let r = Core.Response.{ ok = true; err = None } in
+let respond_ok flow data =
+  let r = Core.Response.{ ok = true; err = None; data } in
   let s = Yojson.Safe.to_string (Core.Response.yojson_of_t r) ^ "\n" in
   Eio.Flow.copy_string s flow
 ;;
@@ -24,7 +24,7 @@ let validate ~wm (body : Core.Request_body.t) : (unit, string) result =
         | None -> Error (Printf.sprintf "unknown layout: %s" name))
      | Spawn "" -> Error "spawn: empty command"
      | _ -> Ok ())
-  | Setting _ -> Ok ()
+  | Setting _ | Query _ -> Ok ()
 ;;
 
 let resolve_seat (wm : Types.Window_manager.t) (req : Core.Request.t) =
@@ -76,7 +76,7 @@ let handle_line ~(wm : Types.Window_manager.t) ~flow line =
        Queue.push pending_request seat.pending_requests;
        Window_manager.mark_dirty wm;
        (match Eio.Promise.await p with
-        | Ok () -> respond_ok flow
+        | Ok data -> respond_ok flow data
         | Error msg -> respond_err flow msg)
      | Wm_pending_exit _ | Wm_exited | Wm_close_requested ->
        respond_err flow "wm shutting down")

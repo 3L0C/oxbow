@@ -48,7 +48,7 @@ val mark_dirty : Types.Window_manager.t -> t -> unit
 (** [push windows output] pushes [windows] to the top of the tile and focus stack
     of [output].
 
-   {b Effects:} mutates WM state *)
+    {b Effects:} mutates WM state *)
 val push : Types.Window.t list -> t -> unit
 
 (** [destroy output] destroys the underlying Wayland objects associated with
@@ -97,38 +97,38 @@ val is_floating : t option -> bool
 (** [set_mfact ~delta output] set's the mfact according to [delta] for the first
     selected tag on [output].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val set_mfact : delta:float Delta.t -> Types.Window_manager.t -> t -> unit
 
 (** [set_nmaster ~delta output] set's the nmaster according to [delta] for the first
     selected tag on [output].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val set_nmaster : delta:int Delta.t -> Types.Window_manager.t -> t -> unit
 
 (** [set_gaps_inner ~delta output] set's the gaps_inner according to [delta] for the first
     selected tag on [output].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val set_gaps_inner : delta:int Delta.t -> Types.Window_manager.t -> t -> unit
 
 (** [set_gaps_outer ~delta output] set's the gaps_outer according to [delta] for the first
     selected tag on [output].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val set_gaps_outer : delta:int Delta.t -> Types.Window_manager.t -> t -> unit
 
 (** [set_stack_kind ~kind output] set's the stack kind according to [kind] for
     the first selected tag on [output].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val set_stack_kind : kind:Stack_kind.t -> Types.Window_manager.t -> t -> unit
 
 (** [shift dir output] shifts the focused window one slot in [dir] through the
     tile stack, wrapping at the head and tail. No-op when there is no focused
     window.
 
-   {b Effects:} mutates WM state *)
+    {b Effects:} mutates WM state *)
 val shift : Logical_direction.t -> t -> unit
 
 (** [resolve_tag_arg arg output] returns the set of tags according to [arg]. *)
@@ -140,7 +140,7 @@ val to_vector : t -> Vector.t
 (** [send_to_logical ctx window dir policy] moves [window] in [dir]. [window]
     will be assigned tags according to [policy].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val send_to_logical
   :  Ctx.manage Ctx.t
   -> Types.Window.t
@@ -151,7 +151,7 @@ val send_to_logical
 (** [send_to_spatial ctx window dir policy] moves [window] in [dir]. [window]
     will be assigned tags according to [policy].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val send_to_spatial
   :  Ctx.manage Ctx.t
   -> Types.Window.t
@@ -162,5 +162,5 @@ val send_to_spatial
 (** [send_to_name ctx window name policy] moves [window] to the output matching
     [name]. [window] will be assigned tags according to [policy].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val send_to_name : Ctx.manage Ctx.t -> Types.Window.t -> string -> Tag_policy.t -> unit

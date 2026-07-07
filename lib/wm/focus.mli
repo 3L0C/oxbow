@@ -46,7 +46,7 @@ val focus_window_logical : Ctx.manage Ctx.t -> Types.Seat.t -> Logical_direction
 (** [focus_window_spatial ctx seat dir] focuses the window in [dir] on [seat]'s
     output.
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val focus_window_spatial : Ctx.manage Ctx.t -> Types.Seat.t -> Spatial_direction.t -> unit
 
 (** [focus_window_query ctx seat query] focuses the window according to [query].
@@ -61,7 +61,7 @@ val focus_output_logical : Ctx.manage Ctx.t -> Types.Seat.t -> Logical_direction
 
 (** [focus_output_spatial ctx seat dir] focuses the output in [dir] on [seat].
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val focus_output_spatial : Ctx.manage Ctx.t -> Types.Seat.t -> Spatial_direction.t -> unit
 
 (** [focus_output_name ctx seat name] focuses the output with [name].
@@ -73,5 +73,5 @@ val focus_output_name : Ctx.manage Ctx.t -> Types.Seat.t -> string -> unit
     not already the master. If it is the master, promote and swap with the  next
     window.
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val zoom : Ctx.manage Ctx.t -> Types.Seat.t -> unit

@@ -71,7 +71,7 @@ val on_window
 
 (** [on_input_device device wm_box] handles newly added input devices.
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val on_input_device
   :  River.V.Input_management.t River.Input_management.River_input_device_v1.t
   -> Types.Window_manager.t Box.t
@@ -79,7 +79,7 @@ val on_input_device
 
 (** [on_xkb_keyboard xkb wm_box] handles newly added xkb keybords.
 
-   {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val on_xkb_keyboard
   :  River.V.Xkb_config.t River.Xkb_config.River_xkb_keyboard_v1.t
   -> Types.Window_manager.t Box.t

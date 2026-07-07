@@ -86,4 +86,6 @@ type t =
       { which : Border_target.t
       ; color : int32
       } [@name "set_border_color"]
+  | Add_rule of Window_rule.t [@name "add_rule"]
+  | Remove_rule of Window_rule.t [@name "remove_rule"]
 [@@deriving yojson]

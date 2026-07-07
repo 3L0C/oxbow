@@ -13,6 +13,7 @@ let bind_group =
     ~doc:"Bind a key or pointer button to a command"
     [ Cmd_layout.bind_cmd
     ; Cmd_output.bind_cmd
+    ; Cmd_rule.bind_cmd
     ; Cmd_session.bind_cmd
     ; Cmd_set.bind_cmd
     ; Cmd_spawn.bind_cmd
@@ -29,6 +30,7 @@ let cmd =
     ~doc:"command-line interface for controlling ocdwm"
     [ Cmd_layout.cmd
     ; Cmd_output.cmd
+    ; Cmd_rule.cmd
     ; Cmd_session.cmd
     ; Cmd_set.cmd
     ; Cmd_spawn.cmd
