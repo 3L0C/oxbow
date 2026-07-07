@@ -12,7 +12,7 @@ let log_level_arg =
   in
   Arg.(
     value
-    & opt (enum levels) Logs.Info
+    & opt (enum levels) Logs.Debug
     & info
         [ "log-level" ]
         ~docv:"LOG_LEVEL"
