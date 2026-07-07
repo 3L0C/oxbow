@@ -179,7 +179,11 @@ let retile (ctx : Ctx.manage Ctx.t) (o : t) =
         count
         (List.length d_xs)
     | w_xs, d_xs ->
-      List.iter2 (fun w g -> Window.clamp w g |> Window.set_geom ctx w) w_xs d_xs)
+      let bw = Int32.to_int (Ctx.wm ctx).config.borders.width in
+      List.iter2
+        (fun w g -> Rect.inset ~by:bw g |> Window.clamp w |> Window.set_geom ctx w)
+        w_xs
+        d_xs)
 ;;
 
 let switch_tags (o : t) = function
