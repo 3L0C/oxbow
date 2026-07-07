@@ -39,5 +39,6 @@ let apply (window : Types.Window.t) ({ pattern; action } : Window_rule.t) =
 
 let apply_for ctx window =
   let wm = Ctx.wm ctx in
-  List.iter (apply window) wm.config.rules
+  List.iter (apply window) wm.config.rules;
+  window.rules_applied <- true
 ;;
