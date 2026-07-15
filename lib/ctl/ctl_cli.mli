@@ -1,19 +1,53 @@
-module Core = Ocdwm_core
-
+(** [seat] is the [--seat NAME] common option: [NAME] receives the request in
+    place of the primary seat. *)
 val seat : string option Cmdliner.Term.t
+
+(** [socket] is the [--socket PATH] common option: [PATH] overrides the resolved
+    ocdwm socket path. *)
 val socket : string option Cmdliner.Term.t
-val logical_targets : (string * Core.Logical_direction.t) list
-val spatial_targets : (string * Core.Spatial_direction.t) list
-val direction_targets : (string * Core.Any_direction.t) list
-val int_delta : int Core.Delta.t Cmdliner.Term.t
-val float_delta : float Core.Delta.t Cmdliner.Term.t
-val tag_arg : Core.Tag_arg.t Cmdliner.Term.t
-val tag_set : Core.Tag_set.t Cmdliner.Term.t
-val policy_flag : Core.Tag_policy.t Cmdliner.Term.t
+
+(** [logical_targets] is each logical direction keyed by its name. *)
+val logical_targets : (string * Ocdwm_core.Direction.Logical.t) list
+
+(** [spatial_targets] is each spatial direction keyed by its name. *)
+val spatial_targets : (string * Ocdwm_core.Direction.Spatial.t) list
+
+(** [direction_targets] is [logical_targets] and [spatial_targets] combined. *)
+val direction_targets : (string * Ocdwm_core.Direction.t) list
+
+(** [int_delta] is the required leading [DELTA] positional: an absolute value
+    ([6]) or a signed offset ([-2]). *)
+val int_delta : int Ocdwm_core.Delta.t Cmdliner.Term.t
+
+(** [float_delta] is the required leading [DELTA] positional: an absolute value
+    ([0.55]) or a signed offset ([-0.05]). *)
+val float_delta : float Ocdwm_core.Delta.t Cmdliner.Term.t
+
+(** [tag_arg] is the required leading [TAGS] positional: indices, ranges, a
+    bitmask, or the literal [occupied]. *)
+val tag_arg : Ocdwm_core.Tag.Arg.t Cmdliner.Term.t
+
+(** [tag_set] is the required leading [TAGS] positional: indices, ranges, or a
+    bitmask. *)
+val tag_set : Ocdwm_core.Tag.Set.t Cmdliner.Term.t
+
+(** [policy_flag] is the [--take] flag as a tag policy, [Keep] when absent. *)
+val policy_flag : Ocdwm_core.Tag.Policy.t Cmdliner.Term.t
+
+(** [app_id_flag] is the [--app-id REGEX] option. *)
 val app_id_flag : string option Cmdliner.Term.t
+
+(** [title_flag] is the [--title REGEX] option. *)
 val title_flag : string option Cmdliner.Term.t
+
+(** [output_name_arg] is the required leading [OUTPUT_NAME] positional. *)
 val output_name_arg : string Cmdliner.Term.t
-val extent_conv : Core.Extent.t Cmdliner.Arg.conv
+
+(** [extent_conv] converts an extent argument. *)
+val extent_conv : Ocdwm_core.Extent.t Cmdliner.Arg.conv
+
+(** [keybind_arg] is the required trailing [KEYBIND] positional: modifiers,
+    keysym, and/or button. *)
 val keybind_arg : string Cmdliner.Term.t
 
 (** [group ?man ?man_xrefs ?version ~name ~doc cmds] is command that groups the
@@ -27,19 +61,26 @@ val group
   -> 'a Cmdliner.Cmd.t list
   -> 'a Cmdliner.Cmd.t
 
-(** [cmd ~name ~doc term] is a command with an arbitrary term. *)
+(** [cmd ~name ~doc term] is a command that, when evaluated, sends [term]'s
+    request body to ocdwm, prints any reply, and exits by the outcome. *)
 val cmd
   :  name:string
   -> doc:string
-  -> Core.Request_body.t Cmdliner.Term.t
+  -> Ocdwm_core.Request.Body.t Cmdliner.Term.t
   -> int Cmdliner.Cmd.t
 
 (** [trigger_term term] maps the action into a [Trigger] body. *)
-val trigger_term : Core.Action.t Cmdliner.Term.t -> Core.Request_body.t Cmdliner.Term.t
+val trigger_term
+  :  Ocdwm_core.Action.t Cmdliner.Term.t
+  -> Ocdwm_core.Request.Body.t Cmdliner.Term.t
 
 (** [bind_term term] composes the action with the [to KEYBIND] suffix and wraps
     the result in [Setting (Bind { keybind; action })]. *)
-val bind_term : Core.Action.t Cmdliner.Term.t -> Core.Request_body.t Cmdliner.Term.t
+val bind_term
+  :  Ocdwm_core.Action.t Cmdliner.Term.t
+  -> Ocdwm_core.Request.Body.t Cmdliner.Term.t
 
 (** [query_term query] maps the query into a [Query] body. *)
-val query_term : Core.Query.t Cmdliner.Term.t -> Core.Request_body.t Cmdliner.Term.t
+val query_term
+  :  Ocdwm_core.Query.t Cmdliner.Term.t
+  -> Ocdwm_core.Request.Body.t Cmdliner.Term.t

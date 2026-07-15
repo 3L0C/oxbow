@@ -16,18 +16,13 @@ module Field = struct
 end
 
 type t =
-  { query : Pattern.t
+  { pattern : Pattern.t
   ; field : Field.t
   ; cycle : bool
   }
 [@@deriving yojson]
 
 let to_string q =
-  let regex =
-    match q.query with
-    | Substring _ -> None
-    | Regex _ -> Some "regex"
-  in
   let field =
     match q.field with
     | Any -> None
@@ -35,9 +30,14 @@ let to_string q =
     | App_id -> Some "app-id"
   in
   let cycle = if q.cycle then Some "cycle" else None in
+  let regex =
+    match q.pattern with
+    | Substring _ -> None
+    | Regex _ -> Some "regex"
+  in
   let tags = List.filter_map Fun.id [ field; cycle; regex ] in
   let s =
-    match q.query with
+    match q.pattern with
     | Substring s -> s
     | Regex s -> s
   in
@@ -50,11 +50,11 @@ let to_string q =
 ;;
 
 let of_string ?(field = Field.Any) ?(cycle = false) s =
-  { query = Substring s; field; cycle }
+  { pattern = Substring s; field; cycle }
 ;;
 
 let get_regex q =
-  match q.query with
+  match q.pattern with
   | Substring s -> Ok (Str.regexp_string_case_fold s)
   | Regex s ->
     (try Ok (Str.regexp s) with

@@ -1,0 +1,15 @@
+(library
+ (name ocdwm_state)
+ (public_name ocdwm.state)
+ (libraries
+  ocdwm.core
+  ocdwm.layout
+  ocdwm.protocol
+  wayland
+  eio
+  logs
+  xkbcommon
+  yojson
+  ppx_yojson_conv_lib)
+ (preprocess
+  (pps ppx_yojson_conv landmarks-ppx --auto)))

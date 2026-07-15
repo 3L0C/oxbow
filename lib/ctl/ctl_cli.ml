@@ -1,5 +1,5 @@
-module Core = Ocdwm_core
-open Cmdliner
+open! Cmdliner
+open! Ocdwm_core
 
 let seat =
   Arg.(
@@ -24,17 +24,17 @@ let socket =
 ;;
 
 let spatial_targets =
-  let open Core.Spatial_direction in
+  let open Direction.Spatial in
   List.map (fun d -> to_string d, d) [ Up; Down; Left; Right ]
 ;;
 
 let logical_targets =
-  let open Core.Logical_direction in
+  let open Direction.Logical in
   List.map (fun d -> to_string d, d) [ Next; Prev ]
 ;;
 
 let direction_targets =
-  let open Core.Any_direction in
+  let open Direction in
   List.map (fun (s, d) -> s, Logical d) logical_targets
   @ List.map (fun (s, d) -> s, Spatial d) spatial_targets
 ;;
@@ -44,15 +44,15 @@ let int_delta_conv =
     | "" -> Error "empty delta"
     | s when s.[0] = '+' || s.[0] = '-' ->
       (match int_of_string_opt s with
-       | Some n -> Ok (Core.Delta.Rel n)
+       | Some n -> Ok (Delta.Rel n)
        | None -> Error (Printf.sprintf "bad int delta: %s" s))
     | s ->
       (match int_of_string_opt s with
-       | Some n -> Ok (Core.Delta.Abs n)
+       | Some n -> Ok (Delta.Abs n)
        | None -> Error (Printf.sprintf "bad int: %s" s))
   in
   let pp ppf = function
-    | Core.Delta.Abs n -> Format.fprintf ppf "%d" n
+    | Delta.Abs n -> Format.fprintf ppf "%d" n
     | Rel n -> Format.fprintf ppf "%+d" n
   in
   Arg.Conv.make ~docv:"DELTA" ~parser ~pp ()
@@ -73,15 +73,15 @@ let float_delta_conv =
     | "" -> Error "empty delta"
     | s when s.[0] = '+' || s.[0] = '-' ->
       (match float_of_string_opt s with
-       | Some n -> Ok (Core.Delta.Rel n)
+       | Some n -> Ok (Delta.Rel n)
        | None -> Error (Printf.sprintf "bad float delta: %s" s))
     | s ->
       (match float_of_string_opt s with
-       | Some n -> Ok (Core.Delta.Abs n)
+       | Some n -> Ok (Delta.Abs n)
        | None -> Error (Printf.sprintf "bad float: %s" s))
   in
   let pp ppf = function
-    | Core.Delta.Abs n -> Format.fprintf ppf "%f" n
+    | Delta.Abs n -> Format.fprintf ppf "%f" n
     | Rel n -> Format.fprintf ppf "%+f" n
   in
   Arg.Conv.make ~docv:"DELTA" ~parser ~pp ()
@@ -98,16 +98,15 @@ let float_delta =
 ;;
 
 let tag_arg_conv =
-  let open Core in
   let parser s =
     let s = String.trim s in
     match s with
-    | "occupied" -> Ok Tag_arg.Tags_occupied
-    | s -> Result.map (fun t -> Tag_arg.Tags_concrete t) (Tag_set.of_string s)
+    | "occupied" -> Ok Tag.Arg.Occupied
+    | s -> Result.map (fun t -> Tag.Arg.Concrete t) (Tag.Set.of_string s)
   in
   let pp ppf = function
-    | Tag_arg.Tags_occupied -> Format.fprintf ppf "occupied"
-    | Tag_arg.Tags_concrete t -> Format.fprintf ppf "%s" (Tag_set.to_string t)
+    | Tag.Arg.Occupied -> Format.fprintf ppf "occupied"
+    | Tag.Arg.Concrete t -> Format.fprintf ppf "%s" (Tag.Set.to_string t)
   in
   Arg.Conv.make ~docv:"TAGS" ~parser ~pp ()
 ;;
@@ -130,9 +129,8 @@ let tag_arg =
 ;;
 
 let tag_set_conv =
-  let open Core in
-  let parser = Tag_set.of_string in
-  let pp ppf t = Format.fprintf ppf "%s" @@ Tag_set.to_string t in
+  let parser = Tag.Set.of_string in
+  let pp ppf t = Format.fprintf ppf "%s" @@ Tag.Set.to_string t in
   Arg.Conv.make ~docv:"TAGS" ~parser ~pp ()
 ;;
 
@@ -145,8 +143,8 @@ let policy_flag =
   Arg.(
     value
     & vflag
-        Core.Tag_policy.Tag_keep
-        [ ( Core.Tag_policy.Tag_take
+        Tag.Policy.Keep
+        [ ( Tag.Policy.Take
           , info [ "take" ] ~doc:"Window takes the active tags on the destination output"
           )
         ])
@@ -177,7 +175,6 @@ let output_name_arg =
 ;;
 
 let extent_conv =
-  let open Core in
   let parser = Extent.of_string in
   let pp ppf e = Format.fprintf ppf "%s" @@ Extent.to_string e in
   Arg.Conv.make ~docv:"EXTENT" ~parser ~pp ()
@@ -210,7 +207,7 @@ let exit_conn_failed =
   Cmd.Exit.info code_conn_failed ~doc:"on failure to connect to the ocdwm socket"
 ;;
 
-let exits = exit_protocol_err :: exit_conn_failed :: Core.Exit.exits
+let exits = exit_protocol_err :: exit_conn_failed :: Exit.exits
 
 let dispatch ?seat ?socket body =
   Eio_main.run
@@ -220,19 +217,19 @@ let dispatch ?seat ?socket body =
     (Logs.app @@ fun m -> m "%s" (Yojson.Safe.pretty_to_string data));
     Cmd.Exit.ok
   | Ok None -> Cmd.Exit.ok
-  | Error (E_conn_failed msg) ->
+  | Error (Connection_failed msg) ->
     (Logs.err @@ fun m -> m "connection failed: %s" msg);
     code_conn_failed
-  | Error (E_protocol msg) ->
+  | Error (Protocol msg) ->
     (Logs.err @@ fun m -> m "%s" msg);
     code_protocol_err
 ;;
 
-let group = Core.Cli.group
+let group = Cli.group
 
 let cmd ~name ~doc term =
   let open Cmdliner.Term.Syntax in
-  Core.Cli.cmd ~exits ~name ~doc
+  Cli.cmd ~exits ~name ~doc
   @@
   let+ seat = seat
   and+ socket = socket
@@ -243,7 +240,7 @@ let cmd ~name ~doc term =
 let trigger_term term =
   let open Cmdliner.Term.Syntax in
   let+ action = term in
-  Core.Request_body.Trigger action
+  Request.Body.Trigger action
 ;;
 
 let bind_suffix =
@@ -262,11 +259,11 @@ let bind_term term =
   let open Cmdliner.Term.Syntax in
   let+ action = term
   and+ keybind = bind_suffix in
-  Core.Request_body.Setting (Bind { keybind; action })
+  Request.Body.Setting (Bind { keybind; action })
 ;;
 
 let query_term term =
   let open Cmdliner.Term.Syntax in
   let+ query = term in
-  Core.Request_body.Query query
+  Request.Body.Query query
 ;;

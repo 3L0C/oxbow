@@ -1,130 +1,13 @@
-module Box = Ocdwm_wm.Box
 module Cli = Ocdwm_core.Cli
-module Config = Ocdwm_wm.Config
+module Exceptions = Ocdwm_runtime.Exceptions
 module Exit = Ocdwm_core.Exit
-module Init_script = Ocdwm_wm.Init_script
-module Layout = Ocdwm_wm.Layout
-module River = Ocdwm_wm.River
-module Types = Ocdwm_wm.Types
-module Wayland_handlers = Ocdwm_wm.Wayland_handlers
-module Window_manager = Ocdwm_wm.Window_manager
-module Window_manager_state = Ocdwm_wm.Window_manager_state
-module Wm_exceptions = Ocdwm_wm.Exceptions
+module Init_script = Ocdwm_state.Init_script
+module Run = Ocdwm_runtime.Run
 
 let version =
   match Build_info.V1.version () with
   | Some v -> Build_info.V1.Version.to_string v
   | None -> "dev"
-;;
-
-let loop ~init_command ~net ~clock =
-  Eio.Switch.run
-  @@ fun sw ->
-  let transport = Wayland.Unix_transport.connect ~sw ~net () in
-  let display = Wayland.Client.connect ~sw transport in
-  let registry = Wayland.Registry.of_display display in
-  let wm_box : Types.Window_manager.t Box.t = { body = None } in
-  let river_wm_v1 =
-    Wayland.Registry.bind registry
-    @@ object
-         inherit [_] River.Window_management.River_window_manager_v1.v4
-         method on_finished _ = Wayland_handlers.on_finished wm_box
-         method on_manage_start proxy = Wayland_handlers.on_manage_start proxy wm_box
-
-         method on_output proxy river_output =
-           Wayland_handlers.on_output proxy river_output wm_box
-
-         method on_render_start proxy = Wayland_handlers.on_render_start proxy wm_box
-
-         method on_seat proxy river_seat =
-           Wayland_handlers.on_seat proxy river_seat wm_box
-
-         method on_session_locked = Wayland_handlers.on_session_locked
-         method on_session_unlocked = Wayland_handlers.on_session_unlocked
-         method on_unavailable = Wayland_handlers.on_unavailable
-
-         method on_window proxy river_window =
-           Wayland_handlers.on_window proxy river_window wm_box
-       end
-  in
-  let river_xkb_v1 =
-    Wayland.Registry.bind registry
-    @@ object
-         inherit [_] River.Xkb_bindings.River_xkb_bindings_v1.v2
-       end
-  in
-  let river_lsh_v1 =
-    Wayland.Registry.bind registry
-    @@ object
-         inherit [_] River.Layer_shell.River_layer_shell_v1.v1
-       end
-  in
-  let river_input_v1 =
-    Wayland.Registry.bind registry
-    @@ object
-         inherit [_] River.Input_management.River_input_manager_v1.v1
-         method on_input_device _ device = Wayland_handlers.on_input_device device wm_box
-         method on_finished = ignore
-       end
-  in
-  let river_xkb_config_v1 =
-    Wayland.Registry.bind registry
-    @@ object
-         inherit [_] River.Xkb_config.River_xkb_config_v1.v1
-         method on_xkb_keyboard _ xkb = Wayland_handlers.on_xkb_keyboard xkb wm_box
-         method on_finished = ignore
-       end
-  in
-  let layout_registry = Layout.create_registry () in
-  let config = Layout.default_layout_entry ~registry:layout_registry |> Config.default in
-  let wm =
-    Types.Window_manager.
-      { river_wm_v1
-      ; river_xkb_v1
-      ; river_lsh_v1
-      ; river_input_v1
-      ; river_xkb_config_v1
-      ; registry
-      ; shutdown = Eio.Condition.create ()
-      ; state = Wm_running
-      ; primary_seat = None
-      ; dirty = false
-      ; outputs = []
-      ; windows = []
-      ; seats = []
-      ; input_devices = []
-      ; current_keymap = None
-      ; desired_keymap_path = None
-      ; config
-      ; init_command
-      ; init_handle = None
-      ; layout_registry
-      ; ipc = Ipc_inactive
-      }
-  in
-  let signaled = Eio.Condition.create () in
-  let on_signal _ = Eio.Condition.broadcast signaled in
-  wm_box.body <- Some wm;
-  Eio.Fiber.fork ~sw (fun () ->
-    let outcome =
-      Eio.Fiber.first
-        (fun () ->
-           Eio.Condition.await_no_mutex signaled;
-           `Signal)
-        (fun () ->
-           Window_manager.await_shutdown wm;
-           `Shutdown)
-    in
-    match outcome with
-    | `Signal -> Window_manager.request_close wm
-    | `Shutdown -> ());
-  Sys.set_signal Sys.sigint @@ Sys.Signal_handle on_signal;
-  Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
-  Ocdwm_wm.Ipc_server.start ~sw ~net ~wm;
-  Window_manager.await_shutdown wm;
-  Window_manager.teardown ~clock wm;
-  Wayland.Client.stop display;
-  Exit.ok
 ;;
 
 let setup ~log_level =
@@ -136,11 +19,11 @@ let setup ~log_level =
 
 let run ~init_command ~log_level () =
   setup ~log_level;
-  try Eio_main.run @@ fun env -> loop ~init_command ~net:env#net ~clock:env#clock with
+  try Eio_main.run @@ fun env -> Run.loop ~init_command ~net:env#net ~clock:env#clock with
   | Failure s ->
     Printf.eprintf "%s\n" s;
     Exit.software
-  | Wm_exceptions.Unavailable -> Exit.unavailable
+  | Exceptions.Unavailable -> Exit.unavailable
 ;;
 
 let man =

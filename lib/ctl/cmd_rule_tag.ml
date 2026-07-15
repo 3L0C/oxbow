@@ -5,8 +5,8 @@ let action_term kind =
   let+ tag_arg = Ctl_cli.tag_arg
   and+ app_id = Ctl_cli.app_id_flag
   and+ title = Ctl_cli.title_flag in
-  let rule : Window_rule.t =
-    { pattern = { app_id; title }; action = Rule_action.Set_tags tag_arg }
+  let rule : Rule.t =
+    { pattern = { app_id; title }; action = Rule.Action.Set_tags tag_arg }
   in
   match kind with
   | `Add -> Action.Add_rule rule

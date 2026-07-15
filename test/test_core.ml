@@ -6,10 +6,10 @@ let () =
     ; Focus_window_logical Next
     ; Set_mfact (Delta.Rel 0.05)
     ; Set_mfact (Delta.Abs 0.55)
-    ; Tag_view (Tags_concrete (Tag_set.singleton 3))
+    ; Tag_view (Concrete (Tag.Set.singleton 3))
     ]
   in
-  let stacks : Stack_kind.t list = [ Stack_diminish; Stack_dwindle; Stack_even ] in
+  let stacks : Stack_kind.t list = [ Even; Diminish; Dwindle ] in
   let responses : Response.t list =
     [ { ok = true; err = None; data = None }
     ; { ok = false; err = Some "Had an error"; data = None }

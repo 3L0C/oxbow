@@ -1,7 +1,7 @@
 open! Ocdwm_core
 
 let dir_action dir =
-  let open Any_direction in
+  let open Direction in
   match dir with
   | Logical d -> Action.Focus_output_logical d
   | Spatial d -> Action.Focus_output_spatial d

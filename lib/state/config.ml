@@ -1,0 +1,67 @@
+open! Ocdwm_core
+open! Ocdwm_layout
+include Types.Config
+
+let default_layout_params =
+  Params.{ mfact = 0.55; nmaster = 1; gaps_inner = 10; gaps_outer = 20; stack = Even }
+;;
+
+let default_borders =
+  Border.
+    { width = 4l
+    ; focused_color = 0xFFFFFFl
+    ; unfocused_color = 0xFFFFFFl
+    ; urgent_color = 0xFFFFFFl
+    }
+;;
+
+let create_tag_data entry = Data.{ params = default_layout_params; entry }
+
+let default entry =
+  { default_tag_config = { params = default_layout_params; entry }
+  ; borders = default_borders
+  ; cursor_theme = None
+  ; modkey = River.Window_management.River_seat_v1.Modifiers.(Int32.(logor mod4 ctrl))
+  ; rules = []
+  ; focus_follows_pointer = true
+  ; warp_on_focus = false
+  ; repeat_rate = 50
+  ; repeat_delay = 300
+  }
+;;
+
+let set_focus_follows_pointer (wm : Types.Wm.t) focus_follows_pointer =
+  wm.config.focus_follows_pointer <- focus_follows_pointer
+;;
+
+let set_warp_on_focus (wm : Types.Wm.t) warp_on_focus =
+  wm.config.warp_on_focus <- warp_on_focus
+;;
+
+let set_border_width (wm : Types.Wm.t) border_width =
+  wm.config.borders.width <- border_width;
+  Dirty.mark_all wm
+;;
+
+let set_cursor_theme (wm : Types.Wm.t) cursor_theme =
+  wm.config.cursor_theme <- cursor_theme
+;;
+
+let set_key_repeat (wm : Types.Wm.t) ~rate ~delay =
+  wm.config.repeat_rate <- rate;
+  wm.config.repeat_delay <- delay
+;;
+
+let set_border_color (wm : Types.Wm.t) (border : Border_target.t) color =
+  Dirty.mark_all wm;
+  match border with
+  | Urgent -> wm.config.borders.urgent_color <- color
+  | Focused -> wm.config.borders.focused_color <- color
+  | Unfocused -> wm.config.borders.unfocused_color <- color
+;;
+
+let add_rule (wm : Types.Wm.t) rule = wm.config.rules <- wm.config.rules @ [ rule ]
+
+let remove_rule (wm : Types.Wm.t) rule =
+  wm.config.rules <- List.filter (Fun.negate (Rule.equal rule)) wm.config.rules
+;;

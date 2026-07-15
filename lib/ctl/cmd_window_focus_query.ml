@@ -37,8 +37,8 @@ let action_term =
   in
   Action.Focus_window_query
     (if regex
-     then { query = Regex query; field; cycle }
-     else { query = Substring query; field; cycle })
+     then { pattern = Regex query; field; cycle }
+     else { pattern = Substring query; field; cycle })
 ;;
 
 let name = "query"

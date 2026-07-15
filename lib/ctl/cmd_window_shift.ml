@@ -6,7 +6,7 @@ let leaf mk_term (name, doc, dir) =
 
 let targets =
   List.map
-    (fun (s, (d : Logical_direction.t)) ->
+    (fun (s, (d : Direction.Logical.t)) ->
        match d with
        | Next ->
          ( s

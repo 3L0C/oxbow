@@ -35,87 +35,39 @@ let to_int = function
   | Config -> 78
 ;;
 
-(** [ok] indicates successful termination *)
 let ok = to_int Okay
-
 let ok_info = "on success"
-
-(** [usage] indicates command line usage error *)
 let usage = to_int Usage
-
 let usage_info = "on command line usage error"
-
-(** [dataerr] indicates data format error *)
 let dataerr = to_int Dataerr
-
 let dataerr_info = "on data format error"
-
-(** [noinput] indicates the programs could not open input *)
 let noinput = to_int Noinput
-
 let noinput_info = "on failure to open input"
-
-(** [nouser] indecates addressee unknown *)
 let nouser = to_int Nouser
-
 let nouser_info = "on unknown addressee"
-
-(** [nohost] indicates host name unknown *)
 let nohost = to_int Nohost
-
 let nohost_info = "on unknown host name"
-
-(** [unavailable] indicates service unavailable *)
 let unavailable = to_int Unavailable
-
 let unavailable_info = "on unavailable service"
-
-(** [software] indicates an internal software error *)
 let software = to_int Software
-
 let software_info = "on internal software error"
-
-(** [oserr] indicates system error (e.g., can't fork) *)
 let oserr = to_int Oserr
-
 let oserr_info = "on system error (e.g., can't fork)"
-
-(** [osfile] indicates critical OS file missing *)
 let osfile = to_int Osfile
-
 let osfile_info = "on critical OS file missing"
-
-(** [cantcreat] indicates can't create (user) output file *)
 let cantcreat = to_int Cantcreat
-
 let cantcreat_info = "on failure to create (user) output file"
-
-(** [ioerr] indicates input/output error *)
 let ioerr = to_int Ioerr
-
 let ioerr_info = "on input/output error"
-
-(** [tempfail] indicates temp failure; user is invited to retry *)
 let tempfail = to_int Tempfail
-
 let tempfail_info = "on temporary failure; user is invited to retry"
-
-(** [protocol] indicates a remote error in protocol *)
 let protocol = to_int Protocol
-
 let protocol_info = "on remote error in protocol"
-
-(** [noperm] indicates permission denied *)
 let noperm = to_int Noperm
-
 let noperm_info = "on permision denied"
-
-(** [config] indicates a configuration error *)
 let config = to_int Config
-
 let config_info = "on configuration error"
 
-(** [exits] is a list of exit info for [Cmdliner] *)
 let exits =
   let open Cmdliner in
   List.fold_left

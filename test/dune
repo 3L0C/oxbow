@@ -1,3 +1,9 @@
 (test
  (name test_core)
+ (modules test_core)
  (libraries ocdwm.core yojson))
+
+(test
+ (name test_layout)
+ (modules test_layout)
+ (libraries ocdwm.core ocdwm.layout))

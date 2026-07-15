@@ -1,0 +1,51 @@
+include module type of Types.Config
+
+(** [create_tag_data entry] is the [Data.t] created from [entry]. *)
+val create_tag_data : Ocdwm_layout.Entry.t -> Data.t
+
+(** [default entry] is the default config given [entry]. *)
+val default : Ocdwm_layout.Entry.t -> t
+
+(** [set_focus_follows_pointer wm focus_follows_pointer] sets [wm]'s "focus
+    follows pointer" flag to [focus_follows_pointer].
+
+    {b Effects:} mutates WM state *)
+val set_focus_follows_pointer : Types.Wm.t -> bool -> unit
+
+(** [set_warp_on_focus wm warp_on_focus] sets [wm]'s "warp on focus" flag to
+    [warp_on_focus].
+
+    {b Effects:} mutates WM state *)
+val set_warp_on_focus : Types.Wm.t -> bool -> unit
+
+(** [set_border_width wm border_width] sets [wm]'s border width to
+    [border_width].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_border_width : Types.Wm.t -> int32 -> unit
+
+(** [set_cursor_theme wm cursor_theme] sets [wm]'s cursor theme to
+    [cursor_theme].
+
+    {b Effects:} mutates WM state *)
+val set_cursor_theme : Types.Wm.t -> (string * int32) option -> unit
+
+(** [set_key_repeat wm ~rate ~delay] sets the key repeat [rate] and [delay].
+
+    {b Effects:} mutates WM state *)
+val set_key_repeat : Types.Wm.t -> rate:int -> delay:int -> unit
+
+(** [set_border_color wm border color] sets the target [border] type to [color].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_border_color : Types.Wm.t -> Ocdwm_core.Border_target.t -> int32 -> unit
+
+(** [add_rule wm rule] adds [rule] to [wm]'s configuration.
+
+    {b Effects:} mutates WM state *)
+val add_rule : Types.Wm.t -> Ocdwm_core.Rule.t -> unit
+
+(** [remove_rule wm rule] removes [rule] from [wm]'s configuration.
+
+    {b Effects:} mutates WM state *)
+val remove_rule : Types.Wm.t -> Ocdwm_core.Rule.t -> unit

@@ -1,0 +1,218 @@
+open! Ocdwm_core
+open! Ocdwm_state
+
+let layer_shell_sync (wm : Wm.t) =
+  match Wm.focused_output wm with
+  | None -> ()
+  | Some o -> River.Layer_shell.River_layer_shell_output_v1.set_default o.layer_shell
+;;
+
+let set_output ctx seat output =
+  let wm = Ctx.wm ctx in
+  Seat.set_output seat output;
+  if Phys.opt_holds wm.primary_seat seat then layer_shell_sync wm
+;;
+
+let focus_window ?(force : bool = false) ctx (seat : Seat.t) (target : Window.t) =
+  let force = force || Option.is_some seat.layer_focus in
+  match Seat.focused_window seat with
+  | Some w when w == target && not force -> ()
+  | _ ->
+    set_output ctx seat target.output;
+    Stacking.focus_window ctx seat target;
+    Pointer.warp_to_focus ctx seat
+;;
+
+let clear (_ : Ctx.manage Ctx.t) (seat : Seat.t) =
+  River.Window_management.River_seat_v1.clear_focus seat.obj
+;;
+
+let refresh ctx output =
+  let wm = Ctx.wm ctx in
+  let target = Output.focused_window output in
+  List.iter
+    (fun (s : Seat.t) ->
+       match s.output with
+       | Some o when o == output ->
+         (match target with
+          | Some w -> focus_window ~force:true ctx s w
+          | None -> clear ctx s)
+       | _ -> ())
+    wm.seats
+;;
+
+let refresh_layer_shell ctx (seat : Seat.t) =
+  if Option.is_none seat.layer_focus
+  then (
+    match Seat.focused_window seat with
+    | Some w -> focus_window ~force:true ctx seat w
+    | None -> clear ctx seat)
+;;
+
+let window_logical ctx seat (dir : Direction.Logical.t) =
+  match Seat.focused_window seat, seat.output with
+  | Some w, _ when Window.is_fullscreen w -> ()
+  | _, None -> ()
+  | _, Some o ->
+    (match dir with
+     | Next -> Output.next_window o |> Option.iter (focus_window ctx seat)
+     | Prev -> Output.prev_window o |> Option.iter (focus_window ctx seat))
+;;
+
+let window_spatial ctx seat (dir : Direction.Spatial.t) =
+  match Seat.focused_window seat, seat.output with
+  | Some w, _ when Window.is_fullscreen w -> ()
+  | _, None -> ()
+  | None, Some _ -> ()
+  | Some current, Some o ->
+    let from = Vector.center (Rect.to_int current.geom) in
+    Vector.nearest_in_direction
+      ~from
+      ~dir
+      (fun (w : Window.t) ->
+         if w == current || (not @@ Window.is_tiled w) || (not @@ Window.tag_visible w)
+         then None
+         else Some (Rect.to_int w.geom |> Vector.center))
+      o.wm_stack
+    |> Option.iter (focus_window ctx seat)
+;;
+
+let window_query ctx seat q =
+  let wm = Ctx.wm ctx in
+  match Window_query.get_regex q with
+  | Error e -> Logs.err @@ fun m -> m "%s" e
+  | Ok r ->
+    let matches_opt = function
+      | Some s ->
+        (try
+           ignore @@ Str.search_forward r s 0;
+           true
+         with
+         | Not_found -> false)
+      | None -> false
+    in
+    let matches_fields =
+      match q.field with
+      | Any -> fun title app_id -> matches_opt title || matches_opt app_id
+      | Title -> fun title _ -> matches_opt title
+      | App_id -> fun _ app_id -> matches_opt app_id
+    in
+    let windows =
+      List.find_all (fun (w : Window.t) -> matches_fields w.title w.app_id) wm.windows
+    in
+    let target =
+      match Seat.focused_window seat with
+      | Some w when q.cycle && matches_fields w.title w.app_id ->
+        Ring.next_or_first w windows
+      | _ -> List.nth_opt windows 0
+    in
+    Option.iter (focus_window ctx seat) target
+;;
+
+let focus_output ctx seat output =
+  set_output ctx seat @@ Some output;
+  Pointer.warp_to_focus ctx seat;
+  match Output.focused_window output with
+  | Some w -> focus_window ctx seat w
+  | None -> clear ctx seat
+;;
+
+let output_logical ctx (seat : Seat.t) (dir : Direction.Logical.t) =
+  let wm = Ctx.wm ctx in
+  match seat.output with
+  | None -> ()
+  | Some o ->
+    let target =
+      match dir with
+      | Next -> Ring.next_or_first o wm.outputs
+      | Prev -> Ring.prev_or_last o wm.outputs
+    in
+    (match target with
+     | Some t when t != o -> focus_output ctx seat t
+     | _ -> ())
+;;
+
+let output_spatial ctx (seat : Seat.t) (dir : Direction.Spatial.t) =
+  let wm = Ctx.wm ctx in
+  match seat.output with
+  | None -> ()
+  | Some current ->
+    let from = Output.to_vector current in
+    Vector.nearest_in_direction
+      ~from
+      ~dir
+      (fun (o : Output.t) -> if o == current then None else Some (Output.to_vector o))
+      wm.outputs
+    |> Option.iter (focus_output ctx seat)
+;;
+
+let output_name ctx (seat : Seat.t) (name : string) =
+  let wm = Ctx.wm ctx in
+  match
+    List.find_opt
+      (fun (o : Output.t) -> Option.fold ~none:false ~some:(fun n -> n = name) o.name)
+      wm.outputs
+  with
+  | None -> ()
+  | Some o ->
+    (match seat.output with
+     | None -> focus_output ctx seat o
+     | Some o' when o != o' -> focus_output ctx seat o
+     | _ -> ())
+;;
+
+let remove_window ctx window =
+  Option.iter (Stacking.remove_window ~window) window.output;
+  Option.iter (refresh ctx) window.output
+;;
+
+let wm_sync (ctx : Ctx.manage Ctx.t) =
+  let wm = Ctx.wm ctx in
+  let default = Wm.default_output wm in
+  List.iter
+    (fun (s : Seat.t) ->
+       match s.output with
+       | Some o when not @@ List.memq o wm.outputs -> set_output ctx s default
+       | None when not @@ List.is_empty wm.outputs -> set_output ctx s default
+       | _ -> ())
+    wm.seats;
+  List.iter
+    (fun (w : Window.t) ->
+       match w.output with
+       | None when not @@ List.is_empty wm.outputs ->
+         Window.set_output w default;
+         Option.iter (fun o -> Stacking.push [ w ] o) default
+       | _ -> ())
+    wm.windows
+;;
+
+let seat_sync ctx (seat : Seat.t) =
+  (match seat.lifecycle with
+   | Dirty { prev } ->
+     refresh_layer_shell ctx seat;
+     Seat.set_lifecycle seat prev
+   | _ -> ());
+  Seat.refresh_cursor_target seat
+;;
+
+let apply_request ctx (seat : Seat.t) =
+  let wm = Ctx.wm ctx in
+  if wm.config.focus_follows_pointer && Option.is_none seat.op && seat.layer_focus = None
+  then (
+    match seat.focus_state with
+    | Refresh w ->
+      focus_window ctx seat w ~force:true;
+      Seat.set_focus_state seat Idle
+    | Clear ->
+      clear ctx seat;
+      Seat.set_focus_state seat Idle
+    | Idle -> ())
+;;
+
+let apply_interaction ctx (seat : Seat.t) =
+  match seat.interacted with
+  | None -> ()
+  | Some w ->
+    focus_window ctx seat w;
+    Seat.set_interacted seat None
+;;

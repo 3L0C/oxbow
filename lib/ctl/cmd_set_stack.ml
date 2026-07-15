@@ -1,11 +1,7 @@
 open! Ocdwm_core
 
 let stack_targets =
-  let open Stack_kind in
-  [ to_string Stack_even, Stack_even
-  ; to_string Stack_diminish, Stack_diminish
-  ; to_string Stack_dwindle, Stack_dwindle
-  ]
+  List.map (fun k -> Stack_kind.to_string k, k) [ Even; Diminish; Dwindle ]
 ;;
 
 let leaf mk_term (name, stack_kind) =

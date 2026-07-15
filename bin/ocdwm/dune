@@ -3,7 +3,7 @@
  (public_name ocdwm)
  (libraries
   ocdwm.core
-  ocdwm.wm
+  ocdwm.runtime
   ocdwm.protocol
   dune-build-info
   cmdliner

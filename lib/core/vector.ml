@@ -3,11 +3,11 @@ type t =
   ; y : int
   }
 
-let position_of_box (r : int Rect.t) = { x = r.x + (r.w / 2); y = r.y + (r.h / 2) }
+let center (r : int Rect.t) = { x = r.x + (r.w / 2); y = r.y + (r.h / 2) }
 let diff a b = { x = b.x - a.x; y = b.y - a.y }
 
 let direction v =
-  let open Spatial_direction in
+  let open Direction.Spatial in
   match v with
   | { x; y } when x = 0 && y = 0 -> None
   | { x; y } when abs y > abs x -> Some (if y > 0 then Down else Up)

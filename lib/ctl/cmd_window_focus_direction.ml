@@ -1,7 +1,7 @@
 open! Ocdwm_core
 
 let action_term dir =
-  let open Any_direction in
+  let open Direction in
   match dir with
   | Logical d -> Cmdliner.Term.const @@ Action.Focus_window_logical d
   | Spatial d -> Cmdliner.Term.const @@ Action.Focus_window_spatial d

@@ -2,7 +2,7 @@ open! Ocdwm_core
 
 let dir_action_term dir =
   let open Cmdliner.Term.Syntax in
-  let open Any_direction in
+  let open Direction in
   let+ policy = Ctl_cli.policy_flag in
   match dir with
   | Logical d -> Action.Send_to_output_logical { dir = d; policy }
