@@ -243,13 +243,22 @@ let is_rendered (w : t) =
     @@ List.exists (fun w' -> w' != w && is_fullscreen w' && tag_visible w') o.focus_stack
 ;;
 
-let sync (_ : 'p Ctx.t) (w : t) =
+let sync (ctx : Ctx.manage Ctx.t) (w : t) =
+  let wm = Ctx.wm ctx in
+  let moving =
+    List.exists
+      (fun (s : Types.Seat.t) ->
+         match s.op with
+         | Some (Move { window; _ }) when window == w -> true
+         | _ -> false)
+      wm.seats
+  in
   let should_render = is_rendered w in
   match should_render, w.is_hidden with
   | true, true ->
     River.Window_management.River_window_v1.show w.obj;
     w.is_hidden <- false
-  | false, false ->
+  | false, false when not moving ->
     River.Window_management.River_window_v1.hide w.obj;
     w.is_hidden <- true
   | _, _ -> ()

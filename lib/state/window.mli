@@ -81,7 +81,7 @@ val is_rendered : t -> bool
     state.
 
     {b Effects:} mutates WM state; sends River request *)
-val sync : 'p Ctx.t -> t -> unit
+val sync : Ctx.manage Ctx.t -> t -> unit
 
 (** [queue_request wm window request] adds [request] to [window]'s request
     queue.

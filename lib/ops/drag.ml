@@ -45,6 +45,7 @@ let step ctx (seat : Seat.t) =
      | Some o when not @@ Phys.opt_holds w.output o ->
        let prev = w.output in
        Placement.move_window ~policy:Tag.Policy.Take w o;
+       Focus.focus_window ctx seat w;
        Option.iter Dirty.mark_output prev;
        Dirty.mark_output o
      | _ -> ());

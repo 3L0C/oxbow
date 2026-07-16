@@ -24,16 +24,16 @@ let zoom ctx (seat : Seat.t) =
   | _ -> Error "focused window is not tiled"
 ;;
 
-let move_window ?(policy = Tag.Policy.Keep) window target =
+let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
   let take () =
+    (match policy with
+     | Keep -> ()
+     | Take ->
+       Tag.Set.first target.selected_tags
+       |> Option.fold ~none:window.tags ~some:Tag.Set.singleton
+       |> Window.set_tags window);
     Window.set_output window @@ Some target;
-    Stacking.push [ window ] target;
-    match policy with
-    | Keep -> ()
-    | Take ->
-      Tag.Set.first target.selected_tags
-      |> Option.fold ~none:window.tags ~some:Tag.Set.singleton
-      |> Window.set_tags window
+    Stacking.push [ window ] target
   in
   match window.output with
   | Some o when o == target -> ()
@@ -43,7 +43,7 @@ let move_window ?(policy = Tag.Policy.Keep) window target =
     take ()
 ;;
 
-let send_to ctx (src : Output.t) dst window policy =
+let send_to ~(src : Output.t) ~(dst : Output.t) ctx window policy =
   move_window ~policy window dst;
   (match window.presentation with
    | Tiled -> ()
@@ -71,7 +71,7 @@ let send_window_to_logical ctx (window : Window.t) (dir : Direction.Logical.t) p
     let target = Output.resolve_output_logical ~dir current wm.outputs in
     (match target with
      | Some o when o != current ->
-       send_to ctx current o window policy;
+       send_to ~src:current ~dst:o ctx window policy;
        Ok None
      | _ -> Error Messages.no_other_output)
 ;;
@@ -85,7 +85,7 @@ let send_window_to_spatial ctx (window : Window.t) (dir : Direction.Spatial.t) p
     let target = Output.resolve_output_spatial ~from ~dir current wm.outputs in
     (match target with
      | Some o when o != current ->
-       send_to ctx current o window policy;
+       send_to ~src:current ~dst:o ctx window policy;
        Ok None
      | _ -> Error (Printf.sprintf "no output %s" (Direction.Spatial.to_string dir)))
 ;;
@@ -99,7 +99,7 @@ let send_window_to_name ctx (window : Window.t) name policy =
     let target = Output.resolve_output_name name wm.outputs in
     (match target with
      | Some o when o != current ->
-       send_to ctx current o window policy;
+       send_to ~src:current ~dst:o ctx window policy;
        Ok None
      | _ -> Error (Printf.sprintf "no output named %S" name))
 ;;

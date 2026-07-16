@@ -3,7 +3,7 @@ open! Ocdwm_state
 
 let handle_position ~x ~y (wm : Wm.t) seat =
   Seat.set_position seat { x; y };
-  if wm.config.focus_follows_pointer
+  if wm.config.focus_follows_pointer && Option.is_none seat.op
   then (
     match Output.at_point ~x ~y wm.outputs with
     | None -> Seat.set_cursor_target seat None
