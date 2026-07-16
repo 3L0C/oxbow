@@ -112,7 +112,10 @@ let window_query ctx seat q =
     in
     (match target with
      | None ->
-       Error (Printf.sprintf "no window matches query: %S" (Window_query.to_string q))
+       Error
+         (Printf.sprintf
+            "no window matches query: %S"
+            (Window_query.yojson_of_t q |> Yojson.Safe.to_string))
      | Some w ->
        focus_window ctx seat w;
        Ok None)
