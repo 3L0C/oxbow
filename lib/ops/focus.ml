@@ -84,7 +84,7 @@ let window_spatial ctx seat (dir : Direction.Spatial.t) =
         o.wm_stack
     in
     (match target with
-     | None -> Error (Printf.sprintf "no output %s" (Direction.Spatial.to_string dir))
+     | None -> Error (Printf.sprintf "no window %s" (Direction.Spatial.to_string dir))
      | Some w ->
        focus_window ctx seat w;
        Ok None)
