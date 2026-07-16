@@ -67,11 +67,11 @@ val parse_button : string -> (Ocdwm_core.Pointer_button.t, string) result
     See [parse_modifiers], [parse_keysym], and [parse_button] for more details. *)
 val parse : string -> (t, string) result
 
-(** [handle ctx seat setting] applies the Bind/Unbind [setting].
+(** [handle ctx seat keymap] applies the Bind/Unbind [keymap].
 
     {b Effects:} mutates WM state; sends River request *)
 val handle
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Setting.t
+  -> Ocdwm_ipc.Keymap.t
   -> (Yojson.Safe.t option, string) result

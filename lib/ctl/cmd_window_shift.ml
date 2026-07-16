@@ -1,7 +1,8 @@
 open! Ocdwm_core
+open! Ocdwm_ipc
 
 let leaf mk_term (name, doc, dir) =
-  Ctl_cli.cmd ~name ~doc @@ mk_term @@ Cmdliner.Term.const (Action.Shift dir)
+  Ctl_cli.cmd ~name ~doc @@ mk_term @@ Cmdliner.Term.const (Command.Window (Shift dir))
 ;;
 
 let targets =
@@ -24,5 +25,5 @@ let targets =
 let name = "shift"
 let doc = "Shift the focused window through the tile stack"
 let build mk_term = Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) targets
-let cmd = build Ctl_cli.trigger_term
+let cmd = build Ctl_cli.command_term
 let bind_cmd = build Ctl_cli.bind_term

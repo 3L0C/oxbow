@@ -1,12 +1,13 @@
 let () =
   let open Ocdwm_core in
-  let actions : Action.t list =
-    [ Zoom
+  let open Ocdwm_ipc in
+  let commands : Command.t list =
+    [ Window Zoom
     ; Spawn "foot"
-    ; Focus_window_logical Next
-    ; Set_mfact (Delta.Rel 0.05)
-    ; Set_mfact (Delta.Abs 0.55)
-    ; Tag_view (Concrete (Tag.Set.singleton 3))
+    ; Window (Focus_logical Next)
+    ; Set (Mfact (Delta.Rel 0.05))
+    ; Set (Mfact (Delta.Abs 0.55))
+    ; Tag (View (Concrete (Tag.Set.singleton 3)))
     ]
   in
   let stacks : Stack_kind.t list = [ Even; Diminish; Dwindle ] in
@@ -16,12 +17,12 @@ let () =
     ]
   in
   List.iter
-    (fun a ->
-       let j = Action.yojson_of_t a in
-       let a' = Action.t_of_yojson j in
-       assert (a = a');
+    (fun c ->
+       let j = Command.yojson_of_t c in
+       let c' = Command.t_of_yojson j in
+       assert (c = c');
        Printf.printf "ok: %s\n" (Yojson.Safe.to_string j))
-    actions;
+    commands;
   List.iter
     (fun s ->
        let j = Stack_kind.yojson_of_t s in

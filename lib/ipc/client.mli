@@ -13,5 +13,5 @@ val send
   :  env:Eio_unix.Stdenv.base
   -> ?seat:string
   -> ?socket:string
-  -> Ocdwm_core.Request.Body.t
+  -> Request.Body.t
   -> (Yojson.Safe.t option, Error.t) result

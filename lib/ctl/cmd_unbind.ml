@@ -1,9 +1,10 @@
 open! Ocdwm_core
+open! Ocdwm_ipc
 
 let body_term =
   let open Cmdliner.Term.Syntax in
   let+ keybind = Ctl_cli.keybind_arg in
-  Request.Body.Setting (Unbind keybind)
+  Request.Body.Keymap (Unbind keybind)
 ;;
 
 let name = "unbind"

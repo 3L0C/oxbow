@@ -1,4 +1,5 @@
 open! Ocdwm_core
+open! Ocdwm_ipc
 
 let name = "list"
 let doc = "List all the active window rules"

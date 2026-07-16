@@ -10,4 +10,5 @@
   fmt.tty
   yojson
   ppx_yojson_conv_lib)
- (preprocess (pps ppx_yojson_conv)))
+ (preprocess
+  (pps ppx_yojson_conv)))

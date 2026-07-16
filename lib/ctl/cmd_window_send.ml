@@ -1,28 +1,29 @@
 open! Ocdwm_core
+open! Ocdwm_ipc
 
-let dir_action_term dir =
+let dir_command_term dir =
   let open Cmdliner.Term.Syntax in
   let open Direction in
   let+ policy = Ctl_cli.policy_flag in
   match dir with
-  | Logical d -> Action.Send_to_output_logical { dir = d; policy }
-  | Spatial d -> Action.Send_to_output_spatial { dir = d; policy }
+  | Logical d -> Command.Window (Send_logical { dir = d; policy })
+  | Spatial d -> Command.Window (Send_spatial { dir = d; policy })
 ;;
 
 let dir_leaf mk_term (name, dir) =
   Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Send to the %s output" name)
-  @@ mk_term (dir_action_term dir)
+  @@ mk_term (dir_command_term dir)
 ;;
 
-let to_action_term =
+let to_command_term =
   let open Cmdliner.Term.Syntax in
   let+ name = Ctl_cli.output_name_arg
   and+ policy = Ctl_cli.policy_flag in
-  Action.Send_to_output_name { name; policy }
+  Command.Window (Send_name { name; policy })
 ;;
 
 let to_leaf mk_term =
-  Ctl_cli.cmd ~name:"to" ~doc:"Send to the named output" @@ mk_term to_action_term
+  Ctl_cli.cmd ~name:"to" ~doc:"Send to the named output" @@ mk_term to_command_term
 ;;
 
 let name = "send"
@@ -33,5 +34,5 @@ let build mk_term =
   @@ (to_leaf mk_term :: List.map (dir_leaf mk_term) Ctl_cli.direction_targets)
 ;;
 
-let cmd = build Ctl_cli.trigger_term
+let cmd = build Ctl_cli.command_term
 let bind_cmd = build Ctl_cli.bind_term

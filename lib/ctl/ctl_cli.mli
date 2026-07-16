@@ -66,21 +66,21 @@ val group
 val cmd
   :  name:string
   -> doc:string
-  -> Ocdwm_core.Request.Body.t Cmdliner.Term.t
+  -> Ocdwm_ipc.Request.Body.t Cmdliner.Term.t
   -> int Cmdliner.Cmd.t
 
-(** [trigger_term term] maps the action into a [Trigger] body. *)
-val trigger_term
-  :  Ocdwm_core.Action.t Cmdliner.Term.t
-  -> Ocdwm_core.Request.Body.t Cmdliner.Term.t
+(** [command_term term] maps the [term]'s command into a [Command] body. *)
+val command_term
+  :  Ocdwm_ipc.Command.t Cmdliner.Term.t
+  -> Ocdwm_ipc.Request.Body.t Cmdliner.Term.t
 
-(** [bind_term term] composes the action with the [to KEYBIND] suffix and wraps
-    the result in [Setting (Bind { keybind; action })]. *)
+(** [bind_term term] composes [term]'s command with the [to KEYBIND] suffix and
+    wraps the result in [Keymap (Bind { keybind; command })]. *)
 val bind_term
-  :  Ocdwm_core.Action.t Cmdliner.Term.t
-  -> Ocdwm_core.Request.Body.t Cmdliner.Term.t
+  :  Ocdwm_ipc.Command.t Cmdliner.Term.t
+  -> Ocdwm_ipc.Request.Body.t Cmdliner.Term.t
 
 (** [query_term query] maps the query into a [Query] body. *)
 val query_term
-  :  Ocdwm_core.Query.t Cmdliner.Term.t
-  -> Ocdwm_core.Request.Body.t Cmdliner.Term.t
+  :  Ocdwm_ipc.Query.t Cmdliner.Term.t
+  -> Ocdwm_ipc.Request.Body.t Cmdliner.Term.t

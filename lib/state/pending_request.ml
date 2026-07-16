@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Ocdwm_ipc
 
 type t =
   { body : Request.Body.t

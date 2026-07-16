@@ -271,7 +271,7 @@ and Seat : sig
     type t =
       { obj : River.V.Xkb_bindings.t River.Xkb_bindings.River_xkb_binding_v1.t
       ; seat : Seat.t
-      ; action : Ocdwm_core.Action.t
+      ; command : Ocdwm_ipc.Command.t
       ; mods : int32
       ; keysym : Xkbcommon.Keysym.t
       }
@@ -282,7 +282,7 @@ and Seat : sig
       { obj :
           River.V.Window_management.t River.Window_management.River_pointer_binding_v1.t
       ; seat : Seat.t
-      ; action : Ocdwm_core.Action.t
+      ; command : Ocdwm_ipc.Command.t
       ; mods : int32
       ; button : Ocdwm_core.Pointer_button.t
       }

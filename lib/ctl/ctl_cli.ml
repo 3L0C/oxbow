@@ -1,5 +1,6 @@
 open! Cmdliner
 open! Ocdwm_core
+open! Ocdwm_ipc
 
 let seat =
   Arg.(
@@ -237,10 +238,10 @@ let cmd ~name ~doc term =
   dispatch ?seat ?socket body
 ;;
 
-let trigger_term term =
+let command_term term =
   let open Cmdliner.Term.Syntax in
-  let+ action = term in
-  Request.Body.Trigger action
+  let+ command = term in
+  Request.Body.Command command
 ;;
 
 let bind_suffix =
@@ -250,16 +251,16 @@ let bind_suffix =
     Arg.(
       required
       & pos ~rev:true 1 (some to_kw) None
-      & info [] ~docv:"to" ~doc:"Literal $(b,to) separating action from keybind")
+      & info [] ~docv:"to" ~doc:"Literal $(b,to) separating command from keybind")
   and+ keybind = keybind_arg in
   keybind
 ;;
 
 let bind_term term =
   let open Cmdliner.Term.Syntax in
-  let+ action = term
+  let+ command = term
   and+ keybind = bind_suffix in
-  Request.Body.Setting (Bind { keybind; action })
+  Request.Body.Keymap (Bind { keybind; command })
 ;;
 
 let query_term term =

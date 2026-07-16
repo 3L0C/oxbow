@@ -1,7 +1,8 @@
 open! Ocdwm_core
+open! Ocdwm_ipc
 
-let action_term = Cmdliner.Term.const Action.Close_wm
+let command_term = Cmdliner.Term.const @@ Command.Wm Close
 let name = "close"
 let doc = "Close ocdwm (leaves River running)"
-let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.trigger_term action_term
-let bind_cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.bind_term action_term
+let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.command_term command_term
+let bind_cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.bind_term command_term

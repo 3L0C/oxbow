@@ -228,7 +228,7 @@ let close_focused seat =
     Ok None
 ;;
 
-let move_to ctx seat x y =
+let move_to ~x ~y ctx seat =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
   | Some w ->
@@ -252,7 +252,7 @@ let move_spatial ctx seat dir by =
       Ok None)
 ;;
 
-let resize_to ctx seat width height =
+let resize_to ~width ~height ctx seat =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
   | Some w ->

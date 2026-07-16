@@ -1,6 +1,7 @@
 open! Ocdwm_core
+open! Ocdwm_ipc
 
-let action_term =
+let command_term =
   let open Cmdliner in
   let open Cmdliner.Term.Syntax in
   let+ x =
@@ -28,11 +29,11 @@ let action_term =
              of the usable width/height (e.g. $(b,25%) places the top edge a quarter of \
              the way down)")
   in
-  Action.Move_to { x; y }
+  Command.Window (Move_to { x; y })
 ;;
 
 let name = "to"
 let doc = "Move the focused window to point ($(i,X), $(i,Y))"
-let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term action_term
-let cmd = build Ctl_cli.trigger_term
+let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term command_term
+let cmd = build Ctl_cli.command_term
 let bind_cmd = build Ctl_cli.bind_term

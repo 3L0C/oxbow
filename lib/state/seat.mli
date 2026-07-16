@@ -6,8 +6,8 @@ include module type of Types.Seat
     {b Effects:} mutates WM state; sends River request *)
 val unbind_xkb_binding : Ctx.manage Ctx.t -> t -> int32 -> Xkbcommon.Keysym.t -> unit
 
-(** [replace_xkb_binding ctx seat mods keysym action] replaces the existing
-    binding matching [mods] and [keysym] with [action].
+(** [replace_xkb_binding ctx seat mods keysym command] replaces the existing
+    binding matching [mods] and [keysym] with [command].
 
     {b Effects:} mutates WM state; sends River request *)
 val replace_xkb_binding
@@ -15,7 +15,7 @@ val replace_xkb_binding
   -> t
   -> int32
   -> Xkbcommon.Keysym.t
-  -> Ocdwm_core.Action.t
+  -> Ocdwm_ipc.Command.t
   -> unit
 
 (** [unbind_pointer_binding ctx seat mods button] destroys the keybind matching
@@ -29,8 +29,8 @@ val unbind_pointer_binding
   -> Ocdwm_core.Pointer_button.t
   -> unit
 
-(** [replace_pointer_binding ctx seat mods button action] replaces the existing
-    binding matching [mods] and [button] with [action].
+(** [replace_pointer_binding ctx seat mods button command] replaces the existing
+    binding matching [mods] and [button] with [command].
 
     {b Effects:} mutates WM state; sends River request *)
 val replace_pointer_binding
@@ -38,7 +38,7 @@ val replace_pointer_binding
   -> t
   -> int32
   -> Ocdwm_core.Pointer_button.t
-  -> Ocdwm_core.Action.t
+  -> Ocdwm_ipc.Command.t
   -> unit
 
 (** [destroy ctx seat] destroys the Wayland objects underlying [seat].
@@ -150,12 +150,12 @@ val set_interacted : t -> Types.Window.t option -> unit
 (** [is_dirty seat] is true when [seat]'s lifecycle is [Dirty _]. *)
 val is_dirty : t -> bool
 
-(** [bind ctx seat mods key action] binds the [mods] and [key] to [action].
+(** [bind ctx seat mods key command] binds the [mods] and [key] to [command].
 
     {b Effects:} mutates WM state; sends River request *)
-val bind : Ctx.manage Ctx.t -> t -> int32 -> Types.Key.t -> Ocdwm_core.Action.t -> unit
+val bind : Ctx.manage Ctx.t -> t -> int32 -> Types.Key.t -> Ocdwm_ipc.Command.t -> unit
 
-(** [unbind ctx seat mods key] unbinds the action bound to [mods] and [key], if
+(** [unbind ctx seat mods key] unbinds the command bound to [mods] and [key], if
     any.
 
     {b Effects:} mutates WM state; sends River request *)

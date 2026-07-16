@@ -1,4 +1,5 @@
 open! Ocdwm_core
+open! Ocdwm_ipc
 include Types.Seat
 
 let xkb_binding_destroy (_ : Ctx.manage Ctx.t) (binding : Xkb_binding.t) =
@@ -12,9 +13,9 @@ let unbind_xkb_binding ctx (seat : t) mods keysym =
   seat.xkb_bindings <- to_keep
 ;;
 
-let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mods keysym action =
+let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mods keysym command =
   let wm = Ctx.wm ctx in
-  let body = Request.Body.Trigger action in
+  let body = Request.Body.Command command in
   let keysym_i32 = Int32.of_int (Xkbcommon.Keysym.to_int keysym) in
   let binding : Xkb_binding.t =
     { obj =
@@ -32,7 +33,7 @@ let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mods keysym action =
           ~keysym:keysym_i32
           ~modifiers:mods
     ; seat
-    ; action
+    ; command
     ; mods
     ; keysym
     }
@@ -41,9 +42,9 @@ let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mods keysym action =
   seat.xkb_bindings <- binding :: seat.xkb_bindings
 ;;
 
-let replace_xkb_binding ctx seat mods keysym action =
+let replace_xkb_binding ctx seat mods keysym command =
   unbind_xkb_binding ctx seat mods keysym;
-  xkb_binding_create ctx seat mods keysym action
+  xkb_binding_create ctx seat mods keysym command
 ;;
 
 let pointer_binding_destroy (_ : Ctx.manage Ctx.t) (pointer : Pointer_binding.t) =
@@ -57,8 +58,8 @@ let unbind_pointer_binding ctx (seat : t) mods button =
   seat.pointer_bindings <- to_keep
 ;;
 
-let pointer_binding_create (_ : Ctx.manage Ctx.t) (seat : t) mods button action =
-  let body = Request.Body.Trigger action in
+let pointer_binding_create (_ : Ctx.manage Ctx.t) (seat : t) mods button command =
+  let body = Request.Body.Command command in
   let binding : Pointer_binding.t =
     { obj =
         River.Window_management.River_seat_v1.get_pointer_binding
@@ -73,7 +74,7 @@ let pointer_binding_create (_ : Ctx.manage Ctx.t) (seat : t) mods button action 
           ~button:(Pointer_button.to_int32 button)
           ~modifiers:mods
     ; seat
-    ; action
+    ; command
     ; mods
     ; button
     }
@@ -82,9 +83,9 @@ let pointer_binding_create (_ : Ctx.manage Ctx.t) (seat : t) mods button action 
   seat.pointer_bindings <- binding :: seat.pointer_bindings
 ;;
 
-let replace_pointer_binding ctx seat mods button action =
+let replace_pointer_binding ctx seat mods button command =
   unbind_pointer_binding ctx seat mods button;
-  pointer_binding_create ctx seat mods button action
+  pointer_binding_create ctx seat mods button command
 ;;
 
 let destroy ctx (s : t) =
@@ -174,10 +175,10 @@ let is_dirty (s : t) =
   | _ -> false
 ;;
 
-let bind ctx seat mods (key : Types.Key.t) action =
+let bind ctx seat mods (key : Types.Key.t) command =
   match key with
-  | Keysym keysym -> replace_xkb_binding ctx seat mods keysym action
-  | Pointer button -> replace_pointer_binding ctx seat mods button action
+  | Keysym keysym -> replace_xkb_binding ctx seat mods keysym command
+  | Pointer button -> replace_pointer_binding ctx seat mods button command
 ;;
 
 let unbind ctx seat mods (key : Types.Key.t) =

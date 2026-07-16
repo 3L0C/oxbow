@@ -1,7 +1,7 @@
 module Body : sig
   type t =
-    | Trigger of Action.t
-    | Setting of Setting.t
+    | Command of Command.t
+    | Keymap of Keymap.t
     | Query of Query.t
 
   val t_of_yojson : Yojson.Safe.t -> t

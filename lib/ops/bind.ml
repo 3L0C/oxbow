@@ -1,4 +1,5 @@
 open! Ocdwm_core
+open! Ocdwm_ipc
 open! Ocdwm_state
 module Modifiers = River.Window_management.River_seat_v1.Modifiers
 
@@ -14,44 +15,44 @@ let install_defaults ctx seat =
   let shift = River.Window_management.River_seat_v1.Modifiers.shift in
   let xkb_bindings =
     Xkbcommon.Keysym.
-      [ (* mods, keysym,   action *)
-        modkey, K_Return, Action.Spawn "kitty"
-      ; modkey, K_q, Action.Close_focused
-      ; modkey, K_j, Action.Focus_window_logical Next
-      ; modkey, K_k, Action.Focus_window_logical Prev
-      ; modkey, K_Escape, Action.Close_wm
-      ; Int32.(logor modkey shift), K_Escape, Action.Exit_session
-      ; modkey, K_h, Action.Tag_view_cycle Prev
-      ; modkey, K_l, Action.Tag_view_cycle Next
-      ; modkey, K_Tab, Action.Tag_view_cycle Next
-      ; modkey, K_ISO_Left_Tab, Action.Tag_view_cycle Prev
-      ; Int32.(logor modkey alt), K_Tab, Layout_cycle Next
-      ; Int32.(logor modkey alt), K_ISO_Left_Tab, Layout_cycle Prev
-      ; Int32.(logor modkey shift), K_space, Toggle_floating
-      ; modkey, K_v, Toggle_fullscreen
-      ; modkey, K_I, Toggle_fake_fullscreen
-      ; modkey, K_F, Toggle_maximize
-      ; modkey, K_H, Set_mfact Delta.(Rel (-0.05))
-      ; modkey, K_L, Set_mfact Delta.(Rel 0.05)
-      ; modkey, K_a, Set_mfact Delta.(Abs 0.55)
-      ; modkey, K_space, Zoom
-      ; modkey, K_J, Shift Next
-      ; modkey, K_K, Shift Prev
+      [ (* mods, keysym,  command *)
+        modkey, K_Return, Command.Spawn "kitty"
+      ; modkey, K_q, Command.Window Close
+      ; modkey, K_j, Command.Window (Focus_logical Next)
+      ; modkey, K_k, Command.Window (Focus_logical Prev)
+      ; modkey, K_Escape, Command.Wm Close
+      ; Int32.(logor modkey shift), K_Escape, Command.Session Exit
+      ; modkey, K_l, Command.Tag (View_cycle_occupied Next)
+      ; modkey, K_h, Command.Tag (View_cycle_occupied Prev)
+      ; modkey, K_Tab, Command.Tag (View_cycle Next)
+      ; modkey, K_ISO_Left_Tab, Command.Tag (View_cycle Prev)
+      ; Int32.(logor modkey alt), K_Tab, Command.Layout (Cycle Next)
+      ; Int32.(logor modkey alt), K_ISO_Left_Tab, Command.Layout (Cycle Prev)
+      ; Int32.(logor modkey shift), K_space, Command.Window Toggle_floating
+      ; modkey, K_v, Command.Window Toggle_fullscreen
+      ; modkey, K_I, Command.Window Toggle_fake_fullscreen
+      ; modkey, K_F, Command.Window Toggle_maximize
+      ; modkey, K_H, Command.Set (Mfact Delta.(Rel (-0.05)))
+      ; modkey, K_L, Command.Set (Mfact Delta.(Rel 0.05))
+      ; modkey, K_a, Command.Set (Mfact Delta.(Abs 0.55))
+      ; modkey, K_space, Command.Window Zoom
+      ; modkey, K_J, Command.Window (Shift Next)
+      ; modkey, K_K, Command.Window (Shift Prev)
       ]
   in
   let num_keys = Xkbcommon.Keysym.[ K_1; K_2; K_3; K_4; K_5; K_6; K_7; K_8; K_9 ] in
   let num_bindings =
     List.mapi
       (fun i keysym ->
-         modkey, keysym, Action.Tag_view (Concrete (Tag.Set.singleton (i + 1))))
+         modkey, keysym, Command.Tag (View (Concrete (Tag.Set.singleton (i + 1)))))
       num_keys
   in
   let xkb_bindings = num_bindings @ xkb_bindings in
   let pointer_bindings =
     Pointer_button.
-      [ (* mods, keysym,   action *)
-        modkey, Btn_left, Action.Move_interactive
-      ; modkey, Btn_right, Action.Resize_interactive
+      [ (* mods, button,  command *)
+        modkey, Btn_left, Command.Window Move_drag
+      ; modkey, Btn_right, Command.Window Resize_drag
       ]
   in
   List.iter (fun (m, k, a) -> Seat.replace_xkb_binding ctx seat m k a) xkb_bindings;
@@ -98,13 +99,13 @@ let parse s =
   aux 0l parts
 ;;
 
-let handle ctx seat (setting : Setting.t) =
-  match setting with
+let handle ctx seat (keymap : Keymap.t) =
+  match keymap with
   | Bind bind ->
     (match parse bind.keybind with
      | Error msg -> Error msg
      | Ok { mods; key } ->
-       Seat.bind ctx seat mods key bind.action;
+       Seat.bind ctx seat mods key bind.command;
        Ok None)
   | Unbind bind ->
     (match parse bind with

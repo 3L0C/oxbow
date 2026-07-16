@@ -105,7 +105,7 @@ let loop ~init_command ~net ~clock =
     | `Shutdown -> ());
   Sys.set_signal Sys.sigint @@ Sys.Signal_handle on_signal;
   Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
-  Ipc.Server.start ~sw ~net ~wm;
+  Ipc_server.start ~sw ~net ~wm;
   Lifecycle.await_shutdown wm;
   Lifecycle.teardown ~clock wm;
   Wayland.Client.stop display;

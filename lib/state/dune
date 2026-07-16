@@ -3,6 +3,7 @@
  (public_name ocdwm.state)
  (libraries
   ocdwm.core
+  ocdwm.ipc
   ocdwm.layout
   ocdwm.protocol
   wayland

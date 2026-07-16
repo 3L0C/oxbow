@@ -1,6 +1,7 @@
 open! Ocdwm_core
+open! Ocdwm_ipc
 
-let action_term =
+let command_term =
   let open Window_query in
   let open Cmdliner in
   let open Cmdliner.Term.Syntax in
@@ -35,14 +36,15 @@ let action_term =
             "If the currently focused window matches the search term, focus the next \
              matching window, if any")
   in
-  Action.Focus_window_query
-    (if regex
-     then { pattern = Regex query; field; cycle }
-     else { pattern = Substring query; field; cycle })
+  Command.Window
+    (Focus_query
+       (if regex
+        then { pattern = Regex query; field; cycle }
+        else { pattern = Substring query; field; cycle }))
 ;;
 
 let name = "query"
 let doc = "Focus a window matching the search query"
-let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term action_term
-let cmd = build Ctl_cli.trigger_term
+let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term command_term
+let cmd = build Ctl_cli.command_term
 let bind_cmd = build Ctl_cli.bind_term

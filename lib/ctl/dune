@@ -1,4 +1,4 @@
 (library
  (name ocdwm_ctl)
  (public_name ocdwm.ctl)
- (libraries ocdwm.core cmdliner yojson eio eio_main logs))
+ (libraries ocdwm.core ocdwm.ipc cmdliner yojson eio eio_main logs))

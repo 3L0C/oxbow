@@ -3,6 +3,7 @@
  (public_name ocdwm.runtime)
  (libraries
   ocdwm.core
+  ocdwm.ipc
   ocdwm.layout
   ocdwm.state
   ocdwm.ops

@@ -3,6 +3,7 @@
  (public_name ocdwm.ops)
  (libraries
   ocdwm.core
+  ocdwm.ipc
   ocdwm.layout
   ocdwm.state
   ocdwm.protocol

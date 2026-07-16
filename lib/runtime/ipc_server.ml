@@ -1,6 +1,7 @@
 [@@@landmark "auto-off"]
 
 open! Ocdwm_core
+open! Ocdwm_ipc
 open! Ocdwm_state
 open! Ocdwm_ops
 
@@ -19,15 +20,15 @@ module Handler = struct
 
   let validate ~(wm : Wm.t) (body : Request.Body.t) =
     match body with
-    | Trigger a ->
-      (match a with
-       | Layout_set name ->
+    | Command c ->
+      (match c with
+       | Set (Layout name) ->
          (match Ocdwm_layout.Registry.find wm.layout_registry name with
           | Some _ -> Ok ()
           | None -> Error (Printf.sprintf "unknown layout: %s" name))
        | Spawn "" -> Error "spawn: empty command"
        | _ -> Ok ())
-    | Setting _ | Query _ -> Ok ()
+    | Keymap _ | Query _ -> Ok ()
   ;;
 
   let resolve_seat (wm : Wm.t) (req : Request.t) =
@@ -90,36 +91,35 @@ module Handler = struct
   ;;
 end
 
-module Server = struct
-  let accept_loop ~sw ~wm socket =
-    let rec loop () =
-      let outcome =
-        Eio.Fiber.first
-          (fun () ->
-             Lifecycle.await_shutdown wm;
-             `Shutdown)
-          (fun () ->
-             let flow, _addr = Eio.Net.accept ~sw socket in
-             `Conn flow)
-      in
-      match outcome with
-      | `Shutdown -> ()
-      | `Conn flow ->
-        Eio.Fiber.fork ~sw (fun () ->
-          try Handler.run ~wm flow with
-          | Eio.Cancel.Cancelled _ ->
-            Logs.debug @@ fun m -> m "Ipc.Handler.run failed: wm shutting down"
-          | exn ->
-            Logs.warn @@ fun m -> m "ipc handler crashed: %s" (Printexc.to_string exn));
-        loop ()
+let accept_loop ~sw ~wm socket =
+  let rec loop () =
+    let outcome =
+      Eio.Fiber.first
+        (fun () ->
+           Lifecycle.await_shutdown wm;
+           `Shutdown)
+        (fun () ->
+           let flow, _addr = Eio.Net.accept ~sw socket in
+           `Conn flow)
     in
-    loop ()
-  ;;
+    match outcome with
+    | `Shutdown -> ()
+    | `Conn flow ->
+      Eio.Fiber.fork ~sw (fun () ->
+        try Handler.run ~wm flow with
+        | Eio.Cancel.Cancelled _ ->
+          Logs.debug
+          @@ fun m -> m "Ipc_server: connection handler failed (ocdwm shutting down)"
+        | exn ->
+          Logs.warn @@ fun m -> m "ipc handler crashed: %s" (Printexc.to_string exn));
+      loop ()
+  in
+  loop ()
+;;
 
-  let start ~sw ~net ~wm =
-    let path = Socket_path.resolve () in
-    let socket = Eio.Net.listen ~sw ~backlog:128 ~reuse_addr:true net (`Unix path) in
-    Eio.Fiber.fork ~sw (fun () -> accept_loop ~sw ~wm socket);
-    Logs.info @@ fun m -> m "ipc: listening on %s" path
-  ;;
-end
+let start ~sw ~net ~wm =
+  let path = Socket_path.resolve () in
+  let socket = Eio.Net.listen ~sw ~backlog:128 ~reuse_addr:true net (`Unix path) in
+  Eio.Fiber.fork ~sw (fun () -> accept_loop ~sw ~wm socket);
+  Logs.info @@ fun m -> m "ipc: listening on %s" path
+;;

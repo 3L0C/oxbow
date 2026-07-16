@@ -1,7 +1,7 @@
 (test
  (name test_core)
  (modules test_core)
- (libraries ocdwm.core yojson))
+ (libraries ocdwm.core ocdwm.ipc yojson))
 
 (test
  (name test_layout)
