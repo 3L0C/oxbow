@@ -7,15 +7,9 @@ open! Ocdwm_ops
 let handle_window ctx seat (cmd : Command.Window.t) =
   match cmd with
   | Close -> Placement.close_focused seat
-  | Focus_logical dir ->
-    Focus.window_logical ctx seat dir;
-    Ok None
-  | Focus_spatial dir ->
-    Focus.window_spatial ctx seat dir;
-    Ok None
-  | Focus_query q ->
-    Focus.window_query ctx seat q;
-    Ok None
+  | Focus_logical dir -> Focus.window_logical ctx seat dir
+  | Focus_spatial dir -> Focus.window_spatial ctx seat dir
+  | Focus_query q -> Focus.window_query ctx seat q
   | Move_drag -> Window_request.move_interactive ctx seat
   | Move_to { x; y } -> Placement.move_to ~x ~y ctx seat
   | Move_spatial { dir; by } -> Placement.move_spatial ctx seat dir by
@@ -52,13 +46,10 @@ let handle_layout ctx seat (cmd : Command.Layout.t) =
 ;;
 
 let handle_output ctx seat (cmd : Command.Output.t) =
-  let () =
-    match cmd with
-    | Focus_logical dir -> Focus.output_logical ctx seat dir
-    | Focus_spatial dir -> Focus.output_spatial ctx seat dir
-    | Focus_name name -> Focus.output_name ctx seat name
-  in
-  Ok None
+  match cmd with
+  | Focus_logical dir -> Focus.output_logical ctx seat dir
+  | Focus_spatial dir -> Focus.output_spatial ctx seat dir
+  | Focus_name name -> Focus.output_name ctx seat name
 ;;
 
 let handle_set ctx seat (cmd : Command.Set.t) =
@@ -167,6 +158,6 @@ let handle ctx seat ({ body; reply } : Pending_request.t) =
   in
   match result, reply with
   | Ok _, None -> ()
-  | Error msg, None -> Logs.err @@ fun m -> m "%s" msg
+  | Error msg, None -> Logs.debug @@ fun m -> m "%s" msg
   | _, Some u -> Eio.Promise.resolve u result
 ;;

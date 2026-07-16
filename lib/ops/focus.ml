@@ -51,19 +51,22 @@ let refresh_layer_shell ctx (seat : Seat.t) =
 
 let window_logical ctx seat (dir : Direction.Logical.t) =
   match Seat.focused_window seat, seat.output with
-  | Some w, _ when Window.is_fullscreen w -> ()
-  | _, None -> ()
+  | Some w, _ when Window.is_fullscreen w -> Error Messages.window_is_fullscreen
+  | _, None -> Error Messages.seat_missing_output
   | _, Some o ->
-    (match dir with
-     | Next -> Output.next_window o |> Option.iter (focus_window ctx seat)
-     | Prev -> Output.prev_window o |> Option.iter (focus_window ctx seat))
+    let () =
+      match dir with
+      | Next -> Output.next_window o |> Option.iter (focus_window ctx seat)
+      | Prev -> Output.prev_window o |> Option.iter (focus_window ctx seat)
+    in
+    Ok None
 ;;
 
 let window_spatial ctx seat (dir : Direction.Spatial.t) =
   match Seat.focused_window seat, seat.output with
-  | Some w, _ when Window.is_fullscreen w -> ()
-  | _, None -> ()
-  | None, Some _ -> ()
+  | Some w, _ when Window.is_fullscreen w -> Error Messages.window_is_fullscreen
+  | _, None -> Error Messages.seat_missing_output
+  | None, Some _ -> Error Messages.no_focused_window
   | Some current, Some o ->
     let from = Vector.center (Rect.to_int current.geom) in
     Vector.nearest_in_direction
@@ -74,13 +77,14 @@ let window_spatial ctx seat (dir : Direction.Spatial.t) =
          then None
          else Some (Rect.to_int w.geom |> Vector.center))
       o.wm_stack
-    |> Option.iter (focus_window ctx seat)
+    |> Option.iter (focus_window ctx seat);
+    Ok None
 ;;
 
 let window_query ctx seat q =
   let wm = Ctx.wm ctx in
   match Window_query.get_regex q with
-  | Error e -> Logs.err @@ fun m -> m "%s" e
+  | Error e -> Error e
   | Ok r ->
     let matches_opt = function
       | Some s ->
@@ -106,7 +110,12 @@ let window_query ctx seat q =
         Ring.next_or_first w windows
       | _ -> List.nth_opt windows 0
     in
-    Option.iter (focus_window ctx seat) target
+    (match target with
+     | None ->
+       Error (Printf.sprintf "no window matches query: %S" (Window_query.to_string q))
+     | Some w ->
+       focus_window ctx seat w;
+       Ok None)
 ;;
 
 let focus_output ctx seat output =
@@ -120,7 +129,7 @@ let focus_output ctx seat output =
 let output_logical ctx (seat : Seat.t) (dir : Direction.Logical.t) =
   let wm = Ctx.wm ctx in
   match seat.output with
-  | None -> ()
+  | None -> Error Messages.seat_missing_output
   | Some o ->
     let target =
       match dir with
@@ -128,22 +137,30 @@ let output_logical ctx (seat : Seat.t) (dir : Direction.Logical.t) =
       | Prev -> Ring.prev_or_last o wm.outputs
     in
     (match target with
-     | Some t when t != o -> focus_output ctx seat t
-     | _ -> ())
+     | Some t when t != o ->
+       focus_output ctx seat t;
+       Ok None
+     | _ -> Error Messages.no_other_output)
 ;;
 
 let output_spatial ctx (seat : Seat.t) (dir : Direction.Spatial.t) =
   let wm = Ctx.wm ctx in
   match seat.output with
-  | None -> ()
+  | None -> Error Messages.seat_missing_output
   | Some current ->
     let from = Output.to_vector current in
-    Vector.nearest_in_direction
-      ~from
-      ~dir
-      (fun (o : Output.t) -> if o == current then None else Some (Output.to_vector o))
-      wm.outputs
-    |> Option.iter (focus_output ctx seat)
+    let target =
+      Vector.nearest_in_direction
+        ~from
+        ~dir
+        (fun (o : Output.t) -> if o == current then None else Some (Output.to_vector o))
+        wm.outputs
+    in
+    (match target with
+     | None -> Error (Printf.sprintf "no output %s" (Direction.Spatial.to_string dir))
+     | Some o ->
+       focus_output ctx seat o;
+       Ok None)
 ;;
 
 let output_name ctx (seat : Seat.t) (name : string) =
@@ -153,12 +170,13 @@ let output_name ctx (seat : Seat.t) (name : string) =
       (fun (o : Output.t) -> Option.fold ~none:false ~some:(fun n -> n = name) o.name)
       wm.outputs
   with
-  | None -> ()
+  | None -> Error (Printf.sprintf "no output named %S" name)
   | Some o ->
     (match seat.output with
      | None -> focus_output ctx seat o
      | Some o' when o != o' -> focus_output ctx seat o
-     | _ -> ())
+     | _ -> ());
+    Ok None
 ;;
 
 let remove_window ctx window =

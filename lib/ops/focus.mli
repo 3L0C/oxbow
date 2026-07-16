@@ -38,64 +38,73 @@ val clear : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Seat.t -> un
 val refresh : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Output.t -> unit
 
 (** [window_logical ctx seat dir] focuses the window in logical direction [dir]
-    and warps the pointer to it when configured.
+    and warps the pointer to it when configured. Returns [Error msg] when the
+    focused window is fullscreen, [seat] has no output, or there is no window to
+    focus.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_logical
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
-  -> unit
+  -> (Yojson.Safe.t option, string) result
 
 (** [window_spatial ctx seat dir] focuses the window in spatial direction [dir]
-    and warps the pointer to it when configured.
+    and warps the pointer to it when configured. Returns [Error msg] when the
+    focused window is fullscreen, [seat] has no output, or there is no window to
+    focus.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_spatial
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Spatial.t
-  -> unit
+  -> (Yojson.Safe.t option, string) result
 
 (** [window_query ctx seat query] focuses the first (or, when [query] cycles,
     next) window matching [query] and warps the pointer to it when configured.
+    Returns [Error msg] when [query]'s regex fails to compile or no window
+    matches.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_query
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Window_query.t
-  -> unit
+  -> (Yojson.Safe.t option, string) result
 
 (** [output_logical ctx seat dir] focuses the output in logical direction [dir]
-    and warps the pointer to it when configured.
+    and warps the pointer to it when configured. Returns [Error msg] when [seat]
+    has no output or no other output exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val output_logical
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
-  -> unit
+  -> (Yojson.Safe.t option, string) result
 
 (** [output_spatial ctx seat dir] focuses the output in spatial direction [dir]
-    and warps the pointer to it when configured.
+    and warps the pointer to it when configured. Return [Error msg] when [seat]
+    has no output or no output lies in [dir].
 
     {b Effects:} mutates WM state; sends River request *)
 val output_spatial
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Spatial.t
-  -> unit
+  -> (Yojson.Safe.t option, string) result
 
 (** [output_name ctx seat name] focuses the output named [name] and warps the
-    pointer to it when configured.
+    pointer to it when configured. Returns [Error msg] when no output is named
+    [name].
 
     {b Effects:} mutates WM state; sends River request *)
 val output_name
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> string
-  -> unit
+  -> (Yojson.Safe.t option, string) result
 
 (** [remove_window ctx window] removes [window] from [wm]'s management.
 
