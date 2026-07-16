@@ -27,7 +27,7 @@ let bind_group =
 let cmd =
   Ctl_cli.group
     ~version
-    ~name:"ocdwmctl"
+    ~name:"octl"
     ~doc:"command-line interface for controlling ocdwm"
     [ Cmd_exec.cmd
     ; Cmd_layout.cmd
