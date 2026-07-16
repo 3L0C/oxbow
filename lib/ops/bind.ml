@@ -16,7 +16,7 @@ let install_defaults ctx seat =
   let xkb_bindings =
     Xkbcommon.Keysym.
       [ (* mods, keysym,  command *)
-        modkey, K_Return, Command.Execute (Spawn "kitty")
+        modkey, K_Return, Command.Execute (Spawn "uwsm-app -- kitty")
       ; modkey, K_q, Command.Window Close
       ; modkey, K_j, Command.Window (Focus_logical Next)
       ; modkey, K_k, Command.Window (Focus_logical Prev)
@@ -38,6 +38,9 @@ let install_defaults ctx seat =
       ; modkey, K_space, Command.Window Zoom
       ; modkey, K_J, Command.Window (Shift Next)
       ; modkey, K_K, Command.Window (Shift Prev)
+      ; modkey, K_comma, Command.Execute (Spawn "uwsm-app -- wk-river")
+      ; modkey, K_i, Command.Set (Layout "monocle")
+      ; modkey, K_y, Command.Set (Layout "tile")
       ]
   in
   let num_keys = Xkbcommon.Keysym.[ K_1; K_2; K_3; K_4; K_5; K_6; K_7; K_8; K_9 ] in

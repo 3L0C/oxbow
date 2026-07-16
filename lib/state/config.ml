@@ -21,12 +21,12 @@ let default entry =
   { default_tag_config = { params = default_layout_params; entry }
   ; borders = default_borders
   ; cursor_theme = None
-  ; modkey = River.Window_management.River_seat_v1.Modifiers.(Int32.(logor mod4 ctrl))
+  ; modkey = River.Window_management.River_seat_v1.Modifiers.(mod4)
   ; rules = []
   ; focus_follows_pointer = true
   ; warp_on_focus = false
   ; repeat_rate = 50
-  ; repeat_delay = 300
+  ; repeat_delay = 250
   }
 ;;
 
