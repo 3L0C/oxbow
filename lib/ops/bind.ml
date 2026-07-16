@@ -16,7 +16,7 @@ let install_defaults ctx seat =
   let xkb_bindings =
     Xkbcommon.Keysym.
       [ (* mods, keysym,  command *)
-        modkey, K_Return, Command.Spawn "kitty"
+        modkey, K_Return, Command.Execute (Spawn "kitty")
       ; modkey, K_q, Command.Window Close
       ; modkey, K_j, Command.Window (Focus_logical Next)
       ; modkey, K_k, Command.Window (Focus_logical Prev)

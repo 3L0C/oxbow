@@ -130,6 +130,15 @@ module Wm : sig
   val yojson_of_t : t -> Yojson.Safe.t
 end
 
+module Execute : sig
+  type t =
+    | Spawn of string
+    | Exec of string array
+
+  val t_of_yojson : Yojson.Safe.t -> t
+  val yojson_of_t : t -> Yojson.Safe.t
+end
+
 type t =
   | Window of Window.t
   | Tag of Tag.t
@@ -139,7 +148,7 @@ type t =
   | Rule of Rule.t
   | Session of Session.t
   | Wm of Wm.t
-  | Spawn of string
+  | Execute of Execute.t
 
 val t_of_yojson : Yojson.Safe.t -> t
 val yojson_of_t : t -> Yojson.Safe.t

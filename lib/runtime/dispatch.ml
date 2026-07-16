@@ -128,6 +128,12 @@ let handle_wm ctx seat (cmd : Command.Wm.t) =
   Ok None
 ;;
 
+let handle_execute (cmd : Command.Execute.t) =
+  match cmd with
+  | Spawn cmd -> Execute.spawn cmd
+  | Exec argv -> Execute.exec argv
+;;
+
 let handle_command ctx seat (cmd : Command.t) =
   match cmd with
   | Window c -> handle_window ctx seat c
@@ -138,9 +144,7 @@ let handle_command ctx seat (cmd : Command.t) =
   | Rule c -> handle_rule ctx seat c
   | Session c -> handle_session ctx seat c
   | Wm c -> handle_wm ctx seat c
-  | Spawn cmd ->
-    Spawn.spawn cmd;
-    Ok None
+  | Execute c -> handle_execute c
 ;;
 
 let handle_keymap ctx seat keymap = Bind.handle ctx seat keymap

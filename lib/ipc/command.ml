@@ -113,6 +113,13 @@ module Wm = struct
   type t = Close [@name "close"] [@@deriving yojson]
 end
 
+module Execute = struct
+  type t =
+    | Spawn of string [@name "spawn"]
+    | Exec of string array [@name "exec"]
+  [@@deriving yojson]
+end
+
 type t =
   | Window of Window.t [@name "window"]
   | Tag of Tag.t [@name "tag"]
@@ -122,5 +129,5 @@ type t =
   | Rule of Rule.t [@name "rule"]
   | Session of Session.t [@name "session"]
   | Wm of Wm.t [@name "wm"]
-  | Spawn of string [@name "spawn"]
+  | Execute of Execute.t [@name "execute"]
 [@@deriving yojson]

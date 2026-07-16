@@ -26,7 +26,8 @@ module Handler = struct
          (match Ocdwm_layout.Registry.find wm.layout_registry name with
           | Some _ -> Ok ()
           | None -> Error (Printf.sprintf "unknown layout: %s" name))
-       | Spawn "" -> Error "spawn: empty command"
+       | Execute (Spawn "") -> Error "spawn: empty command"
+       | Execute (Exec [||]) | Execute (Exec [| "" |]) -> Error "exec: empty command"
        | _ -> Ok ())
     | Keymap _ | Query _ -> Ok ()
   ;;

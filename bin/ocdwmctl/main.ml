@@ -11,7 +11,8 @@ let bind_group =
   Ctl_cli.group
     ~name:"bind"
     ~doc:"Bind a key or pointer button to a command"
-    [ Cmd_layout.bind_cmd
+    [ Cmd_exec.bind_cmd
+    ; Cmd_layout.bind_cmd
     ; Cmd_output.bind_cmd
     ; Cmd_rule.bind_cmd
     ; Cmd_session.bind_cmd
@@ -28,7 +29,8 @@ let cmd =
     ~version
     ~name:"ocdwmctl"
     ~doc:"command-line interface for controlling ocdwm"
-    [ Cmd_layout.cmd
+    [ Cmd_exec.cmd
+    ; Cmd_layout.cmd
     ; Cmd_output.cmd
     ; Cmd_rule.cmd
     ; Cmd_session.cmd

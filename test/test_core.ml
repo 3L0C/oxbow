@@ -3,7 +3,7 @@ let () =
   let open Ocdwm_ipc in
   let commands : Command.t list =
     [ Window Zoom
-    ; Spawn "foot"
+    ; Execute (Spawn "foot")
     ; Window (Focus_logical Next)
     ; Set (Mfact (Delta.Rel 0.05))
     ; Set (Mfact (Delta.Abs 0.55))
