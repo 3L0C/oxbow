@@ -1,6 +1,6 @@
 (executable
  (name main)
- (public_name ocdwmctl)
+ (public_name octl)
  (libraries
   ocdwm.core
   ocdwm.ctl
