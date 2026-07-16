@@ -85,7 +85,7 @@ val output_logical
   -> (Yojson.Safe.t option, string) result
 
 (** [output_spatial ctx seat dir] focuses the output in spatial direction [dir]
-    and warps the pointer to it when configured. Return [Error msg] when [seat]
+    and warps the pointer to it when configured. Returns [Error msg] when [seat]
     has no output or no output lies in [dir].
 
     {b Effects:} mutates WM state; sends River request *)
