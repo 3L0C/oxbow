@@ -2,7 +2,7 @@ open! Ocdwm_core
 
 let exec argv =
   match argv with
-  | [||] | [| "" |] -> Error "Nothing to execute"
+  | [||] | [| "" |] -> Error "nothing to execute"
   | _ ->
     let () =
       match Unix.fork () with

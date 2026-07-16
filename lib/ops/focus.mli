@@ -38,9 +38,8 @@ val clear : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Seat.t -> un
 val refresh : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Output.t -> unit
 
 (** [window_logical ctx seat dir] focuses the window in logical direction [dir]
-    and warps the pointer to it when configured. Returns [Error msg] when the
-    focused window is fullscreen, [seat] has no output, or there is no window to
-    focus.
+    and warps the pointer to it when configured. Is [Error msg] when the focused
+    window is fullscreen, [seat] has no output, or there is no window to focus.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_logical
@@ -50,9 +49,8 @@ val window_logical
   -> (Yojson.Safe.t option, string) result
 
 (** [window_spatial ctx seat dir] focuses the window in spatial direction [dir]
-    and warps the pointer to it when configured. Returns [Error msg] when the
-    focused window is fullscreen, [seat] has no output, or there is no window to
-    focus.
+    and warps the pointer to it when configured. Is [Error msg] when the focused
+    window is fullscreen, [seat] has no output, or there is no window to focus.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_spatial
@@ -63,8 +61,7 @@ val window_spatial
 
 (** [window_query ctx seat query] focuses the first (or, when [query] cycles,
     next) window matching [query] and warps the pointer to it when configured.
-    Returns [Error msg] when [query]'s regex fails to compile or no window
-    matches.
+    Is [Error msg] when [query]'s regex fails to compile or no window matches.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_query
@@ -74,8 +71,8 @@ val window_query
   -> (Yojson.Safe.t option, string) result
 
 (** [output_logical ctx seat dir] focuses the output in logical direction [dir]
-    and warps the pointer to it when configured. Returns [Error msg] when [seat]
-    has no output or no other output exists.
+    and warps the pointer to it when configured. Is [Error msg] when [seat] has
+    no output or no other output exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val output_logical
@@ -85,8 +82,8 @@ val output_logical
   -> (Yojson.Safe.t option, string) result
 
 (** [output_spatial ctx seat dir] focuses the output in spatial direction [dir]
-    and warps the pointer to it when configured. Returns [Error msg] when [seat]
-    has no output or no output lies in [dir].
+    and warps the pointer to it when configured. Is [Error msg] when [seat] has
+    no output or no output lies in [dir].
 
     {b Effects:} mutates WM state; sends River request *)
 val output_spatial
@@ -96,7 +93,7 @@ val output_spatial
   -> (Yojson.Safe.t option, string) result
 
 (** [output_name ctx seat name] focuses the output named [name] and warps the
-    pointer to it when configured. Returns [Error msg] when no output is named
+    pointer to it when configured. Is [Error msg] when no output is named
     [name].
 
     {b Effects:} mutates WM state; sends River request *)

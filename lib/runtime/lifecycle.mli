@@ -26,7 +26,7 @@ val dispatch_pending : Ocdwm_state.Wm.t -> unit
 val notify_finished : Ocdwm_state.Wm.t -> unit
 
 (** [await_shutdown wm] blocks the current fiber until [request_shutdown] has
-    been called. Returns immediately if shutdown is already in progress.
+    been called. No-op if shutdown is already in progress.
 
     {b Effects:} mutates WM state *)
 val await_shutdown : Ocdwm_state.Wm.t -> unit

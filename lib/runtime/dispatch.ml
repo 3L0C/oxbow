@@ -26,9 +26,7 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Toggle_maximize -> Window_request.toggle_maximize ctx seat
   | Toggle_fullscreen -> Window_request.toggle_fullscreen ctx seat
   | Toggle_fake_fullscreen -> Window_request.toggle_fake_fullscreen ctx seat
-  | Zoom ->
-    Placement.zoom ctx seat;
-    Ok None
+  | Zoom -> Placement.zoom ctx seat
 ;;
 
 let handle_tag seat (cmd : Command.Tag.t) =
@@ -70,10 +68,7 @@ let handle_set ctx seat (cmd : Command.Set.t) =
   | Keyboard_repeat { rate; delay } ->
     Config.set_key_repeat ~rate ~delay wm;
     Ok None
-  | Keyboard_layout_file path ->
-    (match Keyboard.set_layout_file ~path wm with
-     | Ok () -> Ok None
-     | Error msg -> Error msg)
+  | Keyboard_layout_file path -> Keyboard.set_layout_file ~path wm
   | Pointer_warp b ->
     Config.set_warp_on_focus wm b;
     Ok None
@@ -93,12 +88,9 @@ let handle_set ctx seat (cmd : Command.Set.t) =
 
 let handle_rule ctx seat (cmd : Command.Rule.t) =
   let wm = Ctx.wm ctx in
-  let () =
-    match cmd with
-    | Add rule -> Config.add_rule wm rule
-    | Remove rule -> Config.remove_rule wm rule
-  in
-  Ok None
+  match cmd with
+  | Add rule -> Rules.add wm rule
+  | Remove rule -> Rules.remove wm rule
 ;;
 
 let handle_session ctx seat (cmd : Command.Session.t) =

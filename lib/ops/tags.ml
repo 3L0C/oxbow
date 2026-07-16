@@ -1,17 +1,13 @@
 open! Ocdwm_core
 open! Ocdwm_state
 
-let seat_missing_output = "seat is not attached to any output"
-let tag_set_is_empty = "tag set is empty"
-let no_focused_window = "no focused window"
-
 let view (seat : Seat.t) arg =
   match seat.output with
-  | None -> Error seat_missing_output
+  | None -> Error Messages.seat_missing_output
   | Some o ->
     let s = Output.resolve_tag_arg arg o in
     if Tag.Set.is_empty s
-    then Error tag_set_is_empty
+    then Error Messages.tag_set_is_empty
     else (
       Output.switch_tags ~tags:s o;
       Ok None)
@@ -19,10 +15,10 @@ let view (seat : Seat.t) arg =
 
 let toggle_view (seat : Seat.t) s =
   if Tag.Set.is_empty s
-  then Error tag_set_is_empty
+  then Error Messages.tag_set_is_empty
   else (
     match seat.output with
-    | None -> Error seat_missing_output
+    | None -> Error Messages.seat_missing_output
     | Some o ->
       let new_tags = Tag.Set.symmetric_diff o.selected_tags s in
       if Tag.Set.is_empty new_tags
@@ -34,7 +30,7 @@ let toggle_view (seat : Seat.t) s =
 
 let view_previous (seat : Seat.t) =
   match seat.output with
-  | None -> Error seat_missing_output
+  | None -> Error Messages.seat_missing_output
   | Some o when Tag.Set.is_empty o.previous_tags -> Error "no previous tags defined"
   | Some o ->
     Output.switch_tags ~tags:o.previous_tags o;
@@ -43,7 +39,7 @@ let view_previous (seat : Seat.t) =
 
 let view_cycle (seat : Seat.t) (dir : Direction.Logical.t) =
   match seat.output with
-  | None -> Error seat_missing_output
+  | None -> Error Messages.seat_missing_output
   | Some o ->
     let target =
       match dir with
@@ -56,28 +52,28 @@ let view_cycle (seat : Seat.t) (dir : Direction.Logical.t) =
 
 let view_cycle_occupied (seat : Seat.t) (dir : Direction.Logical.t) =
   match seat.output with
-  | None -> Error seat_missing_output
+  | None -> Error Messages.seat_missing_output
   | Some o ->
-    let target =
-      match dir with
-      | Next ->
-        let occupied = Output.occupied_tags o in
-        Tag.Set.next_occupied ~selected:o.selected_tags ~occupied
-      | Prev ->
-        let occupied = Output.occupied_tags o in
-        Tag.Set.prev_occupied ~selected:o.selected_tags ~occupied
-    in
-    Output.switch_tags ~tags:target o;
-    Ok None
+    let occupied = Output.occupied_tags o in
+    if Tag.Set.is_empty occupied
+    then Error "no occupied tags"
+    else (
+      let tags =
+        match dir with
+        | Next -> Tag.Set.next_occupied ~selected:o.selected_tags ~occupied
+        | Prev -> Tag.Set.prev_occupied ~selected:o.selected_tags ~occupied
+      in
+      Output.switch_tags ~tags o;
+      Ok None)
 ;;
 
 let tag_window seat (arg : Tag.Arg.t) =
   match Seat.focused_window seat with
-  | None -> Error no_focused_window
+  | None -> Error Messages.no_focused_window
   | Some w ->
     let resolve s =
       if Tag.Set.is_empty s
-      then Error tag_set_is_empty
+      then Error Messages.tag_set_is_empty
       else (
         Window.set_tags w s;
         Ok None)
@@ -90,10 +86,10 @@ let tag_window seat (arg : Tag.Arg.t) =
 
 let toggle_window_tags seat tags =
   if Tag.Set.is_empty tags
-  then Error tag_set_is_empty
+  then Error Messages.tag_set_is_empty
   else (
     match Seat.focused_window seat with
-    | None -> Error no_focused_window
+    | None -> Error Messages.no_focused_window
     | Some w ->
       let new_tags = Tag.Set.symmetric_diff w.tags tags in
       if Tag.Set.is_empty new_tags

@@ -42,3 +42,19 @@ let apply_for ctx window =
   let wm = Ctx.wm ctx in
   List.iter (apply wm window) wm.config.rules
 ;;
+
+let add (wm : Wm.t) rule =
+  if List.exists (Rule.equal rule) wm.config.rules
+  then Error "rule already exists"
+  else (
+    Config.add_rule wm rule;
+    Ok None)
+;;
+
+let remove (wm : Wm.t) rule =
+  if List.exists (Rule.equal rule) wm.config.rules
+  then (
+    Config.remove_rule wm rule;
+    Ok None)
+  else Error "no matching rule"
+;;

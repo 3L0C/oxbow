@@ -23,7 +23,7 @@ val prev_window : t -> Types.Window.t option
 val to_tag_data : t -> Config.Data.t
 
 (** [at_point ~x ~y lst] returns the first output that contains point ([x],
-    [y]). Returns [None] when the point is out of bounds. *)
+    [y]). Is [None] when the point is out of bounds. *)
 val at_point : x:int32 -> y:int32 -> t list -> t option
 
 (** [destroy output] destroys the underlying Wayland objects associated with
@@ -118,8 +118,8 @@ val to_vector : t -> Ocdwm_core.Vector.t
 val matches_name : string -> t -> bool
 
 (** [resolve_output_logical ~dir current outputs] is [Some output] in the
-    logical direction [dir] from [current] or [None] if [outputs] is empty.
-    Returns [Some current] when [current] is the only output in [outputs]. *)
+    logical direction [dir] from [current] or [None] if [outputs] is empty. Is
+    [Some current] when [current] is the only output in [outputs]. *)
 val resolve_output_logical : dir:Ocdwm_core.Direction.Logical.t -> t -> t list -> t option
 
 (** [resolve_output_spatial ~from ~dir current outputs] is [Some output] in the

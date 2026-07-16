@@ -1,13 +1,14 @@
 include module type of Types.Seat
 
-(** [unbind_xkb_binding ctx seat mods keysym] destroys the keybind matching
-    [mods]+[keysym], if it exists.
+(** [unbind_xkb_binding ctx seat mods keysym] destroys any binding matching
+    [mods] and [keysym]. Is [true] when a binding was destroyed.
 
     {b Effects:} mutates WM state; sends River request *)
-val unbind_xkb_binding : Ctx.manage Ctx.t -> t -> int32 -> Xkbcommon.Keysym.t -> unit
+val unbind_xkb_binding : Ctx.manage Ctx.t -> t -> int32 -> Xkbcommon.Keysym.t -> bool
 
 (** [replace_xkb_binding ctx seat mods keysym command] replaces the existing
-    binding matching [mods] and [keysym] with [command].
+    binding matching [mods] and [keysym] with [command]. Is [true] when a
+    binding was replaced.
 
     {b Effects:} mutates WM state; sends River request *)
 val replace_xkb_binding
@@ -16,10 +17,10 @@ val replace_xkb_binding
   -> int32
   -> Xkbcommon.Keysym.t
   -> Ocdwm_ipc.Command.t
-  -> unit
+  -> bool
 
-(** [unbind_pointer_binding ctx seat mods button] destroys the keybind matching
-    [mods]+[button], if it exists.
+(** [unbind_pointer_binding ctx seat mods button] destroys any binding matching
+    [mods] and [button]. Is [true] when a binding was destroyed.
 
     {b Effects:} mutates WM state; sends River request *)
 val unbind_pointer_binding
@@ -27,10 +28,11 @@ val unbind_pointer_binding
   -> t
   -> int32
   -> Ocdwm_core.Pointer_button.t
-  -> unit
+  -> bool
 
 (** [replace_pointer_binding ctx seat mods button command] replaces the existing
-    binding matching [mods] and [button] with [command].
+    binding matching [mods] and [button] with [command]. Is [true] when a
+    binding was replaced.
 
     {b Effects:} mutates WM state; sends River request *)
 val replace_pointer_binding
@@ -39,7 +41,7 @@ val replace_pointer_binding
   -> int32
   -> Ocdwm_core.Pointer_button.t
   -> Ocdwm_ipc.Command.t
-  -> unit
+  -> bool
 
 (** [destroy ctx seat] destroys the Wayland objects underlying [seat].
 
@@ -151,15 +153,17 @@ val set_interacted : t -> Types.Window.t option -> unit
 val is_dirty : t -> bool
 
 (** [bind ctx seat mods key command] binds the [mods] and [key] to [command].
+    Replaces any existing binding for [mods] and [key]. Is [true] when a binding
+    was destroyed.
 
     {b Effects:} mutates WM state; sends River request *)
-val bind : Ctx.manage Ctx.t -> t -> int32 -> Types.Key.t -> Ocdwm_ipc.Command.t -> unit
+val bind : Ctx.manage Ctx.t -> t -> int32 -> Types.Key.t -> Ocdwm_ipc.Command.t -> bool
 
-(** [unbind ctx seat mods key] unbinds the command bound to [mods] and [key], if
-    any.
+(** [unbind ctx seat mods key] unbinds the command bound to [mods] and [key]. Is
+    [true] when a binding was destroyed.
 
     {b Effects:} mutates WM state; sends River request *)
-val unbind : Ctx.manage Ctx.t -> t -> int32 -> Types.Key.t -> unit
+val unbind : Ctx.manage Ctx.t -> t -> int32 -> Types.Key.t -> bool
 
 (** [focused_window seat] is the focused window on [seat]'s output; [None] when
     the seat has no output. *)

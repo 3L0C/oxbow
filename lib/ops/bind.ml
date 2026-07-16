@@ -58,9 +58,11 @@ let install_defaults ctx seat =
       ; modkey, Btn_right, Command.Window Resize_drag
       ]
   in
-  List.iter (fun (m, k, a) -> Seat.replace_xkb_binding ctx seat m k a) xkb_bindings;
   List.iter
-    (fun (m, ec, a) -> Seat.replace_pointer_binding ctx seat m ec a)
+    (fun (m, k, a) -> ignore @@ Seat.replace_xkb_binding ctx seat m k a)
+    xkb_bindings;
+  List.iter
+    (fun (m, ec, a) -> ignore @@ Seat.replace_pointer_binding ctx seat m ec a)
     pointer_bindings
 ;;
 
@@ -108,12 +110,17 @@ let handle ctx seat (keymap : Keymap.t) =
     (match parse bind.keybind with
      | Error msg -> Error msg
      | Ok { mods; key } ->
-       Seat.bind ctx seat mods key bind.command;
-       Ok None)
+       if Seat.bind ctx seat mods key bind.command
+       then Ok None
+       else
+         Ok
+           (Some
+              (`String (Printf.sprintf "overwrote existing binding for %S" bind.keybind))))
   | Unbind bind ->
     (match parse bind with
      | Error msg -> Error msg
      | Ok { mods; key } ->
-       Seat.unbind ctx seat mods key;
-       Ok None)
+       if Seat.unbind ctx seat mods key
+       then Ok None
+       else Error (Printf.sprintf "no binding for %S" bind))
 ;;

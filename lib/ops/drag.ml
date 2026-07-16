@@ -44,7 +44,7 @@ let step ctx (seat : Seat.t) =
     (match Output.at_point ~x:cx ~y:cy wm.outputs with
      | Some o when not @@ Phys.opt_holds w.output o ->
        let prev = w.output in
-       Placement.move_window w o;
+       Placement.move_window ~policy:Tag.Policy.Take w o;
        Option.iter Dirty.mark_output prev;
        Dirty.mark_output o
      | _ -> ());

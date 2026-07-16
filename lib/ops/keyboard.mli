@@ -19,7 +19,10 @@ val set_repeat_info : Ocdwm_state.Wm.t -> rate:int -> delay:int -> unit
 
 (** [set_layout_file wm ~path] opens [path] and asks the compositor to compile
     it into a keymap, applied to every xkb keyboard once the [success] event
-    arrives. Is [Error msg] on synchronous failure, [Ok ()] otherwise.
+    arrives. Is [Error msg] on synchronous failure, [Ok None] otherwise.
 
     {b Effects:} mutates WM state; sends River request *)
-val set_layout_file : Ocdwm_state.Wm.t -> path:string -> (unit, string) result
+val set_layout_file
+  :  Ocdwm_state.Wm.t
+  -> path:string
+  -> (Yojson.Safe.t option, string) result

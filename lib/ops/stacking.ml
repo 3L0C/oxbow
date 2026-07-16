@@ -54,12 +54,18 @@ let shift (seat : Seat.t) (dir : Direction.Logical.t) =
   match seat.output with
   | None -> Error Messages.seat_missing_output
   | Some o ->
-    let () =
-      let open Direction.Logical in
-      match Output.focused_window o, dir with
-      | None, _ -> ()
-      | Some w, Next -> Output.set_wm_stack o @@ Ring.shift_right (( == ) w) o.wm_stack
-      | Some w, Prev -> Output.set_wm_stack o @@ Ring.shift_left (( == ) w) o.wm_stack
+    let has_other =
+      match o.wm_stack with
+      | [] | [ _ ] -> false
+      | _ -> true
     in
-    Ok None
+    (match Output.focused_window o, dir with
+     | None, _ -> Error Messages.no_focused_window
+     | Some _, _ when not has_other -> Error "no other window to shift"
+     | Some w, Next ->
+       Output.set_wm_stack o @@ Ring.shift_right (( == ) w) o.wm_stack;
+       Ok None
+     | Some w, Prev ->
+       Output.set_wm_stack o @@ Ring.shift_left (( == ) w) o.wm_stack;
+       Ok None)
 ;;

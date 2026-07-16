@@ -67,6 +67,7 @@ let rec handle ctx window (request : Window.Request.t) =
   | Set_tags arg -> handle_set_tags ctx window arg
   | Send_to_output_name { name; policy } ->
     Placement.send_window_to_name ctx window name policy
+    |> Result.iter_error @@ fun e -> Logs.debug @@ fun m -> m "%s" e
   | Float -> Window.float ctx window
   | Tile -> Window.tile window
 ;;
@@ -102,28 +103,35 @@ let toggle_fullscreen ctx seat =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
   | Some w ->
-    let () =
-      match w.presentation with
-      | Fullscreen _ -> handle ctx w Exit_fullscreen
-      | _ -> handle ctx w @@ Fullscreen { output = w.output }
-    in
-    Ok None
+    (match w.presentation with
+     | Fullscreen _ ->
+       handle ctx w Exit_fullscreen;
+       Ok None
+     | _ when Option.is_none w.output -> Error Messages.window_missing_output
+     | _ ->
+       handle ctx w @@ Fullscreen { output = w.output };
+       Ok None)
 ;;
 
 let move_interactive ctx (seat : Seat.t) =
   match seat.op, seat.hovered with
-  | None, Some window ->
-    handle ctx window @@ Move { seat };
+  | Some _, _ -> Error "cannot begin move during an active operation"
+  | None, None -> Error "no hovered window"
+  | None, Some w when Window.is_fullscreen w -> Error "cannot move a fullscreen window"
+  | None, Some w ->
+    handle ctx w @@ Move { seat };
     Ok None
-  | _ -> Error "cannot begin move during an active operation"
 ;;
 
 let resize_interactive ctx (seat : Seat.t) =
   match seat.op, seat.hovered with
-  | None, Some window ->
+  | Some _, _ -> Error "cannot begin resize during an active operation"
+  | None, None -> Error "no hovered window"
+  | None, Some w when Window.is_fullscreen w -> Error "cannot resize a fullscreen window"
+  | None, Some w ->
     handle
       ctx
-      window
+      w
       (Resize
          { seat
          ; edges =
@@ -132,5 +140,4 @@ let resize_interactive ctx (seat : Seat.t) =
                River.Window_management.River_window_v1.Edges.bottom
          });
     Ok None
-  | _ -> Error "cannot begin resize during an active operation"
 ;;

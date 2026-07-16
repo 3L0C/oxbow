@@ -10,7 +10,8 @@ let unbind_xkb_binding ctx (seat : t) mods keysym =
   let matches (b : Xkb_binding.t) = b.mods = mods && b.keysym = keysym in
   let to_destroy, to_keep = List.partition matches seat.xkb_bindings in
   List.iter (xkb_binding_destroy ctx) to_destroy;
-  seat.xkb_bindings <- to_keep
+  seat.xkb_bindings <- to_keep;
+  not @@ List.is_empty to_destroy
 ;;
 
 let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mods keysym command =
@@ -43,8 +44,9 @@ let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mods keysym command =
 ;;
 
 let replace_xkb_binding ctx seat mods keysym command =
-  unbind_xkb_binding ctx seat mods keysym;
-  xkb_binding_create ctx seat mods keysym command
+  let replaced = unbind_xkb_binding ctx seat mods keysym in
+  xkb_binding_create ctx seat mods keysym command;
+  replaced
 ;;
 
 let pointer_binding_destroy (_ : Ctx.manage Ctx.t) (pointer : Pointer_binding.t) =
@@ -55,7 +57,8 @@ let unbind_pointer_binding ctx (seat : t) mods button =
   let matches (p : Pointer_binding.t) = p.mods = mods && p.button = button in
   let to_destroy, to_keep = List.partition matches seat.pointer_bindings in
   List.iter (pointer_binding_destroy ctx) to_destroy;
-  seat.pointer_bindings <- to_keep
+  seat.pointer_bindings <- to_keep;
+  not @@ List.is_empty to_destroy
 ;;
 
 let pointer_binding_create (_ : Ctx.manage Ctx.t) (seat : t) mods button command =
@@ -84,8 +87,9 @@ let pointer_binding_create (_ : Ctx.manage Ctx.t) (seat : t) mods button command
 ;;
 
 let replace_pointer_binding ctx seat mods button command =
-  unbind_pointer_binding ctx seat mods button;
-  pointer_binding_create ctx seat mods button command
+  let replaced = unbind_pointer_binding ctx seat mods button in
+  pointer_binding_create ctx seat mods button command;
+  replaced
 ;;
 
 let destroy ctx (s : t) =

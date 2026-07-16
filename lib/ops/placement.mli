@@ -1,13 +1,17 @@
 (** [zoom ctx seat] promotes the focused window to the top of the stack if it is
-    not already the master. If it is the master, promote and swap with the  next
-    window.
+    not already the master. If it is the master, promote and swap with the next
+    window. Is [Error msg] when [seat] has no output or focused window, the
+    focused window is not tiled, or no other tiled window exists.
 
     {b Effects:} mutates WM state; sends River request *)
-val zoom : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Seat.t -> unit
+val zoom
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> (Yojson.Safe.t option, string) result
 
-(** [move_window ?policy window output] removes [window] from its current output,
-    if any, and moves it to [output]. No-op when [window] is already owned by
-    [output]. If [policy] is not given, [window]'s tags are unchanged.
+(** [move_window ?policy window output] removes [window] from its current
+    output, if any, and moves it to [output]. No-op when [window] is already
+    owned by [output]. If [policy] is not given, [window]'s tags are unchanged.
 
     {b Effects:} mutates WM state *)
 val move_window
@@ -16,8 +20,9 @@ val move_window
   -> Ocdwm_state.Output.t
   -> unit
 
-(** [send_window_to_logical ctx window dir policy] moves [window] in [dir]. [window]
-    will be assigned tags according to [policy].
+(** [send_window_to_logical ctx window dir policy] moves [window] in [dir].
+    [window] will be assigned tags according to [policy]. Is [Error msg] when
+    [window] has no output, or no other output exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val send_window_to_logical
@@ -25,10 +30,11 @@ val send_window_to_logical
   -> Ocdwm_state.Window.t
   -> Ocdwm_core.Direction.Logical.t
   -> Ocdwm_core.Tag.Policy.t
-  -> unit
+  -> (Yojson.Safe.t option, string) result
 
-(** [send_window_to_spatial ctx window dir policy] moves [window] in [dir]. [window]
-    will be assigned tags according to [policy].
+(** [send_window_to_spatial ctx window dir policy] moves [window] in [dir].
+    [window] will be assigned tags according to [policy]. Is [Error msg] when
+    [window] has no output, or no output exists in [dir].
 
     {b Effects:} mutates WM state; sends River request *)
 val send_window_to_spatial
@@ -36,10 +42,11 @@ val send_window_to_spatial
   -> Ocdwm_state.Window.t
   -> Ocdwm_core.Direction.Spatial.t
   -> Ocdwm_core.Tag.Policy.t
-  -> unit
+  -> (Yojson.Safe.t option, string) result
 
-(** [send_window_to_name ctx window name policy] moves [window] to the output matching
-    [name]. [window] will be assigned tags according to [policy].
+(** [send_window_to_name ctx window name policy] moves [window] to the output
+    matching [name]. [window] will be assigned tags according to [policy]. Is
+    [Error msg] when [window] has no output, or no output named [name] exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val send_window_to_name
@@ -47,10 +54,11 @@ val send_window_to_name
   -> Ocdwm_state.Window.t
   -> string
   -> Ocdwm_core.Tag.Policy.t
-  -> unit
+  -> (Yojson.Safe.t option, string) result
 
 (** [send_to_logical ctx seat dir policy] sends [seat]'s focused window to the
-    output in logical direction [dir], resolving its tags per [policy].
+    output in logical direction [dir], resolving its tags per [policy]. Is
+    [Error msg] when [window] has no output, or no other output exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val send_to_logical
@@ -61,7 +69,8 @@ val send_to_logical
   -> (Yojson.Safe.t option, string) result
 
 (** [send_to_spatial ctx seat dir policy] sends [seat]'s focused window to the
-    output in spatial direction [dir], resolving its tags per [policy].
+    output in spatial direction [dir], resolving its tags per [policy]. Is
+    [Error msg] when [window] has no output, or no output exists in [dir].
 
     {b Effects:} mutates WM state; sends River request *)
 val send_to_spatial
@@ -72,7 +81,8 @@ val send_to_spatial
   -> (Yojson.Safe.t option, string) result
 
 (** [send_to_name ctx seat name policy] sends [seat]'s focused window to the
-    output named [name], resolving its tags per [policy].
+    output named [name], resolving its tags per [policy]. Is [Error msg] when
+    [window] has no output, or no output named [name] exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val send_to_name
@@ -83,7 +93,8 @@ val send_to_name
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_floating ctx seat] toggles [seat]'s focused window between tiled and
-    floating. Is [Error _] when the window is fullscreen.
+    floating. Is [Error msg] when [seat] has no focused window, window has no
+    output, or when window is fullscreen, maximized, or fixed.
 
     {b Effects:} mutates WM state; sends River request *)
 val toggle_floating
@@ -128,7 +139,7 @@ val exit_fullscreen
 
 (** [select_layout ctx seat name] sets the layout registered as [name] on the
     first selected tag of [seat]'s output; tiled windows leaving the [floating]
-    layout remember their geometry. Is [Error _] when no layout is registered as
+    layout remember their geometry. Is [Error msg] when no layout is registered as
     [name] or [seat] has no output.
 
     {b Effects:} mutates WM state *)
@@ -140,7 +151,7 @@ val select_layout
 
 (** [cycle_layout ctx seat dir] sets the current layout's registered neighbor in
     [dir] on the first selected tag of [seat]'s output; tiled windows leaving
-    the [floating] layout remember their geometry. Is [Error _] when [seat] has
+    the [floating] layout remember their geometry. Is [Error msg] when [seat] has
     no output.
 
     {b Effects:} mutates WM state *)
@@ -156,7 +167,7 @@ val cycle_layout
 val close_focused : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [move_to ~x ~y ctx seat] moves [seat]'s focused window to the extents [x] and
-    [y]. Is [Error _] when the window is fullscreen.
+    [y]. Is [Error msg] when the window is fullscreen.
 
     {b Effects:} mutates WM state; sends River request *)
 val move_to
@@ -167,7 +178,7 @@ val move_to
   -> (Yojson.Safe.t option, string) result
 
 (** [move_spatial ctx seat dir by] moves [seat]'s focused window in [dir] by
-    [by]. Is [Error _] when the window is fullscreen.
+    [by]. Is [Error msg] when the window is fullscreen.
 
     {b Effects:} mutates WM state; sends River request *)
 val move_spatial
@@ -178,7 +189,7 @@ val move_spatial
   -> (Yojson.Safe.t option, string) result
 
 (** [resize_to ~width ~height ctx seat] resizes [seat]'s focused window to the
-    extents [width] and [height]. Is [Error _] when the window is fullscreen.
+    extents [width] and [height]. Is [Error msg] when the window is fullscreen.
 
     {b Effects:} mutates WM state; sends River request *)
 val resize_to
@@ -189,7 +200,7 @@ val resize_to
   -> (Yojson.Safe.t option, string) result
 
 (** [resize_spatial ctx seat dir by] resizes [seat]'s focused window in [dir] by
-    [by]. Is [Error _] when the window is fullscreen.
+    [by]. Is [Error msg] when the window is fullscreen.
 
     {b Effects:} mutates WM state; sends River request *)
 val resize_spatial

@@ -60,5 +60,5 @@ let set_layout_file wm ~path =
         ~format:River.Xkb_config.River_xkb_config_v1.Keymap_format.Text_v1
     in
     Unix.close fd;
-    Ok ()
+    Ok None
 ;;

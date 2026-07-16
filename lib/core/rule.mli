@@ -32,7 +32,7 @@ type t =
   ; action : Action.t
   }
 
-(** [eqaul a b] is [true] when [a] and [b] have equal patterns and equal
+(** [equal a b] is [true] when [a] and [b] have equal patterns and equal
     actions. *)
 val equal : t -> t -> bool
 

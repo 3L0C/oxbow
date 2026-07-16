@@ -4,21 +4,24 @@ open! Ocdwm_layout
 
 let zoom ctx (seat : Seat.t) =
   match seat.output, Seat.focused_window seat with
+  | None, _ -> Error Messages.seat_missing_output
+  | _, None -> Error Messages.no_focused_window
   | Some o, Some w when w.presentation = Tiled ->
     (match Output.tiled_windows o with
      | w' :: x :: _ when w' == w ->
        Stacking.push [ x; w ] o;
-       Focus.focus_window ~force:true ctx seat x
+       Focus.focus_window ~force:true ctx seat x;
+       Ok None
      | w' :: _ when w' != w ->
        Stacking.push [ w; w' ] o;
-       Focus.focus_window ~force:true ctx seat w
+       Focus.focus_window ~force:true ctx seat w;
+       Ok None
      | []
        when let open Ocdwm_layout in
             Output.current_layout_entry o |> Entry.name <> Floating.name ->
-       Logs.err
-       @@ fun m -> m "zoom: focused window is tiled but tiled window list is empty"
-     | _ -> ())
-  | _ -> ()
+       Error "focused window is tiled but tiled window list is empty"
+     | _ -> Error "no window to zoom with")
+  | _ -> Error "focused window is not tiled"
 ;;
 
 let move_window ?(policy = Tag.Policy.Keep) window target =
@@ -63,81 +66,78 @@ let send_to ctx (src : Output.t) dst window policy =
 let send_window_to_logical ctx (window : Window.t) (dir : Direction.Logical.t) policy =
   let wm = Ctx.wm ctx in
   match window.output with
-  | None -> ()
+  | None -> Error Messages.window_missing_output
   | Some current ->
     let target = Output.resolve_output_logical ~dir current wm.outputs in
     (match target with
-     | Some o when o != current -> send_to ctx current o window policy
-     | _ -> ())
+     | Some o when o != current ->
+       send_to ctx current o window policy;
+       Ok None
+     | _ -> Error Messages.no_other_output)
 ;;
 
 let send_window_to_spatial ctx (window : Window.t) (dir : Direction.Spatial.t) policy =
   let wm = Ctx.wm ctx in
   match window.output with
-  | None -> ()
+  | None -> Error Messages.window_missing_output
   | Some current ->
     let from = Output.to_vector current in
     let target = Output.resolve_output_spatial ~from ~dir current wm.outputs in
     (match target with
-     | Some o when o != current -> send_to ctx current o window policy
-     | _ -> ())
+     | Some o when o != current ->
+       send_to ctx current o window policy;
+       Ok None
+     | _ -> Error (Printf.sprintf "no output %s" (Direction.Spatial.to_string dir)))
 ;;
 
 let send_window_to_name ctx (window : Window.t) name policy =
   let wm = Ctx.wm ctx in
   match window.output with
-  | None -> ()
-  | Some current when Output.matches_name name current -> ()
+  | None -> Error Messages.window_missing_output
+  | Some current when Output.matches_name name current -> Ok None
   | Some current ->
     let target = Output.resolve_output_name name wm.outputs in
     (match target with
-     | Some o when o != current -> send_to ctx current o window policy
-     | _ -> ())
+     | Some o when o != current ->
+       send_to ctx current o window policy;
+       Ok None
+     | _ -> Error (Printf.sprintf "no output named %S" name))
 ;;
 
 let send_to_logical ctx seat dir policy =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
-  | Some w ->
-    send_window_to_logical ctx w dir policy;
-    Ok None
+  | Some w -> send_window_to_logical ctx w dir policy
 ;;
 
 let send_to_spatial ctx seat dir policy =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
-  | Some w ->
-    send_window_to_spatial ctx w dir policy;
-    Ok None
+  | Some w -> send_window_to_spatial ctx w dir policy
 ;;
 
 let send_to_name ctx seat name policy =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
-  | Some w ->
-    send_window_to_name ctx w name policy;
-    Ok None
+  | Some w -> send_window_to_name ctx w name policy
 ;;
 
 let toggle_floating ctx seat =
-  let toggle (w : Window.t) =
-    if Option.is_some w.output
-    then (
-      match w.presentation with
-      | Tiled -> Window.float ctx w
-      | Floating when not w.is_fixed -> Window.tile w
-      | Floating | Maximized _ | Fullscreen _ -> ())
-  in
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
+  | Some w when Option.is_none w.output -> Error Messages.window_missing_output
   | Some w ->
     (match w.presentation with
      | Fullscreen _ -> Error "cannot toggle float while window is fullscreen"
-     | _ ->
-       toggle w;
+     | Maximized _ -> Error "cannot toggle float while window is maximized"
+     | Floating when w.is_fixed -> Error "cannot tile a fixed window"
+     | Tiled | Floating ->
        (match seat.output with
-        | None -> Error Messages.no_focused_window
+        | None -> Error Messages.seat_missing_output
         | Some o ->
+          (match w.presentation with
+           | Tiled -> Window.float ctx w
+           | _ -> Window.tile w);
           Dirty.mark_output o;
           Ok None))
 ;;
@@ -197,7 +197,7 @@ let select_layout ctx (seat : Seat.t) name =
   | None -> Error (Printf.sprintf "no registered layout named: %S" name)
   | Some entry ->
     (match seat.output with
-     | None -> Error "ocdwm does not have a focused output"
+     | None -> Error Messages.seat_missing_output
      | Some o ->
        let old_name = Output.current_layout_entry o |> Entry.name in
        if old_name = "floating"
@@ -209,7 +209,7 @@ let select_layout ctx (seat : Seat.t) name =
 let cycle_layout ctx (seat : Seat.t) dir =
   let wm = Ctx.wm ctx in
   match seat.output with
-  | None -> Error "ocdwm does not have a focused output"
+  | None -> Error Messages.seat_missing_output
   | Some o ->
     let name = Output.current_layout_entry o |> Entry.name in
     (match Registry.cycle wm.layout_registry name dir with

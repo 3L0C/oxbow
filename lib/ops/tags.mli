@@ -1,5 +1,5 @@
 (** [view seat arg] makes the tags resolved from [arg] the selected tags on
-    [seat]'s output. Is [Error _] when [seat] has no output or when the set
+    [seat]'s output. Is [Error msg] when [seat] has no output or when the set
     resolved is empty.
 
     {b Effects:} mutates WM state *)
@@ -9,7 +9,7 @@ val view
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_view seat tags] toggles [tags] within the selected set on [seat]'s
-    output. Is [Error _] when the toggle would leave no tags visible.
+    output. Is [Error msg] when the toggle would leave no tags visible.
 
     {b Effects:} mutates WM state *)
 val toggle_view
@@ -18,13 +18,13 @@ val toggle_view
   -> (Yojson.Safe.t option, string) result
 
 (** [view_previous seat] reselects the previous tag set on [seat]'s output. Is
-    [Error _] when no previous set exists.
+    [Error msg] when no previous set exists.
 
     {b Effects:} mutates WM state *)
 val view_previous : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [view_cycle seat dir] advances the lowest selected tag on [seat]'s output
-    one position in [dir], wrapping. Is [Error _] when [seat] has no output.
+    one position in [dir], wrapping. Is [Error msg] when [seat] has no output.
 
     {b Effects:} mutates WM state *)
 val view_cycle
@@ -33,7 +33,8 @@ val view_cycle
   -> (Yojson.Safe.t option, string) result
 
 (** [view_cycle_occupied seat dir] moves the selection to the next occupied tag
-    in [dir], wrapping. Is [Error _] when [seat] has no output.
+    in [dir], wrapping. Is [Error msg] when [seat] has no output, or output has
+    no occupied tags.
 
     {b Effects:} mutates WM state *)
 val view_cycle_occupied
@@ -42,7 +43,7 @@ val view_cycle_occupied
   -> (Yojson.Safe.t option, string) result
 
 (** [tag_window seat arg] assigns the tags resolved from [arg] to [seat]'s
-    focused window. Is [Error _] when there is no focused window, the set
+    focused window. Is [Error msg] when there is no focused window, the set
     resolves empty, or [arg] is [Occupied] and the window has no output.
 
     {b Effects:} mutates WM state *)
@@ -52,7 +53,7 @@ val tag_window
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_window_tags seat tags] toggles [tags] on [seat]'s focused window.
-    Is [Error _] when the toggle would leave the window on no tags.
+    Is [Error msg] when the toggle would leave the window on no tags.
 
     {b Effects:} mutates WM state *)
 val toggle_window_tags

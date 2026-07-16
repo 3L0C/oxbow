@@ -20,8 +20,8 @@ val focus_window
   -> unit
 
 (** [shift seat dir] shifts the focused window one slot in [dir] through the
-    tile stack, wrapping at the head and tail. No-op when there is no focused
-    window.
+    tile stack, wrapping at the head and tail. Is [Error msg] when [seat] has no
+    output, no window is focused, or no other window exists.
 
     {b Effects:} mutates WM state *)
 val shift
