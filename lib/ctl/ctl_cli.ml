@@ -214,6 +214,9 @@ let dispatch ?seat ?socket body =
   Eio_main.run
   @@ fun env ->
   match Client.send ~env ?seat ?socket body with
+  | Ok (Some (`String s)) ->
+    (Logs.app @@ fun m -> m "%s" s);
+    Cmd.Exit.ok
   | Ok (Some data) ->
     (Logs.app @@ fun m -> m "%s" (Yojson.Safe.pretty_to_string data));
     Cmd.Exit.ok

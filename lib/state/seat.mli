@@ -154,7 +154,7 @@ val is_dirty : t -> bool
 
 (** [bind ctx seat mods key command] binds the [mods] and [key] to [command].
     Replaces any existing binding for [mods] and [key]. Is [true] when a binding
-    was destroyed.
+    was replaced.
 
     {b Effects:} mutates WM state; sends River request *)
 val bind : Ctx.manage Ctx.t -> t -> int32 -> Types.Key.t -> Ocdwm_ipc.Command.t -> bool

@@ -111,11 +111,11 @@ let handle ctx seat (keymap : Keymap.t) =
      | Error msg -> Error msg
      | Ok { mods; key } ->
        if Seat.bind ctx seat mods key bind.command
-       then Ok None
-       else
+       then
          Ok
            (Some
-              (`String (Printf.sprintf "overwrote existing binding for %S" bind.keybind))))
+              (`String (Printf.sprintf "overwrote existing binding for %S" bind.keybind)))
+       else Ok None)
   | Unbind bind ->
     (match parse bind with
      | Error msg -> Error msg
