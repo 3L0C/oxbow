@@ -142,9 +142,10 @@ let handle_command ctx seat (cmd : Command.t) =
 
 let handle_keymap ctx seat keymap = Bind.handle ctx seat keymap
 
-let handle_query (wm : Wm.t) (query : Query.t) =
+let handle_query (wm : Wm.t) seat (query : Query.t) =
   match query with
   | Rules -> Ok (Some ([%yojson_of: Rule.t list] wm.config.rules))
+  | Keymaps { all } -> Ok (Some (Bind.list wm seat ~all))
 ;;
 
 let handle ctx seat ({ body; reply } : Pending_request.t) =
@@ -153,7 +154,7 @@ let handle ctx seat ({ body; reply } : Pending_request.t) =
       match body with
       | Command c -> handle_command ctx seat c
       | Keymap keymap -> handle_keymap ctx seat keymap
-      | Query query -> handle_query (Ctx.wm ctx) query
+      | Query query -> handle_query (Ctx.wm ctx) seat query
     with
     | Exceptions.Finished -> raise Exceptions.Finished
     | exn -> Error (Printexc.to_string exn)

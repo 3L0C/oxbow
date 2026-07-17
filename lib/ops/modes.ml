@@ -10,12 +10,7 @@ let declare (wm : Wm.t) name =
 ;;
 
 let enter ctx seat name =
-  let wm = Ctx.wm ctx in
-  if not @@ List.mem name wm.config.modes
-  then Error (Printf.sprintf "mode not declared: %S" name)
-  else if String.equal name Mode.locked
-  then Error "cannot enter 'locked' mode manually"
-  else (
-    Seat.set_mode seat name;
-    Ok None)
+  match Seat.set_mode ctx seat name with
+  | Error _ as e -> e
+  | Ok () -> Ok None
 ;;

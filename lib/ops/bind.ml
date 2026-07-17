@@ -58,11 +58,9 @@ let install_defaults ctx seat =
       ; modkey, Btn_right, Command.Window Resize_drag
       ]
   in
+  List.iter (fun (m, k, a) -> ignore @@ Seat.bind ctx seat m (Keysym k) a) xkb_bindings;
   List.iter
-    (fun (m, k, a) -> ignore @@ Seat.replace_xkb_binding ctx seat Mode.normal m k a)
-    xkb_bindings;
-  List.iter
-    (fun (m, ec, a) -> ignore @@ Seat.replace_pointer_binding ctx seat Mode.normal m ec a)
+    (fun (m, b, a) -> ignore @@ Seat.bind ctx seat m (Pointer b) a)
     pointer_bindings
 ;;
 
@@ -104,30 +102,90 @@ let parse s =
   aux 0l parts
 ;;
 
+let format_modifiers mods =
+  List.fold_left
+    (fun acc (m, r) -> if Int32.logand m mods <> 0l then acc @ [ r ] else acc)
+    []
+    [ Modifiers.mod4, "Super"
+    ; Modifiers.mod1, "Alt"
+    ; Modifiers.ctrl, "Control"
+    ; Modifiers.shift, "Shift"
+    ; Modifiers.mod3, "Mod3"
+    ; Modifiers.mod5, "Mod5"
+    ]
+;;
+
+let format_keybind mods (key : Types.Key.t) =
+  let key_name =
+    match key with
+    | Keysym keysym -> Xkbcommon.Keysym.get_name keysym
+    | Pointer button -> Pointer_button.to_string button
+  in
+  String.concat "+" (format_modifiers mods @ [ key_name ])
+;;
+
+let list (wm : Wm.t) (seat : Seat.t) ~all =
+  let entry mode keybind command =
+    `Assoc
+      [ "mode", `String mode
+      ; "keybind", `String keybind
+      ; "command", Command.yojson_of_t command
+      ]
+  in
+  let seat_json (s : Seat.t) =
+    let bindings =
+      List.concat_map
+        (fun mode ->
+           List.fold_left
+             (fun acc (xkb : Seat.Xkb_binding.t) ->
+                if String.equal mode xkb.mode
+                then
+                  entry mode (format_keybind xkb.mods (Keysym xkb.keysym)) xkb.command
+                  :: acc
+                else acc)
+             []
+             s.xkb_bindings
+           @ List.fold_left
+               (fun acc (p : Seat.Pointer_binding.t) ->
+                  if String.equal mode p.mode
+                  then
+                    entry mode (format_keybind p.mods (Pointer p.button)) p.command :: acc
+                  else acc)
+               []
+               s.pointer_bindings)
+        wm.config.modes
+    in
+    `Assoc
+      [ ( "seat"
+        , match s.name with
+          | Some n -> `String n
+          | None -> `Null )
+      ; "mode", `String s.mode
+      ; "bindings", `List bindings
+      ]
+  in
+  if all then `List (List.map seat_json wm.seats) else seat_json seat
+;;
+
 let handle ctx seat (keymap : Keymap.t) =
-  let wm = Ctx.wm ctx in
   match keymap with
   | Bind bind ->
     (match parse bind.keybind with
-     | Error msg -> Error msg
+     | Error _ as e -> e
      | Ok { mods; key } ->
-       let mode = Option.value bind.mode ~default:Mode.normal in
-       if not @@ List.mem mode wm.config.modes
-       then Error (Printf.sprintf "mode not declared: %S" mode)
-       else if Seat.bind ctx seat mode mods key bind.command
-       then
-         Ok
-           (Some
-              (`String (Printf.sprintf "overwrote existing binding for %S" bind.keybind)))
-       else Ok None)
+       (match Seat.bind ctx seat ?mode:bind.mode mods key bind.command with
+        | Error _ as e -> e
+        | Ok true ->
+          Ok
+            (Some
+               (`String (Printf.sprintf "overwrote existing binding for %S" bind.keybind)))
+        | Ok false -> Ok None))
   | Unbind bind ->
     (match parse bind.keybind with
      | Error msg -> Error msg
      | Ok { mods; key } ->
-       let mode = Option.value bind.mode ~default:Mode.normal in
-       if not @@ List.mem mode wm.config.modes
-       then Error (Printf.sprintf "mode not declared: %S" mode)
-       else if Seat.unbind ctx seat mode mods key
-       then Ok None
-       else Error (Printf.sprintf "no binding for %S" bind.keybind))
+       (match Seat.unbind ctx seat ?mode:bind.mode mods key with
+        | Error _ as e -> e
+        | Ok true -> Ok None
+        | Ok false -> Error (Printf.sprintf "no binding for %S" bind.keybind)))
 ;;

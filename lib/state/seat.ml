@@ -156,7 +156,14 @@ let set_layer_focus (s : t) layer =
   Dirty.mark_seat s
 ;;
 
-let set_mode (seat : t) mode = seat.mode <- mode
+let set_mode (ctx : Ctx.manage Ctx.t) (seat : t) mode =
+  if not @@ List.mem mode (Ctx.wm ctx).config.modes
+  then Error (Printf.sprintf "mode not declared: %S" mode)
+  else if String.equal mode Mode.locked
+  then Error "cannot enter 'locked' mode manually"
+  else Ok (seat.mode <- mode)
+;;
+
 let set_position (s : t) position = s.position <- position
 let set_cursor_target (s : t) window = s.cursor_target <- window
 let set_focus_state (s : t) state = s.focus_state <- state
@@ -192,16 +199,24 @@ let is_dirty (s : t) =
   | _ -> false
 ;;
 
-let bind ctx seat mode mods (key : Types.Key.t) command =
-  match key with
-  | Keysym keysym -> replace_xkb_binding ctx seat mode mods keysym command
-  | Pointer button -> replace_pointer_binding ctx seat mode mods button command
+let bind ctx seat ?(mode = Mode.normal) mods (key : Types.Key.t) command =
+  if not @@ List.mem mode (Ctx.wm ctx).config.modes
+  then Error (Printf.sprintf "mode not declared: %S" mode)
+  else
+    Ok
+      (match key with
+       | Keysym keysym -> replace_xkb_binding ctx seat mode mods keysym command
+       | Pointer button -> replace_pointer_binding ctx seat mode mods button command)
 ;;
 
-let unbind ctx seat mode mods (key : Types.Key.t) =
-  match key with
-  | Keysym keysym -> unbind_xkb_binding ctx seat mode mods keysym
-  | Pointer button -> unbind_pointer_binding ctx seat mode mods button
+let unbind ctx seat ?(mode = Mode.normal) mods (key : Types.Key.t) =
+  if not @@ List.mem mode (Ctx.wm ctx).config.modes
+  then Error (Printf.sprintf "mode not declared: %S" mode)
+  else
+    Ok
+      (match key with
+       | Keysym keysym -> unbind_xkb_binding ctx seat mode mods keysym
+       | Pointer button -> unbind_pointer_binding ctx seat mode mods button)
 ;;
 
 let focused_window (seat : t) =

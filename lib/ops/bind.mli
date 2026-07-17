@@ -67,6 +67,20 @@ val parse_button : string -> (Ocdwm_core.Pointer_button.t, string) result
     See [parse_modifiers], [parse_keysym], and [parse_button] for more details. *)
 val parse : string -> (t, string) result
 
+(** [format_modifiers mods] is the modifier names set in [mods], in the
+    canonical order Super, Alt, Control, Shift, Mod3, Mod5. Empty when [mods] is
+    [0l]. *)
+val format_modifiers : int32 -> string list
+
+(** [format_keybind mods key] is the keybind string for [mods] and [key]: the
+    inverse of [parse]. [parse (format_keybind mods key)] is [Ok { mods; key }]. *)
+val format_keybind : int32 -> Ocdwm_state.Types.Key.t -> string
+
+(** [list wm seat ~all] is the JSON keybinding listing for [seat]; its name,
+    stored mode, and bindings grouped by declared mode, or for every seat in
+    [wm] when [all] is [true]. *)
+val list : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> all:bool -> Yojson.Safe.t
+
 (** [handle ctx seat keymap] applies the Bind/Unbind [keymap].
 
     {b Effects:} mutates WM state; sends River request *)
