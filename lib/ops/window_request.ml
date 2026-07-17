@@ -129,15 +129,18 @@ let resize_interactive ctx (seat : Seat.t) =
   | None, None -> Error "no hovered window"
   | None, Some w when Window.is_fullscreen w -> Error "cannot resize a fullscreen window"
   | None, Some w ->
-    handle
-      ctx
-      w
-      (Resize
-         { seat
-         ; edges =
-             Int32.logor
-               River.Window_management.River_window_v1.Edges.right
-               River.Window_management.River_window_v1.Edges.bottom
-         });
+    let g = w.geom in
+    let open River.Window_management.River_window_v1 in
+    let horiz =
+      if Int32.(compare seat.position.x (add g.x (div g.w 2l))) < 0
+      then Edges.left
+      else Edges.right
+    in
+    let vert =
+      if Int32.(compare seat.position.y (add g.y (div g.h 2l))) < 0
+      then Edges.top
+      else Edges.bottom
+    in
+    handle ctx w (Resize { seat; edges = Int32.logor horiz vert });
     Ok None
 ;;

@@ -17,6 +17,11 @@ let begin_move ctx seat window =
 
 let begin_resize ctx seat window edges =
   Focus.focus_window ctx seat window;
+  let g = window.geom in
+  let open River.Window_management.River_window_v1 in
+  let corner_x = if Int32.logand edges Edges.left <> 0l then g.x else Int32.add g.x g.w in
+  let corner_y = if Int32.logand edges Edges.top <> 0l then g.y else Int32.add g.y g.h in
+  River.Window_management.River_seat_v1.pointer_warp seat.obj ~x:corner_x ~y:corner_y;
   River.Window_management.River_window_v1.inform_resize_start window.obj;
   River.Window_management.River_seat_v1.op_start_pointer seat.obj;
   Seat.set_op seat
