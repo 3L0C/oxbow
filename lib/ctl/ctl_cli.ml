@@ -197,6 +197,24 @@ let keybind_arg =
            forward, back, or task.")
 ;;
 
+let color_arg_conv =
+  let parser = Color.of_string in
+  let pp ppf c = Color.to_string c |> Format.fprintf ppf "%s" in
+  Arg.Conv.make ~docv:"COLOR" ~parser ~pp ()
+;;
+
+let color_arg =
+  Arg.(
+    required
+    & pos 0 (some color_arg_conv) None
+    & info
+        []
+        ~docv:"COLOR"
+        ~doc:
+          "An RGBA or RGB color string. The following are equivalent: $(i,7FB4CAFF) \
+           $(i,7FB4CA). May be prefixed with $(i,#) or $(i,0x).")
+;;
+
 let code_protocol_err = 1
 let code_conn_failed = 2
 

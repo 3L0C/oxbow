@@ -8,9 +8,9 @@ module Config = struct
   module Border = struct
     type t =
       { mutable width : int32
-      ; mutable focused_color : int32
-      ; mutable unfocused_color : int32
-      ; mutable urgent_color : int32
+      ; mutable focused_color : Ocdwm_core.Color.t
+      ; mutable unfocused_color : Ocdwm_core.Color.t
+      ; mutable urgent_color : Ocdwm_core.Color.t
       }
   end
 

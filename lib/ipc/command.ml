@@ -93,7 +93,7 @@ module Set = struct
     | Border_width of int32 [@name "border_width"]
     | Border_color of
         { which : Ocdwm_core.Border_target.t
-        ; color : int32
+        ; color : Ocdwm_core.Color.t
         } [@name "border_color"]
   [@@deriving yojson]
 end

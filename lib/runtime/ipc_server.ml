@@ -56,6 +56,7 @@ module Handler = struct
 
   let parse_request json =
     try Ok (Request.t_of_yojson json) with
+    | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (Failure msg, _) -> Error msg
     | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error _ -> Error "invalid request shape"
   ;;
 

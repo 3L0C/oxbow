@@ -50,6 +50,9 @@ val extent_conv : Ocdwm_core.Extent.t Cmdliner.Arg.conv
     keysym, and/or button. *)
 val keybind_arg : string Cmdliner.Term.t
 
+(** [color_arg] is the required trailing [COLOR] positional. *)
+val color_arg : Ocdwm_core.Color.t Cmdliner.Term.t
+
 (** [group ?man ?man_xrefs ?version ~name ~doc cmds] is command that groups the
     subcommands [cmds]. *)
 val group

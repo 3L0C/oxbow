@@ -38,7 +38,11 @@ val set_key_repeat : Types.Wm.t -> rate:int -> delay:int -> unit
 (** [set_border_color wm border color] sets the target [border] type to [color].
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_border_color : Types.Wm.t -> Ocdwm_core.Border_target.t -> int32 -> unit
+val set_border_color
+  :  Types.Wm.t
+  -> Ocdwm_core.Border_target.t
+  -> Ocdwm_core.Color.t
+  -> unit
 
 (** [add_rule wm rule] adds [rule] to [wm]'s configuration.
 

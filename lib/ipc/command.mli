@@ -100,7 +100,7 @@ module Set : sig
     | Border_width of int32
     | Border_color of
         { which : Ocdwm_core.Border_target.t
-        ; color : int32
+        ; color : Ocdwm_core.Color.t
         }
 
   val t_of_yojson : Yojson.Safe.t -> t

@@ -9,9 +9,9 @@ let default_layout_params =
 let default_borders =
   Border.
     { width = 4l
-    ; focused_color = 0xFFFFFFl
-    ; unfocused_color = 0xFFFFFFl
-    ; urgent_color = 0xFFFFFFl
+    ; focused_color = Color.of_string_exn "#7FB4CA"
+    ; unfocused_color = Color.of_string_exn "#727169"
+    ; urgent_color = Color.of_string_exn "#FF5D62"
     }
 ;;
 
