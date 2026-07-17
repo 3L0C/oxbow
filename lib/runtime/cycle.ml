@@ -196,7 +196,7 @@ let render_impl ctx (seat : Seat.t) =
      in
      Window.set_position ctx op_r.window ~x ~y);
   List.iter set_presentation_mode wm.outputs;
-  Border.paint ctx
+  Border.paint ctx seat
 ;;
 
 let render wm proxy =

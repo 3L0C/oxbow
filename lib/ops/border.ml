@@ -1,12 +1,14 @@
 open! Ocdwm_core
 open! Ocdwm_state
 
-let paint ctx =
+let paint ctx (seat : Seat.t) =
   let wm = Ctx.wm ctx in
   let borders = wm.config.borders in
   let color (w : Window.t) o =
     if w.is_urgent
     then borders.urgent_color
+    else if not @@ Phys.opt_holds seat.output o
+    then borders.unfocused_color
     else if Phys.opt_holds (Output.focused_window o) w
     then borders.focused_color
     else borders.unfocused_color
