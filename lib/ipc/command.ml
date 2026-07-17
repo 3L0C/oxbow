@@ -5,7 +5,16 @@ module Window = struct
     | Close [@name "close"]
     | Focus_logical of Ocdwm_core.Direction.Logical.t [@name "focus_logical"]
     | Focus_spatial of Ocdwm_core.Direction.Spatial.t [@name "focus_spatial"]
-    | Focus_query of Ocdwm_core.Window_query.t [@name "focus_query"]
+    | Focus_query of
+        { query : Ocdwm_core.Window_query.t
+        ; cycle : bool
+        } [@name "focus_query"]
+    | Tag_query of
+        { query : Ocdwm_core.Window_query.t
+        ; tags : Ocdwm_core.Tag.Arg.t
+        } [@name "tag_query"]
+    | Tag_shift of Ocdwm_core.Direction.Logical.t [@name "tag_shift"]
+    | Tag_shift_occupied of Ocdwm_core.Direction.Logical.t [@name "tag_shift_occupied"]
     | Move_drag [@name "move_drag"]
     | Move_to of
         { x : Ocdwm_core.Extent.t

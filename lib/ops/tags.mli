@@ -60,3 +60,35 @@ val toggle_window_tags
   :  Ocdwm_state.Seat.t
   -> Ocdwm_core.Tag.Set.t
   -> (Yojson.Safe.t option, string) result
+
+(** [tag_window_query ctx query arg] sets the tags resolved from [arg] on every
+    window matching [query]; [occupied] resolves against each window's own
+    output, skipping windows with none. Is [Error msg] when [query]'s regex
+    fails to compile, no window matches, or a concrete set is empty.
+
+    {b Effects:} mutates WM state *)
+val tag_window_query
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_core.Window_query.t
+  -> Ocdwm_core.Tag.Arg.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [tag_shift_window seat dir] advances the focused window's lowest tag one
+    position in [dir], wrapping. Is [Error msg] when [seat] has no focused
+    window or the window has no tags.
+
+    {b Effects:} mutates WM state *)
+val tag_shift_window
+  :  Ocdwm_state.Seat.t
+  -> Ocdwm_core.Direction.Logical.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [tag_shift_window_occupied seat dir] moves the focused window to the next
+    occupied tag in [dir], wrapping. Is [Error msg] when [seat] has no focused
+    window, the window has no output, or the output has no occupied tags.
+
+    {b Effects:} mutates WM state *)
+val tag_shift_window_occupied
+  :  Ocdwm_state.Seat.t
+  -> Ocdwm_core.Direction.Logical.t
+  -> (Yojson.Safe.t option, string) result

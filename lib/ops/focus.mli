@@ -59,13 +59,15 @@ val window_spatial
   -> Ocdwm_core.Direction.Spatial.t
   -> (Yojson.Safe.t option, string) result
 
-(** [window_query ctx seat query] focuses the first (or, when [query] cycles,
-    next) window matching [query] and warps the pointer to it when configured.
-    Is [Error msg] when [query]'s regex fails to compile or no window matches.
+(** [window_query ~cycle ctx seat query] focuses the first (or, next when
+    [cycle] is [true]) window matching [query] and warps the pointer to it when
+    configured. Is [Error msg] when [query]'s regex fails to compile or no
+    window matches.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_query
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  cycle:bool
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Window_query.t
   -> (Yojson.Safe.t option, string) result

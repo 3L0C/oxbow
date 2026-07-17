@@ -8,26 +8,17 @@ let command_term =
   let+ pattern = Ctl_cli.window_query_pattern_arg
   and+ field = Ctl_cli.window_query_field_flag
   and+ regex = Ctl_cli.window_query_regex_flag
-  and+ cycle =
-    Arg.(
-      value
-      & flag
-      & info
-          [ "cycle" ]
-          ~doc:
-            "If the currently focused window matches the search term, focus the next \
-             matching window, if any")
-  in
+  and+ tags = Ctl_cli.tag_arg_at 1 in
   let query =
     if regex
     then { pattern = Regex pattern; field }
     else { pattern = Substring pattern; field }
   in
-  Command.Window (Focus_query { query; cycle })
+  Command.Window (Tag_query { query; tags })
 ;;
 
 let name = "query"
-let doc = "Focus a window matching the search query"
+let doc = "Set TAGS on all windows matching the search query"
 let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term command_term
 let cmd = build Ctl_cli.command_term
 let bind_cmd = build Ctl_cli.bind_term

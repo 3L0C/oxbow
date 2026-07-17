@@ -23,6 +23,10 @@ val int_delta : int Ocdwm_core.Delta.t Cmdliner.Term.t
     ([0.55]) or a signed offset ([-0.05]). *)
 val float_delta : float Ocdwm_core.Delta.t Cmdliner.Term.t
 
+(** [tag_arg_at index] is the required leading [TAGS] positional at [index]:
+    indices, ranges, a bitmask, or the literal [occupied]. *)
+val tag_arg_at : int -> Ocdwm_core.Tag.Arg.t Cmdliner.Term.t
+
 (** [tag_arg] is the required leading [TAGS] positional: indices, ranges, a
     bitmask, or the literal [occupied]. *)
 val tag_arg : Ocdwm_core.Tag.Arg.t Cmdliner.Term.t
@@ -30,6 +34,9 @@ val tag_arg : Ocdwm_core.Tag.Arg.t Cmdliner.Term.t
 (** [tag_set] is the required leading [TAGS] positional: indices, ranges, or a
     bitmask. *)
 val tag_set : Ocdwm_core.Tag.Set.t Cmdliner.Term.t
+
+(** [occupied_flag] is the [--occupied] flag used to restrict tag operations. *)
+val occupied_flag : bool Cmdliner.Term.t
 
 (** [policy_flag] is the [--take] flag as a tag policy, [Keep] when absent. *)
 val policy_flag : Ocdwm_core.Tag.Policy.t Cmdliner.Term.t
@@ -52,6 +59,17 @@ val keybind_arg : string Cmdliner.Term.t
 
 (** [color_arg] is the required trailing [COLOR] positional. *)
 val color_arg : Ocdwm_core.Color.t Cmdliner.Term.t
+
+(** [window_query_pattern_arg] is the required trailing [STRING] positional for
+    a window query. *)
+val window_query_pattern_arg : string Cmdliner.Term.t
+
+(** [window_query_field_flag] is the [--title] and [--app-id] flags for a
+    window query. *)
+val window_query_field_flag : Ocdwm_core.Window_query.Field.t Cmdliner.Term.t
+
+(** [window_query_regex_flag] is the [--regex] flag for a window query. *)
+val window_query_regex_flag : bool Cmdliner.Term.t
 
 (** [group ?man ?man_xrefs ?version ~name ~doc cmds] is command that groups the
     subcommands [cmds]. *)

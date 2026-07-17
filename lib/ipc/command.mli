@@ -3,7 +3,16 @@ module Window : sig
     | Close
     | Focus_logical of Ocdwm_core.Direction.Logical.t
     | Focus_spatial of Ocdwm_core.Direction.Spatial.t
-    | Focus_query of Ocdwm_core.Window_query.t
+    | Focus_query of
+        { query : Ocdwm_core.Window_query.t
+        ; cycle : bool
+        }
+    | Tag_query of
+        { query : Ocdwm_core.Window_query.t
+        ; tags : Ocdwm_core.Tag.Arg.t
+        }
+    | Tag_shift of Ocdwm_core.Direction.Logical.t
+    | Tag_shift_occupied of Ocdwm_core.Direction.Logical.t
     | Move_drag
     | Move_to of
         { x : Ocdwm_core.Extent.t

@@ -9,7 +9,10 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Close -> Placement.close_focused seat
   | Focus_logical dir -> Focus.window_logical ctx seat dir
   | Focus_spatial dir -> Focus.window_spatial ctx seat dir
-  | Focus_query q -> Focus.window_query ctx seat q
+  | Focus_query { query; cycle } -> Focus.window_query ~cycle ctx seat query
+  | Tag_query { query; tags } -> Tags.tag_window_query ctx query tags
+  | Tag_shift dir -> Tags.tag_shift_window seat dir
+  | Tag_shift_occupied dir -> Tags.tag_shift_window_occupied seat dir
   | Move_drag -> Window_request.move_interactive ctx seat
   | Move_to { x; y } -> Placement.move_to ~x ~y ctx seat
   | Move_spatial { dir; by } -> Placement.move_spatial ctx seat dir by

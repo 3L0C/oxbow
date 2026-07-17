@@ -90,32 +90,19 @@ let window_spatial ctx seat (dir : Direction.Spatial.t) =
        Ok None)
 ;;
 
-let window_query ctx seat q =
+let window_query ~cycle ctx seat q =
   let wm = Ctx.wm ctx in
-  match Window_query.get_regex q with
+  match Window_query.compile q with
   | Error e -> Error e
-  | Ok r ->
-    let matches_opt = function
-      | Some s ->
-        (try
-           ignore @@ Str.search_forward r s 0;
-           true
-         with
-         | Not_found -> false)
-      | None -> false
-    in
-    let matches_fields =
-      match q.field with
-      | Any -> fun title app_id -> matches_opt title || matches_opt app_id
-      | Title -> fun title _ -> matches_opt title
-      | App_id -> fun _ app_id -> matches_opt app_id
-    in
+  | Ok matches ->
     let windows =
-      List.find_all (fun (w : Window.t) -> matches_fields w.title w.app_id) wm.windows
+      List.find_all
+        (fun (w : Window.t) -> matches ~title:w.title ~app_id:w.app_id)
+        wm.windows
     in
     let target =
       match Seat.focused_window seat with
-      | Some w when q.cycle && matches_fields w.title w.app_id ->
+      | Some w when cycle && matches ~title:w.title ~app_id:w.app_id ->
         Ring.next_or_first w windows
       | _ -> List.nth_opt windows 0
     in

@@ -120,14 +120,16 @@ let tag_shared_doc =
    $(b,0b111) means tags 1, 2, and 3."
 ;;
 
-let tag_arg =
+let tag_arg_at i =
   let doc =
     tag_shared_doc
     ^ " The string literal $(i,occupied) is allowed and represents all currently \
        occupied tags."
   in
-  Arg.(required & pos 0 (some tag_arg_conv) None & info [] ~docv:"TAGS" ~doc)
+  Arg.(required & pos i (some tag_arg_conv) None & info [] ~docv:"TAGS" ~doc)
 ;;
+
+let tag_arg = tag_arg_at 0
 
 let tag_set_conv =
   let parser = Tag.Set.of_string in
@@ -138,6 +140,10 @@ let tag_set_conv =
 let tag_set =
   let doc = tag_shared_doc in
   Arg.(required & pos 0 (some tag_set_conv) None & info [] ~docv:"TAGS" ~doc)
+;;
+
+let occupied_flag =
+  Arg.(value & flag & info [ "occupied" ] ~doc:"Restrict operation to occupied tags")
 ;;
 
 let policy_flag =
@@ -213,6 +219,31 @@ let color_arg =
         ~doc:
           "An RGBA or RGB color string. The following are equivalent: $(i,7FB4CAFF) \
            $(i,7FB4CA). May be prefixed with $(i,#) or $(i,0x).")
+;;
+
+let window_query_pattern_arg =
+  Arg.(
+    required
+    & pos 0 (some string) None
+    & info [] ~docv:"STRING" ~doc:"Match windows containing STRING in their title/app-id")
+;;
+
+let window_query_field_flag =
+  let open Ocdwm_core.Window_query in
+  Arg.(
+    value
+    & vflag
+        Field.Any
+        [ Field.Title, info [ "title" ] ~doc:"Match against window title only"
+        ; Field.App_id, info [ "app-id" ] ~doc:"Match againts app-id only"
+        ])
+;;
+
+let window_query_regex_flag =
+  Arg.(
+    value
+    & flag
+    & info [ "regex" ] ~doc:"Interpret the search string as a regular expression")
 ;;
 
 let code_protocol_err = 1

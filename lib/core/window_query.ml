@@ -15,10 +15,13 @@ module Field = struct
   [@@deriving yojson]
 end
 
+module Matcher = struct
+  type t = title:string option -> app_id:string option -> bool
+end
+
 type t =
   { pattern : Pattern.t
   ; field : Field.t
-  ; cycle : bool
   }
 [@@deriving yojson]
 
@@ -29,13 +32,12 @@ let to_string q =
     | Title -> Some "title"
     | App_id -> Some "app-id"
   in
-  let cycle = if q.cycle then Some "cycle" else None in
   let regex =
     match q.pattern with
     | Substring _ -> None
     | Regex _ -> Some "regex"
   in
-  let tags = List.filter_map Fun.id [ field; cycle; regex ] in
+  let tags = List.filter_map Fun.id [ field; regex ] in
   let s =
     match q.pattern with
     | Substring s -> s
@@ -49,9 +51,7 @@ let to_string q =
   render s
 ;;
 
-let of_string ?(field = Field.Any) ?(cycle = false) s =
-  { pattern = Substring s; field; cycle }
-;;
+let of_string ?(field = Field.Any) s = { pattern = Substring s; field }
 
 let get_regex q =
   match q.pattern with
@@ -59,4 +59,25 @@ let get_regex q =
   | Regex s ->
     (try Ok (Str.regexp s) with
      | Failure e -> Error e)
+;;
+
+let compile q =
+  match get_regex q with
+  | Error e -> Error e
+  | Ok r ->
+    let matches_opt = function
+      | Some s ->
+        (try
+           ignore @@ Str.search_forward r s 0;
+           true
+         with
+         | Not_found -> false)
+      | None -> false
+    in
+    Ok
+      (fun ~title ~app_id ->
+        match q.field with
+        | Any -> matches_opt title || matches_opt app_id
+        | Title -> matches_opt title
+        | App_id -> matches_opt app_id)
 ;;
