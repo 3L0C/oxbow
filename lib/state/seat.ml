@@ -2,19 +2,25 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 include Types.Seat
 
+let effective_mode ctx (seat : t) =
+  if (Ctx.wm ctx).session_locked then Mode.locked else seat.mode
+;;
+
 let xkb_binding_destroy (_ : Ctx.manage Ctx.t) (binding : Xkb_binding.t) =
   River.Xkb_bindings.River_xkb_binding_v1.destroy binding.obj
 ;;
 
-let unbind_xkb_binding ctx (seat : t) mods keysym =
-  let matches (b : Xkb_binding.t) = b.mods = mods && b.keysym = keysym in
+let unbind_xkb_binding ctx (seat : t) mode mods keysym =
+  let matches (b : Xkb_binding.t) =
+    String.equal b.mode mode && b.mods = mods && b.keysym = keysym
+  in
   let to_destroy, to_keep = List.partition matches seat.xkb_bindings in
   List.iter (xkb_binding_destroy ctx) to_destroy;
   seat.xkb_bindings <- to_keep;
   not @@ List.is_empty to_destroy
 ;;
 
-let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mods keysym command =
+let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mode mods keysym command =
   let wm = Ctx.wm ctx in
   let body = Request.Body.Command command in
   let keysym_i32 = Int32.of_int (Xkbcommon.Keysym.to_int keysym) in
@@ -34,6 +40,8 @@ let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mods keysym command =
           ~keysym:keysym_i32
           ~modifiers:mods
     ; seat
+    ; mode
+    ; enabled = String.equal mode (effective_mode ctx seat)
     ; command
     ; mods
     ; keysym
@@ -43,9 +51,9 @@ let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mods keysym command =
   seat.xkb_bindings <- binding :: seat.xkb_bindings
 ;;
 
-let replace_xkb_binding ctx seat mods keysym command =
-  let replaced = unbind_xkb_binding ctx seat mods keysym in
-  xkb_binding_create ctx seat mods keysym command;
+let replace_xkb_binding ctx seat mode mods keysym command =
+  let replaced = unbind_xkb_binding ctx seat mode mods keysym in
+  xkb_binding_create ctx seat mode mods keysym command;
   replaced
 ;;
 
@@ -53,15 +61,17 @@ let pointer_binding_destroy (_ : Ctx.manage Ctx.t) (pointer : Pointer_binding.t)
   River.Window_management.River_pointer_binding_v1.destroy pointer.obj
 ;;
 
-let unbind_pointer_binding ctx (seat : t) mods button =
-  let matches (p : Pointer_binding.t) = p.mods = mods && p.button = button in
+let unbind_pointer_binding ctx (seat : t) mode mods button =
+  let matches (p : Pointer_binding.t) =
+    String.equal p.mode mode && p.mods = mods && p.button = button
+  in
   let to_destroy, to_keep = List.partition matches seat.pointer_bindings in
   List.iter (pointer_binding_destroy ctx) to_destroy;
   seat.pointer_bindings <- to_keep;
   not @@ List.is_empty to_destroy
 ;;
 
-let pointer_binding_create (_ : Ctx.manage Ctx.t) (seat : t) mods button command =
+let pointer_binding_create (ctx : Ctx.manage Ctx.t) (seat : t) mode mods button command =
   let body = Request.Body.Command command in
   let binding : Pointer_binding.t =
     { obj =
@@ -77,6 +87,8 @@ let pointer_binding_create (_ : Ctx.manage Ctx.t) (seat : t) mods button command
           ~button:(Pointer_button.to_int32 button)
           ~modifiers:mods
     ; seat
+    ; mode
+    ; enabled = String.equal mode (effective_mode ctx seat)
     ; command
     ; mods
     ; button
@@ -86,9 +98,9 @@ let pointer_binding_create (_ : Ctx.manage Ctx.t) (seat : t) mods button command
   seat.pointer_bindings <- binding :: seat.pointer_bindings
 ;;
 
-let replace_pointer_binding ctx seat mods button command =
-  let replaced = unbind_pointer_binding ctx seat mods button in
-  pointer_binding_create ctx seat mods button command;
+let replace_pointer_binding ctx seat mode mods button command =
+  let replaced = unbind_pointer_binding ctx seat mode mods button in
+  pointer_binding_create ctx seat mode mods button command;
   replaced
 ;;
 
@@ -144,6 +156,7 @@ let set_layer_focus (s : t) layer =
   Dirty.mark_seat s
 ;;
 
+let set_mode (seat : t) mode = seat.mode <- mode
 let set_position (s : t) position = s.position <- position
 let set_cursor_target (s : t) window = s.cursor_target <- window
 let set_focus_state (s : t) state = s.focus_state <- state
@@ -179,20 +192,48 @@ let is_dirty (s : t) =
   | _ -> false
 ;;
 
-let bind ctx seat mods (key : Types.Key.t) command =
+let bind ctx seat mode mods (key : Types.Key.t) command =
   match key with
-  | Keysym keysym -> replace_xkb_binding ctx seat mods keysym command
-  | Pointer button -> replace_pointer_binding ctx seat mods button command
+  | Keysym keysym -> replace_xkb_binding ctx seat mode mods keysym command
+  | Pointer button -> replace_pointer_binding ctx seat mode mods button command
 ;;
 
-let unbind ctx seat mods (key : Types.Key.t) =
+let unbind ctx seat mode mods (key : Types.Key.t) =
   match key with
-  | Keysym keysym -> unbind_xkb_binding ctx seat mods keysym
-  | Pointer button -> unbind_pointer_binding ctx seat mods button
+  | Keysym keysym -> unbind_xkb_binding ctx seat mode mods keysym
+  | Pointer button -> unbind_pointer_binding ctx seat mode mods button
 ;;
 
-let focused_window (s : t) =
-  match s.output with
+let focused_window (seat : t) =
+  match seat.output with
   | Some o -> Output.focused_window o
   | None -> None
+;;
+
+let sync_bindings ctx (seat : t) =
+  let active = effective_mode ctx seat in
+  List.iter
+    (fun (b : Xkb_binding.t) ->
+       let desired = String.equal b.mode active in
+       match desired, b.enabled with
+       | true, true | false, false -> ()
+       | true, false ->
+         River.Xkb_bindings.River_xkb_binding_v1.enable b.obj;
+         b.enabled <- desired
+       | false, true ->
+         River.Xkb_bindings.River_xkb_binding_v1.disable b.obj;
+         b.enabled <- desired)
+    seat.xkb_bindings;
+  List.iter
+    (fun (p : Pointer_binding.t) ->
+       let desired = String.equal p.mode active in
+       match desired, p.enabled with
+       | true, true | false, false -> ()
+       | true, false ->
+         River.Window_management.River_pointer_binding_v1.enable p.obj;
+         p.enabled <- desired
+       | false, true ->
+         River.Window_management.River_pointer_binding_v1.disable p.obj;
+         p.enabled <- desired)
+    seat.pointer_bindings
 ;;

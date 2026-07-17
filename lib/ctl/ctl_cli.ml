@@ -203,6 +203,17 @@ let keybind_arg =
            forward, back, or task.")
 ;;
 
+let mode_flag =
+  let open Cmdliner in
+  Arg.(
+    value
+    & opt (some string) None
+    & info
+        [ "mode" ]
+        ~docv:"MODE"
+        ~doc:"The keymap mode the binding belongs to (default $(b,normal)).")
+;;
+
 let color_arg_conv =
   let parser = Color.of_string in
   let pp ppf c = Color.to_string c |> Format.fprintf ppf "%s" in
@@ -311,8 +322,9 @@ let bind_suffix =
 let bind_term term =
   let open Cmdliner.Term.Syntax in
   let+ command = term
+  and+ mode = mode_flag
   and+ keybind = bind_suffix in
-  Request.Body.Keymap (Bind { keybind; command })
+  Request.Body.Keymap (Bind { keybind; command; mode })
 ;;
 
 let query_term term =

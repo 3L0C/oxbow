@@ -57,6 +57,10 @@ val extent_conv : Ocdwm_core.Extent.t Cmdliner.Arg.conv
     keysym, and/or button. *)
 val keybind_arg : string Cmdliner.Term.t
 
+(** An optional [--mode MODE] flag naming the keymap mode a binding belongs to;
+    [None] means the default mode. *)
+val mode_flag : string option Cmdliner.Term.t
+
 (** [color_arg] is the required trailing [COLOR] positional. *)
 val color_arg : Ocdwm_core.Color.t Cmdliner.Term.t
 

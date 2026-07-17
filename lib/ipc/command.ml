@@ -114,6 +114,13 @@ module Rule = struct
   [@@deriving yojson]
 end
 
+module Mode = struct
+  type t =
+    | Declare of string [@name "declare"]
+    | Enter of string [@name "enter"]
+  [@@deriving yojson]
+end
+
 module Session = struct
   type t = Exit [@name "exit"] [@@deriving yojson]
 end
@@ -136,6 +143,7 @@ type t =
   | Output of Output.t [@name "output"]
   | Set of Set.t [@name "set"]
   | Rule of Rule.t [@name "rule"]
+  | Mode of Mode.t [@name "mode"]
   | Session of Session.t [@name "session"]
   | Wm of Wm.t [@name "wm"]
   | Execute of Execute.t [@name "execute"]

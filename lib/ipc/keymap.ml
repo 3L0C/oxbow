@@ -4,6 +4,10 @@ type t =
   | Bind of
       { keybind : string
       ; command : Command.t
+      ; mode : string option
       } [@name "bind"]
-  | Unbind of string [@name "unbind"]
+  | Unbind of
+      { keybind : string
+      ; mode : string option
+      } [@name "unbind"]
 [@@deriving yojson]

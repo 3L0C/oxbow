@@ -104,3 +104,8 @@ val is_dirty : t -> bool
 
     {b Effects:} mutates WM state *)
 val clean : t -> unit
+
+(** [set_session_locked wm locked] records whether the session is locked.
+
+    {b Effects:} mutates WM state *)
+val set_session_locked : t -> bool -> unit

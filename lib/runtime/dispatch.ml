@@ -96,6 +96,12 @@ let handle_rule ctx seat (cmd : Command.Rule.t) =
   | Remove rule -> Rules.remove wm rule
 ;;
 
+let handle_mode ctx seat (cmd : Command.Mode.t) =
+  match cmd with
+  | Declare mode -> Modes.declare (Ctx.wm ctx) mode
+  | Enter mode -> Modes.enter ctx seat mode
+;;
+
 let handle_session ctx seat (cmd : Command.Session.t) =
   let wm = Ctx.wm ctx in
   let () =
@@ -128,6 +134,7 @@ let handle_command ctx seat (cmd : Command.t) =
   | Output c -> handle_output ctx seat c
   | Set c -> handle_set ctx seat c
   | Rule c -> handle_rule ctx seat c
+  | Mode c -> handle_mode ctx seat c
   | Session c -> handle_session ctx seat c
   | Wm c -> handle_wm ctx seat c
   | Execute c -> handle_execute c

@@ -22,8 +22,8 @@ let loop ~init_command ~net ~clock =
 
          method on_render_start proxy = Handlers.on_render_start proxy wm_box
          method on_seat proxy river_seat = Handlers.on_seat proxy river_seat wm_box
-         method on_session_locked = Handlers.on_session_locked
-         method on_session_unlocked = Handlers.on_session_unlocked
+         method on_session_locked proxy = Handlers.on_session_locked proxy wm_box
+         method on_session_unlocked proxy = Handlers.on_session_unlocked proxy wm_box
          method on_unavailable = Handlers.on_unavailable
 
          method on_window proxy river_window =
@@ -71,6 +71,7 @@ let loop ~init_command ~net ~clock =
     ; lifecycle = Running
     ; primary_seat = None
     ; is_dirty = false
+    ; session_locked = false
     ; outputs = []
     ; windows = []
     ; seats = []

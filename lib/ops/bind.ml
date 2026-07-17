@@ -59,10 +59,10 @@ let install_defaults ctx seat =
       ]
   in
   List.iter
-    (fun (m, k, a) -> ignore @@ Seat.replace_xkb_binding ctx seat m k a)
+    (fun (m, k, a) -> ignore @@ Seat.replace_xkb_binding ctx seat Mode.normal m k a)
     xkb_bindings;
   List.iter
-    (fun (m, ec, a) -> ignore @@ Seat.replace_pointer_binding ctx seat m ec a)
+    (fun (m, ec, a) -> ignore @@ Seat.replace_pointer_binding ctx seat Mode.normal m ec a)
     pointer_bindings
 ;;
 
@@ -105,22 +105,29 @@ let parse s =
 ;;
 
 let handle ctx seat (keymap : Keymap.t) =
+  let wm = Ctx.wm ctx in
   match keymap with
   | Bind bind ->
     (match parse bind.keybind with
      | Error msg -> Error msg
      | Ok { mods; key } ->
-       if Seat.bind ctx seat mods key bind.command
+       let mode = Option.value bind.mode ~default:Mode.normal in
+       if not @@ List.mem mode wm.config.modes
+       then Error (Printf.sprintf "mode not declared: %S" mode)
+       else if Seat.bind ctx seat mode mods key bind.command
        then
          Ok
            (Some
               (`String (Printf.sprintf "overwrote existing binding for %S" bind.keybind)))
        else Ok None)
   | Unbind bind ->
-    (match parse bind with
+    (match parse bind.keybind with
      | Error msg -> Error msg
      | Ok { mods; key } ->
-       if Seat.unbind ctx seat mods key
+       let mode = Option.value bind.mode ~default:Mode.normal in
+       if not @@ List.mem mode wm.config.modes
+       then Error (Printf.sprintf "mode not declared: %S" mode)
+       else if Seat.unbind ctx seat mode mods key
        then Ok None
-       else Error (Printf.sprintf "no binding for %S" bind))
+       else Error (Printf.sprintf "no binding for %S" bind.keybind))
 ;;

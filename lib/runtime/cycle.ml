@@ -126,6 +126,7 @@ let manage_seat ctx seat =
   Focus.apply_request ctx seat;
   Focus.apply_interaction ctx seat;
   drain ();
+  Seat.sync_bindings ctx seat;
   Drag.step ctx seat
 ;;
 

@@ -43,20 +43,22 @@ val on_seat
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
-(** [on_session_locked river_wm_v1] handles the session lock request.
+(** [on_session_locked river_wm_v1 wm_box] handles the session lock request.
 
     {b Effects:} mutates WM state; sends River request *)
 val on_session_locked
   :  Ocdwm_state.River.V.Window_management.t
        Ocdwm_state.River.Window_management.River_window_manager_v1.t
+  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
-(** [on_session_unlocked river_wm_v1] handles the session unlock request.
+(** [on_session_unlocked river_wm_v1 wm_box] handles the session unlock request.
 
     {b Effects:} mutates WM state; sends River request *)
 val on_session_unlocked
   :  Ocdwm_state.River.V.Window_management.t
        Ocdwm_state.River.Window_management.River_window_manager_v1.t
+  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
 (** [on_unavailable river_wm_v1] handles the unavailable event.

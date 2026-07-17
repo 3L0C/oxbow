@@ -169,6 +169,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
     ; output = None
     ; position = { x = 0l; y = 0l }
     ; layer_focus = None
+    ; mode = Mode.normal
     ; xkb_bindings = []
     ; pointer_bindings = []
     ; pending_requests = Queue.create ()
@@ -228,8 +229,17 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
   Wm.ensure_seat_output wm seat
 ;;
 
-let on_session_locked _proxy = ()
-let on_session_unlocked _proxy = ()
+let on_session_locked _proxy (wm_box : Wm.t Box.t) =
+  let wm = Option.get wm_box.body in
+  Wm.set_session_locked wm true;
+  Dirty.mark_wm wm
+;;
+
+let on_session_unlocked _proxy (wm_box : Wm.t Box.t) =
+  let wm = Option.get wm_box.body in
+  Wm.set_session_locked wm true;
+  Dirty.mark_wm wm
+;;
 
 let on_unavailable _proxy =
   Printf.eprintf "error: another window manager is already running\n";

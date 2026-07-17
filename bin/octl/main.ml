@@ -12,6 +12,7 @@ let bind_group =
     ~name:"bind"
     ~doc:"Bind a key or pointer button to a command"
     [ Cmd_exec.bind_cmd
+    ; Cmd_keymap.bind_cmd
     ; Cmd_layout.bind_cmd
     ; Cmd_output.bind_cmd
     ; Cmd_rule.bind_cmd
@@ -30,6 +31,7 @@ let cmd =
     ~name:"octl"
     ~doc:"command-line interface for controlling ocdwm"
     [ Cmd_exec.cmd
+    ; Cmd_keymap.cmd
     ; Cmd_layout.cmd
     ; Cmd_output.cmd
     ; Cmd_rule.cmd

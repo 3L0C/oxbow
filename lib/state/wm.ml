@@ -72,3 +72,4 @@ let find_input_device_opt (wm : t) device =
 
 let is_dirty (wm : t) = wm.is_dirty
 let clean (wm : t) = wm.is_dirty <- false
+let set_session_locked (wm : t) b = wm.session_locked <- b

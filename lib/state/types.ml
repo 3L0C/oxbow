@@ -25,6 +25,7 @@ module Config = struct
     { default_tag_config : Data.t
     ; borders : Border.t
     ; mutable cursor_theme : (string * int32) option
+    ; mutable modes : string list
     ; mutable modkey : River.Window_management.River_seat_v1.Modifiers.t
     ; mutable rules : Ocdwm_core.Rule.t list
     ; mutable focus_follows_pointer : bool
@@ -271,6 +272,8 @@ and Seat : sig
     type t =
       { obj : River.V.Xkb_bindings.t River.Xkb_bindings.River_xkb_binding_v1.t
       ; seat : Seat.t
+      ; mode : string
+      ; mutable enabled : bool
       ; command : Ocdwm_ipc.Command.t
       ; mods : int32
       ; keysym : Xkbcommon.Keysym.t
@@ -282,6 +285,8 @@ and Seat : sig
       { obj :
           River.V.Window_management.t River.Window_management.River_pointer_binding_v1.t
       ; seat : Seat.t
+      ; mode : string
+      ; mutable enabled : bool
       ; command : Ocdwm_ipc.Command.t
       ; mods : int32
       ; button : Ocdwm_core.Pointer_button.t
@@ -300,6 +305,7 @@ and Seat : sig
       mutable output : Output.t option
     ; mutable position : Position.t
     ; mutable layer_focus : Layer_focus.t option
+    ; mutable mode : string
     ; (* Keybindings *)
       mutable xkb_bindings : Xkb_binding.t list
     ; mutable pointer_bindings : Pointer_binding.t list
@@ -361,6 +367,7 @@ and Wm : sig
       shutdown : Eio.Condition.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable is_dirty : bool
+    ; mutable session_locked : bool
     ; (* State *)
       mutable primary_seat : Seat.t option
     ; (* Managed items *)

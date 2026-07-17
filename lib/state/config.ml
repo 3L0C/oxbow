@@ -23,6 +23,7 @@ let default entry =
   ; cursor_theme = None
   ; modkey = River.Window_management.River_seat_v1.Modifiers.(mod4)
   ; rules = []
+  ; modes = [ Mode.normal; Mode.locked ]
   ; focus_follows_pointer = true
   ; warp_on_focus = false
   ; repeat_rate = 50
@@ -65,3 +66,5 @@ let add_rule (wm : Types.Wm.t) rule = wm.config.rules <- wm.config.rules @ [ rul
 let remove_rule (wm : Types.Wm.t) rule =
   wm.config.rules <- List.filter (Fun.negate (Rule.equal rule)) wm.config.rules
 ;;
+
+let declare_mode (wm : Types.Wm.t) name = wm.config.modes <- wm.config.modes @ [ name ]

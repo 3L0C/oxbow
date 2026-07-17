@@ -53,3 +53,8 @@ val add_rule : Types.Wm.t -> Ocdwm_core.Rule.t -> unit
 
     {b Effects:} mutates WM state *)
 val remove_rule : Types.Wm.t -> Ocdwm_core.Rule.t -> unit
+
+(** [declare_mode wm name] appends [name] to the declared modes.
+
+    {b Effects:} mutates WM state *)
+val declare_mode : Types.Wm.t -> string -> unit

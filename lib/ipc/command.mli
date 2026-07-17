@@ -125,6 +125,15 @@ module Rule : sig
   val yojson_of_t : t -> Yojson.Safe.t
 end
 
+module Mode : sig
+  type t =
+    | Declare of string
+    | Enter of string
+
+  val t_of_yojson : Yojson.Safe.t -> t
+  val yojson_of_t : t -> Yojson.Safe.t
+end
+
 module Session : sig
   type t = Exit
 
@@ -155,6 +164,7 @@ type t =
   | Output of Output.t
   | Set of Set.t
   | Rule of Rule.t
+  | Mode of Mode.t
   | Session of Session.t
   | Wm of Wm.t
   | Execute of Execute.t
