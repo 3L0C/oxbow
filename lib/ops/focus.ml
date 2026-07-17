@@ -110,7 +110,7 @@ let window_query ~cycle ctx seat q =
      | None ->
        Error (Printf.sprintf "no window matches query: %S" (Window_query.to_string q))
      | Some w ->
-       focus_window ctx seat w;
+       focus_window ~force:true ctx seat w;
        Ok None)
 ;;
 

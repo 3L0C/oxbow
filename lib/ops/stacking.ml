@@ -34,6 +34,7 @@ let apply (intent : Focus_intent.t) (output : Output.t) =
   match intent with
   | Promote { window; seat; _ } ->
     splice_focus_stack [ window ];
+    Output.switch_tags ~tags:window.tags output;
     sync seat
   | Push windows ->
     Output.set_wm_stack output @@ windows @ List.filter (not_in windows) output.wm_stack;
