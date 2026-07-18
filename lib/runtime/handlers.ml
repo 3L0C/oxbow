@@ -68,7 +68,11 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
             ~name
           @@ ( object
                  inherit [_] Wayland.Wayland_client.Wl_output.v4
-                 method on_name _ ~name = Output.set_name output @@ Some name
+
+                 method on_name _ ~name =
+                   Output.set_name output @@ Some name;
+                   List.iter (fun w -> Window.rehome wm w name) wm.windows
+
                  method on_scale _ ~factor = ()
                  method on_mode _ ~flags ~width ~height ~refresh = ()
 

@@ -180,7 +180,9 @@ val resize_spatial
     {b Effects:} mutates WM state; marks dirty *)
 val set_tags : t -> Ocdwm_core.Tag.Set.t -> unit
 
-(** [set_output window output] sets [window]'s output to [output].
+(** [set_output window output] sets [window]'s output to [output]. Setting
+    [None] records the current output's name if none has been recorded
+    previously.
 
     {b Effects:} mutates WM state; marks dirty *)
 val set_output : t -> Types.Output.t option -> unit
@@ -260,3 +262,10 @@ val set_is_fixed : t -> bool -> unit
 
     {b Effects:} mutates WM state *)
 val set_is_hidden : t -> bool -> unit
+
+(** [rehome wm window name] queues a request to send [window] to the output
+    matching [name], when [window]'s home output matches [name]. No-op
+    otherwise.
+
+    {b Effects:} mutates WM state; marks dirty *)
+val rehome : Types.Wm.t -> t -> string -> unit

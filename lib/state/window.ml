@@ -44,6 +44,7 @@ let create (output : Types.Output.t option) river_window : t =
        | None -> Tag.Set.singleton 1
        | Some o -> o.selected_tags)
   ; output
+  ; output_before_evac = None
   ; is_fixed = false
   ; is_urgent = false
   ; is_fake_fullscreen = false
@@ -411,9 +412,16 @@ let set_tags (w : t) tags =
 ;;
 
 let set_output (w : t) output =
-  Option.iter Dirty.mark_output w.output;
-  Option.iter Dirty.mark_output output;
-  w.output <- output
+  let aux () =
+    Option.iter Dirty.mark_output w.output;
+    Option.iter Dirty.mark_output output;
+    w.output <- output
+  in
+  match w.output, output with
+  | Some o, None when Option.is_none w.output_before_evac ->
+    w.output_before_evac <- o.name;
+    aux ()
+  | _ -> aux ()
 ;;
 
 let set_presentation (w : t) presentation =
@@ -437,3 +445,11 @@ let set_presentation_hint (w : t) hint = w.presentation_hint <- hint
 let set_size_hints (w : t) hints = w.size_hints <- hints
 let set_is_fixed (w : t) is_fixed = w.is_fixed <- is_fixed
 let set_is_hidden (w : t) is_hidden = w.is_hidden <- is_hidden
+
+let rehome wm (w : t) name =
+  match w.output_before_evac with
+  | Some n when String.equal n name ->
+    w.output_before_evac <- None;
+    queue_request wm w @@ Send_to_output_name { name; policy = Tag.Policy.Keep }
+  | _ -> ()
+;;

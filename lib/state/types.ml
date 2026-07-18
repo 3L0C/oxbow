@@ -204,6 +204,7 @@ and Window : sig
     ; (* Tag and output assignment *)
       mutable tags : Ocdwm_core.Tag.Set.t
     ; mutable output : Output.t option
+    ; mutable output_before_evac : string option
     ; (* State flags *)
       mutable is_fixed : bool
     ; mutable is_urgent : bool
