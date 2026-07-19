@@ -155,6 +155,7 @@ let handle ctx seat ({ body; reply } : Pending_request.t) =
       | Command c -> handle_command ctx seat c
       | Keymap keymap -> handle_keymap ctx seat keymap
       | Query query -> handle_query (Ctx.wm ctx) seat query
+      | Subscribe _ -> Error "subscribe handled at the connection layer"
     with
     | Exceptions.Finished -> raise Exceptions.Finished
     | exn -> Error (Printexc.to_string exn)

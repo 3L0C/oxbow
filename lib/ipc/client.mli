@@ -15,3 +15,16 @@ val send
   -> ?socket:string
   -> Request.Body.t
   -> (Yojson.Safe.t option, Error.t) result
+
+(** [subscribe ~env ?socket ?output ~kinds f] opens a subscribe stream over the
+    ocdwm socket and calls [f] with each event line until either side closes;
+    [kinds] empty for all kinds, [output] restricts output-keyed kinds.
+
+    {b Effects:} I/O; blocks until the stream ends *)
+val subscribe
+  :  env:Eio_unix.Stdenv.base
+  -> ?socket:string
+  -> ?output:string
+  -> kinds:Event.Kind.t list
+  -> (string -> unit)
+  -> (unit, Error.t) result

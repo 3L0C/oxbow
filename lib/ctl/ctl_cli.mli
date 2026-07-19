@@ -94,6 +94,15 @@ val cmd
   -> Ocdwm_ipc.Request.Body.t Cmdliner.Term.t
   -> int Cmdliner.Cmd.t
 
+(** [stream_cmd ~name ~doc term] is a command that streams subscribe events for
+    [term]'s kinds and output filter to stdout, one JSON line each, and exits by
+    the outcome. *)
+val stream_cmd
+  :  name:string
+  -> doc:string
+  -> (Ocdwm_ipc.Event.Kind.t list * string option) Cmdliner.Term.t
+  -> int Cmdliner.Cmd.t
+
 (** [command_term term] maps the [term]'s command into a [Command] body. *)
 val command_term
   :  Ocdwm_ipc.Command.t Cmdliner.Term.t

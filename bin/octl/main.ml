@@ -38,6 +38,7 @@ let cmd =
     ; Cmd_session.cmd
     ; Cmd_set.cmd
     ; Cmd_spawn.cmd
+    ; Cmd_subscribe.cmd
     ; Cmd_tag.cmd
     ; Cmd_unbind.cmd
     ; Cmd_window.cmd

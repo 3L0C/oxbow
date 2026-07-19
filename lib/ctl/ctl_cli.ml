@@ -289,6 +289,23 @@ let dispatch ?seat ?socket body =
     code_protocol_err
 ;;
 
+let dispatch_stream ?socket ?output ~kinds () =
+  Eio_main.run
+  @@ fun env ->
+  match
+    Client.subscribe ~env ?socket ?output ~kinds (fun line ->
+      print_endline line;
+      flush stdout)
+  with
+  | Ok () -> Cmd.Exit.ok
+  | Error (Connection_failed msg) ->
+    (Logs.err @@ fun m -> m "connection failed: %s" msg);
+    code_conn_failed
+  | Error (Protocol msg) ->
+    (Logs.err @@ fun m -> m "%s" msg);
+    code_protocol_err
+;;
+
 let group = Cli.group
 
 let cmd ~name ~doc term =
@@ -299,6 +316,15 @@ let cmd ~name ~doc term =
   and+ socket = socket
   and+ body = term in
   dispatch ?seat ?socket body
+;;
+
+let stream_cmd ~name ~doc term =
+  let open Cmdliner.Term.Syntax in
+  Cli.cmd ~exits ~name ~doc
+  @@
+  let+ socket = socket
+  and+ kinds, output = term in
+  dispatch_stream ?socket ?output ~kinds ()
 ;;
 
 let command_term term =

@@ -29,7 +29,7 @@ module Handler = struct
        | Execute (Spawn "") -> Error "spawn: empty command"
        | Execute (Exec [||]) | Execute (Exec [| "" |]) -> Error "exec: empty command"
        | _ -> Ok ())
-    | Keymap _ | Query _ -> Ok ()
+    | Keymap _ | Query _ | Subscribe _ -> Ok ()
   ;;
 
   let resolve_seat (wm : Wm.t) (req : Request.t) =
@@ -69,12 +69,46 @@ module Handler = struct
     Ok (req, seat)
   ;;
 
-  let handle_line ~wm ~flow line =
+  let run_subscribe ~wm ~flow ~buf (s : Event.Subscribe.t) =
+    respond_ok flow None;
+    let kinds =
+      match s.kinds with
+      | [] -> Event.Kind.all
+      | ks -> ks
+    in
+    let sub =
+      Wm.Ipc.Subscriber.
+        { kinds; output = s.output; pending = []; wake = Eio.Condition.create () }
+    in
+    Wm.add_subscriber wm sub;
+    Events.seed wm sub;
+    Fun.protect ~finally:(fun () -> Wm.remove_subscriber wm sub)
+    @@ fun () ->
+    try
+      Eio.Fiber.first
+        (fun () ->
+           try ignore @@ Eio.Buf_read.line buf with
+           | End_of_file -> ())
+        (fun () ->
+           while true do
+             while sub.pending = [] do
+               Eio.Condition.await_no_mutex sub.wake
+             done;
+             let batch = sub.pending in
+             sub.pending <- [];
+             List.iter (fun (_, line) -> Eio.Flow.copy_string (line ^ "\n") flow) batch
+           done)
+    with
+    | Eio.Io _ -> ()
+  ;;
+
+  let handle_line ~wm ~flow ~buf line =
     match decode_line ~wm line with
     | Error e -> respond_err flow e
     | Ok (req, seat) ->
-      (match wm.lifecycle with
-       | Running ->
+      (match req.body, wm.lifecycle with
+       | Subscribe s, Running -> run_subscribe ~wm ~flow ~buf s
+       | _, Running ->
          let p, u = Eio.Promise.create () in
          let open Pending_request in
          let request = { body = req.body; reply = Some u } in
@@ -82,14 +116,15 @@ module Handler = struct
          (match Eio.Promise.await p with
           | Ok data -> respond_ok flow data
           | Error msg -> respond_err flow msg)
-       | Pending_exit _ | Exited | Close_requested -> respond_err flow "wm shutting down")
+       | _, (Pending_exit _ | Exited | Close_requested) ->
+         respond_err flow "wm shutting down")
   ;;
 
   let run ~wm flow =
     let buf = Eio.Buf_read.of_flow flow ~max_size:65536 in
     match Eio.Buf_read.line buf with
     | exception _ -> respond_err flow "read failed"
-    | line -> handle_line ~wm ~flow line
+    | line -> handle_line ~wm ~flow ~buf line
   ;;
 end
 

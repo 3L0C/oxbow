@@ -336,22 +336,17 @@ and Wm : sig
   module Ipc : sig
     module Subscriber : sig
       type t =
-        { mutable fd : Unix.file_descr
-        ; mutable events : string list
-        }
-    end
-
-    module Connection : sig
-      type t =
-        { socket_path : string
-        ; server_fd : Unix.file_descr
-        ; mutable subscribers : Subscriber.t list
+        { kinds : Ocdwm_ipc.Event.Kind.t list
+        ; output : string option
+        ; mutable pending : ((Ocdwm_ipc.Event.Kind.t * string) * string) list
+        ; wake : Eio.Condition.t
         }
     end
 
     type t =
-      | Inactive
-      | Active of Connection.t
+      { mutable subscribers : Subscriber.t list
+      ; mutable last : ((Ocdwm_ipc.Event.Kind.t * string) * Ocdwm_ipc.Event.t) list
+      }
   end
 
   type t =

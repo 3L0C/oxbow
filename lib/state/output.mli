@@ -42,6 +42,10 @@ val switch_tags : tags:Ocdwm_core.Tag.Set.t -> t -> unit
     windows. *)
 val occupied_tags : t -> Ocdwm_core.Tag.Set.t
 
+(** [occupied_tags output] is the tag set containing all tags with urgent
+    windows. *)
+val urgent_tags : t -> Ocdwm_core.Tag.Set.t
+
 (** [current_layout_entry output] is the layout entry of the first selected tag
     on [output]. *)
 val current_layout_entry : t -> Ocdwm_layout.Entry.t
@@ -49,6 +53,9 @@ val current_layout_entry : t -> Ocdwm_layout.Entry.t
 (** [current_layout_params output] is the layout params of the first selected
     tag on [output]. *)
 val current_layout_params : t -> Ocdwm_layout.Params.t
+
+(** [current_layout_ctx output] is the current layout context of [output]. *)
+val current_layout_ctx : t -> Ocdwm_layout.Symbol.Ctx.t
 
 (** [tiled_windows output] is the list of tiled windows on the selected tags of
     [output]. *)

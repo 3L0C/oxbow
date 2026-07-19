@@ -83,7 +83,7 @@ let loop ~init_command ~net ~clock =
     ; init_command
     ; init_handle = None
     ; layout_registry
-    ; ipc = Inactive
+    ; ipc = { subscribers = []; last = [] }
     }
   in
   let signaled = Eio.Condition.create () in

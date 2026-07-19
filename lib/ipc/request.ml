@@ -5,6 +5,7 @@ module Body = struct
     | Command of Command.t [@name "command"]
     | Keymap of Keymap.t [@name "keymap"]
     | Query of Query.t [@name "query"]
+    | Subscribe of Event.Subscribe.t [@name "subscribe"]
   [@@deriving yojson]
 end
 

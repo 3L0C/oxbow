@@ -7,3 +7,8 @@
  (name test_layout)
  (modules test_layout)
  (libraries ocdwm.core ocdwm.layout))
+
+(test
+ (name test_events)
+ (modules test_events)
+ (libraries ocdwm.ipc yojson))

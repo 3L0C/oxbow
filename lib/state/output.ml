@@ -83,6 +83,19 @@ let current_layout_params o =
   td.params
 ;;
 
+let current_layout_ctx o =
+  match focused_window o with
+  | None -> Symbol.Ctx.{ focused_index = 0; count = 0 }
+  | Some w ->
+    let ws = visible_windows o in
+    let count = List.length ws in
+    let focused_index =
+      List.find_mapi (fun i w' -> if w == w' then Some i else None) ws
+      |> Option.value ~default:0
+    in
+    Symbol.Ctx.{ focused_index; count }
+;;
+
 let switch_tags ~tags (o : t) =
   if not (Tag.Set.is_empty tags || Tag.Set.equal tags o.selected_tags)
   then (
@@ -94,6 +107,13 @@ let switch_tags ~tags (o : t) =
 let occupied_tags (o : t) =
   List.fold_left
     (fun s (w : Types.Window.t) -> Tag.Set.union s w.tags)
+    Tag.Set.empty
+    o.wm_stack
+;;
+
+let urgent_tags (o : t) =
+  List.fold_left
+    (fun s (w : Types.Window.t) -> if w.is_urgent then Tag.Set.union s w.tags else s)
     Tag.Set.empty
     o.wm_stack
 ;;

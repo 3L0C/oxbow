@@ -6,9 +6,7 @@ module Error = struct
     | Protocol of string
 end
 
-let send ~env ?seat ?socket (body : Request.Body.t)
-  : (Yojson.Safe.t option, Error.t) result
-  =
+let send ~env ?seat ?socket body =
   let path = Socket_path.resolve ?override:socket () in
   let net = Eio.Stdenv.net env in
   let addr = `Unix path in
@@ -26,6 +24,35 @@ let send ~env ?seat ?socket (body : Request.Body.t)
     if resp.ok
     then Ok resp.data
     else Error (Error.Protocol (Option.value ~default:"unspecified" resp.err))
+  with
+  | Eio.Io _ as ex -> Error (Connection_failed (Format.asprintf "%a" Eio.Exn.pp ex))
+;;
+
+let subscribe ~env ?socket ?output ~kinds f =
+  let path = Socket_path.resolve ?override:socket () in
+  let net = Eio.Stdenv.net env in
+  let addr = `Unix path in
+  let body = Request.Body.Subscribe { kinds; output } in
+  let req = Request.{ body; seat = None } in
+  let req_str = Yojson.Safe.to_string (Request.yojson_of_t req) ^ "\n" in
+  try
+    Eio.Switch.run
+    @@ fun sw ->
+    let flow = Eio.Net.connect ~sw net addr in
+    Eio.Flow.copy_string req_str flow;
+    let buf = Eio.Buf_read.of_flow flow ~max_size:65536 in
+    let line = Eio.Buf_read.line buf in
+    let resp = Response.t_of_yojson @@ Yojson.Safe.from_string line in
+    if not resp.ok
+    then Error (Error.Protocol (Option.value ~default:"unspecified" resp.err))
+    else (
+      try
+        while true do
+          f (Eio.Buf_read.line buf)
+        done;
+        Ok ()
+      with
+      | End_of_file -> Ok ())
   with
   | Eio.Io _ as ex -> Error (Connection_failed (Format.asprintf "%a" Eio.Exn.pp ex))
 ;;

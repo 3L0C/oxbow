@@ -66,21 +66,6 @@ val set_init_handle : t -> Init_script.t option -> unit
     {b Effects:} mutates WM state *)
 val set_input_devices : t -> Types.Input_device.t list -> unit
 
-(** [add_input_device wm entry] adds [entry] to [wm]'s input device list.
-
-    {b Effects:} mutates WM state *)
-val add_input_device : t -> Types.Input_device.t -> unit
-
-(** [remove_input_device wm entry] removes [entry] from [wm]'s input device
-    list.
-
-    {b Effects:} mutates WM state; sends River request *)
-val remove_input_device : t -> Types.Input_device.t -> unit
-
-(** [find_input_device_opt wm device] is the input device matching [device] or
-    [None]. *)
-val find_input_device_opt : t -> int32 -> Types.Input_device.t option
-
 (** [add_xkb_stash wm device xkb] adds [(device, xkb)] to [wm]'s pending xkb
     list.
 
@@ -96,6 +81,32 @@ val remove_xkb_stash : t -> int32 -> unit
 (** [find_xkb_stash_opt wm device] is the pending xkb object matching [device]
     or [None]. *)
 val find_xkb_stash_opt : t -> int32 -> Types.Input_device.Xkb.t option
+
+(** [add_input_device wm entry] adds [entry] to [wm]'s input device list.
+
+    {b Effects:} mutates WM state *)
+val add_input_device : t -> Types.Input_device.t -> unit
+
+(** [remove_input_device wm entry] removes [entry] from [wm]'s input device
+    list.
+
+    {b Effects:} mutates WM state; sends River request *)
+val remove_input_device : t -> Types.Input_device.t -> unit
+
+(** [find_input_device_opt wm device] is the input device matching [device] or
+    [None]. *)
+val find_input_device_opt : t -> int32 -> Types.Input_device.t option
+
+(** [add_subscriber wm sub] registers [sub] to receive published events.
+
+    {b Effects:} mutates WM state *)
+val add_subscriber : t -> Ipc.Subscriber.t -> unit
+
+(** [remove_subscriber wm sub] removes [sub] from the subscriber registry; no-op
+    when [sub] is not registered.
+
+    {b Effects:} mutates WM state *)
+val remove_subscriber : t -> Ipc.Subscriber.t -> unit
 
 (** [is_dirty wm] is [true] when a dirty mark is pending. *)
 val is_dirty : t -> bool
