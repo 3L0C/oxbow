@@ -53,8 +53,10 @@ end
 module Window = struct
   type t =
     { output : string
+    ; focused : bool
     ; title : string option
     ; app_id : string option
+    ; tags : int list option
     }
   [@@deriving yojson]
 end

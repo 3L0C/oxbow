@@ -19,14 +19,17 @@ let snapshot_tags (output : Output.t) =
   Option.map f output.name
 ;;
 
-let snapshot_windows (output : Output.t) =
+let snapshot_windows (wm : Wm.t) (output : Output.t) =
   let f name =
     let focused = Output.focused_window output in
     ( (Event.Kind.Window, name)
     , Event.Window
         { output = name
+        ; focused =
+            List.exists (fun (s : Seat.t) -> Phys.opt_holds output s.output) wm.seats
         ; title = Option.bind focused (fun w -> w.title)
         ; app_id = Option.bind focused (fun w -> w.app_id)
+        ; tags = Option.bind focused (fun w -> Some (Tag.Set.to_list w.tags))
         } )
   in
   Option.map f output.name
@@ -77,7 +80,7 @@ let snapshots (wm : Wm.t) =
   let out_snaps =
     List.map
       (fun (o : Output.t) ->
-         let snaps = [ snapshot_tags o; snapshot_windows o; snapshot_layout o ] in
+         let snaps = [ snapshot_tags o; snapshot_windows wm o; snapshot_layout o ] in
          List.filter_map Fun.id snaps)
       wm.outputs
     |> List.flatten

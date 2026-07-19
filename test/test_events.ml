@@ -47,8 +47,16 @@ let () =
           ; focused = [ 1 ]
           }));
   check
-    ~expect:{|{"event":"window","output":"DP-1","title":null,"app_id":"foot"}|}
-    (Event.to_line (Window { output = "DP-1"; title = None; app_id = Some "foot" }));
+    ~expect:
+      {|{"event":"window","output":"DP-1","focused":false,"title":null,"app_id":"foot","tags":[1,2]}|}
+    (Event.to_line
+       (Window
+          { output = "DP-1"
+          ; focused = false
+          ; title = None
+          ; app_id = Some "foot"
+          ; tags = Some [ 1; 2 ]
+          }));
   check
     ~expect:{|{"event":"layout","output":"DP-1","layout":"tall","symbol":"[]="}|}
     (Event.to_line (Layout { output = "DP-1"; layout = "tall"; symbol = "[]=" }));

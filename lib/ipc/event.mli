@@ -30,8 +30,10 @@ end
 module Window : sig
   type t =
     { output : string
+    ; focused : bool
     ; title : string option
     ; app_id : string option
+    ; tags : int list option
     }
 
   val t_of_yojson : Yojson.Safe.t -> t
