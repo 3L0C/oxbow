@@ -48,6 +48,7 @@ let add (wm : Wm.t) rule =
   then Error "rule already exists"
   else (
     Config.add_rule wm rule;
+    List.iter (fun w -> apply wm w rule) wm.windows;
     Ok None)
 ;;
 
