@@ -7,9 +7,9 @@ let paint ctx (seat : Seat.t) =
   let color (w : Window.t) o =
     if w.is_urgent
     then borders.urgent_color
-    else if not @@ Phys.opt_holds seat.output o
+    else if not @@ Phys.opt_holds o seat.output
     then borders.unfocused_color
-    else if Phys.opt_holds (Output.focused_window o) w
+    else if Phys.opt_holds w (Output.focused_window o)
     then borders.focused_color
     else borders.unfocused_color
   in

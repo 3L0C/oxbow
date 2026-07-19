@@ -105,7 +105,7 @@ let manage_new_seat ctx (seat : Seat.t) =
     Seat.set_lifecycle seat Active;
     let wm = Ctx.wm ctx in
     (match wm.init_handle, wm.init_command with
-     | None, Some cmd when Phys.opt_holds wm.primary_seat seat ->
+     | None, Some cmd when Phys.opt_holds seat wm.primary_seat ->
        let init_handle = Init_script.fork ~cmd in
        Wm.set_init_handle wm @@ Some init_handle;
        Logs.debug @@ fun m -> m "init script forked: pid=%d" init_handle.pid

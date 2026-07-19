@@ -10,7 +10,7 @@ let layer_shell_sync (wm : Wm.t) =
 let set_output ctx seat output =
   let wm = Ctx.wm ctx in
   Seat.set_output seat output;
-  if Phys.opt_holds wm.primary_seat seat then layer_shell_sync wm
+  if Phys.opt_holds seat wm.primary_seat then layer_shell_sync wm
 ;;
 
 let focus_window ?(force : bool = false) ctx (seat : Seat.t) (target : Window.t) =

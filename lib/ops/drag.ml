@@ -47,7 +47,7 @@ let step ctx (seat : Seat.t) =
     let cx = Int32.(div w.geom.w 2l |> add w.geom.x) in
     let cy = Int32.(div w.geom.h 2l |> add w.geom.y) in
     (match Output.at_point ~x:cx ~y:cy wm.outputs with
-     | Some o when not @@ Phys.opt_holds w.output o ->
+     | Some o when not @@ Phys.opt_holds o w.output ->
        let prev = w.output in
        Placement.move_window ~policy:Tag.Policy.Take w o;
        Focus.focus_window ctx seat w;

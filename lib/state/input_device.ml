@@ -24,7 +24,7 @@ let set_xkb (wm : Types.Wm.t) (entry : t) xkb =
 
 let clear_xkb (entry : t) xkb =
   match entry.role with
-  | Keyboard k when Phys.opt_holds k.xkb xkb -> k.xkb <- None
+  | Keyboard k when Phys.opt_holds xkb k.xkb -> k.xkb <- None
   | Keyboard _ | Pointer | Touch | Tablet -> ()
 ;;
 

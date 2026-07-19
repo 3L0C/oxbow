@@ -8,9 +8,9 @@ let handle_position ~x ~y (wm : Wm.t) seat =
     match Output.at_point ~x ~y wm.outputs with
     | None -> Seat.set_cursor_target seat None
     | Some o ->
-      if not @@ Phys.opt_holds seat.output o then Seat.focus_output seat @@ Some o;
+      if not @@ Phys.opt_holds o seat.output then Seat.focus_output seat @@ Some o;
       (match seat.hovered with
-       | Some w when not @@ Phys.opt_holds seat.cursor_target w ->
+       | Some w when not @@ Phys.opt_holds w seat.cursor_target ->
          Seat.set_focus_state seat @@ Refresh w;
          Seat.set_cursor_target seat seat.hovered
        | _ -> ()))

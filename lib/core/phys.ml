@@ -1,7 +1,6 @@
 let opt_equal a b = Option.equal ( == ) a b
 
-let opt_holds o v =
-  match o with
+let opt_holds v = function
   | Some x -> x == v
   | None -> false
 ;;
