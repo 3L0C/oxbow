@@ -142,9 +142,13 @@ let clear_pending (s : t) =
 ;;
 
 let set_output (s : t) output =
-  Option.iter Dirty.mark_output s.output;
-  Option.iter Dirty.mark_output output;
-  s.output <- output
+  match s.output, output with
+  | Some o, Some o' when o == o' -> ()
+  | None, None -> ()
+  | _ ->
+    Option.iter Dirty.mark_output s.output;
+    Option.iter Dirty.mark_output output;
+    s.output <- output
 ;;
 
 let focus_output (s : t) output =

@@ -134,9 +134,18 @@ let manage_output ctx (output : Output.t) =
   match output.lifecycle with
   | Dirty { prev = Removed } -> Output.set_lifecycle output Removed
   | Dirty { prev } ->
+    (* The dirty flag is taken before handling: a handler that re-marks this
+       output schedules another cycle, so handlers must be idempotent. *)
     Output.set_lifecycle output prev;
     Arrange.retile ctx output;
-    Focus.refresh ctx output
+    Focus.refresh ctx output;
+    if Output.is_dirty output
+    then
+      Logs.debug
+      @@ fun m ->
+      m
+        "manage_output: %s re-dirtied during its own handling (non-idempotent handler?)"
+        (Option.value output.name ~default:"<unnamed>")
   | Active | Removed -> ()
 ;;
 
