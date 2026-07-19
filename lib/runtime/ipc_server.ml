@@ -136,20 +136,20 @@ let accept_loop ~sw ~wm socket =
            Lifecycle.await_shutdown wm;
            `Shutdown)
         (fun () ->
-           let flow, _addr = Eio.Net.accept ~sw socket in
-           `Conn flow)
+           Eio.Net.accept_fork
+             ~sw
+             socket
+             ~on_error:(fun exn ->
+               Logs.warn @@ fun m -> m "ipc handler crashed: %s" (Printexc.to_string exn))
+             (fun flow _addr ->
+                Eio.Fiber.first
+                  (fun () -> Lifecycle.await_shutdown wm)
+                  (fun () -> Handler.run ~wm flow));
+           `Accepted)
     in
     match outcome with
     | `Shutdown -> ()
-    | `Conn flow ->
-      Eio.Fiber.fork ~sw (fun () ->
-        try Handler.run ~wm flow with
-        | Eio.Cancel.Cancelled _ ->
-          Logs.debug
-          @@ fun m -> m "Ipc_server: connection handler failed (ocdwm shutting down)"
-        | exn ->
-          Logs.warn @@ fun m -> m "ipc handler crashed: %s" (Printexc.to_string exn));
-      loop ()
+    | `Accepted -> loop ()
   in
   loop ()
 ;;
