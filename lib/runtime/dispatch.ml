@@ -146,6 +146,11 @@ let handle_query (wm : Wm.t) seat (query : Query.t) =
   match query with
   | Rules -> Ok (Some ([%yojson_of: Rule.t list] wm.config.rules))
   | Keymaps { all } -> Ok (Some (Bind.list wm seat ~all))
+  | Outputs ->
+    Ok
+      (Some
+         ([%yojson_of: string list]
+            (List.filter_map (fun (o : Output.t) -> o.name) wm.outputs)))
 ;;
 
 let handle ctx seat ({ body; reply } : Pending_request.t) =
