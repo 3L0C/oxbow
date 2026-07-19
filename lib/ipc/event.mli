@@ -65,6 +65,7 @@ module Focus : sig
     ; output : string option
     ; title : string option
     ; app_id : string option
+    ; tags : int list option
     }
 
   val t_of_yojson : Yojson.Safe.t -> t

@@ -57,8 +57,13 @@ let () =
     (Event.to_line (Mode { seat = "default"; mode = "normal" }));
   check
     ~expect:
-      {|{"event":"focus","seat":"default","output":"DP-1","title":null,"app_id":"foot"}|}
+      {|{"event":"focus","seat":"default","output":"DP-1","title":null,"app_id":"foot","tags":[1,3]}|}
     (Event.to_line
        (Focus
-          { seat = "default"; output = Some "DP-1"; title = None; app_id = Some "foot" }))
+          { seat = "default"
+          ; output = Some "DP-1"
+          ; title = None
+          ; app_id = Some "foot"
+          ; tags = Some [ 1; 3 ]
+          }))
 ;;

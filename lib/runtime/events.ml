@@ -59,6 +59,7 @@ let snapshot_focus (seat : Seat.t) =
         ; output = Option.bind seat.output (fun o -> o.name)
         ; title = Option.bind focused_window (fun w -> w.title)
         ; app_id = Option.bind focused_window (fun w -> w.app_id)
+        ; tags = Option.bind focused_window (fun w -> Some (Tag.Set.to_list w.tags))
         } )
   in
   Option.map f seat.name

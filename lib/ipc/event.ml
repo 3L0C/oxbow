@@ -82,6 +82,7 @@ module Focus = struct
     ; output : string option
     ; title : string option
     ; app_id : string option
+    ; tags : int list option
     }
   [@@deriving yojson]
 end
