@@ -8,6 +8,7 @@ let cmd =
     [ Cmd_window_close.cmd
     ; Cmd_window_focus.cmd
     ; Cmd_window_move.cmd
+    ; Cmd_window_query.cmd
     ; Cmd_window_resize.cmd
     ; Cmd_window_send.cmd
     ; Cmd_window_shift.cmd

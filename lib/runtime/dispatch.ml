@@ -151,6 +151,17 @@ let handle_query (wm : Wm.t) seat (query : Query.t) =
       (Some
          ([%yojson_of: string list]
             (List.filter_map (fun (o : Output.t) -> o.name) wm.outputs)))
+  | Focused ->
+    let focused_window = Seat.focused_window seat in
+    Ok
+      (Some
+         ([%yojson_of: Event.Focus.t]
+            { seat = Option.value seat.name ~default:""
+            ; output = Option.bind seat.output (fun o -> o.name)
+            ; title = Option.bind focused_window (fun w -> w.title)
+            ; app_id = Option.bind focused_window (fun w -> w.app_id)
+            ; tags = Option.bind focused_window (fun w -> Some (Tag.Set.to_list w.tags))
+            }))
 ;;
 
 let handle ctx seat ({ body; reply } : Pending_request.t) =
