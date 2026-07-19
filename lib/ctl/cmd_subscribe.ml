@@ -18,8 +18,8 @@ let term =
           []
           ~docv:"KIND"
           ~doc:
-            "Event kinds to stream (default: all). Available: tags, window, layout, and \
-             mode")
+            "Event kinds to stream (default: all). Available: tags, window, layout, \
+             mode, and focus")
   and+ output =
     Arg.(
       value

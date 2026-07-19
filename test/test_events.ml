@@ -54,5 +54,11 @@ let () =
     (Event.to_line (Layout { output = "DP-1"; layout = "tall"; symbol = "[]=" }));
   check
     ~expect:{|{"event":"mode","seat":"default","mode":"normal"}|}
-    (Event.to_line (Mode { seat = "default"; mode = "normal" }))
+    (Event.to_line (Mode { seat = "default"; mode = "normal" }));
+  check
+    ~expect:
+      {|{"event":"focus","seat":"default","output":"DP-1","title":null,"app_id":"foot"}|}
+    (Event.to_line
+       (Focus
+          { seat = "default"; output = Some "DP-1"; title = None; app_id = Some "foot" }))
 ;;

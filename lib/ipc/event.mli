@@ -4,6 +4,7 @@ module Kind : sig
     | Window
     | Layout
     | Mode
+    | Focus
 
   val t_of_yojson : Yojson.Safe.t -> t
   val yojson_of_t : t -> Yojson.Safe.t
@@ -58,6 +59,18 @@ module Mode : sig
   val yojson_of_t : t -> Yojson.Safe.t
 end
 
+module Focus : sig
+  type t =
+    { seat : string
+    ; output : string option
+    ; title : string option
+    ; app_id : string option
+    }
+
+  val t_of_yojson : Yojson.Safe.t -> t
+  val yojson_of_t : t -> Yojson.Safe.t
+end
+
 module Subscribe : sig
   type t =
     { kinds : Kind.t list
@@ -73,6 +86,7 @@ type t =
   | Window of Window.t
   | Layout of Layout.t
   | Mode of Mode.t
+  | Focus of Focus.t
 
 val kind : t -> Kind.t
 val source : t -> string

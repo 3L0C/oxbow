@@ -50,8 +50,29 @@ let snapshot_mode (seat : Seat.t) =
   Option.map f seat.name
 ;;
 
+let snapshot_focus (seat : Seat.t) =
+  let f name =
+    let focused_window = Option.bind seat.output Output.focused_window in
+    ( (Event.Kind.Focus, name)
+    , Event.Focus
+        { seat = name
+        ; output = Option.bind seat.output (fun o -> o.name)
+        ; title = Option.bind focused_window (fun w -> w.title)
+        ; app_id = Option.bind focused_window (fun w -> w.app_id)
+        } )
+  in
+  Option.map f seat.name
+;;
+
 let snapshots (wm : Wm.t) =
-  let seat_snaps = List.filter_map snapshot_mode wm.seats in
+  let seat_snaps =
+    List.map
+      (fun (s : Seat.t) ->
+         let snaps = [ snapshot_mode s; snapshot_focus s ] in
+         List.filter_map Fun.id snaps)
+      wm.seats
+    |> List.flatten
+  in
   let out_snaps =
     List.map
       (fun (o : Output.t) ->
@@ -70,8 +91,8 @@ let matches (sub : Wm.Ipc.Subscriber.t) (k, source) =
   | None -> true
   | Some o ->
     (match k with
-     | Mode -> true
-     | _ -> String.equal o source)
+     | Mode | Focus -> true
+     | Tags | Window | Layout -> String.equal o source)
 ;;
 
 let offer (sub : Wm.Ipc.Subscriber.t) key line =

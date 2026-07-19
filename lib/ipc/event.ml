@@ -6,6 +6,7 @@ module Kind = struct
     | Window
     | Layout
     | Mode
+    | Focus
 
   let all = [ Tags; Window; Layout; Mode ]
   let equal (a : t) (b : t) = a = b
@@ -15,6 +16,7 @@ module Kind = struct
     | "window" -> Ok Window
     | "layout" -> Ok Layout
     | "mode" -> Ok Mode
+    | "focus" -> Ok Focus
     | s -> Error (Printf.sprintf "unrecognized event kind: %s" s)
   ;;
 
@@ -23,6 +25,7 @@ module Kind = struct
     | Window -> "window"
     | Layout -> "layout"
     | Mode -> "mode"
+    | Focus -> "focus"
   ;;
 
   let t_of_yojson = function
@@ -73,6 +76,16 @@ module Mode = struct
   [@@deriving yojson]
 end
 
+module Focus = struct
+  type t =
+    { seat : string
+    ; output : string option
+    ; title : string option
+    ; app_id : string option
+    }
+  [@@deriving yojson]
+end
+
 module Subscribe = struct
   type t =
     { kinds : Kind.t list
@@ -86,19 +99,22 @@ type t =
   | Window of Window.t
   | Layout of Layout.t
   | Mode of Mode.t
+  | Focus of Focus.t
 
 let kind = function
   | Tags _ -> Kind.Tags
   | Window _ -> Kind.Window
   | Layout _ -> Kind.Layout
   | Mode _ -> Kind.Mode
+  | Focus _ -> Kind.Focus
 ;;
 
 let source = function
   | Tags { output = s; _ }
   | Window { output = s; _ }
   | Layout { output = s; _ }
-  | Mode { seat = s; _ } -> s
+  | Mode { seat = s; _ }
+  | Focus { seat = s; _ } -> s
 ;;
 
 let to_line t =
@@ -111,4 +127,5 @@ let to_line t =
   | Window p -> json (Kind.to_string Kind.Window) (Window.yojson_of_t p)
   | Layout p -> json (Kind.to_string Kind.Layout) (Layout.yojson_of_t p)
   | Mode p -> json (Kind.to_string Kind.Mode) (Mode.yojson_of_t p)
+  | Focus p -> json (Kind.to_string Kind.Focus) (Focus.yojson_of_t p)
 ;;
