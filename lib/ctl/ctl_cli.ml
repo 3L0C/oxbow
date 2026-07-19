@@ -292,6 +292,7 @@ let dispatch ?seat ?socket body =
 let dispatch_stream ?socket ?output ~kinds () =
   Eio_posix.run
   @@ fun env ->
+  Sys.set_signal Sys.sigpipe Sys.Signal_default;
   match
     Client.subscribe ~env ?socket ?output ~kinds (fun line ->
       print_endline line;
