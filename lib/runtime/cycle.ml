@@ -100,6 +100,7 @@ let manage_window ctx (window : Window.t) =
 
 let manage_new_seat ctx (seat : Seat.t) =
   match seat.lifecycle with
+  | Active | Dirty _ | Closing -> ()
   | New ->
     Bind.install_defaults ctx seat;
     Seat.set_lifecycle seat Active;
@@ -110,7 +111,6 @@ let manage_new_seat ctx (seat : Seat.t) =
        Wm.set_init_handle wm @@ Some init_handle;
        Logs.debug @@ fun m -> m "init script forked: pid=%d" init_handle.pid
      | _ -> ())
-  | _ -> ()
 ;;
 
 let manage_seat ctx seat =
@@ -121,7 +121,6 @@ let manage_seat ctx seat =
       Dispatch.handle ctx seat r;
       drain ()
   in
-  manage_new_seat ctx seat;
   Focus.seat_sync ctx seat;
   Focus.apply_request ctx seat;
   Focus.apply_interaction ctx seat;
@@ -161,6 +160,7 @@ let manage (wm : Wm.t) proxy =
       close_windows ctx;
       close_seats ctx;
       Focus.wm_sync ctx;
+      List.iter (manage_new_seat ctx) wm.seats;
       List.iter (manage_window ctx) wm.windows;
       List.iter (manage_seat ctx) wm.seats;
       List.iter (manage_output ctx) wm.outputs;
