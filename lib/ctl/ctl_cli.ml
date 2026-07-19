@@ -271,7 +271,7 @@ let exit_conn_failed =
 let exits = exit_protocol_err :: exit_conn_failed :: Exit.exits
 
 let dispatch ?seat ?socket body =
-  Eio_main.run
+  Eio_posix.run
   @@ fun env ->
   match Client.send ~env ?seat ?socket body with
   | Ok (Some (`String s)) ->
@@ -290,7 +290,7 @@ let dispatch ?seat ?socket body =
 ;;
 
 let dispatch_stream ?socket ?output ~kinds () =
-  Eio_main.run
+  Eio_posix.run
   @@ fun env ->
   match
     Client.subscribe ~env ?socket ?output ~kinds (fun line ->
