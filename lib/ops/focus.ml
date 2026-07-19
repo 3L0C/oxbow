@@ -202,10 +202,11 @@ let wm_sync (ctx : Ctx.manage Ctx.t) =
 
 let seat_sync ctx (seat : Seat.t) =
   (match seat.lifecycle with
+   | Dirty { prev = Closing } -> Seat.set_lifecycle seat Closing
    | Dirty { prev } ->
-     refresh_layer_shell ctx seat;
-     Seat.set_lifecycle seat prev
-   | _ -> ());
+     Seat.set_lifecycle seat prev;
+     refresh_layer_shell ctx seat
+   | New | Active | Closing -> ());
   Seat.refresh_cursor_target seat
 ;;
 

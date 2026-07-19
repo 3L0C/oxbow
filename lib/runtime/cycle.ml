@@ -132,11 +132,12 @@ let manage_seat ctx seat =
 
 let manage_output ctx (output : Output.t) =
   match output.lifecycle with
+  | Dirty { prev = Removed } -> Output.set_lifecycle output Removed
   | Dirty { prev } ->
+    Output.set_lifecycle output prev;
     Arrange.retile ctx output;
-    Focus.refresh ctx output;
-    Output.set_lifecycle output prev
-  | _ -> ()
+    Focus.refresh ctx output
+  | Active | Removed -> ()
 ;;
 
 let manage (wm : Wm.t) proxy =
