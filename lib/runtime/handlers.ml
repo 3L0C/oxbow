@@ -241,7 +241,7 @@ let on_session_locked _proxy (wm_box : Wm.t Box.t) =
 
 let on_session_unlocked _proxy (wm_box : Wm.t Box.t) =
   let wm = Option.get wm_box.body in
-  Wm.set_session_locked wm true;
+  Wm.set_session_locked wm false;
   Dirty.mark_wm wm
 ;;
 
