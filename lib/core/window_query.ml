@@ -55,10 +55,11 @@ let of_string ?(field = Field.Any) s = { pattern = Substring s; field }
 
 let get_regex q =
   match q.pattern with
-  | Substring s -> Ok (Str.regexp_string_case_fold s)
+  | Substring s -> Ok (Re.compile (Re.no_case (Re.str s)))
   | Regex s ->
-    (try Ok (Str.regexp s) with
-     | Failure e -> Error e)
+    (try Ok (Re.compile (Re.Pcre.re s)) with
+     | Re.Perl.Parse_error | Re.Perl.Not_supported ->
+       Error (Printf.sprintf "invalid regex: %s" s))
 ;;
 
 let compile q =
@@ -66,12 +67,7 @@ let compile q =
   | Error e -> Error e
   | Ok r ->
     let matches_opt = function
-      | Some s ->
-        (try
-           ignore @@ Str.search_forward r s 0;
-           true
-         with
-         | Not_found -> false)
+      | Some s -> Re.execp r s
       | None -> false
     in
     Ok

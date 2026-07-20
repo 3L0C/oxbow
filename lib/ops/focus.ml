@@ -20,6 +20,8 @@ let focus_window ?(force : bool = false) ~warp ctx (seat : Seat.t) (target : Win
   | _ ->
     set_output ctx seat target.output;
     Stacking.focus_window ctx seat target;
+    (* FIXME need to delay this because zoom forces a retile which changes the
+       warp location *)
     if warp then Pointer.warp_to_focus ctx seat
 ;;
 

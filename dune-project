@@ -34,6 +34,8 @@
    (>= 2.0))
   (ppx_yojson_conv
    (>= 0.16))
+  (re
+   (>= 1.12))
   (cmdliner
    (>= 1.3))
   (xkbcommon

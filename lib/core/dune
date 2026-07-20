@@ -3,7 +3,7 @@
  (public_name ocdwm.core)
  (libraries
   cmdliner
-  str
+  re
   logs
   logs.fmt
   fmt

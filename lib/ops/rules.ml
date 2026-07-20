@@ -3,15 +3,13 @@ open! Ocdwm_state
 
 let apply wm (window : Window.t) ({ pattern; action } : Rule.t) =
   let search r_str s_str =
-    let r =
-      try Str.regexp r_str with
-      | Failure _ -> Str.regexp_string_case_fold r_str
+    let compile () =
+      try Ok (Re.compile (Re.Pcre.re r_str)) with
+      | Re.Pcre.Parse_error | Re.Pcre.Not_supported -> Error ()
     in
-    try
-      ignore @@ Str.search_forward r s_str 0;
-      true
-    with
-    | Not_found -> false
+    match compile () with
+    | Error _ -> false
+    | Ok r -> Re.execp r s_str
   in
   let matches_app_id =
     match pattern.app_id, window.app_id with
@@ -41,6 +39,20 @@ let apply wm (window : Window.t) ({ pattern; action } : Rule.t) =
 let apply_for ctx window =
   let wm = Ctx.wm ctx in
   List.iter (apply wm window) wm.config.rules
+;;
+
+let validate (rule : Rule.t) =
+  match List.filter_map Fun.id [ rule.pattern.title; rule.pattern.app_id ] with
+  | [] -> true
+  | l ->
+    List.exists
+      (fun s ->
+         try
+           ignore @@ Re.compile (Re.Pcre.re s);
+           true
+         with
+         | Re.Pcre.Parse_error | Re.Pcre.Not_supported -> false)
+      l
 ;;
 
 let add (wm : Wm.t) rule =

@@ -14,7 +14,7 @@
   xkbcommon
   yojson
   ppx_yojson_conv_lib
-  str
+  re
   landmarks)
  (preprocess
   (pps ppx_yojson_conv landmarks-ppx --auto)))

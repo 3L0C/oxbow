@@ -14,7 +14,6 @@
   logs
   xkbcommon
   yojson
-  ppx_yojson_conv_lib
-  str)
+  ppx_yojson_conv_lib)
  (preprocess
   (pps ppx_yojson_conv landmarks-ppx --auto)))

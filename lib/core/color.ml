@@ -2,7 +2,7 @@ open! Ppx_yojson_conv_lib.Yojson_conv
 
 type t = int32
 
-let r = Str.regexp {|^\(#\|0[xX]\)?\([0-9a-fA-F]+\)$|}
+let r = Re.compile @@ Re.Pcre.re {|^(#|0[xX])?([0-9a-fA-F]+)$|}
 
 let of_string s =
   let error () =
@@ -10,14 +10,14 @@ let of_string s =
       (Printf.sprintf "invalid color %S: expected \"#RRGGBB\", \"0xRRGGBBAA\", etc." s)
   in
   let s = String.trim s in
-  if not @@ Str.string_match r s 0
-  then error ()
-  else (
-    let body = Str.replace_matched "\\2" s in
-    match String.length body with
-    | 6 -> Ok Int32.(logor (shift_left (of_string ("0x" ^ body)) 8) 0xFFl)
-    | 8 -> Ok Int32.(of_string ("0x" ^ body))
-    | _ -> error ())
+  match Re.exec_opt r s with
+  | None -> error ()
+  | Some g ->
+    let body = Re.Group.get g 2 in
+    (match String.length body with
+     | 6 -> Ok Int32.(logor (shift_left (of_string ("0x" ^ body)) 8) 0xFFl)
+     | 8 -> Ok Int32.(of_string ("0x" ^ body))
+     | _ -> error ())
 ;;
 
 let of_string_exn s = of_string s |> Result.fold ~ok:Fun.id ~error:invalid_arg
