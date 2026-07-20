@@ -54,3 +54,5 @@ let cycle (registry : t) name (dir : Direction.Logical.t) =
   in
   after entries
 ;;
+
+let names (registry : t) = List.map fst registry.entries

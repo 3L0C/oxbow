@@ -23,3 +23,6 @@ val find : t -> string -> Entry.t option
     [dir], wrapping at the ends (a lone entry cycles to itself); [None] when
     [name] is not registered. *)
 val cycle : t -> string -> Ocdwm_core.Direction.Logical.t -> (string * Entry.t) option
+
+(** [names registry] is the registered layout names, in registration order. *)
+val names : t -> string list

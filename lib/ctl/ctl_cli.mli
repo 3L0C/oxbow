@@ -50,6 +50,9 @@ val title_flag : string option Cmdliner.Term.t
 (** [output_name_arg] is the required leading [OUTPUT_NAME] positional. *)
 val output_name_arg : string Cmdliner.Term.t
 
+(** [output_flag] is the optional [--output NAME] filter flag. *)
+val output_flag : string option Cmdliner.Term.t
+
 (** [extent_conv] converts an extent argument. *)
 val extent_conv : Ocdwm_core.Extent.t Cmdliner.Arg.conv
 

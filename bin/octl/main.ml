@@ -36,6 +36,7 @@ let cmd =
     ; Cmd_output.cmd
     ; Cmd_rule.cmd
     ; Cmd_session.cmd
+    ; Cmd_seat.cmd
     ; Cmd_set.cmd
     ; Cmd_spawn.cmd
     ; Cmd_subscribe.cmd

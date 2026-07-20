@@ -3,6 +3,7 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 open! Ocdwm_state
 open! Ocdwm_ops
+open! Ocdwm_layout
 
 let handle_window ctx seat (cmd : Command.Window.t) =
   match cmd with
@@ -172,6 +173,46 @@ let handle_query (wm : Wm.t) seat (query : Query.t) =
                      m ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
                   wm.windows
                 |> List.map (Records.to_window wm)))))
+  | Tags { output } ->
+    let outs =
+      match output with
+      | None -> wm.outputs
+      | Some o ->
+        List.filter
+          (fun (o' : Output.t) ->
+             Option.fold ~none:false ~some:(fun name -> name = o) o'.name)
+          wm.outputs
+    in
+    let records = List.filter_map Records.to_tags outs in
+    Ok (Some ([%yojson_of: Record.Tags.t list] records))
+  | Layouts { output } ->
+    let current =
+      let get_layouts = List.filter_map Records.to_layout in
+      match output with
+      | None -> get_layouts wm.outputs
+      | Some name ->
+        List.filter
+          (fun (o : Output.t) ->
+             match o.name with
+             | None -> true
+             | Some n -> n = name)
+          wm.outputs
+        |> get_layouts
+    in
+    let available = Registry.names wm.layout_registry in
+    Ok (Some (Query.Layouts_reply.yojson_of_t { available; current }))
+  | Seats ->
+    let records =
+      List.filter_map
+        (fun (s : Seat.t) ->
+           Option.map
+             (fun name ->
+                Query.Seat_info.
+                  { name; mode = s.mode; output = Option.bind s.output (fun o -> o.name) })
+             s.name)
+        wm.seats
+    in
+    Ok (Some ([%yojson_of: Query.Seat_info.t list] records))
 ;;
 
 let handle ctx seat ({ body; reply } : Pending_request.t) =

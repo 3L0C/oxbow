@@ -181,6 +181,13 @@ let output_name_arg =
         ~doc:"The name of the target output, e.g., HDMI-A-2, eDP-1, etc.")
 ;;
 
+let output_flag =
+  Arg.(
+    value
+    & opt (some string) None
+    & info [ "output" ] ~docv:"NAME" ~doc:"Filter query to outputs matching $(i,NAME).")
+;;
+
 let extent_conv =
   let parser = Extent.of_string in
   let pp ppf e = Format.fprintf ppf "%s" @@ Extent.to_string e in
