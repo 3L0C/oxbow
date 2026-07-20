@@ -73,7 +73,7 @@ module Handler = struct
     respond_ok flow None;
     let kinds =
       match s.kinds with
-      | [] -> Event.Kind.all
+      | [] -> Record.all
       | ks -> ks
     in
     let sub =

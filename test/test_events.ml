@@ -10,15 +10,13 @@ let () =
   let open Ocdwm_ipc in
   List.iter
     (fun k ->
-       let j = Event.Kind.yojson_of_t k in
-       let k' = Event.Kind.t_of_yojson j in
-       assert (Event.Kind.equal k k');
+       let j = Record.yojson_of_t k in
+       let k' = Record.t_of_yojson j in
+       assert (Record.equal k k');
        Printf.printf "ok: %s\n" (Yojson.Safe.to_string j))
-    Event.Kind.all;
-  List.iter
-    (fun k -> assert (Event.Kind.of_string (Event.Kind.to_string k) = Ok k))
-    Event.Kind.all;
-  (match Event.Kind.of_string "bogus" with
+    Record.all;
+  List.iter (fun k -> assert (Record.of_string (Record.to_string k) = Ok k)) Record.all;
+  (match Record.of_string "bogus" with
    | Error _ -> print_endline "ok: bogus kind rejected"
    | Ok _ -> assert false);
   let subs : Event.Subscribe.t list =
@@ -48,14 +46,19 @@ let () =
           }));
   check
     ~expect:
-      {|{"event":"window","output":"DP-1","focused":false,"title":null,"app_id":"foot","tags":[1,2]}|}
+      {|{"event":"window","id":1,"identifier":null,"title":null,"app_id":"foot","output":"DP-1","tags":[1,2],"focused":false,"urgent":false,"hidden":true,"presentation":"tiled"}|}
     (Event.to_line
        (Window
-          { output = "DP-1"
-          ; focused = false
+          { id = 1
+          ; identifier = None
           ; title = None
           ; app_id = Some "foot"
-          ; tags = Some [ 1; 2 ]
+          ; output = Some "DP-1"
+          ; tags = [ 1; 2 ]
+          ; focused = false
+          ; urgent = false
+          ; hidden = true
+          ; presentation = "tiled"
           }));
   check
     ~expect:{|{"event":"layout","output":"DP-1","layout":"tall","symbol":"[]="}|}

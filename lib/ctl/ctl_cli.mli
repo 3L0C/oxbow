@@ -108,7 +108,7 @@ val cmd
 val stream_cmd
   :  name:string
   -> doc:string
-  -> (Ocdwm_ipc.Event.Kind.t list * string option) Cmdliner.Term.t
+  -> (Ocdwm_ipc.Record.t list * string option) Cmdliner.Term.t
   -> int Cmdliner.Cmd.t
 
 (** [command_term term] maps the [term]'s command into a [Command] body. *)

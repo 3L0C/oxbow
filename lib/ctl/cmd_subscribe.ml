@@ -2,8 +2,8 @@ open! Ocdwm_ipc
 
 let kind_conv =
   let open Cmdliner in
-  let parser = Event.Kind.of_string in
-  let pp ppf k = Format.fprintf ppf "%s" (Event.Kind.to_string k) in
+  let parser = Record.of_string in
+  let pp ppf k = Format.fprintf ppf "%s" (Record.to_string k) in
   Arg.Conv.make ~docv:"KIND" ~parser ~pp ()
 ;;
 

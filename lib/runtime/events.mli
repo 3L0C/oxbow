@@ -2,7 +2,7 @@
     [wm], in publish order. *)
 val snapshots
   :  Ocdwm_state.Wm.t
-  -> ((Ocdwm_ipc.Event.Kind.t * string) * Ocdwm_ipc.Event.t) list
+  -> ((Ocdwm_ipc.Record.t * string) * Ocdwm_ipc.Event.t) list
 
 (** [seed wm sub] fills [sub]'s pending buffer with the last-published snapshots
     matching its filters and wakes its drain fiber.

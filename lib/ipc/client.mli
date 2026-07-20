@@ -25,6 +25,6 @@ val subscribe
   :  env:Eio_unix.Stdenv.base
   -> ?socket:string
   -> ?output:string
-  -> kinds:Event.Kind.t list
+  -> kinds:Record.t list
   -> (string -> unit)
   -> (unit, Error.t) result

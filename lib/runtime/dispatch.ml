@@ -152,47 +152,26 @@ let handle_query (wm : Wm.t) seat (query : Query.t) =
          ([%yojson_of: string list]
             (List.filter_map (fun (o : Output.t) -> o.name) wm.outputs)))
   | Focused ->
-    let focused_window = Seat.focused_window seat in
-    Ok
-      (Some
-         ([%yojson_of: Event.Focus.t]
-            { seat = Option.value seat.name ~default:""
-            ; output = Option.bind seat.output (fun o -> o.name)
-            ; title = Option.bind focused_window (fun w -> w.title)
-            ; app_id = Option.bind focused_window (fun w -> w.app_id)
-            ; tags = Option.bind focused_window (fun w -> Some (Tag.Set.to_list w.tags))
-            }))
+    (match Records.to_focus seat with
+     | None -> Ok None
+     | Some record -> Ok (Some ([%yojson_of: Record.Focus.t] record)))
   | Windows { query } ->
     let matcher =
       match query with
       | None -> Ok (fun ~title:_ ~app_id:_ ~identifier:_ -> true)
       | Some q -> Window_query.compile q
     in
-    let info (w : Window.t) =
-      Query.Window_info.
-        { id = w.id
-        ; identifier = w.identifier
-        ; title = w.title
-        ; app_id = w.app_id
-        ; output = Option.bind w.output (fun o -> o.name)
-        ; tags = Tag.Set.to_list w.tags
-        ; focused = Phys.opt_holds w (Seat.focused_window seat)
-        ; urgent = w.is_urgent
-        ; hidden = w.is_hidden
-        ; presentation = Window.presentation_string w
-        }
-    in
     (match matcher with
      | Error _ as e -> e
      | Ok m ->
        Ok
          (Some
-            ([%yojson_of: Query.Window_info.t list]
+            ([%yojson_of: Record.Window.t list]
                (List.filter
                   (fun (w : Window.t) ->
                      m ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
                   wm.windows
-                |> List.map info))))
+                |> List.map (Records.to_window wm)))))
 ;;
 
 let handle ctx seat ({ body; reply } : Pending_request.t) =

@@ -336,16 +336,16 @@ and Wm : sig
   module Ipc : sig
     module Subscriber : sig
       type t =
-        { kinds : Ocdwm_ipc.Event.Kind.t list
+        { kinds : Ocdwm_ipc.Record.t list
         ; output : string option
-        ; mutable pending : ((Ocdwm_ipc.Event.Kind.t * string) * string) list
+        ; mutable pending : ((Ocdwm_ipc.Record.t * string) * string) list
         ; wake : Eio.Condition.t
         }
     end
 
     type t =
       { mutable subscribers : Subscriber.t list
-      ; mutable last : ((Ocdwm_ipc.Event.Kind.t * string) * Ocdwm_ipc.Event.t) list
+      ; mutable last : ((Ocdwm_ipc.Record.t * string) * Ocdwm_ipc.Event.t) list
       }
   end
 

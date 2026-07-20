@@ -2,70 +2,39 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ipc
 open! Ocdwm_layout
+open! Ocdwm_ops
 
 let snapshot_tags (output : Output.t) =
-  let f name =
-    ( (Event.Kind.Tags, name)
-    , Event.Tags
-        { output = name
-        ; viewed = Tag.Set.to_list output.selected_tags
-        ; occupied = Output.occupied_tags output |> Tag.Set.to_list
-        ; urgent = Output.urgent_tags output |> Tag.Set.to_list
-        ; focused =
-            Output.focused_window output
-            |> Option.fold ~none:[] ~some:(fun (w : Window.t) -> Tag.Set.to_list w.tags)
-        } )
-  in
-  Option.map f output.name
+  match output.name, Records.to_tags output with
+  | None, _ | _, None -> None
+  | Some name, Some record -> Some ((Record.Tags, name), Event.Tags record)
 ;;
 
-let snapshot_windows (wm : Wm.t) (output : Output.t) =
-  let f name =
-    let focused = Output.focused_window output in
-    ( (Event.Kind.Window, name)
-    , Event.Window
-        { output = name
-        ; focused =
-            List.exists (fun (s : Seat.t) -> Phys.opt_holds output s.output) wm.seats
-        ; title = Option.bind focused (fun w -> w.title)
-        ; app_id = Option.bind focused (fun w -> w.app_id)
-        ; tags = Option.bind focused (fun w -> Some (Tag.Set.to_list w.tags))
-        } )
-  in
-  Option.map f output.name
+let snapshot_windows (wm : Wm.t) output =
+  let focused_window = Output.focused_window output in
+  match
+    output.name, Option.bind focused_window (fun w -> Some (Records.to_window wm w))
+  with
+  | None, _ | _, None -> None
+  | Some name, Some record -> Some ((Record.Window, name), Event.Window record)
 ;;
 
 let snapshot_layout (output : Output.t) =
-  let f name =
-    let entry = Output.current_layout_entry output in
-    ( (Event.Kind.Layout, name)
-    , Event.Layout
-        { output = name
-        ; layout = Entry.name entry
-        ; symbol = Entry.symbol (Output.current_layout_ctx output) entry
-        } )
-  in
-  Option.map f output.name
+  match output.name, Records.to_layout output with
+  | None, _ | _, None -> None
+  | Some name, Some record -> Some ((Record.Layout, name), Event.Layout record)
 ;;
 
 let snapshot_mode (seat : Seat.t) =
-  let f name = (Event.Kind.Mode, name), Event.Mode { seat = name; mode = seat.mode } in
-  Option.map f seat.name
+  match seat.name, Records.to_mode seat with
+  | None, _ | _, None -> None
+  | Some name, Some record -> Some ((Record.Mode, name), Event.Mode record)
 ;;
 
 let snapshot_focus (seat : Seat.t) =
-  let f name =
-    let focused_window = Option.bind seat.output Output.focused_window in
-    ( (Event.Kind.Focus, name)
-    , Event.Focus
-        { seat = name
-        ; output = Option.bind seat.output (fun o -> o.name)
-        ; title = Option.bind focused_window (fun w -> w.title)
-        ; app_id = Option.bind focused_window (fun w -> w.app_id)
-        ; tags = Option.bind focused_window (fun w -> Some (Tag.Set.to_list w.tags))
-        } )
-  in
-  Option.map f seat.name
+  match seat.name, Records.to_focus seat with
+  | None, _ | _, None -> None
+  | Some name, Some record -> Some ((Record.Focus, name), Event.Focus record)
 ;;
 
 let snapshots (wm : Wm.t) =
@@ -89,7 +58,7 @@ let snapshots (wm : Wm.t) =
 ;;
 
 let matches (sub : Wm.Ipc.Subscriber.t) (k, source) =
-  List.exists (Event.Kind.equal k) sub.kinds
+  List.exists (Record.equal k) sub.kinds
   &&
   match sub.output with
   | None -> true
