@@ -33,7 +33,8 @@ let () =
     in
     let check name cond = if not cond then fail name in
     let params =
-      Params.{ mfact; nmaster; gaps_inner = gi; gaps_outer = go; stack = Stack_kind.Even }
+      Params.
+        { mfact; nmaster; gaps_inner = gi; gaps_outer = go; stack = Even; dir = Left }
     in
     let rects = Tile.compute ~params ~usable_area:ua ~count in
     check "rect count" (List.length rects = count);

@@ -43,6 +43,15 @@ val set_stack
   -> Ocdwm_core.Stack_kind.t
   -> (Yojson.Safe.t option, string) result
 
+(** [set_dir seat dir] sets the stack direction on the first selected tag of
+    [seat]'s output.
+
+    {b Effects:} mutates WM state *)
+val set_dir
+  :  Ocdwm_state.Seat.t
+  -> Ocdwm_core.Direction.Spatial.t
+  -> (Yojson.Safe.t option, string) result
+
 (** [retile ctx output] arranges [output]'s managed windows.
 
     {b Effects:} mutates WM state; sends River request *)

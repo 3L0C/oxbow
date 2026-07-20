@@ -3,7 +3,14 @@ open! Ocdwm_layout
 include Types.Config
 
 let default_layout_params =
-  Params.{ mfact = 0.55; nmaster = 1; gaps_inner = 10; gaps_outer = 20; stack = Even }
+  Params.
+    { mfact = 0.55
+    ; nmaster = 1
+    ; gaps_inner = 10
+    ; gaps_outer = 20
+    ; stack = Even
+    ; dir = Left
+    }
 ;;
 
 let default_borders =

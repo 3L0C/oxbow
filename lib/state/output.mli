@@ -105,6 +105,12 @@ val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> unit
     {b Effects:} mutates WM state; marks dirty *)
 val set_stack : t -> Ocdwm_core.Stack_kind.t -> unit
 
+(** [set_dir output dir] sets [output]'s stacking direction to [dir] for the
+    first selected tag on [output].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_dir : t -> Ocdwm_core.Direction.Spatial.t -> unit
+
 (** [set_wm_stack output ws] replaces [output]'s window stack with [ws].
 
     {b Effects:} mutates WM state; marks dirty *)

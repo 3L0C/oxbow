@@ -63,6 +63,7 @@ let handle_set ctx seat (cmd : Command.Set.t) =
   | Gaps_inner delta -> Arrange.set_gaps_inner seat delta
   | Gaps_outer delta -> Arrange.set_gaps_outer seat delta
   | Stack kind -> Arrange.set_stack seat kind
+  | Dir dir -> Arrange.set_dir seat dir
   | Focus_follows_pointer b ->
     Config.set_focus_follows_pointer wm b;
     Ok None

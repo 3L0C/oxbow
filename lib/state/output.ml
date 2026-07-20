@@ -182,6 +182,12 @@ let set_stack o kind =
   Dirty.mark_output o
 ;;
 
+let set_dir o dir =
+  let params = current_layout_params o in
+  params.dir <- dir;
+  Dirty.mark_output o
+;;
+
 let set_wm_stack (o : t) ws =
   o.wm_stack <- ws;
   Dirty.mark_output o

@@ -86,6 +86,7 @@ module Set = struct
     | Gaps_inner of int Ocdwm_core.Delta.t [@name "gaps_inner"]
     | Gaps_outer of int Ocdwm_core.Delta.t [@name "gaps_outer"]
     | Stack of Ocdwm_core.Stack_kind.t [@name "stack"]
+    | Dir of Ocdwm_core.Direction.Spatial.t [@name "dir"]
     | Focus_follows_pointer of bool [@name "focus_follows_pointer"]
     | Toggle_focus_follows_pointer [@name "toggle_focus_follows_pointer"]
     | Keyboard_repeat of

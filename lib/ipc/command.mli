@@ -93,6 +93,7 @@ module Set : sig
     | Gaps_inner of int Ocdwm_core.Delta.t
     | Gaps_outer of int Ocdwm_core.Delta.t
     | Stack of Ocdwm_core.Stack_kind.t
+    | Dir of Ocdwm_core.Direction.Spatial.t
     | Focus_follows_pointer of bool
     | Toggle_focus_follows_pointer
     | Keyboard_repeat of

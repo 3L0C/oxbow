@@ -42,6 +42,14 @@ let set_stack (seat : Seat.t) kind =
     Ok None
 ;;
 
+let set_dir (seat : Seat.t) dir =
+  match seat.output with
+  | None -> Error Messages.seat_missing_output
+  | Some o ->
+    Output.set_dir o dir;
+    Ok None
+;;
+
 let retile ctx output =
   if not @@ Output.has_visible_fullscreen output
   then (
@@ -49,9 +57,11 @@ let retile ctx output =
     let count = List.length windows in
     let tag_data = Output.to_tag_data output in
     let area = Gaps.pre tag_data.params output.usable in
+    let dir = tag_data.params.dir in
     let compute = Entry.compute tag_data.entry in
     let dimensions =
-      compute ~params:tag_data.params ~usable_area:area ~count
+      compute ~params:tag_data.params ~usable_area:(Xform.pre dir area) ~count
+      |> List.map (Xform.post dir ~area)
       |> List.map (Gaps.post tag_data.params)
     in
     match windows, dimensions with
