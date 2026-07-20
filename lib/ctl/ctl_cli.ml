@@ -302,7 +302,7 @@ let dispatch ?seat ?socket body =
     (Logs.app @@ fun m -> m "%s" s);
     Cmd.Exit.ok
   | Ok (Some data) ->
-    (Logs.app @@ fun m -> m "%s" (Yojson.Safe.pretty_to_string data));
+    (Logs.app @@ fun m -> m "%s" (Yojson.Safe.to_string data));
     Cmd.Exit.ok
   | Ok None -> Cmd.Exit.ok
   | Error (Connection_failed msg) ->
