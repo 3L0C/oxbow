@@ -331,7 +331,7 @@ let dispatch_stream ?socket ?output ~kinds () =
     code_protocol_err
 ;;
 
-let group = Cli.group
+let group = Cli.group ~exits
 
 let cmd ~name ~doc term =
   let open Cmdliner.Term.Syntax in

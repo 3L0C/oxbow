@@ -86,10 +86,11 @@ val window_query_regex_flag : bool Cmdliner.Term.t
     query; regex patterns match case-insensitively when set. *)
 val window_query_case_flag : Ocdwm_core.Window_query.Case.t Cmdliner.Term.t
 
-(** [group ?man ?man_xrefs ?version ~name ~doc cmds] is command that groups the
-    subcommands [cmds]. *)
+(** [group ?exits ?man ?man_xrefs ?version ~name ~doc cmds] is command that
+    groups the subcommands [cmds]. *)
 val group
-  :  ?man:Cmdliner.Manpage.block list
+  :  ?exits:Cmdliner.Cmd.Exit.info list
+  -> ?man:Cmdliner.Manpage.block list
   -> ?man_xrefs:Cmdliner.Manpage.xref list
   -> ?version:string
   -> name:string

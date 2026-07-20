@@ -13,10 +13,11 @@ val info
   -> doc:string
   -> Cmdliner.Cmd.info
 
-(** [group ~name ~doc cmds] is the [cmds] command group; its default term
-    renders the group's help. *)
+(** [group ?exits ?man ?man_xrefs ?version ~name ~doc cmds] is the [cmds]
+    command group; its default term renders the group's help. *)
 val group
-  :  ?man:Cmdliner.Manpage.block list
+  :  ?exits:Cmdliner.Cmd.Exit.info list
+  -> ?man:Cmdliner.Manpage.block list
   -> ?man_xrefs:Cmdliner.Manpage.xref list
   -> ?version:string
   -> name:string
