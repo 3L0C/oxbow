@@ -48,8 +48,12 @@ let retile ctx output =
     let windows = Output.tiled_windows output in
     let count = List.length windows in
     let tag_data = Output.to_tag_data output in
+    let area = Gaps.pre tag_data.params output.usable in
     let compute = Entry.compute tag_data.entry in
-    let dimensions = compute ~params:tag_data.params ~usable_area:output.usable ~count in
+    let dimensions =
+      compute ~params:tag_data.params ~usable_area:area ~count
+      |> List.map (Gaps.post tag_data.params)
+    in
     match windows, dimensions with
     | _, [] when count <> 0 ->
       List.iter (fun w -> Window.restore_or_seed_float ctx w) windows
