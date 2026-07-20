@@ -2,7 +2,7 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 
 let stack_targets =
-  List.map (fun k -> Stack_kind.to_string k, k) [ Even; Diminish; Dwindle ]
+  List.map (fun k -> Stack_kind.to_string k, k) [ Even; Diminish; Dwindle; Spiral ]
 ;;
 
 let leaf mk_term (name, kind) =

@@ -2,6 +2,7 @@ type t =
   | Even
   | Diminish
   | Dwindle
+  | Spiral
 
 (** [to_string k] is [k]'s name in lowercase. *)
 val to_string : t -> string
