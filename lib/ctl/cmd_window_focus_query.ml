@@ -8,6 +8,7 @@ let command_term =
   let+ pattern = Ctl_cli.window_query_pattern_arg
   and+ field = Ctl_cli.window_query_field_flag
   and+ regex = Ctl_cli.window_query_regex_flag
+  and+ case = Ctl_cli.window_query_case_flag
   and+ cycle =
     Arg.(
       value
@@ -19,9 +20,8 @@ let command_term =
              matching window, if any")
   in
   let query =
-    if regex
-    then { pattern = Regex pattern; field }
-    else { pattern = Substring pattern; field }
+    let pattern : Pattern.t = if regex then Regex pattern else Substring pattern in
+    { pattern; field; case }
   in
   Command.Window (Focus_query { query; cycle })
 ;;

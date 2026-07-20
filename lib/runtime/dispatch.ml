@@ -162,6 +162,37 @@ let handle_query (wm : Wm.t) seat (query : Query.t) =
             ; app_id = Option.bind focused_window (fun w -> w.app_id)
             ; tags = Option.bind focused_window (fun w -> Some (Tag.Set.to_list w.tags))
             }))
+  | Windows { query } ->
+    let matcher =
+      match query with
+      | None -> Ok (fun ~title:_ ~app_id:_ ~identifier:_ -> true)
+      | Some q -> Window_query.compile q
+    in
+    let info (w : Window.t) =
+      Query.Window_info.
+        { id = w.id
+        ; identifier = w.identifier
+        ; title = w.title
+        ; app_id = w.app_id
+        ; output = Option.bind w.output (fun o -> o.name)
+        ; tags = Tag.Set.to_list w.tags
+        ; focused = Phys.opt_holds w (Seat.focused_window seat)
+        ; urgent = w.is_urgent
+        ; hidden = w.is_hidden
+        ; presentation = Window.presentation_string w
+        }
+    in
+    (match matcher with
+     | Error _ as e -> e
+     | Ok m ->
+       Ok
+         (Some
+            ([%yojson_of: Query.Window_info.t list]
+               (List.filter
+                  (fun (w : Window.t) ->
+                     m ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
+                  wm.windows
+                |> List.map info))))
 ;;
 
 let handle ctx seat ({ body; reply } : Pending_request.t) =

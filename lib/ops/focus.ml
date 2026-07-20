@@ -99,12 +99,14 @@ let window_query ~cycle ctx seat q =
   | Ok matches ->
     let windows =
       List.find_all
-        (fun (w : Window.t) -> matches ~title:w.title ~app_id:w.app_id)
+        (fun (w : Window.t) ->
+           matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
         wm.windows
     in
     let target =
       match Seat.focused_window seat with
-      | Some w when cycle && matches ~title:w.title ~app_id:w.app_id ->
+      | Some w
+        when cycle && matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier ->
         Ring.next_or_first w windows
       | _ -> List.nth_opt windows 0
     in

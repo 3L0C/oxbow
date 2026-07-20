@@ -64,16 +64,24 @@ val mode_flag : string option Cmdliner.Term.t
 (** [color_arg] is the required trailing [COLOR] positional. *)
 val color_arg : Ocdwm_core.Color.t Cmdliner.Term.t
 
-(** [window_query_pattern_arg] is the required trailing [STRING] positional for
+(** [window_query_pattern_arg] is the required trailing [PATTERN] positional for
     a window query. *)
 val window_query_pattern_arg : string Cmdliner.Term.t
 
-(** [window_query_field_flag] is the [--title] and [--app-id] flags for a
-    window query. *)
+(** [window_query_pattern_opt_arg] is the optional trailing [PATTERN] positional
+    for a window query; [None] matches every window. *)
+val window_query_pattern_opt_arg : string option Cmdliner.Term.t
+
+(** [window_query_field_flag] is the [--title], [--app-id], and [--identifier]
+    flags for a window query. *)
 val window_query_field_flag : Ocdwm_core.Window_query.Field.t Cmdliner.Term.t
 
 (** [window_query_regex_flag] is the [--regex] flag for a window query. *)
 val window_query_regex_flag : bool Cmdliner.Term.t
+
+(** [window_query_case_flag] is the [-i] / [--ignore-case] flag for a window
+    query; regex patterns match case-insensitively when set. *)
+val window_query_case_flag : Ocdwm_core.Window_query.Case.t Cmdliner.Term.t
 
 (** [group ?man ?man_xrefs ?version ~name ~doc cmds] is command that groups the
     subcommands [cmds]. *)

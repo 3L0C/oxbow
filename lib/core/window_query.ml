@@ -12,16 +12,25 @@ module Field = struct
     | Any [@name "any"]
     | Title [@name "title"]
     | App_id [@name "app-id"]
+    | Identifier [@name "identifier"]
+  [@@deriving yojson]
+end
+
+module Case = struct
+  type t =
+    | Sensitive [@name "sensitive"]
+    | Insensitive [@name "insensitive"]
   [@@deriving yojson]
 end
 
 module Matcher = struct
-  type t = title:string option -> app_id:string option -> bool
+  type t = title:string option -> app_id:string option -> identifier:string option -> bool
 end
 
 type t =
   { pattern : Pattern.t
   ; field : Field.t
+  ; case : Case.t
   }
 [@@deriving yojson]
 
@@ -31,13 +40,19 @@ let to_string q =
     | Any -> None
     | Title -> Some "title"
     | App_id -> Some "app-id"
+    | Identifier -> Some "identifier"
   in
   let regex =
     match q.pattern with
     | Substring _ -> None
     | Regex _ -> Some "regex"
   in
-  let tags = List.filter_map Fun.id [ field; regex ] in
+  let case =
+    match q.case with
+    | Sensitive -> Some "sensitive"
+    | Insensitive -> Some "insensitive"
+  in
+  let tags = List.filter_map Fun.id [ field; regex; case ] in
   let s =
     match q.pattern with
     | Substring s -> s
@@ -51,13 +66,20 @@ let to_string q =
   render s
 ;;
 
-let of_string ?(field = Field.Any) s = { pattern = Substring s; field }
+let of_string ?(field = Field.Any) ?(case = Case.Sensitive) s =
+  { pattern = Substring s; field; case }
+;;
 
 let get_regex q =
   match q.pattern with
   | Substring s -> Ok (Re.compile (Re.no_case (Re.str s)))
   | Regex s ->
-    (try Ok (Re.compile (Re.Pcre.re s)) with
+    let flags =
+      match q.case with
+      | Sensitive -> []
+      | Insensitive -> [ `CASELESS ]
+    in
+    (try Ok (Re.compile (Re.Pcre.re ~flags s)) with
      | Re.Perl.Parse_error | Re.Perl.Not_supported ->
        Error (Printf.sprintf "invalid regex: %s" s))
 ;;
@@ -71,9 +93,10 @@ let compile q =
       | None -> false
     in
     Ok
-      (fun ~title ~app_id ->
+      (fun ~title ~app_id ~identifier ->
         match q.field with
         | Any -> matches_opt title || matches_opt app_id
         | Title -> matches_opt title
-        | App_id -> matches_opt app_id)
+        | App_id -> matches_opt app_id
+        | Identifier -> matches_opt identifier)
 ;;

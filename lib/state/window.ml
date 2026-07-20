@@ -453,3 +453,11 @@ let rehome wm (w : t) name =
     queue_request wm w @@ Send_to_output_name { name; policy = Tag.Policy.Keep }
   | _ -> ()
 ;;
+
+let presentation_string (w : t) =
+  match w.presentation with
+  | Tiled -> "tiled"
+  | Floating -> "floating"
+  | Maximized _ -> "maximized"
+  | Fullscreen _ -> "fullscreen"
+;;

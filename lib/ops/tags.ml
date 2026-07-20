@@ -109,7 +109,8 @@ let tag_window_query ctx q (arg : Tag.Arg.t) =
        let wm = Ctx.wm ctx in
        let targets =
          List.find_all
-           (fun (w : Window.t) -> matches ~title:w.title ~app_id:w.app_id)
+           (fun (w : Window.t) ->
+              matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
            wm.windows
        in
        (match targets with

@@ -236,7 +236,14 @@ let window_query_pattern_arg =
   Arg.(
     required
     & pos 0 (some string) None
-    & info [] ~docv:"STRING" ~doc:"Match windows containing STRING in their title/app-id")
+    & info [] ~docv:"PATTERN" ~doc:"Match windows containing STRING in their title/app-id")
+;;
+
+let window_query_pattern_opt_arg =
+  Arg.(
+    value
+    & pos 0 (some string) None
+    & info [] ~docv:"PATTERN" ~doc:"Optional pattern used to filter a window query")
 ;;
 
 let window_query_field_flag =
@@ -246,15 +253,25 @@ let window_query_field_flag =
     & vflag
         Field.Any
         [ Field.Title, info [ "title" ] ~doc:"Match against window title only"
-        ; Field.App_id, info [ "app-id" ] ~doc:"Match againts app-id only"
+        ; Field.App_id, info [ "app-id" ] ~doc:"Match against app-id only"
+        ; Field.Identifier, info [ "identifier" ] ~doc:"Match against identifier only"
         ])
 ;;
 
 let window_query_regex_flag =
   Arg.(
+    value & flag & info [ "regex" ] ~doc:"Interpret $(i,PATTERN) as a regular expression")
+;;
+
+let window_query_case_flag =
+  let open Ocdwm_core.Window_query in
+  Arg.(
     value
-    & flag
-    & info [ "regex" ] ~doc:"Interpret the search string as a regular expression")
+    & vflag
+        Case.Sensitive
+        [ ( Case.Insensitive
+          , info [ "i"; "ignore-case" ] ~doc:"Match $(i,PATTERN) case-insensitively." )
+        ])
 ;;
 
 let code_protocol_err = 1
@@ -268,7 +285,7 @@ let exit_conn_failed =
   Cmd.Exit.info code_conn_failed ~doc:"on failure to connect to the ocdwm socket"
 ;;
 
-let exits = exit_protocol_err :: exit_conn_failed :: Exit.exits
+let exits = [ exit_protocol_err; exit_conn_failed ]
 
 let dispatch ?seat ?socket body =
   Eio_posix.run

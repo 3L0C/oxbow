@@ -8,11 +8,12 @@ let command_term =
   let+ pattern = Ctl_cli.window_query_pattern_arg
   and+ field = Ctl_cli.window_query_field_flag
   and+ regex = Ctl_cli.window_query_regex_flag
-  and+ tags = Ctl_cli.tag_arg_at 1 in
+  and+ tags = Ctl_cli.tag_arg_at 1
+  and+ case = Ctl_cli.window_query_case_flag in
   let query =
     if regex
-    then { pattern = Regex pattern; field }
-    else { pattern = Substring pattern; field }
+    then { pattern = Regex pattern; field; case }
+    else { pattern = Substring pattern; field; case }
   in
   Command.Window (Tag_query { query; tags })
 ;;

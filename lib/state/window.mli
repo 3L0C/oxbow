@@ -269,3 +269,7 @@ val set_is_hidden : t -> bool -> unit
 
     {b Effects:} mutates WM state; marks dirty *)
 val rehome : Types.Wm.t -> t -> string -> unit
+
+(** [presentation_string window] is [window]'s current presentation as one of
+    ["tiled"], ["floating"], ["maximized"], or ["fullscreen"]. *)
+val presentation_string : t -> string
