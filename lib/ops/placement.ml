@@ -10,11 +10,11 @@ let zoom ctx (seat : Seat.t) =
     (match Output.tiled_windows o with
      | w' :: x :: _ when w' == w ->
        Stacking.push [ x; w ] o;
-       Focus.focus_window ~force:true ctx seat x;
+       Focus.focus_window ~force:true ~warp:true ctx seat x;
        Ok None
      | w' :: _ when w' != w ->
        Stacking.push [ w; w' ] o;
-       Focus.focus_window ~force:true ctx seat w;
+       Focus.focus_window ~force:true ~warp:true ctx seat w;
        Ok None
      | []
        when let open Ocdwm_layout in

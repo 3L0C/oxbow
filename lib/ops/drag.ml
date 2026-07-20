@@ -2,7 +2,7 @@ open! Ocdwm_core
 open! Ocdwm_state
 
 let begin_move ctx seat window =
-  Focus.focus_window ctx seat window;
+  Focus.focus_window ~warp:false ctx seat window;
   River.Window_management.River_seat_v1.op_start_pointer seat.obj;
   Seat.set_op seat
   @@ Move
@@ -16,7 +16,7 @@ let begin_move ctx seat window =
 ;;
 
 let begin_resize ctx seat window edges =
-  Focus.focus_window ctx seat window;
+  Focus.focus_window ~warp:false ctx seat window;
   let g = window.geom in
   let open River.Window_management.River_window_v1 in
   let corner_x = if Int32.logand edges Edges.left <> 0l then g.x else Int32.add g.x g.w in
@@ -50,7 +50,7 @@ let step ctx (seat : Seat.t) =
      | Some o when not @@ Phys.opt_holds o w.output ->
        let prev = w.output in
        Placement.move_window ~policy:Tag.Policy.Take w o;
-       Focus.focus_window ctx seat w;
+       Focus.focus_window ~warp:false ctx seat w;
        Option.iter Dirty.mark_output prev;
        Dirty.mark_output o
      | _ -> ());
