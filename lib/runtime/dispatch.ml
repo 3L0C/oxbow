@@ -52,6 +52,7 @@ let handle_output ctx seat (cmd : Command.Output.t) =
   | Focus_logical dir -> Focus.output_logical ctx seat dir
   | Focus_spatial dir -> Focus.output_spatial ctx seat dir
   | Focus_name name -> Focus.output_name ctx seat name
+  | Toggle_overview -> Overview.toggle ctx seat
 ;;
 
 let handle_set ctx seat (cmd : Command.Set.t) =

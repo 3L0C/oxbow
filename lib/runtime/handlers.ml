@@ -47,6 +47,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     ; usable = { x = 0; y = 0; w = 0; h = 0 }
     ; selected_tags = Tag.Set.singleton 1
     ; previous_tags = Tag.Set.singleton 1
+    ; arrangement = Tiling
     ; tag_data =
         Array.init 32 (fun _ -> Config.create_tag_data wm.config.default_tag_config.entry)
     ; focus_stack = []

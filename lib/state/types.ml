@@ -80,23 +80,17 @@ and Output : sig
   end
 
   type t =
-    { (* Wayland objects *)
-      obj : River.V.Window_management.t River.Window_management.River_output_v1.t
+    { obj : River.V.Window_management.t River.Window_management.River_output_v1.t
     ; layer_shell : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_output_v1.t
-    ; (* Lifecycle *)
-      mutable lifecycle : Lifecycle.t
-    ; (* Identity *)
-      mutable name : string option
-    ; (* Geometry *)
-      mutable geom : int32 Ocdwm_core.Rect.t
-    ; (* Usable area *)
-      mutable usable : int Ocdwm_core.Rect.t
-    ; (* Tag state *)
-      mutable selected_tags : Ocdwm_core.Tag.Set.t
+    ; mutable lifecycle : Lifecycle.t
+    ; mutable name : string option
+    ; mutable geom : int32 Ocdwm_core.Rect.t
+    ; mutable usable : int Ocdwm_core.Rect.t
+    ; mutable selected_tags : Ocdwm_core.Tag.Set.t
     ; mutable previous_tags : Ocdwm_core.Tag.Set.t
-    ; (* Per-tag layout configuration *)
-      tag_data : Config.Data.t array
-    ; (* Focus stack - most recently focused first *)
+    ; mutable arrangement : Ocdwm_core.Arrangement.t
+    ; tag_data : Config.Data.t array
+    ; (* Focus stack; most recently focused first *)
       mutable focus_stack : Window.t list
     ; (* All windows on this output. Ordered in tiling order when filtered by
          selected_tags *)

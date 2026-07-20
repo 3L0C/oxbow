@@ -47,6 +47,7 @@ let to_layout (output : Output.t) =
         { output = name
         ; layout = Entry.name entry
         ; symbol = Entry.symbol (Output.current_layout_ctx output) entry
+        ; arrangement = Arrangement.to_string output.arrangement
         }
 ;;
 

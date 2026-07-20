@@ -32,6 +32,7 @@ module Layout = struct
     { output : string
     ; layout : string
     ; symbol : string
+    ; arrangement : string
     }
   [@@deriving yojson]
 end

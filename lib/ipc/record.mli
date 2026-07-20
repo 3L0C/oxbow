@@ -34,6 +34,7 @@ module Layout : sig
     { output : string
     ; layout : string
     ; symbol : string
+    ; arrangement : string
     }
 
   val t_of_yojson : Yojson.Safe.t -> t

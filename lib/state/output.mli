@@ -168,5 +168,11 @@ val set_name : t -> string option -> unit
     {b Effects:} mutates WM state *)
 val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
 
+(** [set_arrangement output arrangement] sets [output]'s arrangment to
+    [arrangement].
+
+    {b Effects:} mutates WM state *)
+val set_arrangement : t -> Ocdwm_core.Arrangement.t -> unit
+
 (** [is_dirty output] is true when [output]'s lifecycle is [Dirty _]. *)
 val is_dirty : t -> bool

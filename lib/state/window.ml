@@ -83,8 +83,11 @@ let set_geom ctx (w : t) g =
 
 let tag_visible (w : t) =
   match w.output with
-  | Some o -> Tag.Set.intersects w.tags o.selected_tags
   | None -> false
+  | Some o ->
+    (match o.arrangement with
+     | Overview _ -> true
+     | Tiling | Scrolling -> Tag.Set.intersects w.tags o.selected_tags)
 ;;
 
 let is_tiled (w : t) = w.presentation = Tiled
@@ -231,7 +234,7 @@ let exit_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
      | `Tiled -> tile w
      | `Floating -> float ctx w
      | `Maximized restore -> maximize ~restore ctx w)
-  | _ -> ()
+  | _, (Tiled | Floating | Maximized _ | Fullscreen _) -> ()
 ;;
 
 let is_rendered (w : t) =

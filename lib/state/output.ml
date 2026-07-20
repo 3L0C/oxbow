@@ -226,6 +226,11 @@ let set_usable (o : t) usable =
 let set_name (o : t) name = o.name <- name
 let set_geom (o : t) geom = o.geom <- geom
 
+let set_arrangement (o : t) a =
+  o.arrangement <- a;
+  Dirty.mark_output o
+;;
+
 let is_dirty (o : t) =
   match o.lifecycle with
   | Dirty _ -> true

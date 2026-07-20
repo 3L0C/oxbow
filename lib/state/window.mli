@@ -23,8 +23,9 @@ val set_position : 'p Ctx.t -> t -> x:int32 -> y:int32 -> unit
     {b Effects:} mutates WM state; sends River request *)
 val set_geom : Ctx.manage Ctx.t -> t -> int32 Ocdwm_core.Rect.t -> unit
 
-(** [tag_visible window] is [true] if [window] is assigned to an output whose
-    selected tags intersect [window]'s. Is [false] otherwise. *)
+(** [tag_visible window] is [true] if [output] is in the [Tiling] or [Scrolling]
+    arrangement, and [window] is assigned to an output whose selected tags
+    intersect [window]'s. Is [false] otherwise. *)
 val tag_visible : t -> bool
 
 (** [is_tiled window] is [true] when [window] is tiled. *)

@@ -61,8 +61,11 @@ let () =
           ; presentation = "tiled"
           }));
   check
-    ~expect:{|{"event":"layout","output":"DP-1","layout":"tall","symbol":"[]="}|}
-    (Event.to_line (Layout { output = "DP-1"; layout = "tall"; symbol = "[]=" }));
+    ~expect:
+      {|{"event":"layout","output":"DP-1","layout":"tall","symbol":"[]=","arrangement":"tiling"}|}
+    (Event.to_line
+       (Layout
+          { output = "DP-1"; layout = "tall"; symbol = "[]="; arrangement = "tiling" }));
   check
     ~expect:{|{"event":"mode","seat":"default","mode":"normal"}|}
     (Event.to_line (Mode { seat = "default"; mode = "normal" }));
