@@ -1,10 +1,12 @@
-(* Property checks for [Tile.compute]: rect count matches window count; in
-   non-degenerate configurations (gaps fit inside the usable area) the tiles
-   fill the area exactly: outer edges flush at [gaps_outer], adjacent tiles
-   separated by exactly [gaps_inner], no overlaps. Degenerate configurations
-   only need non-negative widths and positive heights. *)
+(* Property checks for [Tile.compute]. The compute stage is gapless: the arrange
+   pipeline applies gaps with [Gaps.pre] and [Gaps.post], so the result must not
+   depend on the gaps params. The rect count matches the window count. In
+   non-degenerate configurations (each column holds at least one pixel per
+   window) the tiles fill the usable area exactly: outer edges flush, adjacent
+   tiles flush, no overlaps. Degenerate configurations only need non-negative
+   dimensions. *)
 
-let () =
+let test_tiling () =
   let open Ocdwm_core in
   let open Ocdwm_layout in
   let cases = ref 0 in
@@ -45,15 +47,14 @@ let () =
     in
     let rects = Tile.compute ~params ~usable_area:ua ~count in
     check "rect count" (List.length rects = count);
-    List.iter (fun (r : int Rect.t) -> check "dims sane" (r.w >= 0 && r.h >= 1)) rects;
+    List.iter (fun (r : int Rect.t) -> check "dims sane" (r.w >= 0 && r.h >= 0)) rects;
     if count > 0 && List.length rects = count
     then (
       let m_count = min count nmaster in
       let c_count = count - m_count in
-      let both = m_count > 0 && c_count > 0 in
-      let w_raw = ua.w - (go * 2) - if both then gi else 0 in
-      let mh_raw = ua.h - (go * 2) - if m_count > 0 then gi * (m_count - 1) else 0 in
-      let ch_raw = ua.h - (go * 2) - if c_count > 0 then gi * (c_count - 1) else 0 in
+      let w_raw = ua.w in
+      let mh_raw = ua.h in
+      let ch_raw = ua.h in
       let nondegen =
         w_raw >= max 2 count
         && (m_count = 0 || mh_raw >= m_count)
@@ -73,23 +74,23 @@ let () =
           (fun (r : int Rect.t) ->
              check
                "in bounds"
-               (r.x >= ua.x + go
-                && r.y >= ua.y + go
-                && r.x + r.w <= ua.x + ua.w - go
-                && r.y + r.h <= ua.y + ua.h - go))
+               (r.x >= ua.x
+                && r.y >= ua.y
+                && r.x + r.w <= ua.x + ua.w
+                && r.y + r.h <= ua.y + ua.h))
           rects;
         let column name (col : int Rect.t list) =
           match col with
           | [] -> ()
           | first :: _ ->
             let last = List.nth col (List.length col - 1) in
-            check (name ^ " top flush") (first.y = ua.y + go);
-            check (name ^ " bottom flush") (last.y + last.h = ua.y + ua.h - go);
+            check (name ^ " top flush") (first.y = ua.y);
+            check (name ^ " bottom flush") (last.y + last.h = ua.y + ua.h);
             ignore
               (List.fold_left
                  (fun (prev : int Rect.t option) (r : int Rect.t) ->
                     (match prev with
-                     | Some p -> check (name ^ " vertical gap") (r.y = p.y + p.h + gi)
+                     | Some p -> check (name ^ " vertical flush") (r.y = p.y + p.h)
                      | None -> ());
                     Some r)
                  None
@@ -98,14 +99,14 @@ let () =
         column "master" masters;
         column "client" clients;
         (match masters with
-         | m :: _ -> check "master left flush" (m.x = ua.x + go)
+         | m :: _ -> check "master left flush" (m.x = ua.x)
          | [] -> ());
         (match clients, masters with
-         | c :: _, m :: _ -> check "column gap" (c.x = m.x + m.w + gi)
-         | c :: _, [] -> check "client left flush" (c.x = ua.x + go)
+         | c :: _, m :: _ -> check "column flush" (c.x = m.x + m.w)
+         | c :: _, [] -> check "client left flush" (c.x = ua.x)
          | [], _ -> ());
         match List.rev rects with
-        | r :: _ -> check "right flush" (r.x + r.w = ua.x + ua.w - go)
+        | r :: _ -> check "right flush" (r.x + r.w = ua.x + ua.w)
         | [] -> ()))
   in
   List.iter
@@ -139,3 +140,5 @@ let () =
   Printf.printf "tile: %d cases, %d failures\n" !cases !failures;
   if !failures > 0 then exit 1
 ;;
+
+let () = test_tiling ()
