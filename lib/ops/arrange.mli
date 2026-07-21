@@ -74,7 +74,7 @@ val exit_overview
     exits fullscreen. Leaving views exactly the focused window's tags and
     restores floating and maximized geometry.
 
-    {b Effects:} sends River requests *)
+    {b Effects:} mutates WM state; sends River requests *)
 val toggle_overview
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t

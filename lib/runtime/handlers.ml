@@ -48,6 +48,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     ; selected_tags = Tag.Set.singleton 1
     ; previous_tags = Tag.Set.singleton 1
     ; arrangement = Tiling
+    ; scroll_offset = 0
     ; tag_data =
         Array.init 32 (fun _ -> Config.create_tag_data wm.config.default_tag_config.entry)
     ; focus_stack = []
@@ -180,6 +181,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
     ; pending_requests = Queue.create ()
     ; hovered = None
     ; interacted = None
+    ; warp_pending = false
     ; focus_state = Idle
     ; cursor_target = None
     ; op = None

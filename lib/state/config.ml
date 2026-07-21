@@ -10,6 +10,7 @@ let default_layout_params =
     ; gaps_outer = 20
     ; stack = Even
     ; dir = Left
+    ; scroll_policy = Visible
     }
 ;;
 

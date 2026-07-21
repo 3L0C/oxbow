@@ -112,6 +112,12 @@ val set_hovered : t -> Types.Window.t option -> unit
     {b Effects:} mutates WM state *)
 val set_interacted : t -> Types.Window.t option -> unit
 
+(** [set_warp_pending seat pending]] sets [seat]'s warp pending flag to
+    [pending].
+
+    {b Effects:} mutates WM state *)
+val set_warp_pending : t -> bool -> unit
+
 (** [is_dirty seat] is true when [seat]'s lifecycle is [Dirty _]. *)
 val is_dirty : t -> bool
 

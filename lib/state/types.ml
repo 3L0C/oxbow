@@ -89,6 +89,7 @@ and Output : sig
     ; mutable selected_tags : Ocdwm_core.Tag.Set.t
     ; mutable previous_tags : Ocdwm_core.Tag.Set.t
     ; mutable arrangement : Ocdwm_core.Arrangement.t
+    ; mutable scroll_offset : int
     ; tag_data : Config.Data.t array
     ; (* Focus stack; most recently focused first *)
       mutable focus_stack : Window.t list
@@ -285,29 +286,23 @@ and Seat : sig
   end
 
   type t =
-    { (* Wayland objects *)
-      obj : River.V.Window_management.t River.Window_management.River_seat_v1.t
+    { obj : River.V.Window_management.t River.Window_management.River_seat_v1.t
     ; layer_shell : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_seat_v1.t
-    ; (* Lifecycle *)
-      mutable lifecycle : Lifecycle.t
-    ; (* Identity *)
-      mutable name : string option
-    ; (* State *)
-      mutable output : Output.t option
+    ; mutable lifecycle : Lifecycle.t
+    ; mutable name : string option
+    ; mutable output : Output.t option
     ; mutable position : Position.t
     ; mutable layer_focus : Layer_focus.t option
     ; mutable mode : string
-    ; (* Keybindings *)
-      mutable xkb_bindings : Xkb_binding.t list
+    ; mutable xkb_bindings : Xkb_binding.t list
     ; mutable pointer_bindings : Pointer_binding.t list
     ; mutable pending_requests : Pending_request.t Queue.t
-    ; (* Pointer state *)
-      mutable hovered : Window.t option
+    ; mutable hovered : Window.t option
     ; mutable interacted : Window.t option
+    ; mutable warp_pending : bool
     ; mutable focus_state : Focus_state.t
     ; mutable cursor_target : Window.t option
-    ; (* Interactive op state *)
-      mutable op : Op.t option
+    ; mutable op : Op.t option
     }
 end =
   Seat

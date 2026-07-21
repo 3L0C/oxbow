@@ -165,6 +165,7 @@ let manage (wm : Wm.t) proxy =
       List.iter (manage_seat ctx) wm.seats;
       List.iter (manage_output ctx) wm.outputs;
       List.iter (Window.sync ctx) wm.windows;
+      List.iter (Focus.apply_warp ctx) wm.seats;
       Events.publish wm;
       River.Window_management.River_window_manager_v1.manage_finish proxy)
 ;;

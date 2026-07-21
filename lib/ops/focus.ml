@@ -20,9 +20,7 @@ let focus_window ?(force : bool = false) ~warp ctx (seat : Seat.t) (target : Win
   | _ ->
     set_output ctx seat target.output;
     Stacking.focus_window ctx seat target;
-    (* FIXME need to delay this because zoom forces a retile which changes the
-       warp location *)
-    if warp then Pointer.warp_to_focus ctx seat
+    if warp then Seat.set_warp_pending seat true
 ;;
 
 let clear (_ : Ctx.manage Ctx.t) (seat : Seat.t) =
@@ -120,7 +118,7 @@ let window_query ~cycle ctx seat q =
 
 let focus_output ~warp ctx seat output =
   set_output ctx seat @@ Some output;
-  Pointer.warp_to_focus ctx seat;
+  Seat.set_warp_pending seat true;
   match Output.focused_window output with
   | Some w -> focus_window ~warp ctx seat w
   | None -> clear ctx seat
@@ -243,4 +241,11 @@ let apply_interaction ctx (seat : Seat.t) =
   | Some w ->
     focus_window ~warp:false ctx seat w;
     Seat.set_interacted seat None
+;;
+
+let apply_warp ctx (seat : Seat.t) =
+  if seat.warp_pending
+  then (
+    Pointer.warp_to_focus ctx seat;
+    Seat.set_warp_pending seat false)
 ;;

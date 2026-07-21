@@ -228,6 +228,8 @@ let set_arrangement (o : t) (a : Arrangement.t) =
   Dirty.mark_output o
 ;;
 
+let set_scroll_offset (o : t) offset = o.scroll_offset <- offset
+
 let is_dirty (o : t) =
   match o.lifecycle with
   | Dirty _ -> true

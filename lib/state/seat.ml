@@ -196,6 +196,7 @@ let set_lifecycle (s : t) lifecycle = s.lifecycle <- lifecycle
 let set_name (s : t) name = s.name <- name
 let set_hovered (s : t) window = s.hovered <- window
 let set_interacted (s : t) window = s.interacted <- window
+let set_warp_pending (s : t) v = s.warp_pending <- v
 
 let is_dirty (s : t) =
   match s.lifecycle with

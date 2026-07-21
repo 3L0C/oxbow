@@ -7,4 +7,5 @@ type t =
   ; mutable gaps_outer : int
   ; mutable stack : Stack_kind.t
   ; mutable dir : Direction.Spatial.t
+  ; mutable scroll_policy : Ocdwm_core.Scroll_policy.t
   }

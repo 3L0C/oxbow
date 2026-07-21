@@ -34,7 +34,14 @@ let () =
     let check name cond = if not cond then fail name in
     let params =
       Params.
-        { mfact; nmaster; gaps_inner = gi; gaps_outer = go; stack = Even; dir = Left }
+        { mfact
+        ; nmaster
+        ; gaps_inner = gi
+        ; gaps_outer = go
+        ; stack = Even
+        ; dir = Left
+        ; scroll_policy = Visible
+        }
     in
     let rects = Tile.compute ~params ~usable_area:ua ~count in
     check "rect count" (List.length rects = count);
