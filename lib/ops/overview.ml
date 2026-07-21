@@ -38,37 +38,3 @@ let arrange ctx (output : Output.t) =
       windows
       dimensions)
 ;;
-
-let toggle ctx (seat : Seat.t) =
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o ->
-    (match o.arrangement with
-     | (Tiling | Scrolling) as p ->
-       List.iter (fun w -> Window_request.handle ctx w Exit_fullscreen) o.wm_stack;
-       Output.set_arrangement
-         o
-         (Overview
-            (match p with
-             | Tiling -> `Tiling
-             | Scrolling -> `Scrolling
-             | Overview x -> x));
-       Ok None
-     | Overview prev ->
-       let focused = Output.focused_window o in
-       (match prev with
-        | `Tiling -> Output.set_arrangement o Tiling
-        | `Scrolling -> Output.set_arrangement o Scrolling);
-       (match focused with
-        | Some w -> Output.switch_tags ~tags:w.tags o
-        | None -> ());
-       List.iter
-         (fun (w : Window.t) ->
-            match w.presentation with
-            | Fullscreen _ | Tiled -> ()
-            | Floating -> Window.restore_or_seed_float ctx w
-            | Maximized { restore } -> Window.maximize ~restore ctx w)
-         o.wm_stack;
-       Dirty.mark_output o;
-       Ok None)
-;;

@@ -52,12 +52,41 @@ val set_dir
   -> Ocdwm_core.Direction.Spatial.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_arrangement seat arrangement] sets [seat]'s focused output arrangement
-    to [arrangement].
+(** [enter_overview ctx output] handles the transition to the [Overview]
+    arrangement. No-op when [output] is already in [Overview].
+
+    {b Effects:} mutates WM state *)
+val enter_overview
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Output.t
+  -> unit
+
+(** [exit_overview ctx output] handles the transition from [Overview] to any
+    other arrangement. No-op when [output] is not in [Overview].
+
+    {b Effects:} mutates WM state *)
+val exit_overview
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Output.t
+  -> unit
+
+(** [toggle_overview ctx seat] enters or leaves overview on [seat]'s output.  Entering
+    exits fullscreen. Leaving views exactly the focused window's tags and
+    restores floating and maximized geometry.
+
+    {b Effects:} sends River requests *)
+val toggle_overview
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> ('a option, string) result
+
+(** [set_arrangement ctx seat arrangement] sets [seat]'s focused output
+    arrangement to [arrangement]. No-op when already set to [arrangement].
 
     {b Effects:} mutates WM state *)
 val set_arrangement
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Arrangement.t
   -> (Yojson.Safe.t option, string) result
 

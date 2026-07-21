@@ -4,13 +4,3 @@
 
     {b Effects:} sends River requests *)
 val arrange : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Output.t -> unit
-
-(** [toggle ctx seat] enters or leaves overview on [seat]'s output.  Entering
-    exits fullscreen. Leaving views exactly the focused window's tags and
-    restores floating and maximized geometry.
-
-    {b Effects:} sends River requests *)
-val toggle
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
-  -> ('a option, string) result
