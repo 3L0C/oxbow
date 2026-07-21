@@ -112,7 +112,7 @@ val set_hovered : t -> Types.Window.t option -> unit
     {b Effects:} mutates WM state *)
 val set_interacted : t -> Types.Window.t option -> unit
 
-(** [set_warp_pending seat pending]] sets [seat]'s warp pending flag to
+(** [set_warp_pending seat pending] sets [seat]'s warp pending flag to
     [pending].
 
     {b Effects:} mutates WM state *)

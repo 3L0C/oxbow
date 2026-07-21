@@ -44,7 +44,7 @@ let arrange ctx (output : Output.t) =
             ~total_w
             ~offset:output.scroll_offset
             ~col
-        | None -> min output.scroll_offset (area.w - total_w) |> max 0
+        | None -> min output.scroll_offset (total_w - area.w) |> max 0
       in
       Output.set_scroll_offset output offset;
       placed
