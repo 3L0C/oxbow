@@ -31,6 +31,9 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Toggle_fullscreen -> Window_request.toggle_fullscreen ctx seat
   | Toggle_fake_fullscreen -> Window_request.toggle_fake_fullscreen ctx seat
   | Zoom -> Placement.zoom ctx seat
+  | Column_consume -> Column.consume seat
+  | Column_release -> Column.release seat
+  | Column_move dir -> Column.move seat dir
 ;;
 
 let handle_tag seat (cmd : Command.Tag.t) =

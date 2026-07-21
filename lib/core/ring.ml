@@ -54,3 +54,17 @@ let hop_right sel vis l =
 ;;
 
 let hop_left sel vis l = List.rev l |> hop_right sel vis |> List.rev
+
+let rearrange vis order l =
+  List.fold_left_map
+    (fun ol slot ->
+       if vis slot
+       then (
+         match ol with
+         | [] -> ol, slot
+         | x :: xs -> xs, x)
+       else ol, slot)
+    order
+    l
+  |> snd
+;;

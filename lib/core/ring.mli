@@ -37,3 +37,9 @@ val hop_right : ('a -> bool) -> ('a -> bool) -> 'a list -> 'a list
     the nearest [vis]-satisfying predecessor; the first such element wraps to
     just after the last. *)
 val hop_left : ('a -> bool) -> ('a -> bool) -> 'a list -> 'a list
+
+(** [rearrange vis order l] is [l] with the elements that satisfy [vis]
+    replaced, slot by slot, by the elements of [order]. The other elements keep
+    their positions. [order] holds exactly the [vis]-satisfying elements of [l],
+    in any order. *)
+val rearrange : ('a -> bool) -> 'a list -> 'a list -> 'a list

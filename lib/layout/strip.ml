@@ -16,15 +16,15 @@ let split ~total ~count =
     List.init count (fun i -> if i < rem then size + 1 else size))
 ;;
 
+let rec columns ~consumes = function
+  | [] -> []
+  | x :: xs ->
+    (match columns ~consumes xs, consumes x with
+     | col :: cols, true -> (x :: col) :: cols
+     | cols, _ -> [ x ] :: cols)
+;;
+
 let layout ~(usable : int Rect.t) ~offset (items : ('a * Item.t) list) =
-  let rec group (items : ('a * Item.t) list) =
-    match items with
-    | [] -> []
-    | ((_, it) as x) :: rest ->
-      (match group rest, it.consumes with
-       | col :: cols, true -> (x :: col) :: cols
-       | cols, _ -> [ x ] :: cols)
-  in
   let column_width (col : ('a * Item.t) list) =
     let fac = (List.hd col |> snd).width_fac in
     float_of_int usable.w *. fac |> int_of_float |> max 1
@@ -47,7 +47,7 @@ let layout ~(usable : int Rect.t) ~offset (items : ('a * Item.t) list) =
          let width = column_width col in
          cursor + width, place ~cursor col)
       (usable.x - offset)
-      (group items)
+      (columns ~consumes:(fun (_, (it : Item.t)) -> it.consumes) items)
   in
   List.concat per_column
 ;;

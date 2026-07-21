@@ -21,3 +21,7 @@ val window_missing_output : string
 (** [tag_set_is_empty] is the standard error message used when the given tag set
     is empty. *)
 val tag_set_is_empty : string
+
+(** [not_scrolling] is the standard error message used when an operation is
+    performed on an output that is not in the [Scrolling] arrangement. *)
+val not_scrolling : string

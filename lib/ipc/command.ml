@@ -53,6 +53,9 @@ module Window = struct
     | Toggle_fullscreen [@name "toggle_fullscreen"]
     | Toggle_fake_fullscreen [@name "toggle_fake_fullscreen"]
     | Zoom [@name "zoom"]
+    | Column_consume [@name "column_consume"]
+    | Column_release [@name "column_release"]
+    | Column_move of Ocdwm_core.Direction.Logical.t [@name "column_move"]
   [@@deriving yojson]
 end
 

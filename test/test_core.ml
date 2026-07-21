@@ -75,5 +75,24 @@ let () =
            label
            (String.concat ";" @@ List.map string_of_int r);
          assert false))
-    hops
+    hops;
+  let arrangements =
+    [ "odd", (fun i -> i mod 2 = 1), [ 5; 1; 3 ], [ 1; 2; 3; 4; 5 ], [ 5; 2; 1; 4; 3 ]
+    ; "even", (fun i -> i mod 2 = 0), [ 4; 2 ], [ 1; 2; 3; 4; 5 ], [ 1; 4; 3; 2; 5 ]
+    ; "none", (fun _ -> false), [], [ 1; 2; 3; 4; 5 ], [ 1; 2; 3; 4; 5 ]
+    ; "all", (fun _ -> true), [ 2; 4; 1; 5; 3 ], [ 1; 2; 3; 4; 5 ], [ 2; 4; 1; 5; 3 ]
+    ]
+  in
+  List.iter
+    (fun (label, vis, order, l, expected) ->
+       let r = Ring.rearrange vis order l in
+       if r = expected
+       then Printf.printf "ok: ring rearrange %s\n" label
+       else (
+         Printf.eprintf
+           "failed: ring rearrange %s: [%s]\n"
+           label
+           (String.concat ";" @@ List.map string_of_int r);
+         assert false))
+    arrangements
 ;;

@@ -6,6 +6,7 @@ let cmd =
     ~name
     ~doc
     [ Cmd_window_close.cmd
+    ; Cmd_window_column.cmd
     ; Cmd_window_focus.cmd
     ; Cmd_window_move.cmd
     ; Cmd_window_query.cmd
@@ -23,6 +24,7 @@ let bind_cmd =
     ~name
     ~doc
     [ Cmd_window_close.bind_cmd
+    ; Cmd_window_column.bind_cmd
     ; Cmd_window_focus.bind_cmd
     ; Cmd_window_move.bind_cmd
     ; Cmd_window_resize.bind_cmd

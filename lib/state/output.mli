@@ -181,7 +181,7 @@ val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
     {b Effects:} mutates WM state *)
 val set_arrangement : t -> Ocdwm_core.Arrangement.t -> unit
 
-(** [set_scroll_offset output offset] sets [output]' scroll offset to [offset].
+(** [set_scroll_offset output offset] sets [output]'s scroll offset to [offset].
 
     {b Effects:} mutates WM state *)
 val set_scroll_offset : t -> int -> unit

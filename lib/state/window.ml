@@ -95,6 +95,7 @@ let tag_visible (w : t) =
 ;;
 
 let is_tiled (w : t) = w.presentation = Tiled
+let is_tiled_on_tag w = tag_visible w && is_tiled w
 let remember_float (w : t) = w.float_geom <- Some w.geom
 
 let tile (w : t) =
@@ -448,6 +449,13 @@ let set_tags (w : t) tags =
     w.tags <- tags;
     Option.iter Dirty.mark_output w.output)
   else invalid_arg "Windows cannot have an empty set of tags."
+;;
+
+let set_consumes (w : t) v =
+  if v <> w.consumes
+  then (
+    w.consumes <- v;
+    Option.iter Dirty.mark_output w.output)
 ;;
 
 let set_output (w : t) output =

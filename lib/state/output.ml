@@ -59,10 +59,7 @@ let to_tag_data (o : t) =
 
 let visible_windows (o : t) = List.filter Window.tag_visible o.wm_stack
 let visible_window_count (o : t) = visible_windows o |> List.length
-
-let tiled_windows (o : t) =
-  List.filter (fun w -> Window.tag_visible w && Window.is_tiled w) o.wm_stack
-;;
+let tiled_windows (o : t) = List.filter Window.is_tiled_on_tag o.wm_stack
 
 let set_layout_entry ~entry o =
   let td = to_tag_data o in

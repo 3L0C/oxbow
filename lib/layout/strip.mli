@@ -5,6 +5,11 @@ module Item : sig
     }
 end
 
+(** [columns ~consumes items] groups [items] into columns. A new column starts
+    at each item whose predecessor does not consume. The concatenation of the
+    result is [items]. *)
+val columns : consumes:('a -> bool) -> 'a list -> 'a list list
+
 (** [layout ~usable ~offset items] is the screen-space geometry of [items]
     arranged as full-height columns on a horizontal strip, in order. Column
     width is the head item's [width_fac] * [usable] width (min 1); windows
@@ -17,7 +22,7 @@ val layout
   -> ('a * int Ocdwm_core.Rect.t) list
 
 (** [scroll ~policy ~viewport_w ~total_w ~offset ~col:(x, w)] is the strip
-    offset after applying [policy] to the focused column [col], where [x] its
+    offset after applying [policy] to the focused column [col], where [x] is its
     strip-relative position (offset-0 placement minus the usable origin), [w]
     its width. The result is clamped to [0, max 0 (total_w - viewport_w)], so
     stale offsets self-heal. *)

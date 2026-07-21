@@ -139,7 +139,7 @@ val apply_interaction
   -> unit
 
 (** [apply_warp ctx seat] warps the pointer to [seat]'s focused window if a warp
-    is pending.
+    is pending. Called after retile and window sync.
 
     {b Effects:} mutates WM state; sends River request *)
 val apply_warp : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Seat.t -> unit

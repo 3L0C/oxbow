@@ -31,6 +31,9 @@ val tag_visible : t -> bool
 (** [is_tiled window] is [true] when [window] is tiled. *)
 val is_tiled : t -> bool
 
+(** [is_tiled_on_tag window] is [tag_visible window && is_tiled window] *)
+val is_tiled_on_tag : t -> bool
+
 (** [remember_float window] saves [window]'s current geometry to restore when
     [window] transitions to the floating state.
 
@@ -183,6 +186,12 @@ val resize_spatial
 
     {b Effects:} mutates WM state; marks dirty *)
 val set_tags : t -> Ocdwm_core.Tag.Set.t -> unit
+
+(** [set_consumes window v] sets the consumes chain-bit and marks the output
+    dirty on change.
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_consumes : t -> bool -> unit
 
 (** [set_output window output] sets [window]'s output to [output]. Setting
     [None] records the current output's name if none has been recorded
