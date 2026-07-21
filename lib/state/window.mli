@@ -73,9 +73,12 @@ val fullscreen : ?force:bool -> Ctx.manage Ctx.t -> t -> unit
     {b Effects:} mutates WM state; sends River request *)
 val exit_fullscreen : Ctx.manage Ctx.t -> t -> unit
 
-(** [is_rendered window] is [true] when [tag_visible window] is [true] and
-    [window] is not covered by a fullscreen window. [window] may be occluded by
-    a non-fullscreen window. *)
+(** [is_rendered window] is [true] when all of the following are true:
+    - [tag_visible window] is [true]
+    - [window] is not covered by a fullscreen window ([window] may be occluded
+      by a non-fullscreen window.)
+    - [window]'s output is in the [Scrolling] arrangement and [window] is within
+      output's scrolling viewport *)
 val is_rendered : t -> bool
 
 (** [sync ctx window] ensures [window] is shown or hidden based on window manager

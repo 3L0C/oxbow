@@ -189,6 +189,8 @@ and Window : sig
         River.Window_management.River_output_v1.Presentation_mode.t option
     ; mutable geom : int32 Ocdwm_core.Rect.t
     ; mutable float_geom : int32 Ocdwm_core.Rect.t option
+    ; mutable clip : int Ocdwm_core.Rect.t option
+    ; mutable applied_clip : int Ocdwm_core.Rect.t option
     ; mutable size_hints : int32 Size_hints.t
     ; mutable tags : Ocdwm_core.Tag.Set.t
     ; mutable output : Output.t option
@@ -196,6 +198,8 @@ and Window : sig
     ; mutable is_fixed : bool
     ; mutable is_urgent : bool
     ; mutable is_fake_fullscreen : bool
+    ; mutable consumes : bool
+    ; mutable scroll_width : Ocdwm_core.Width_fac.t option
     ; mutable is_hidden : bool
     ; mutable presentation : Presentation.t
     ; mutable requests : Request.t list
@@ -336,8 +340,7 @@ and Wm : sig
   end
 
   type t =
-    { (* Wayland objects *)
-      river_wm_v1 :
+    { river_wm_v1 :
         River.V.Window_management.t River.Window_management.River_window_manager_v1.t
     ; river_xkb_v1 : River.V.Xkb_bindings.t River.Xkb_bindings.River_xkb_bindings_v1.t
     ; river_lsh_v1 : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_v1.t
@@ -345,29 +348,25 @@ and Wm : sig
         River.V.Input_management.t River.Input_management.River_input_manager_v1.t
     ; river_xkb_config_v1 : River.V.Xkb_config.t River.Xkb_config.River_xkb_config_v1.t
     ; registry : Wayland.Registry.t
-    ; (* Lifecycle *)
-      shutdown : Eio.Condition.t
+    ; shutdown : Eio.Condition.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable is_dirty : bool
     ; mutable session_locked : bool
-    ; (* State *)
-      mutable primary_seat : Seat.t option
-    ; (* Managed items *)
-      mutable outputs : Output.t list (* Sorted by focus order *)
+    ; mutable primary_seat : Seat.t option
+      (* TODO verify if this still holds... *)
+      (* Sorted by focus order *)
+    ; mutable outputs : Output.t list
     ; mutable windows : Window.t list
     ; mutable seats : Seat.t list
     ; mutable input_devices : Input_device.t list
     ; mutable xkb_stash : (int32 * Input_device.Xkb.t) list
     ; mutable keymap : River.V.Xkb_config.t River.Xkb_config.River_xkb_keymap_v1.t option
     ; mutable desired_keymap_path : string option
-    ; (* User configuration *)
-      config : Config.t
+    ; config : Config.t
     ; init_command : string option
     ; mutable init_handle : Init_script.t option
-    ; (* Layout registry *)
-      layout_registry : Ocdwm_layout.Registry.t
-    ; (* IPC state *)
-      ipc : Ipc.t
+    ; layout_registry : Ocdwm_layout.Registry.t
+    ; ipc : Ipc.t
     }
 end =
   Wm

@@ -81,6 +81,7 @@ module Output : sig
     | Focus_spatial of Ocdwm_core.Direction.Spatial.t
     | Focus_name of string
     | Toggle_overview
+    | Arrangement of Ocdwm_core.Arrangement.t
 
   val t_of_yojson : Yojson.Safe.t -> t
   val yojson_of_t : t -> Yojson.Safe.t

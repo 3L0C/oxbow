@@ -38,6 +38,8 @@ let create (output : Types.Output.t option) river_window : t =
   ; presentation_hint = None
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
   ; float_geom = None
+  ; clip = None
+  ; applied_clip = None
   ; size_hints = { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l }
   ; tags =
       (match output with
@@ -48,6 +50,8 @@ let create (output : Types.Output.t option) river_window : t =
   ; is_fixed = false
   ; is_urgent = false
   ; is_fake_fullscreen = false
+  ; consumes = false
+  ; scroll_width = None
   ; is_hidden = false
   ; presentation = Presentation.Tiled
   ; requests = []
@@ -239,12 +243,18 @@ let exit_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
 
 let is_rendered (w : t) =
   tag_visible w
+  && (match w.output with
+      | None -> false
+      | Some o ->
+        not
+        @@ List.exists
+             (fun w' -> w' != w && is_fullscreen w' && tag_visible w')
+             o.focus_stack)
   &&
   match w.output with
-  | None -> false
-  | Some o ->
-    not
-    @@ List.exists (fun w' -> w' != w && is_fullscreen w' && tag_visible w') o.focus_stack
+  | Some ({ arrangement = Scrolling; _ } as o) when is_tiled w ->
+    Rect.(intersect (to_int w.geom) o.usable) |> Option.is_some
+  | _ -> true
 ;;
 
 let sync (ctx : Ctx.manage Ctx.t) (w : t) =
@@ -258,14 +268,40 @@ let sync (ctx : Ctx.manage Ctx.t) (w : t) =
       wm.seats
   in
   let should_render = is_rendered w in
-  match should_render, w.is_hidden with
-  | true, true ->
-    River.Window_management.River_window_v1.show w.obj;
-    w.is_hidden <- false
-  | false, false when not moving ->
-    River.Window_management.River_window_v1.hide w.obj;
-    w.is_hidden <- true
-  | _, _ -> ()
+  let () =
+    match should_render, w.is_hidden with
+    | true, true ->
+      River.Window_management.River_window_v1.show w.obj;
+      w.is_hidden <- false
+    | false, false when not moving ->
+      River.Window_management.River_window_v1.hide w.obj;
+      w.is_hidden <- true
+    | _, _ -> ()
+  in
+  let desired =
+    match w.output with
+    | Some { arrangement = Scrolling; _ } when is_tiled w && should_render -> w.clip
+    | _ -> None
+  in
+  if desired <> w.applied_clip
+  then (
+    (match desired with
+     | Some r ->
+       let g = Rect.to_int32 r in
+       River.Window_management.River_window_v1.set_clip_box
+         w.obj
+         ~x:g.x
+         ~y:g.y
+         ~width:g.w
+         ~height:g.h
+     | None ->
+       River.Window_management.River_window_v1.set_clip_box
+         w.obj
+         ~x:0l
+         ~y:0l
+         ~width:0l
+         ~height:0l);
+    w.applied_clip <- desired)
 ;;
 
 let queue_request wm (w : t) request =

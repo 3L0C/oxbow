@@ -223,9 +223,18 @@ let set_usable (o : t) usable =
 let set_name (o : t) name = o.name <- name
 let set_geom (o : t) geom = o.geom <- geom
 
-let set_arrangement (o : t) a =
-  o.arrangement <- a;
-  Dirty.mark_output o
+let set_arrangement (o : t) (a : Arrangement.t) =
+  match o.arrangement, a with
+  | Overview _, Overview _ -> ()
+  | Tiling, Overview _ ->
+    o.arrangement <- Overview `Tiling;
+    Dirty.mark_output o
+  | Scrolling, Overview _ ->
+    o.arrangement <- Overview `Scrolling;
+    Dirty.mark_output o
+  | _, (Tiling | Scrolling) ->
+    o.arrangement <- a;
+    Dirty.mark_output o
 ;;
 
 let is_dirty (o : t) =

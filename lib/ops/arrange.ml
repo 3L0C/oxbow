@@ -50,9 +50,17 @@ let set_dir (seat : Seat.t) dir =
     Ok None
 ;;
 
+let set_arrangement (seat : Seat.t) (a : Arrangement.t) =
+  match seat.output with
+  | None -> Error Messages.seat_missing_output
+  | Some o ->
+    Output.set_arrangement o a;
+    Ok None
+;;
+
 let retile ctx (output : Output.t) =
   match output.arrangement with
   | Overview _ -> Overview.arrange ctx output
   | Tiling -> Tiling.arrange ctx output
-  | Scrolling -> Logs.info @@ fun m -> m "scrolling arrangement not yet implemented..."
+  | Scrolling -> Scrolling.arrange ctx output
 ;;

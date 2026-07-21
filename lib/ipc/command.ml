@@ -76,6 +76,7 @@ module Output = struct
     | Focus_spatial of Ocdwm_core.Direction.Spatial.t [@name "focus_spatial"]
     | Focus_name of string [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
+    | Arrangement of Ocdwm_core.Arrangement.t [@name "arrangement"]
   [@@deriving yojson]
 end
 

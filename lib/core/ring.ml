@@ -38,19 +38,19 @@ let shift_left p l = List.rev l |> shift_right p |> List.rev
 
 let hop_right sel vis l =
   let rec aux p before = function
-    | x :: xs when p x -> List.rev before, Some x, xs
+    | x :: xs when p x -> Some (List.rev before, x, xs)
     | x :: xs -> aux p (x :: before) xs
-    | [] -> List.rev before, None, []
+    | [] -> None
   in
   match aux sel [] l with
-  | _, None, _ -> l
-  | b, Some x, a ->
+  | None -> l
+  | Some (b, x, a) ->
     (match aux vis [] a with
-     | b', Some y, a' -> b @ b' @ [ y; x ] @ a'
-     | _, None, _ ->
+     | Some (b', y, a') -> b @ b' @ [ y; x ] @ a'
+     | None ->
        (match aux vis [] b with
-        | b', Some y, a' -> b' @ [ x; y ] @ a' @ a
-        | _, None, _ -> l))
+        | Some (b', y, a') -> b' @ [ x; y ] @ a' @ a
+        | None -> l))
 ;;
 
 let hop_left sel vis l = List.rev l |> hop_right sel vis |> List.rev
