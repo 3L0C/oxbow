@@ -57,6 +57,13 @@ val current_layout_params : t -> Ocdwm_layout.Params.t
 (** [current_layout_ctx output] is the current layout context of [output]. *)
 val current_layout_ctx : t -> Ocdwm_layout.Symbol.Ctx.t
 
+(** [visible_windows output] is the list of visible windows on the selected tags
+    of [output]. *)
+val visible_windows : t -> Types.Window.t list
+
+(** [visible_window_count output] is the length of [visible_windows o]. *)
+val visible_window_count : t -> int
+
 (** [tiled_windows output] is the list of tiled windows on the selected tags of
     [output]. *)
 val tiled_windows : t -> Types.Window.t list

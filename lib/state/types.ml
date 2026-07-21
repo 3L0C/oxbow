@@ -175,13 +175,10 @@ and Window : sig
   end
 
   type t =
-    { (* Wayland objects *)
-      obj : River.V.Window_management.t River.Window_management.River_window_v1.t
+    { obj : River.V.Window_management.t River.Window_management.River_window_v1.t
     ; node : River.V.Window_management.t River.Window_management.River_node_v1.t
-    ; (* Lifecycle *)
-      mutable lifecycle : Lifecycle.t
-    ; (* State *)
-      id : int
+    ; mutable lifecycle : Lifecycle.t
+    ; id : int
     ; mutable app_id : string option
     ; mutable title : string option
     ; mutable identifier : string option
@@ -190,23 +187,18 @@ and Window : sig
     ; mutable decoration_hint : Decoration_hint.t option
     ; mutable presentation_hint :
         River.Window_management.River_output_v1.Presentation_mode.t option
-    ; (* Geometry *)
-      mutable geom : int32 Ocdwm_core.Rect.t
+    ; mutable geom : int32 Ocdwm_core.Rect.t
     ; mutable float_geom : int32 Ocdwm_core.Rect.t option
-    ; (* Size hints from dimensions_hint *)
-      mutable size_hints : int32 Size_hints.t
-    ; (* Tag and output assignment *)
-      mutable tags : Ocdwm_core.Tag.Set.t
+    ; mutable size_hints : int32 Size_hints.t
+    ; mutable tags : Ocdwm_core.Tag.Set.t
     ; mutable output : Output.t option
     ; mutable output_before_evac : string option
-    ; (* State flags *)
-      mutable is_fixed : bool
+    ; mutable is_fixed : bool
     ; mutable is_urgent : bool
     ; mutable is_fake_fullscreen : bool
     ; mutable is_hidden : bool
     ; mutable presentation : Presentation.t
-    ; (* Pointer op state *)
-      mutable requests : Request.t list
+    ; mutable requests : Request.t list
     }
 end =
   Window

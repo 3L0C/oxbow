@@ -57,11 +57,8 @@ let to_tag_data (o : t) =
   | None -> invalid_arg "Got an output with no selected tags."
 ;;
 
-let visible_window_count (o : t) =
-  List.fold_left (fun a w -> if Window.tag_visible w then a + 1 else a) 0 o.wm_stack
-;;
-
 let visible_windows (o : t) = List.filter Window.tag_visible o.wm_stack
+let visible_window_count (o : t) = visible_windows o |> List.length
 
 let tiled_windows (o : t) =
   List.filter (fun w -> Window.tag_visible w && Window.is_tiled w) o.wm_stack

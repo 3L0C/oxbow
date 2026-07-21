@@ -24,3 +24,16 @@ val shift_right : ('a -> bool) -> 'a list -> 'a list
     the head element wraps to the tail. [l] unchanged when nothing satisfies
     [p]. *)
 val shift_left : ('a -> bool) -> 'a list -> 'a list
+
+(** [hop_right sel vis l] moves the first element satisfying [sel] one slot
+    right among the elements satisfying [vis]: it is removed and reinserted just
+    after its nearest [vis]-satisfying successor; the last such element wraps to
+    just before the first [vis]-satisfying element. Elements not satisfying
+    [vis] keep their relative order to everything else. [l] unchanged when
+    nothing satisfies [sel] or no other element satisfies [vis]. *)
+val hop_right : ('a -> bool) -> ('a -> bool) -> 'a list -> 'a list
+
+(** [hop_left sel vis l] is the mirror of [hop_right]: reinserted just before
+    the nearest [vis]-satisfying predecessor; the first such element wraps to
+    just after the last. *)
+val hop_left : ('a -> bool) -> ('a -> bool) -> 'a list -> 'a list
