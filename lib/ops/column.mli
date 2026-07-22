@@ -45,3 +45,16 @@ val default_width : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
 
     {b Effects:} mutates WM state *)
 val cycle_width : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
+
+(** [zoom ?warp ctx seat] promotes the focused window in the scrolling layout. A
+    window in a shared column gets its own column at the front. A solo column
+    moves to the front. A solo front column swaps its window with the head of
+    the next column, and the two consume flags swap with them. The payload
+    [warp] overrides the warp on focus configuration.
+
+    {b Effects:} mutates WM state; marks dirty; sends River request *)
+val zoom
+  :  ?warp:bool
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> (Yojson.Safe.t option, string) result

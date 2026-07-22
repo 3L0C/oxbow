@@ -3,33 +3,13 @@ open! Ocdwm_state
 open! Ocdwm_layout
 
 let zoom ?warp ctx (seat : Seat.t) =
-  match seat.output, Seat.focused_window seat with
-  | None, _ -> Error Messages.seat_missing_output
-  | _, None -> Error Messages.no_focused_window
-  | Some o, Some w when w.presentation = Tiled ->
-    (match Output.tiled_windows o with
-     | w' :: x :: _ when w' == w ->
-       Stacking.push [ x; w ] o;
-       Focus.focus_window
-         ~force:true
-         ~warp:(Seat.Warp_request.of_override warp)
-         ctx
-         seat
-         x;
-       Ok None
-     | w' :: _ when w' != w ->
-       Stacking.push [ w; w' ] o;
-       Focus.focus_window
-         ~force:true
-         ~warp:(Seat.Warp_request.of_override warp)
-         ctx
-         seat
-         w;
-       Ok None
-     | [] when Output.current_layout o <> Floating ->
-       Error "focused window is tiled but tiled window list is empty"
-     | _ -> Error "no window to zoom with")
-  | _ -> Error "focused window is not tiled"
+  match seat.output with
+  | None -> Error Messages.seat_missing_output
+  | Some o ->
+    (match Output.current_layout o with
+     | Floating -> Error "cannot zoom in the floating layout"
+     | Scrolling -> Column.zoom ?warp ctx seat
+     | Tiling -> Tiling.zoom ?warp ctx seat)
 ;;
 
 let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =

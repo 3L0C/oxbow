@@ -34,3 +34,34 @@ let arrange ctx output =
         w_xs
         d_xs)
 ;;
+
+(* FIXME should find a place to put these ops with helpers *)
+let with_focused_ctx (seat : Seat.t) f =
+  match seat.output with
+  | None -> Error Messages.seat_missing_output
+  | Some o ->
+    (match Output.focused_window o with
+     | None -> Error Messages.no_focused_window
+     | Some w -> f o w)
+;;
+
+let zoom ?warp ctx seat =
+  with_focused_ctx seat
+  @@ fun o w ->
+  if Output.current_layout o <> Tiling
+  then Error "cannot zoom outside the tiling layout"
+  else if w.presentation <> Tiled
+  then Error "focused window is not tiled"
+  else (
+    let warp = Seat.Warp_request.of_override warp in
+    match Output.tiled_windows o with
+    | w' :: x :: _ when w' == w ->
+      Stacking.push [ x; w ] o;
+      Focus.focus_window ~force:true ~warp ctx seat x;
+      Ok None
+    | w' :: _ when w' != w ->
+      Stacking.push [ w; w' ] o;
+      Focus.focus_window ~force:true ~warp ctx seat w;
+      Ok None
+    | _ -> Error "no window to zoom with")
+;;

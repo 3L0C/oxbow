@@ -101,3 +101,47 @@ let cycle_width seat =
     Width_fac.cycle w.scrolling.width |> Window.set_scroll_width w;
     Ok None
 ;;
+
+let zoom ?warp ctx seat =
+  with_focused_column seat
+  @@ fun o w cols col ->
+  let warp = Seat.Warp_request.of_override warp in
+  match col with
+  | _ :: _ :: _ ->
+    let rec prev_of = function
+      | p :: x :: _ when x == w -> Some p
+      | _ :: rest -> prev_of rest
+      | [] -> None
+    in
+    let last = List.rev col |> List.hd in
+    if last == w
+    then (
+      match prev_of col with
+      | Some x -> Window.set_consumes x false
+      | None -> assert false);
+    Window.set_consumes w false;
+    Stacking.push [ w ] o;
+    Focus.focus_window ~force:true ~warp ctx seat w;
+    Ok None
+  | [ _ ] ->
+    (match cols with
+     | [ _ ] -> Error "no other column"
+     | first :: _ when first != col ->
+       Stacking.push [ w ] o;
+       Focus.focus_window ~force:true ~warp ctx seat w;
+       Ok None
+     | _ :: (next_head :: _) :: _ ->
+       Window.set_consumes w next_head.scrolling.consumes;
+       Window.set_consumes next_head false;
+       let order =
+         List.concat cols
+         |> List.map (fun x ->
+           if x == w then next_head else if x == next_head then w else x)
+       in
+       Output.set_wm_stack o
+       @@ Ring.rearrange (fun x -> List.memq x order) order o.wm_stack;
+       Focus.focus_window ~force:true ~warp ctx seat next_head;
+       Ok None
+     | _ -> Error "no other column")
+  | [] -> Error "focused window is not in the strip"
+;;
