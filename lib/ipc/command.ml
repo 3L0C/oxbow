@@ -1,53 +1,54 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
+open! Ocdwm_core
 
 module Window = struct
   type t =
     | Close [@name "close"]
-    | Focus_logical of Ocdwm_core.Direction.Logical.t [@name "focus_logical"]
-    | Focus_spatial of Ocdwm_core.Direction.Spatial.t [@name "focus_spatial"]
+    | Focus_logical of Direction.Logical.t [@name "focus_logical"]
+    | Focus_spatial of Direction.Spatial.t [@name "focus_spatial"]
     | Focus_query of
-        { query : Ocdwm_core.Window_query.t
+        { query : Window_query.t
         ; cycle : bool
         } [@name "focus_query"]
     | Tag_query of
-        { query : Ocdwm_core.Window_query.t
-        ; tags : Ocdwm_core.Tag.Arg.t
+        { query : Window_query.t
+        ; tags : Tag.Arg.t
         } [@name "tag_query"]
-    | Tag_shift of Ocdwm_core.Direction.Logical.t [@name "tag_shift"]
-    | Tag_shift_occupied of Ocdwm_core.Direction.Logical.t [@name "tag_shift_occupied"]
+    | Tag_shift of Direction.Logical.t [@name "tag_shift"]
+    | Tag_shift_occupied of Direction.Logical.t [@name "tag_shift_occupied"]
     | Move_drag [@name "move_drag"]
     | Move_to of
-        { x : Ocdwm_core.Extent.t
-        ; y : Ocdwm_core.Extent.t
+        { x : Extent.t
+        ; y : Extent.t
         } [@name "move_to"]
     | Move_spatial of
-        { dir : Ocdwm_core.Direction.Spatial.t
-        ; by : Ocdwm_core.Extent.t
+        { dir : Direction.Spatial.t
+        ; by : Extent.t
         } [@name "move_spatial"]
     | Resize_drag [@name "resize_drag"]
     | Resize_to of
-        { w : Ocdwm_core.Extent.t
-        ; h : Ocdwm_core.Extent.t
+        { w : Extent.t
+        ; h : Extent.t
         } [@name "resize_to"]
     | Resize_spatial of
-        { dir : Ocdwm_core.Direction.Spatial.t
-        ; by : Ocdwm_core.Extent.t
+        { dir : Direction.Spatial.t
+        ; by : Extent.t
         } [@name "resize_spatial"]
     | Send_logical of
-        { dir : Ocdwm_core.Direction.Logical.t
-        ; policy : Ocdwm_core.Tag.Policy.t
+        { dir : Direction.Logical.t
+        ; policy : Tag.Policy.t
         } [@name "send_logical"]
     | Send_spatial of
-        { dir : Ocdwm_core.Direction.Spatial.t
-        ; policy : Ocdwm_core.Tag.Policy.t
+        { dir : Direction.Spatial.t
+        ; policy : Tag.Policy.t
         } [@name "send_spatial"]
     | Send_name of
         { name : string
-        ; policy : Ocdwm_core.Tag.Policy.t
+        ; policy : Tag.Policy.t
         } [@name "send_name"]
-    | Shift of Ocdwm_core.Direction.Logical.t [@name "shift"]
-    | Tag of Ocdwm_core.Tag.Arg.t [@name "tag"]
-    | Toggle_tag of Ocdwm_core.Tag.Set.t [@name "toggle_tag"]
+    | Shift of Direction.Logical.t [@name "shift"]
+    | Tag of Tag.Arg.t [@name "tag"]
+    | Toggle_tag of Tag.Set.t [@name "toggle_tag"]
     | Toggle_floating [@name "toggle_floating"]
     | Toggle_maximize [@name "toggle_maximize"]
     | Toggle_fullscreen [@name "toggle_fullscreen"]
@@ -55,8 +56,8 @@ module Window = struct
     | Zoom [@name "zoom"]
     | Column_consume [@name "column_consume"]
     | Column_release [@name "column_release"]
-    | Column_move of Ocdwm_core.Direction.Logical.t [@name "column_move"]
-    | Column_width of float Ocdwm_core.Delta.t [@name "column_width"]
+    | Column_move of Direction.Logical.t [@name "column_move"]
+    | Column_width of float Delta.t [@name "column_width"]
     | Column_width_default [@name "column_width_default"]
     | Column_width_cycle [@name "column_width_cycle"]
   [@@deriving yojson]
@@ -64,22 +65,22 @@ end
 
 module Tag = struct
   type t =
-    | View of Ocdwm_core.Tag.Arg.t [@name "view"]
-    | Toggle_view of Ocdwm_core.Tag.Set.t [@name "toggle_view"]
+    | View of Tag.Arg.t [@name "view"]
+    | Toggle_view of Tag.Set.t [@name "toggle_view"]
     | View_previous [@name "view_previous"]
-    | View_cycle of Ocdwm_core.Direction.Logical.t [@name "view_cycle"]
-    | View_cycle_occupied of Ocdwm_core.Direction.Logical.t [@name "view_cycle_occupied"]
+    | View_cycle of Direction.Logical.t [@name "view_cycle"]
+    | View_cycle_occupied of Direction.Logical.t [@name "view_cycle_occupied"]
   [@@deriving yojson]
 end
 
 module Layout = struct
-  type t = Cycle of Ocdwm_core.Direction.Logical.t [@name "cycle"] [@@deriving yojson]
+  type t = Cycle of Direction.Logical.t [@name "cycle"] [@@deriving yojson]
 end
 
 module Output = struct
   type t =
-    | Focus_logical of Ocdwm_core.Direction.Logical.t [@name "focus_logical"]
-    | Focus_spatial of Ocdwm_core.Direction.Spatial.t [@name "focus_spatial"]
+    | Focus_logical of Direction.Logical.t [@name "focus_logical"]
+    | Focus_spatial of Direction.Spatial.t [@name "focus_spatial"]
     | Focus_name of string [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
     | Layout of Ocdwm_core.Layout.t [@name "layout"]
@@ -88,14 +89,15 @@ end
 
 module Set = struct
   type t =
-    | Scheme of Ocdwm_core.Scheme.t [@name "scheme"]
-    | Mfact of float Ocdwm_core.Delta.t [@name "mfact"]
-    | Nmaster of int Ocdwm_core.Delta.t [@name "nmaster"]
-    | Gaps_inner of int Ocdwm_core.Delta.t [@name "gaps_inner"]
-    | Gaps_outer of int Ocdwm_core.Delta.t [@name "gaps_outer"]
-    | Stack of Ocdwm_core.Stack_kind.t [@name "stack"]
-    | Scroll_policy of Ocdwm_core.Scroll_policy.t [@name "scroll_policy"]
-    | Dir of Ocdwm_core.Direction.Spatial.t [@name "dir"]
+    | Scheme of Scheme.t [@name "scheme"]
+    | Mfact of float Delta.t [@name "mfact"]
+    | Nmaster of int Delta.t [@name "nmaster"]
+    | Gaps_inner of int Delta.t [@name "gaps_inner"]
+    | Gaps_outer of int Delta.t [@name "gaps_outer"]
+    | Stack of Stack_kind.t [@name "stack"]
+    | Scroll_policy of Scroll_policy.t [@name "scroll_policy"]
+    | Default_width of float Delta.t [@name "default_width"]
+    | Dir of Direction.Spatial.t [@name "dir"]
     | Focus_follows_pointer of bool [@name "focus_follows_pointer"]
     | Toggle_focus_follows_pointer [@name "toggle_focus_follows_pointer"]
     | Keyboard_repeat of
@@ -111,16 +113,16 @@ module Set = struct
         } [@name "cursor_theme"]
     | Border_width of int32 [@name "border_width"]
     | Border_color of
-        { which : Ocdwm_core.Border_target.t
-        ; color : Ocdwm_core.Color.t
+        { which : Border_target.t
+        ; color : Color.t
         } [@name "border_color"]
   [@@deriving yojson]
 end
 
 module Rule = struct
   type t =
-    | Add of Ocdwm_core.Rule.t [@name "add"]
-    | Remove of Ocdwm_core.Rule.t [@name "remove"]
+    | Add of Rule.t [@name "add"]
+    | Remove of Rule.t [@name "remove"]
   [@@deriving yojson]
 end
 

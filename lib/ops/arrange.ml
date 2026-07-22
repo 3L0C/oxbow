@@ -49,6 +49,13 @@ let set_scroll_policy seat policy =
   Ok None
 ;;
 
+let set_default_width seat delta =
+  with_focused_output seat
+  @@ fun o ->
+  Output.set_default_width o delta;
+  Ok None
+;;
+
 let set_dir seat dir =
   with_focused_output seat
   @@ fun o ->

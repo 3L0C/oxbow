@@ -59,7 +59,7 @@ let diminish_heights ~total n =
   if n <= 0 then [] else go total 0
 ;;
 
-let compute ~(params : Params.t) ~(usable_area : int Rect.t) ~(count : int) =
+let compute ~(params : Params.Tiling.t) ~(usable_area : int Rect.t) ~(count : int) =
   match count with
   | 0 -> []
   | n ->

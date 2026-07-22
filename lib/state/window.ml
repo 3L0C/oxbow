@@ -19,7 +19,7 @@ let fresh_id () =
   id
 ;;
 
-let create (output : Types.Output.t option) river_window : t =
+let create (wm : Types.Wm.t) (output : Types.Output.t option) river_window : t =
   let node =
     object
       inherit [_] River.Window_management.River_node_v1.v4
@@ -50,7 +50,8 @@ let create (output : Types.Output.t option) river_window : t =
   ; is_fixed = false
   ; is_urgent = false
   ; is_fake_fullscreen = false
-  ; scrolling = { consumes = false; width = None }
+  ; scrolling =
+      { consumes = false; width = wm.config.default_tag_config.scrolling.default_width }
   ; is_hidden = false
   ; presentation = Presentation.Tiled
   ; requests = []

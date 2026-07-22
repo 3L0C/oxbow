@@ -52,6 +52,15 @@ val set_scroll_policy
   -> Ocdwm_core.Scroll_policy.t
   -> (Yojson.Safe.t option, string) result
 
+(** [set_default_width seat delta] sets the default column width according to
+    [delta] on [seat]'s focused output.
+
+    {b Effects:} mutates WM state *)
+val set_default_width
+  :  Ocdwm_state.Seat.t
+  -> float Ocdwm_core.Delta.t
+  -> (Yojson.Safe.t option, string) result
+
 (** [set_dir seat dir] sets the stack direction on the first selected tag of
     [seat]'s output.
 

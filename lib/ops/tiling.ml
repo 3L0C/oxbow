@@ -8,13 +8,13 @@ let arrange ctx output =
     let windows = Output.tiled_windows output in
     let count = List.length windows in
     let tag_data = Output.to_tag_data output in
-    let area = Gaps.pre tag_data.params output.usable in
-    let dir = tag_data.params.dir in
-    let compute = Schemes.compute tag_data.scheme in
+    let area = Gaps.pre tag_data.gaps output.usable in
+    let dir = tag_data.tiling.dir in
+    let compute = Schemes.compute tag_data.tiling.scheme in
     let dimensions =
-      compute ~params:tag_data.params ~usable_area:(Xform.pre dir area) ~count
+      compute ~params:tag_data.tiling ~usable_area:(Xform.pre dir area) ~count
       |> List.map (Xform.post dir ~area)
-      |> List.map (Gaps.post tag_data.params)
+      |> List.map (Gaps.post tag_data.gaps)
     in
     match windows, dimensions with
     | _, d_xs when List.length d_xs <> count ->

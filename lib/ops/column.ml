@@ -73,27 +73,22 @@ let set_width seat (delta : float Delta.t) =
   match List.nth_opt col 0 with
   | None -> Error "not in a column"
   | Some w ->
-    let wf =
-      let sw =
-        match w.scrolling.width with
-        | None -> (Output.current_layout_params o).mfact
-        | Some sw -> Width_fac.to_float sw
-      in
+    let f =
       match delta with
-      | Abs d -> Width_fac.of_float d
-      | Rel d -> Width_fac.of_float (sw +. d)
+      | Abs a -> a
+      | Rel r -> Width_fac.to_float w.scrolling.width +. r
     in
-    Window.set_scroll_width w (Some wf);
+    Window.set_scroll_width w (Width_fac.of_float f);
     Ok None
 ;;
 
 let default_width seat =
   with_focused_column seat
-  @@ fun _o _w _cols col ->
+  @@ fun o _w _cols col ->
   match List.nth_opt col 0 with
   | None -> Error "not in a column"
   | Some w ->
-    Window.set_scroll_width w None;
+    Window.set_scroll_width w (Output.to_tag_data o).scrolling.default_width;
     Ok None
 ;;
 
@@ -103,11 +98,6 @@ let cycle_width seat =
   match List.nth_opt col 0 with
   | None -> Error "not in a column"
   | Some w ->
-    let wf =
-      match w.scrolling.width with
-      | None -> (Output.current_layout_params o).mfact |> Width_fac.of_float
-      | Some sw -> sw
-    in
-    Width_fac.cycle wf |> Option.some |> Window.set_scroll_width w;
+    Width_fac.cycle w.scrolling.width |> Window.set_scroll_width w;
     Ok None
 ;;

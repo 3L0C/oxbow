@@ -2,17 +2,15 @@ open! Ocdwm_core
 open! Ocdwm_layout
 include Types.Config
 
-let default_layout_params =
-  Params.
-    { mfact = 0.55
-    ; nmaster = 1
-    ; gaps_inner = 10
-    ; gaps_outer = 20
-    ; stack = Even
-    ; dir = Left
-    ; scroll_policy = Visible
-    }
+let default_tiling () =
+  Params.Tiling.{ scheme = Tile; mfact = 0.55; nmaster = 1; stack = Even; dir = Left }
 ;;
+
+let default_scrolling () =
+  Params.Scrolling.{ policy = Visible; default_width = Width_fac.of_float 0.55 }
+;;
+
+let default_gaps () = Params.Gaps.{ inner = 10; outer = 20 }
 
 let default_borders =
   Border.
@@ -24,7 +22,12 @@ let default_borders =
 ;;
 
 let create_tag_data () =
-  Data.{ params = default_layout_params; layout = Tiling; scheme = Tile }
+  Data.
+    { layout = Tiling
+    ; tiling = default_tiling ()
+    ; scrolling = default_scrolling ()
+    ; gaps = default_gaps ()
+    }
 ;;
 
 let default () =

@@ -49,10 +49,6 @@ val urgent_tags : t -> Ocdwm_core.Tag.Set.t
 (** [current_layout output] is the layout of the first selected tag of [output]. *)
 val current_layout : t -> Ocdwm_core.Layout.t
 
-(** [current_layout_params output] is the layout params of the first selected
-    tag on [output]. *)
-val current_layout_params : t -> Ocdwm_layout.Params.t
-
 (** [current_scheme output] is the scheme of the first selected tag of
     [output]. *)
 val current_scheme : t -> Ocdwm_core.Scheme.t
@@ -195,6 +191,12 @@ val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
 
     {b Effects:} mutates WM state *)
 val set_scroll_offset : t -> int -> unit
+
+(** [set_default_width output delta] sets the default column width according
+    to [delta] for the first selected tag on [output].
+
+    {b Effects:} mutates WM state *)
+val set_default_width : t -> float Ocdwm_core.Delta.t -> unit
 
 (** [is_dirty output] is true when [output]'s lifecycle is [Dirty _]. *)
 val is_dirty : t -> bool

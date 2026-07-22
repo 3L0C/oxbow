@@ -84,8 +84,7 @@ let urgent_tags (o : t) =
 ;;
 
 let current_layout o = (to_tag_data o).layout
-let current_layout_params o = (to_tag_data o).params
-let current_scheme o = (to_tag_data o).scheme
+let current_scheme o = (to_tag_data o).tiling.scheme
 let at_point ~x ~y = List.find_opt (fun (o : t) -> Rect.contains ~x ~y o.geom)
 
 let has_visible_fullscreen (o : Types.Output.t) =
@@ -104,7 +103,7 @@ let set_layout o layout =
 ;;
 
 let set_scheme o scheme =
-  (to_tag_data o).scheme <- scheme;
+  (to_tag_data o).tiling.scheme <- scheme;
   Dirty.mark_output o
 ;;
 
@@ -114,62 +113,62 @@ let set_overview (o : t) v =
 ;;
 
 let set_mfact o (delta : float Delta.t) =
-  let layout_params = current_layout_params o in
+  let params = (to_tag_data o).tiling in
   let mfact =
     match delta with
     | Delta.Abs a -> a
-    | Delta.Rel r -> layout_params.mfact +. r
+    | Delta.Rel r -> params.mfact +. r
   in
-  layout_params.mfact <- Float.(max 0.05 mfact |> min 0.95);
+  params.mfact <- Float.(max 0.05 mfact |> min 0.95);
   Dirty.mark_output o
 ;;
 
 let set_nmaster o (delta : int Delta.t) =
-  let layout_params = current_layout_params o in
+  let params = (to_tag_data o).tiling in
   let nmaster =
     match delta with
     | Delta.Abs a -> a
-    | Delta.Rel r -> layout_params.nmaster + r
+    | Delta.Rel r -> params.nmaster + r
   in
-  layout_params.nmaster <- max 0 nmaster;
+  params.nmaster <- max 0 nmaster;
   Dirty.mark_output o
 ;;
 
 let set_gaps_inner o (delta : int Delta.t) =
-  let layout_params = current_layout_params o in
+  let params = (to_tag_data o).gaps in
   let gaps_inner =
     match delta with
     | Delta.Abs a -> a
-    | Delta.Rel r -> layout_params.gaps_inner + r
+    | Delta.Rel r -> params.inner + r
   in
-  layout_params.gaps_inner <- max 0 gaps_inner;
+  params.inner <- max 0 gaps_inner;
   Dirty.mark_output o
 ;;
 
 let set_gaps_outer o (delta : int Delta.t) =
-  let layout_params = current_layout_params o in
+  let params = (to_tag_data o).gaps in
   let gaps_outer =
     match delta with
     | Delta.Abs a -> a
-    | Delta.Rel r -> layout_params.gaps_outer + r
+    | Delta.Rel r -> params.outer + r
   in
-  layout_params.gaps_outer <- max 0 gaps_outer;
+  params.outer <- max 0 gaps_outer;
   Dirty.mark_output o
 ;;
 
 let set_stack o kind =
-  let params = current_layout_params o in
+  let params = (to_tag_data o).tiling in
   params.stack <- kind;
   Dirty.mark_output o
 ;;
 
 let set_scroll_policy o policy =
-  (current_layout_params o).scroll_policy <- policy;
+  (to_tag_data o).scrolling.policy <- policy;
   Dirty.mark_output o
 ;;
 
 let set_dir o dir =
-  let params = current_layout_params o in
+  let params = (to_tag_data o).tiling in
   params.dir <- dir;
   Dirty.mark_output o
 ;;
@@ -212,6 +211,16 @@ let set_usable (o : t) usable =
 let set_name (o : t) name = o.name <- name
 let set_geom (o : t) geom = o.geom <- geom
 let set_scroll_offset (o : t) offset = o.scroll_offset <- offset
+
+let set_default_width o (delta : float Delta.t) =
+  let params = (to_tag_data o).scrolling in
+  let f =
+    match delta with
+    | Abs a -> a
+    | Rel r -> Width_fac.to_float params.default_width +. r
+  in
+  params.default_width <- Width_fac.of_float f
+;;
 
 let is_dirty (o : t) =
   match o.lifecycle with

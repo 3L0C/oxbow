@@ -16,9 +16,10 @@ module Config = struct
 
   module Data = struct
     type t =
-      { params : Ocdwm_layout.Params.t
-      ; mutable layout : Ocdwm_core.Layout.t
-      ; mutable scheme : Ocdwm_core.Scheme.t
+      { mutable layout : Ocdwm_core.Layout.t
+      ; tiling : Ocdwm_layout.Params.Tiling.t
+      ; scrolling : Ocdwm_layout.Params.Scrolling.t
+      ; gaps : Ocdwm_layout.Params.Gaps.t
       }
   end
 
@@ -179,7 +180,7 @@ and Window : sig
   module Scrolling_props : sig
     type t =
       { mutable consumes : bool
-      ; mutable width : Ocdwm_core.Width_fac.t option
+      ; mutable width : Ocdwm_core.Width_fac.t
       }
   end
 

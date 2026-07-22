@@ -14,7 +14,7 @@ let arrange ctx (output : Output.t) =
   else (
     let usable = output.usable in
     let bw = (Ctx.wm ctx).config.borders.width |> Int32.to_int in
-    let params = (Output.to_tag_data output).params in
+    let td = Output.to_tag_data output in
     let cols = float n |> sqrt |> ceil |> int_of_float in
     let rows = (n + cols - 1) / cols in
     let row_heights = Tile.split ~total:usable.h ~count:rows in
@@ -31,7 +31,7 @@ let arrange ctx (output : Output.t) =
     in
     List.iter2
       (fun window rect ->
-         Gaps.post params rect
+         Gaps.post td.gaps rect
          |> Rect.inset ~by:bw
          |> Window.clamp window
          |> Window.set_geom ctx window)

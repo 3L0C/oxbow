@@ -254,7 +254,7 @@ let on_unavailable _proxy =
 
 let on_window _ river_window (wm_box : Wm.t Box.t) =
   let wm = Option.get wm_box.body in
-  let window = Window.create (Wm.default_output wm) river_window in
+  let window = Window.create wm (Wm.default_output wm) river_window in
   Wayland.Proxy.Handler.attach
     river_window
     object

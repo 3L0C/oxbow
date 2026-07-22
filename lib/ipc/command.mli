@@ -102,6 +102,7 @@ module Set : sig
     | Gaps_outer of int Ocdwm_core.Delta.t
     | Stack of Ocdwm_core.Stack_kind.t
     | Scroll_policy of Ocdwm_core.Scroll_policy.t
+    | Default_width of float Ocdwm_core.Delta.t
     | Dir of Ocdwm_core.Direction.Spatial.t
     | Focus_follows_pointer of bool
     | Toggle_focus_follows_pointer

@@ -7,15 +7,11 @@ let arrange ctx (output : Output.t) =
   then (
     let windows = Output.tiled_windows output in
     let tag_data = Output.to_tag_data output in
-    let area = Gaps.pre tag_data.params output.usable in
+    let area = Gaps.pre tag_data.gaps output.usable in
     let items =
       List.map
         (fun (w : Window.t) ->
-           let width_fac =
-             match w.scrolling.width with
-             | Some wf -> Width_fac.to_float wf
-             | None -> tag_data.params.mfact
-           in
+           let width_fac = Width_fac.to_float w.scrolling.width in
            w, Strip.Item.{ consumes = w.scrolling.consumes; width_fac })
         windows
     in
@@ -39,7 +35,7 @@ let arrange ctx (output : Output.t) =
         match col with
         | Some col ->
           Strip.scroll
-            ~policy:tag_data.params.scroll_policy
+            ~policy:tag_data.scrolling.policy
             ~viewport_w:area.w
             ~total_w
             ~offset:output.scroll_offset
@@ -50,7 +46,7 @@ let arrange ctx (output : Output.t) =
       placed
       |> List.map (fun (w, g) -> w, Rect.{ g with x = g.x - offset })
       |> List.iter (fun (w, g) ->
-        Gaps.post tag_data.params g
+        Gaps.post tag_data.gaps g
         |> Rect.inset ~by:bw
         |> Window.clamp w
         |> Window.set_geom ctx w;

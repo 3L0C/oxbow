@@ -1,11 +1,25 @@
 open! Ocdwm_core
 
-type t =
-  { mutable mfact : float
-  ; mutable nmaster : int
-  ; mutable gaps_inner : int
-  ; mutable gaps_outer : int
-  ; mutable stack : Stack_kind.t
-  ; mutable dir : Direction.Spatial.t
-  ; mutable scroll_policy : Ocdwm_core.Scroll_policy.t
-  }
+module Tiling = struct
+  type t =
+    { mutable scheme : Scheme.t
+    ; mutable mfact : float
+    ; mutable nmaster : int
+    ; mutable stack : Stack_kind.t
+    ; mutable dir : Direction.Spatial.t
+    }
+end
+
+module Scrolling = struct
+  type t =
+    { mutable policy : Scroll_policy.t
+    ; mutable default_width : Width_fac.t
+    }
+end
+
+module Gaps = struct
+  type t =
+    { mutable inner : int
+    ; mutable outer : int
+    }
+end

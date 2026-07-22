@@ -1,8 +1,9 @@
 include module type of Types.Window
 
-(** [create output river_window] is a unique window. *)
+(** [create wm output river_window] is a unique window. *)
 val create
-  :  Types.Output.t option
+  :  Types.Wm.t
+  -> Types.Output.t option
   -> River.V.Window_management.t River.Window_management.River_window_v1.t
   -> t
 
@@ -196,7 +197,7 @@ val set_consumes : t -> bool -> unit
     [window]'s output dirty on change.
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_scroll_width : t -> Ocdwm_core.Width_fac.t option -> unit
+val set_scroll_width : t -> Ocdwm_core.Width_fac.t -> unit
 
 (** [set_output window output] sets [window]'s output to [output]. Setting
     [None] records the current output's name if none has been recorded
