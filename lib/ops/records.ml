@@ -41,13 +41,25 @@ let to_layout (output : Output.t) =
   match output.name with
   | None -> None
   | Some name ->
-    let layout_name = Output.current_layout output |> Layout.to_string in
+    let layout = Output.current_layout output in
+    let scheme = Output.current_scheme output in
+    let visible = Output.visible_windows output in
+    let focused_index =
+      match Output.focused_window output with
+      | None -> 0
+      | Some w -> List.find_index (( == ) w) visible |> Option.value ~default:0
+    in
+    let ctx = Symbol.Ctx.{ focused_index; count = List.length visible } in
+    let stack = (Output.to_tag_data output).tiling.stack in
     Some
       Record.Layout.
         { output = name
-        ; layout = layout_name
-        ; symbol = Output.current_scheme output |> Scheme.to_string
-        ; arrangement = layout_name
+        ; layout = Layout.to_string layout
+        ; scheme =
+            (match layout with
+             | Tiling -> Some (Scheme.to_string scheme)
+             | Scrolling | Floating -> None)
+        ; symbol = Symbol.render layout ~scheme ~stack ~ctx
         }
 ;;
 

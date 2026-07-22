@@ -62,10 +62,10 @@ let () =
           }));
   check
     ~expect:
-      {|{"event":"layout","output":"DP-1","layout":"tall","symbol":"[]=","arrangement":"tiling"}|}
+      {|{"event":"layout","output":"DP-1","layout":"tiling","symbol":"[]=","scheme":"even"}|}
     (Event.to_line
        (Layout
-          { output = "DP-1"; layout = "tall"; symbol = "[]="; arrangement = "tiling" }));
+          { output = "DP-1"; layout = "tiling"; symbol = "[]="; scheme = Some "even" }));
   check
     ~expect:{|{"event":"mode","seat":"default","mode":"normal"}|}
     (Event.to_line (Mode { seat = "default"; mode = "normal" }));

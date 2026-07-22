@@ -103,7 +103,6 @@ module Output : sig
         ; warp : bool option
         }
     | Toggle_overview
-    | Layout of Ocdwm_core.Layout.t
 
   val t_of_yojson : Yojson.Safe.t -> t
   val yojson_of_t : t -> Yojson.Safe.t
@@ -112,6 +111,7 @@ end
 module Set : sig
   type t =
     | Scheme of Ocdwm_core.Scheme.t
+    | Layout of Ocdwm_core.Layout.t
     | Mfact of float Ocdwm_core.Delta.t
     | Nmaster of int Ocdwm_core.Delta.t
     | Gaps_inner of int Ocdwm_core.Delta.t

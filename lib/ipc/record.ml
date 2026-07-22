@@ -31,8 +31,8 @@ module Layout = struct
   type t =
     { output : string
     ; layout : string
+    ; scheme : string option
     ; symbol : string
-    ; arrangement : string
     }
   [@@deriving yojson]
 end

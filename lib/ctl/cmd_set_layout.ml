@@ -6,11 +6,11 @@ let leaf mk_term (l : Layout.t) =
   Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Switch to %s layout" name)
   @@ mk_term
   @@ Cmdliner.Term.const
-  @@ Command.Output (Layout l)
+  @@ Command.Set (Layout l)
 ;;
 
 let name = "layout"
-let doc = "Set the output layout"
+let doc = "Set the first focused tag's layout"
 
 let build mk_term =
   Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) [ Tiling; Floating; Scrolling ]

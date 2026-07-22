@@ -59,13 +59,13 @@ let handle_output ctx seat (cmd : Command.Output.t) =
   | Focus_spatial { dir; warp } -> Focus.output_spatial ?warp ctx seat dir
   | Focus_name { name; warp } -> Focus.output_name ?warp ctx seat name
   | Toggle_overview -> Arrange.toggle_overview ctx seat
-  | Layout l -> Arrange.set_layout ctx seat l
 ;;
 
 let handle_set ctx seat (cmd : Command.Set.t) =
   let wm = Ctx.wm ctx in
   match cmd with
   | Scheme scheme -> Arrange.select_scheme ctx seat scheme
+  | Layout l -> Arrange.set_layout ctx seat l
   | Mfact delta -> Arrange.set_mfact seat delta
   | Nmaster delta -> Arrange.set_nmaster seat delta
   | Gaps_inner delta -> Arrange.set_gaps_inner seat delta

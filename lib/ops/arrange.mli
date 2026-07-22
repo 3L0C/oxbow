@@ -34,8 +34,8 @@ val set_gaps_outer
   -> int Ocdwm_core.Delta.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_stack seat kind] sets the stack arrangement on the first selected tag
-    of [seat]'s output.
+(** [set_stack seat kind] sets the stack layout on the first selected tag of
+    [seat]'s output.
 
     {b Effects:} mutates WM state *)
 val set_stack
@@ -43,7 +43,7 @@ val set_stack
   -> Ocdwm_core.Stack_kind.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_scroll_policy seat policy] sets the scrolling policy arrangement on the
+(** [set_scroll_policy seat policy] sets the scrolling policy layout on the
     first selected tag of [seat]'s output.
 
     {b Effects:} mutates WM state *)
@@ -70,8 +70,8 @@ val set_dir
   -> Ocdwm_core.Direction.Spatial.t
   -> (Yojson.Safe.t option, string) result
 
-(** [enter_overview ctx output] handles the transition to the [Overview]
-    arrangement. No-op when [output] is already in [Overview].
+(** [enter_overview ctx output] handles the transition to the [Overview] layout.
+    No-op when [output] is already in [Overview].
 
     {b Effects:} mutates WM state *)
 val enter_overview
@@ -80,7 +80,7 @@ val enter_overview
   -> unit
 
 (** [exit_overview ctx output] handles the transition from [Overview] to any
-    other arrangement. No-op when [output] is not in [Overview].
+    other layout. No-op when [output] is not in [Overview].
 
     {b Effects:} mutates WM state *)
 val exit_overview

@@ -80,7 +80,7 @@ val exit_fullscreen : Ctx.manage Ctx.t -> t -> unit
     - [tag_visible window] is [true]
     - [window] is not covered by a fullscreen window ([window] may be occluded
       by a non-fullscreen window.)
-    - [window]'s output is in the [Scrolling] arrangement and [window] is within
+    - [window]'s output is in the [Scrolling] layout and [window] is within
       output's scrolling viewport *)
 val is_rendered : t -> bool
 

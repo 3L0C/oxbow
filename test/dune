@@ -4,8 +4,8 @@
  (libraries ocdwm.core ocdwm.ipc yojson))
 
 (test
- (name test_arrangements)
- (modules test_arrangements)
+ (name test_layouts)
+ (modules test_layouts)
  (libraries ocdwm.core ocdwm.layout))
 
 (test

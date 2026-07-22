@@ -1,3 +1,5 @@
+open! Ocdwm_core
+
 module Ctx = struct
   type t =
     { focused_index : int
@@ -5,6 +7,18 @@ module Ctx = struct
     }
 end
 
-type t =
-  | Static of string
-  | Dynamic of (Ctx.t -> string)
+let render (layout : Layout.t) ~(scheme : Scheme.t) ~(stack : Stack_kind.t) ~(ctx : Ctx.t)
+  =
+  match layout with
+  | Floating -> "∘∘∘"
+  | Scrolling -> ">>="
+  | Tiling ->
+    (match scheme with
+     | Monocle -> Printf.sprintf "[%d]" ctx.focused_index
+     | Tile ->
+       (match stack with
+        | Even -> "[]="
+        | Diminish -> "[]>"
+        | Dwindle -> "[\\]"
+        | Spiral -> "[@]"))
+;;

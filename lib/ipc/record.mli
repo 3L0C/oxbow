@@ -33,8 +33,8 @@ module Layout : sig
   type t =
     { output : string
     ; layout : string
+    ; scheme : string option
     ; symbol : string
-    ; arrangement : string
     }
 
   val t_of_yojson : Yojson.Safe.t -> t

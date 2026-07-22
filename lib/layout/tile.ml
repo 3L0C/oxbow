@@ -1,8 +1,5 @@
 open! Ocdwm_core
 
-let name = "tile"
-let symbol = Symbol.Static "[]="
-
 let split ~total ~count =
   if count <= 0
   then []

@@ -99,13 +99,13 @@ module Output = struct
         ; warp : bool option [@yojson.option]
         } [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
-    | Layout of Ocdwm_core.Layout.t [@name "layout"]
   [@@deriving yojson]
 end
 
 module Set = struct
   type t =
     | Scheme of Scheme.t [@name "scheme"]
+    | Layout of Ocdwm_core.Layout.t [@name "layout"]
     | Mfact of float Delta.t [@name "mfact"]
     | Nmaster of int Delta.t [@name "nmaster"]
     | Gaps_inner of int Delta.t [@name "gaps_inner"]

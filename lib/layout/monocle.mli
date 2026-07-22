@@ -1,6 +1,3 @@
-val name : string
-val symbol : Symbol.t
-
 (** [compute ~params ~usable_area ~count] is a list of window dimensions of
     length [count]. Each dimension is equal to [usable_area]. *)
 val compute
