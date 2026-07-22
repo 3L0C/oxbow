@@ -176,6 +176,11 @@ let set_stack o kind =
   Dirty.mark_output o
 ;;
 
+let set_scroll_policy o policy =
+  (current_layout_params o).scroll_policy <- policy;
+  Dirty.mark_output o
+;;
+
 let set_dir o dir =
   let params = current_layout_params o in
   params.dir <- dir;

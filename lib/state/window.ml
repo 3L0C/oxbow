@@ -458,6 +458,13 @@ let set_consumes (w : t) v =
     Option.iter Dirty.mark_output w.output)
 ;;
 
+let set_scroll_width (w : t) v =
+  if w.scroll_width <> v
+  then (
+    w.scroll_width <- v;
+    Option.iter Dirty.mark_output w.output)
+;;
+
 let set_output (w : t) output =
   let aux () =
     Option.iter Dirty.mark_output w.output;

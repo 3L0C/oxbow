@@ -43,6 +43,15 @@ val set_stack
   -> Ocdwm_core.Stack_kind.t
   -> (Yojson.Safe.t option, string) result
 
+(** [set_scroll_policy seat policy] sets the scrolling policy arrangement on the
+    first selected tag of [seat]'s output.
+
+    {b Effects:} mutates WM state *)
+val set_scroll_policy
+  :  Ocdwm_state.Seat.t
+  -> Ocdwm_core.Scroll_policy.t
+  -> (Yojson.Safe.t option, string) result
+
 (** [set_dir seat dir] sets the stack direction on the first selected tag of
     [seat]'s output.
 

@@ -54,6 +54,9 @@ module Window : sig
     | Column_consume
     | Column_release
     | Column_move of Ocdwm_core.Direction.Logical.t
+    | Column_width of float Ocdwm_core.Delta.t
+    | Column_width_default
+    | Column_width_cycle
 
   val t_of_yojson : Yojson.Safe.t -> t
   val yojson_of_t : t -> Yojson.Safe.t
@@ -98,6 +101,7 @@ module Set : sig
     | Gaps_inner of int Ocdwm_core.Delta.t
     | Gaps_outer of int Ocdwm_core.Delta.t
     | Stack of Ocdwm_core.Stack_kind.t
+    | Scroll_policy of Ocdwm_core.Scroll_policy.t
     | Dir of Ocdwm_core.Direction.Spatial.t
     | Focus_follows_pointer of bool
     | Toggle_focus_follows_pointer

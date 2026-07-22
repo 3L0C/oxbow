@@ -34,6 +34,9 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Column_consume -> Column.consume seat
   | Column_release -> Column.release seat
   | Column_move dir -> Column.move seat dir
+  | Column_width delta -> Column.set_width seat delta
+  | Column_width_default -> Column.default_width seat
+  | Column_width_cycle -> Column.cycle_width seat
 ;;
 
 let handle_tag seat (cmd : Command.Tag.t) =
@@ -68,6 +71,7 @@ let handle_set ctx seat (cmd : Command.Set.t) =
   | Gaps_inner delta -> Arrange.set_gaps_inner seat delta
   | Gaps_outer delta -> Arrange.set_gaps_outer seat delta
   | Stack kind -> Arrange.set_stack seat kind
+  | Scroll_policy policy -> Arrange.set_scroll_policy seat policy
   | Dir dir -> Arrange.set_dir seat dir
   | Focus_follows_pointer b ->
     Config.set_focus_follows_pointer wm b;

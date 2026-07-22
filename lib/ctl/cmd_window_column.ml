@@ -8,6 +8,9 @@ let cmd =
     [ Cmd_window_column_consume.cmd
     ; Cmd_window_column_release.cmd
     ; Cmd_window_column_move.cmd
+    ; Cmd_window_column_width.cmd
+    ; Cmd_window_column_default.cmd
+    ; Cmd_window_column_cycle.cmd
     ]
 ;;
 
@@ -18,5 +21,8 @@ let bind_cmd =
     [ Cmd_window_column_consume.bind_cmd
     ; Cmd_window_column_release.bind_cmd
     ; Cmd_window_column_move.bind_cmd
+    ; Cmd_window_column_width.bind_cmd
+    ; Cmd_window_column_default.bind_cmd
+    ; Cmd_window_column_cycle.bind_cmd
     ]
 ;;

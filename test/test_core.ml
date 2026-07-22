@@ -81,6 +81,7 @@ let () =
     ; "even", (fun i -> i mod 2 = 0), [ 4; 2 ], [ 1; 2; 3; 4; 5 ], [ 1; 4; 3; 2; 5 ]
     ; "none", (fun _ -> false), [], [ 1; 2; 3; 4; 5 ], [ 1; 2; 3; 4; 5 ]
     ; "all", (fun _ -> true), [ 2; 4; 1; 5; 3 ], [ 1; 2; 3; 4; 5 ], [ 2; 4; 1; 5; 3 ]
+    ; "identity", (fun _ -> true), [ 1; 2; 3; 4; 5 ], [ 1; 2; 3; 4; 5 ], [ 1; 2; 3; 4; 5 ]
     ]
   in
   List.iter
@@ -94,5 +95,18 @@ let () =
            label
            (String.concat ";" @@ List.map string_of_int r);
          assert false))
-    arrangements
+    arrangements;
+  let width_facs =
+    [ "1/3", 1.0 /. 3.0, 0.5; "1/2", 0.5, 2.0 /. 3.0; "2/3", 2.0 /. 3.0, 1.0 /. 3.0 ]
+  in
+  List.iter
+    (fun (label, p, expected) ->
+       let wf = Width_fac.of_float p in
+       let r = Width_fac.(cycle wf |> to_float) in
+       if Float.compare r expected = 0
+       then Printf.printf "ok: width fac cycle %s\n" label
+       else (
+         Printf.eprintf "failed: width fac cycle %s\n" label;
+         assert false))
+    width_facs
 ;;

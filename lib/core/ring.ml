@@ -61,7 +61,9 @@ let rearrange vis order l =
        if vis slot
        then (
          match ol with
-         | [] -> ol, slot
+         | [] ->
+           invalid_arg
+             "order does not contain all the elements of the list that satisfy vis"
          | x :: xs -> xs, x)
        else ol, slot)
     order

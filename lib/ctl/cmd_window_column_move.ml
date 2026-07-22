@@ -9,7 +9,13 @@ let move_targets =
   List.map
     (fun (name, dir) ->
        ( name
-       , Printf.sprintf "Swap the focused column with the %s column" name
+       , (match (dir : Direction.Logical.t) with
+          | Next ->
+            "Shift focused column tail of the stack. Wraps to the head if focused column \
+             is the tail"
+          | Prev ->
+            "Shift focused column toward the head of the stack. Wraps to the tail if \
+             focused column is the head")
        , Command.Window.Column_move dir ))
     Ctl_cli.logical_targets
 ;;

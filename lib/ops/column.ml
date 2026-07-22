@@ -40,7 +40,7 @@ let release seat =
   with_focused_column seat
   @@ fun o w _cols col ->
   match col with
-  | [ _ ] -> Error "focused window is not in a column"
+  | [ _ ] -> Error "focused window is alone in its column"
   | _ ->
     let head = List.hd col in
     let remaining = List.filter (( != ) w) col in
@@ -64,5 +64,50 @@ let move seat (dir : Direction.Logical.t) =
     in
     let order = hop (( == ) col) (fun _ -> true) cols |> List.concat in
     Output.set_wm_stack o @@ Ring.rearrange (fun w -> List.memq w order) order o.wm_stack;
+    Ok None
+;;
+
+let set_width seat (delta : float Delta.t) =
+  with_focused_column seat
+  @@ fun o _w _cols col ->
+  match List.nth_opt col 0 with
+  | None -> Error "not in a column"
+  | Some w ->
+    let wf =
+      let sw =
+        match w.scroll_width with
+        | None -> (Output.current_layout_params o).mfact
+        | Some sw -> Width_fac.to_float sw
+      in
+      match delta with
+      | Abs d -> Width_fac.of_float d
+      | Rel d -> Width_fac.of_float (sw +. d)
+    in
+    Window.set_scroll_width w (Some wf);
+    Ok None
+;;
+
+let default_width seat =
+  with_focused_column seat
+  @@ fun _o _w _cols col ->
+  match List.nth_opt col 0 with
+  | None -> Error "not in a column"
+  | Some w ->
+    Window.set_scroll_width w None;
+    Ok None
+;;
+
+let cycle_width seat =
+  with_focused_column seat
+  @@ fun o _w _cols col ->
+  match List.nth_opt col 0 with
+  | None -> Error "not in a column"
+  | Some w ->
+    let wf =
+      match w.scroll_width with
+      | None -> (Output.current_layout_params o).mfact |> Width_fac.of_float
+      | Some sw -> sw
+    in
+    Width_fac.cycle wf |> Option.some |> Window.set_scroll_width w;
     Ok None
 ;;

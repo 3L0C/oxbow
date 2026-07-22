@@ -17,6 +17,7 @@ let cmd =
     ; Cmd_set_nmaster.cmd
     ; Cmd_set_pointer.cmd
     ; Cmd_set_stack.cmd
+    ; Cmd_set_scroll_policy.cmd
     ]
 ;;
 
@@ -36,5 +37,6 @@ let bind_cmd =
     ; Cmd_set_nmaster.bind_cmd
     ; Cmd_set_pointer.bind_cmd
     ; Cmd_set_stack.bind_cmd
+    ; Cmd_set_scroll_policy.bind_cmd
     ]
 ;;

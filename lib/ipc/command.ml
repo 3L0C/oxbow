@@ -56,6 +56,9 @@ module Window = struct
     | Column_consume [@name "column_consume"]
     | Column_release [@name "column_release"]
     | Column_move of Ocdwm_core.Direction.Logical.t [@name "column_move"]
+    | Column_width of float Ocdwm_core.Delta.t [@name "column_width"]
+    | Column_width_default [@name "column_width_default"]
+    | Column_width_cycle [@name "column_width_cycle"]
   [@@deriving yojson]
 end
 
@@ -91,6 +94,7 @@ module Set = struct
     | Gaps_inner of int Ocdwm_core.Delta.t [@name "gaps_inner"]
     | Gaps_outer of int Ocdwm_core.Delta.t [@name "gaps_outer"]
     | Stack of Ocdwm_core.Stack_kind.t [@name "stack"]
+    | Scroll_policy of Ocdwm_core.Scroll_policy.t [@name "scroll_policy"]
     | Dir of Ocdwm_core.Direction.Spatial.t [@name "dir"]
     | Focus_follows_pointer of bool [@name "focus_follows_pointer"]
     | Toggle_focus_follows_pointer [@name "toggle_focus_follows_pointer"]

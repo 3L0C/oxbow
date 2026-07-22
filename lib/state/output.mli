@@ -112,6 +112,12 @@ val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> unit
     {b Effects:} mutates WM state; marks dirty *)
 val set_stack : t -> Ocdwm_core.Stack_kind.t -> unit
 
+(** [set_scroll_policy output policy] sets [output]'s scrolling policy to
+    [policy].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_scroll_policy : t -> Ocdwm_core.Scroll_policy.t -> unit
+
 (** [set_dir output dir] sets [output]'s stacking direction to [dir] for the
     first selected tag on [output].
 

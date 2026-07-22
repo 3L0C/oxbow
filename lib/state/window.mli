@@ -187,11 +187,17 @@ val resize_spatial
     {b Effects:} mutates WM state; marks dirty *)
 val set_tags : t -> Ocdwm_core.Tag.Set.t -> unit
 
-(** [set_consumes window v] sets the consumes chain-bit and marks the output
-    dirty on change.
+(** [set_consumes window v] sets the consumes chain-bit and marks [window]'s
+    output dirty on change.
 
     {b Effects:} mutates WM state; marks dirty *)
 val set_consumes : t -> bool -> unit
+
+(** [set_scroll_width window v] sets the scroll-width override and marks
+    [window]'s output dirty on change.
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_scroll_width : t -> Ocdwm_core.Width_fac.t option -> unit
 
 (** [set_output window output] sets [window]'s output to [output]. Setting
     [None] records the current output's name if none has been recorded
