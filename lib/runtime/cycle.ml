@@ -80,18 +80,25 @@ let close_seats ctx =
        wm.seats
 ;;
 
+let manage_new_window ctx (window : Window.t) =
+  River.Window_management.River_window_v1.set_capabilities
+    window.obj
+    ~caps:
+      River.Window_management.River_window_v1.Capabilities.(
+        Int32.logor maximize fullscreen);
+  Option.iter (Stacking.push [ window ]) window.output;
+  if window.is_fixed then Window.set_presentation window Floating;
+  Rules.apply_for ctx window;
+  Window.set_lifecycle window Active;
+  match window.output with
+  | Some o when window.presentation = Tiled && Output.current_layout o = Floating ->
+    Window.restore_or_seed_float ctx window
+  | _ -> ()
+;;
+
 let manage_window ctx (window : Window.t) =
   (match window.lifecycle with
-   | New ->
-     River.Window_management.River_window_v1.set_capabilities
-       window.obj
-       ~caps:
-         River.Window_management.River_window_v1.Capabilities.(
-           Int32.logor maximize fullscreen);
-     Option.iter (Stacking.push [ window ]) window.output;
-     if window.is_fixed then Window.set_presentation window Floating;
-     Rules.apply_for ctx window;
-     Window.set_lifecycle window Active
+   | New -> manage_new_window ctx window
    | _ -> ());
   List.rev window.requests |> List.iter (Window_request.handle ctx window);
   Window.clear_requests window;

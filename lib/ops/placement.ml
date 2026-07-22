@@ -110,24 +110,35 @@ let send_to_name ctx seat name policy =
   | Some w -> send_window_to_name ctx w name policy
 ;;
 
+let with_focused_ctx (seat : Seat.t) f =
+  match seat.output with
+  | None -> Error Messages.seat_missing_output
+  | Some o ->
+    (match Output.focused_window o with
+     | None -> Error Messages.no_focused_window
+     | Some w -> f o w)
+;;
+
 let toggle_floating ctx seat =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w when Option.is_none w.output -> Error Messages.window_missing_output
-  | Some w ->
-    (match w.presentation with
-     | Fullscreen _ -> Error "cannot toggle float while window is fullscreen"
-     | Maximized _ -> Error "cannot toggle float while window is maximized"
-     | Floating when w.is_fixed -> Error "cannot tile a fixed window"
-     | Tiled | Floating ->
-       (match seat.output with
-        | None -> Error Messages.seat_missing_output
-        | Some o ->
-          (match w.presentation with
-           | Tiled -> Window.float ctx w
-           | _ -> Window.tile w);
-          Dirty.mark_output o;
-          Ok None))
+  with_focused_ctx seat
+  @@ fun o w ->
+  if Output.current_layout o = Floating
+  then Error "cannot toggle floating from the floating layout"
+  else if o.overview
+  then Error "cannot toggle floating from overview"
+  else (
+    match w.presentation with
+    | Fullscreen _ -> Error "cannot toggle float while window is fullscreen"
+    | Maximized _ -> Error "cannot toggle float while window is maximized"
+    | Floating when w.is_fixed -> Error "cannot tile a fixed window"
+    | Tiled ->
+      Window.float ctx w;
+      Dirty.mark_output o;
+      Ok None
+    | Floating ->
+      Window.tile w;
+      Dirty.mark_output o;
+      Ok None)
 ;;
 
 let maximize ctx window =

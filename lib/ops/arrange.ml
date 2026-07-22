@@ -102,7 +102,9 @@ let set_layout ctx seat (l : Layout.t) =
   then Ok None
   else (
     (match current, l with
-     | Floating, _ | _, Floating ->
+     | (Tiling | Scrolling), Floating ->
+       Output.tiled_windows o |> List.iter (Window.restore_or_seed_float ctx)
+     | Floating, (Tiling | Scrolling) ->
        Output.tiled_windows o |> List.iter Window.remember_float
      | _ -> ());
     Output.set_layout o l;
@@ -141,5 +143,9 @@ let retile ctx (output : Output.t) =
     match Output.current_layout output with
     | Tiling -> Tiling.arrange ctx output
     | Scrolling -> Scrolling.arrange ctx output
-    | Floating -> Floating.arrange ctx output)
+    | Floating ->
+      ()
+      (* NOTE: no call to Floating.arrange as floating windows don't need to be
+         rearranged. The floating action happens above in the state trasition of
+         set_layout and manage_window for new windows. *))
 ;;
