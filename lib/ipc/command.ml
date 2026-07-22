@@ -4,11 +4,18 @@ open! Ocdwm_core
 module Window = struct
   type t =
     | Close [@name "close"]
-    | Focus_logical of Direction.Logical.t [@name "focus_logical"]
-    | Focus_spatial of Direction.Spatial.t [@name "focus_spatial"]
+    | Focus_logical of
+        { dir : Direction.Logical.t
+        ; warp : bool option [@yojson.option]
+        } [@name "focus_logical"]
+    | Focus_spatial of
+        { dir : Direction.Spatial.t
+        ; warp : bool option [@yojson.option]
+        } [@name "focus_spatial"]
     | Focus_query of
         { query : Window_query.t
         ; cycle : bool
+        ; warp : bool option [@yojson.option]
         } [@name "focus_query"]
     | Tag_query of
         { query : Window_query.t
@@ -53,7 +60,7 @@ module Window = struct
     | Toggle_maximize [@name "toggle_maximize"]
     | Toggle_fullscreen [@name "toggle_fullscreen"]
     | Toggle_fake_fullscreen [@name "toggle_fake_fullscreen"]
-    | Zoom [@name "zoom"]
+    | Zoom of { warp : bool option [@yojson.option] } [@name "zoom"]
     | Column_consume [@name "column_consume"]
     | Column_release [@name "column_release"]
     | Column_move of Direction.Logical.t [@name "column_move"]
@@ -79,9 +86,18 @@ end
 
 module Output = struct
   type t =
-    | Focus_logical of Direction.Logical.t [@name "focus_logical"]
-    | Focus_spatial of Direction.Spatial.t [@name "focus_spatial"]
-    | Focus_name of string [@name "focus_name"]
+    | Focus_logical of
+        { dir : Direction.Logical.t
+        ; warp : bool option [@yojson.option]
+        } [@name "focus_logical"]
+    | Focus_spatial of
+        { dir : Direction.Spatial.t
+        ; warp : bool option [@yojson.option]
+        } [@name "focus_spatial"]
+    | Focus_name of
+        { name : string
+        ; warp : bool option [@yojson.option]
+        } [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
     | Layout of Ocdwm_core.Layout.t [@name "layout"]
   [@@deriving yojson]

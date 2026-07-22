@@ -1,11 +1,13 @@
-(** [zoom ctx seat] promotes the focused window to the top of the stack if it is
-    not already the master. If it is the master, promote and swap with the next
-    window. Is [Error msg] when [seat] has no output or focused window, the
-    focused window is not tiled, or no other tiled window exists.
+(** [zoom ?warp ctx seat] promotes the focused window to the top of the stack if
+    it is not already the master. If it is the master, promote and swap with the
+    next window. The payload [warp] overrides the warp on focus configuration.
+    Is [Error msg] when [seat] has no output or focused window, the focused
+    window is not tiled, or no other tiled window exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val zoom
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  ?warp:bool
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 

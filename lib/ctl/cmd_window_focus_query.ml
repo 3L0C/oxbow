@@ -18,12 +18,12 @@ let command_term =
           ~doc:
             "If the currently focused window matches the search term, focus the next \
              matching window, if any")
-  in
+  and+ warp = Ctl_cli.warp_flag in
   let query =
     let pattern : Pattern.t = if regex then Regex pattern else Substring pattern in
     { pattern; field; case }
   in
-  Command.Window (Focus_query { query; cycle })
+  Command.Window (Focus_query { query; cycle; warp })
 ;;
 
 let name = "query"

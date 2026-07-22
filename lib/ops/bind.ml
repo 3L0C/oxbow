@@ -18,8 +18,8 @@ let install_defaults ctx seat =
       [ (* mods, keysym,  command *)
         modkey, K_Return, Command.Execute (Spawn "uwsm-app -- kitty")
       ; modkey, K_q, Command.Window Close
-      ; modkey, K_j, Command.Window (Focus_logical Next)
-      ; modkey, K_k, Command.Window (Focus_logical Prev)
+      ; modkey, K_j, Command.Window (Focus_logical { dir = Next; warp = None })
+      ; modkey, K_k, Command.Window (Focus_logical { dir = Prev; warp = None })
       ; modkey, K_Escape, Command.Wm Close
       ; Int32.(logor modkey shift), K_Escape, Command.Session Exit
       ; modkey, K_l, Command.Tag (View_cycle_occupied Next)
@@ -35,7 +35,7 @@ let install_defaults ctx seat =
       ; modkey, K_H, Command.Set (Mfact Delta.(Rel (-0.05)))
       ; modkey, K_L, Command.Set (Mfact Delta.(Rel 0.05))
       ; modkey, K_a, Command.Set (Mfact Delta.(Abs 0.55))
-      ; modkey, K_space, Command.Window Zoom
+      ; modkey, K_space, Command.Window (Zoom { warp = None })
       ; modkey, K_J, Command.Window (Shift Next)
       ; modkey, K_K, Command.Window (Shift Prev)
       ; modkey, K_comma, Command.Execute (Spawn "uwsm-app -- wk-river")

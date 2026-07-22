@@ -2,7 +2,7 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_layout
 
-let zoom ctx (seat : Seat.t) =
+let zoom ?warp ctx (seat : Seat.t) =
   match seat.output, Seat.focused_window seat with
   | None, _ -> Error Messages.seat_missing_output
   | _, None -> Error Messages.no_focused_window
@@ -10,11 +10,21 @@ let zoom ctx (seat : Seat.t) =
     (match Output.tiled_windows o with
      | w' :: x :: _ when w' == w ->
        Stacking.push [ x; w ] o;
-       Focus.focus_window ~force:true ~warp:true ctx seat x;
+       Focus.focus_window
+         ~force:true
+         ~warp:(Seat.Warp_request.of_override warp)
+         ctx
+         seat
+         x;
        Ok None
      | w' :: _ when w' != w ->
        Stacking.push [ w; w' ] o;
-       Focus.focus_window ~force:true ~warp:true ctx seat w;
+       Focus.focus_window
+         ~force:true
+         ~warp:(Seat.Warp_request.of_override warp)
+         ctx
+         seat
+         w;
        Ok None
      | [] when Output.current_layout o <> Floating ->
        Error "focused window is tiled but tiled window list is empty"

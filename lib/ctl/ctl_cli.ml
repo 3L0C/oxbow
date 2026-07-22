@@ -281,6 +281,26 @@ let window_query_case_flag =
         ])
 ;;
 
+let warp_flag =
+  Arg.(
+    value
+    & vflag
+        None
+        [ ( Some true
+          , info
+              [ "warp" ]
+              ~doc:
+                "Warp the pointer after the focus change. This overrides the warp on \
+                 focus configuration." )
+        ; ( Some false
+          , info
+              [ "no-warp" ]
+              ~doc:
+                "Do not warp the pointer after the focus change. This overrides the warp \
+                 on focus configuration." )
+        ])
+;;
+
 let code_protocol_err = 1
 let code_conn_failed = 2
 

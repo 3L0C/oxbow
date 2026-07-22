@@ -14,15 +14,16 @@ val set_output
   -> Ocdwm_state.Output.t option
   -> unit
 
-(** [focus_window ?force ~warp ctx seat window] focuses [window] on [seat].
+(** [focus_window ?force ?warp ctx seat window] focuses [window] on [seat].
     No-op when [window] is already focused on [seat] and neither [force] nor a
-    layer focus on [seat] forces a refocus. Default [force] is [false]. When [warp]
-    is [true], [seat]'s pointer will be warped to the center of [window].
+    layer focus on [seat] forces a refocus. Default [force] is [false]. When
+    [warp] is present, it becomes [seat]'s warp request.  When [warp] is absent,
+    the warp request does not change.
 
     {b Effects:} mutates WM state; sends River request *)
 val focus_window
   :  ?force:bool
-  -> warp:bool
+  -> ?warp:Ocdwm_state.Seat.Warp_request.t
   -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_state.Window.t
@@ -39,70 +40,78 @@ val clear : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Seat.t -> un
     {b Effects:} mutates WM state; sends River request *)
 val refresh : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Output.t -> unit
 
-(** [window_logical ctx seat dir] focuses the window in logical direction [dir]
-    and warps the pointer to it when configured. Is [Error msg] when the focused
-    window is fullscreen, [seat] has no output, or there is no window to focus.
+(** [window_logical ?warp ctx seat dir] focuses the window in logical direction [dir]
+    The payload [warp] overrides the warp on focus configuration. Is [Error msg]
+    when the focused window is fullscreen, [seat] has no output, or there is no
+    window to focus.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_logical
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  ?warp:bool
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [window_spatial ctx seat dir] focuses the window in spatial direction [dir]
-    and warps the pointer to it when configured. Is [Error msg] when the focused
-    window is fullscreen, [seat] has no output, or there is no window to focus.
+(** [window_spatial ?warp ctx seat dir] focuses the window in spatial direction [dir]
+    The payload [warp] overrides the warp on focus configuration. Is [Error msg]
+    when the focused window is fullscreen, [seat] has no output, or there is no
+    window to focus.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_spatial
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  ?warp:bool
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Spatial.t
   -> (Yojson.Safe.t option, string) result
 
-(** [window_query ~cycle ctx seat query] focuses the first (or, next when
-    [cycle] is [true]) window matching [query] and warps the pointer to it when
-    configured. Is [Error msg] when [query]'s regex fails to compile or no
-    window matches.
+(** [window_query ?warp ~cycle ctx seat query] focuses the first (or, next when
+    [cycle] is [true]) window matching [query]. The payload [warp] overrides the
+    warp on focus configuration. Is [Error msg] when [query]'s regex fails to
+    compile or no window matches.
 
     {b Effects:} mutates WM state; sends River request *)
 val window_query
-  :  cycle:bool
+  :  ?warp:bool
+  -> cycle:bool
   -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Window_query.t
   -> (Yojson.Safe.t option, string) result
 
-(** [output_logical ctx seat dir] focuses the output in logical direction [dir]
-    and warps the pointer to it when configured. Is [Error msg] when [seat] has
-    no output or no other output exists.
+(** [output_logical ?warp ctx seat dir] focuses the output in logical direction
+    [dir]. The payload [warp] overrides the warp on focus configuration. Is
+    [Error msg] when [seat] has no output or no other output exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val output_logical
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  ?warp:bool
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [output_spatial ctx seat dir] focuses the output in spatial direction [dir]
-    and warps the pointer to it when configured. Is [Error msg] when [seat] has
-    no output or no output lies in [dir].
+(** [output_spatial ?warp ctx seat dir] focuses the output in spatial direction [dir].
+    The payload [warp] overrides the warp on focus configuration. Is [Error msg]
+    when [seat] has no output or no output lies in [dir].
 
     {b Effects:} mutates WM state; sends River request *)
 val output_spatial
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  ?warp:bool
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Spatial.t
   -> (Yojson.Safe.t option, string) result
 
-(** [output_name ctx seat name] focuses the output named [name] and warps the
-    pointer to it when configured. Is [Error msg] when no output is named
-    [name].
+(** [output_name ?warp ctx seat name] focuses the output named [name]. The
+    payload [warp] overrides the warp on focus configuration. Is [Error msg]
+    when no output is named [name].
 
     {b Effects:} mutates WM state; sends River request *)
 val output_name
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  ?warp:bool
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> string
   -> (Yojson.Safe.t option, string) result

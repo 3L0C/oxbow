@@ -5,9 +5,8 @@
 val handle_position : x:int32 -> y:int32 -> Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
 
 (** [warp_to_focus ctx seat] warps the pointer to the center of the [seat]'s
-    focused window when warp on focus is set to [true]. If the seat has no
-    focused window, the pointer warps to the center of its focused output
-    instead. No-op when warp on focus is [false].
+    focused window. If the seat has no focused window, the pointer warps to the
+    center of its focused output instead.
 
     {b Effects:} sends River request *)
 val warp_to_focus : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Seat.t -> unit

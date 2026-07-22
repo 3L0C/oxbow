@@ -8,9 +8,9 @@ open! Ocdwm_layout
 let handle_window ctx seat (cmd : Command.Window.t) =
   match cmd with
   | Close -> Placement.close_focused seat
-  | Focus_logical dir -> Focus.window_logical ctx seat dir
-  | Focus_spatial dir -> Focus.window_spatial ctx seat dir
-  | Focus_query { query; cycle } -> Focus.window_query ~cycle ctx seat query
+  | Focus_logical { dir; warp } -> Focus.window_logical ?warp ctx seat dir
+  | Focus_spatial { dir; warp } -> Focus.window_spatial ?warp ctx seat dir
+  | Focus_query { query; cycle; warp } -> Focus.window_query ?warp ~cycle ctx seat query
   | Tag_query { query; tags } -> Tags.tag_window_query ctx query tags
   | Tag_shift dir -> Tags.tag_shift_window seat dir
   | Tag_shift_occupied dir -> Tags.tag_shift_window_occupied seat dir
@@ -30,7 +30,7 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Toggle_maximize -> Window_request.toggle_maximize ctx seat
   | Toggle_fullscreen -> Window_request.toggle_fullscreen ctx seat
   | Toggle_fake_fullscreen -> Window_request.toggle_fake_fullscreen ctx seat
-  | Zoom -> Placement.zoom ctx seat
+  | Zoom { warp } -> Placement.zoom ?warp ctx seat
   | Column_consume -> Column.consume seat
   | Column_release -> Column.release seat
   | Column_move dir -> Column.move seat dir
@@ -55,9 +55,9 @@ let handle_layout ctx seat (cmd : Command.Layout.t) =
 
 let handle_output ctx seat (cmd : Command.Output.t) =
   match cmd with
-  | Focus_logical dir -> Focus.output_logical ctx seat dir
-  | Focus_spatial dir -> Focus.output_spatial ctx seat dir
-  | Focus_name name -> Focus.output_name ctx seat name
+  | Focus_logical { dir; warp } -> Focus.output_logical ?warp ctx seat dir
+  | Focus_spatial { dir; warp } -> Focus.output_spatial ?warp ctx seat dir
+  | Focus_name { name; warp } -> Focus.output_name ?warp ctx seat name
   | Toggle_overview -> Arrange.toggle_overview ctx seat
   | Layout l -> Arrange.set_layout ctx seat l
 ;;

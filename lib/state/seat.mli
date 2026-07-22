@@ -116,7 +116,7 @@ val set_interacted : t -> Types.Window.t option -> unit
     [pending].
 
     {b Effects:} mutates WM state *)
-val set_warp_pending : t -> bool -> unit
+val set_warp_request : t -> Warp_request.t -> unit
 
 (** [is_dirty seat] is true when [seat]'s lifecycle is [Dirty _]. *)
 val is_dirty : t -> bool

@@ -2,23 +2,25 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 
 let dir_command dir =
+  let open Cmdliner.Term.Syntax in
+  let+ warp = Ctl_cli.warp_flag in
   let open Direction in
   match dir with
-  | Logical d -> Command.Output (Focus_logical d)
-  | Spatial d -> Command.Output (Focus_spatial d)
+  | Logical dir -> Command.Output (Focus_logical { dir; warp })
+  | Spatial dir -> Command.Output (Focus_spatial { dir; warp })
 ;;
 
 let dir_leaf mk_term (name, dir) =
   Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Focus the %s output" name)
   @@ mk_term
-  @@ Cmdliner.Term.const
   @@ dir_command dir
 ;;
 
 let name_command_term =
   let open Cmdliner.Term.Syntax in
-  let+ name = Ctl_cli.output_name_arg in
-  Command.Output (Focus_name name)
+  let+ name = Ctl_cli.output_name_arg
+  and+ warp = Ctl_cli.warp_flag in
+  Command.Output (Focus_name { name; warp })
 ;;
 
 let name_leaf mk_term =

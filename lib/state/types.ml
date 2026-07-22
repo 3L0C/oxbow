@@ -293,6 +293,15 @@ and Seat : sig
       }
   end
 
+  module Warp_request : sig
+    type t =
+      | No_request
+      | Follow_config
+      | Forced of bool
+
+    val of_override : bool option -> t
+  end
+
   type t =
     { obj : River.V.Window_management.t River.Window_management.River_seat_v1.t
     ; layer_shell : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_seat_v1.t
@@ -307,7 +316,7 @@ and Seat : sig
     ; mutable pending_requests : Pending_request.t Queue.t
     ; mutable hovered : Window.t option
     ; mutable interacted : Window.t option
-    ; mutable warp_pending : bool
+    ; mutable warp_request : Warp_request.t
     ; mutable focus_state : Focus_state.t
     ; mutable cursor_target : Window.t option
     ; mutable op : Op.t option

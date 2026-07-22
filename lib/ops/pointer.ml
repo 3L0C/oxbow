@@ -18,17 +18,14 @@ let handle_position ~x ~y (wm : Wm.t) seat =
 
 let warp_to_focus ctx seat =
   let center (g : int32 Rect.t) = Int32.(add g.x (div g.w 2l), add g.y (div g.h 2l)) in
-  let wm = Ctx.wm ctx in
-  if wm.config.warp_on_focus
-  then (
-    let target =
-      match Seat.focused_window seat with
-      | Some w -> Some w.geom
-      | None -> Option.map (fun (o : Output.t) -> o.geom) seat.output
-    in
-    match target with
-    | None -> ()
-    | Some g ->
-      let x, y = center g in
-      River.Window_management.River_seat_v1.pointer_warp seat.obj ~x ~y)
+  let target =
+    match Seat.focused_window seat with
+    | Some w -> Some w.geom
+    | None -> Option.map (fun (o : Output.t) -> o.geom) seat.output
+  in
+  match target with
+  | None -> ()
+  | Some g ->
+    let x, y = center g in
+    River.Window_management.River_seat_v1.pointer_warp seat.obj ~x ~y
 ;;

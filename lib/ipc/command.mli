@@ -1,11 +1,18 @@
 module Window : sig
   type t =
     | Close
-    | Focus_logical of Ocdwm_core.Direction.Logical.t
-    | Focus_spatial of Ocdwm_core.Direction.Spatial.t
+    | Focus_logical of
+        { dir : Ocdwm_core.Direction.Logical.t
+        ; warp : bool option
+        }
+    | Focus_spatial of
+        { dir : Ocdwm_core.Direction.Spatial.t
+        ; warp : bool option
+        }
     | Focus_query of
         { query : Ocdwm_core.Window_query.t
         ; cycle : bool
+        ; warp : bool option
         }
     | Tag_query of
         { query : Ocdwm_core.Window_query.t
@@ -50,7 +57,7 @@ module Window : sig
     | Toggle_maximize
     | Toggle_fullscreen
     | Toggle_fake_fullscreen
-    | Zoom
+    | Zoom of { warp : bool option }
     | Column_consume
     | Column_release
     | Column_move of Ocdwm_core.Direction.Logical.t
@@ -83,9 +90,18 @@ end
 
 module Output : sig
   type t =
-    | Focus_logical of Ocdwm_core.Direction.Logical.t
-    | Focus_spatial of Ocdwm_core.Direction.Spatial.t
-    | Focus_name of string
+    | Focus_logical of
+        { dir : Ocdwm_core.Direction.Logical.t
+        ; warp : bool option
+        }
+    | Focus_spatial of
+        { dir : Ocdwm_core.Direction.Spatial.t
+        ; warp : bool option
+        }
+    | Focus_name of
+        { name : string
+        ; warp : bool option
+        }
     | Toggle_overview
     | Layout of Ocdwm_core.Layout.t
 

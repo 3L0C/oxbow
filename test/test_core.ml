@@ -2,9 +2,9 @@ let () =
   let open Ocdwm_core in
   let open Ocdwm_ipc in
   let commands : Command.t list =
-    [ Window Zoom
+    [ Window (Zoom { warp = None })
     ; Execute (Spawn "foot")
-    ; Window (Focus_logical Next)
+    ; Window (Focus_logical { dir = Next; warp = None })
     ; Set (Mfact (Delta.Rel 0.05))
     ; Set (Mfact (Delta.Abs 0.55))
     ; Tag (View (Concrete (Tag.Set.singleton 3)))

@@ -2,10 +2,12 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 
 let command_term dir =
+  let open Cmdliner.Term.Syntax in
+  let+ warp = Ctl_cli.warp_flag in
   let open Direction in
   match dir with
-  | Logical d -> Cmdliner.Term.const @@ Command.Window (Focus_logical d)
-  | Spatial d -> Cmdliner.Term.const @@ Command.Window (Focus_spatial d)
+  | Logical dir -> Command.Window (Focus_logical { dir; warp })
+  | Spatial dir -> Command.Window (Focus_spatial { dir; warp })
 ;;
 
 let build mk_term (name, dir) =

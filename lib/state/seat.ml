@@ -2,6 +2,15 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 include Types.Seat
 
+module Warp_request = struct
+  include Types.Seat.Warp_request
+
+  let of_override = function
+    | Some b -> Forced b
+    | None -> Follow_config
+  ;;
+end
+
 let effective_mode ctx (seat : t) =
   if (Ctx.wm ctx).session_locked then Mode.locked else seat.mode
 ;;
@@ -196,7 +205,7 @@ let set_lifecycle (s : t) lifecycle = s.lifecycle <- lifecycle
 let set_name (s : t) name = s.name <- name
 let set_hovered (s : t) window = s.hovered <- window
 let set_interacted (s : t) window = s.interacted <- window
-let set_warp_pending (s : t) v = s.warp_pending <- v
+let set_warp_request (s : t) v = s.warp_request <- v
 
 let is_dirty (s : t) =
   match s.lifecycle with

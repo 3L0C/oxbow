@@ -86,6 +86,10 @@ val window_query_regex_flag : bool Cmdliner.Term.t
     query; regex patterns match case-insensitively when set. *)
 val window_query_case_flag : Ocdwm_core.Window_query.Case.t Cmdliner.Term.t
 
+(** [warp_flag] is the exclusive flag pair [--warp] and [--no-warp]. The flag
+    overrides the warp on focus configuration for one command. *)
+val warp_flag : bool option Cmdliner.Term.t
+
 (** [group ?exits ?man ?man_xrefs ?version ~name ~doc cmds] is command that
     groups the subcommands [cmds]. *)
 val group

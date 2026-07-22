@@ -13,14 +13,14 @@ let set_output ctx seat output =
   if Phys.opt_holds seat wm.primary_seat then layer_shell_sync wm
 ;;
 
-let focus_window ?(force : bool = false) ~warp ctx (seat : Seat.t) (target : Window.t) =
+let focus_window ?(force : bool = false) ?warp ctx (seat : Seat.t) (target : Window.t) =
   let force = force || Option.is_some seat.layer_focus in
   match Seat.focused_window seat with
   | Some w when w == target && not force -> ()
   | _ ->
     set_output ctx seat target.output;
     Stacking.focus_window ctx seat target;
-    if warp then Seat.set_warp_pending seat true
+    Option.iter (Seat.set_warp_request seat) warp
 ;;
 
 let clear (_ : Ctx.manage Ctx.t) (seat : Seat.t) =
@@ -35,7 +35,7 @@ let refresh ctx output =
        match s.output with
        | Some o when o == output ->
          (match target with
-          | Some w -> focus_window ~force:true ~warp:false ctx s w
+          | Some w -> focus_window ~force:true ctx s w
           | None -> clear ctx s)
        | _ -> ())
     wm.seats
@@ -45,11 +45,11 @@ let refresh_layer_shell ctx (seat : Seat.t) =
   if Option.is_none seat.layer_focus
   then (
     match Seat.focused_window seat with
-    | Some w -> focus_window ~force:true ~warp:false ctx seat w
+    | Some w -> focus_window ~force:true ctx seat w
     | None -> clear ctx seat)
 ;;
 
-let window_logical ctx seat (dir : Direction.Logical.t) =
+let window_logical ?warp ctx seat (dir : Direction.Logical.t) =
   match Seat.focused_window seat, seat.output with
   | Some w, _ when Window.is_fullscreen w -> Error Messages.window_is_fullscreen
   | _, None -> Error Messages.seat_missing_output
@@ -62,11 +62,11 @@ let window_logical ctx seat (dir : Direction.Logical.t) =
     (match target with
      | None -> Error "no window to focus"
      | Some w ->
-       focus_window ~warp:true ctx seat w;
+       focus_window ~warp:(Seat.Warp_request.of_override warp) ctx seat w;
        Ok None)
 ;;
 
-let window_spatial ctx seat (dir : Direction.Spatial.t) =
+let window_spatial ?warp ctx seat (dir : Direction.Spatial.t) =
   match Seat.focused_window seat, seat.output with
   | Some w, _ when Window.is_fullscreen w -> Error Messages.window_is_fullscreen
   | _, None -> Error Messages.seat_missing_output
@@ -86,11 +86,11 @@ let window_spatial ctx seat (dir : Direction.Spatial.t) =
     (match target with
      | None -> Error (Printf.sprintf "no window %s" (Direction.Spatial.to_string dir))
      | Some w ->
-       focus_window ~warp:true ctx seat w;
+       focus_window ~warp:(Seat.Warp_request.of_override warp) ctx seat w;
        Ok None)
 ;;
 
-let window_query ~cycle ctx seat q =
+let window_query ?warp ~cycle ctx seat q =
   let wm = Ctx.wm ctx in
   match Window_query.compile q with
   | Error e -> Error e
@@ -112,19 +112,19 @@ let window_query ~cycle ctx seat q =
      | None ->
        Error (Printf.sprintf "no window matches query: %S" (Window_query.to_string q))
      | Some w ->
-       focus_window ~force:true ~warp:true ctx seat w;
+       focus_window ~force:true ~warp:(Seat.Warp_request.of_override warp) ctx seat w;
        Ok None)
 ;;
 
-let focus_output ~warp ctx seat output =
+let focus_output ?warp ctx seat output =
   set_output ctx seat @@ Some output;
-  Seat.set_warp_pending seat true;
+  Seat.(Warp_request.of_override warp |> set_warp_request seat);
   match Output.focused_window output with
-  | Some w -> focus_window ~warp ctx seat w
+  | Some w -> focus_window ctx seat w
   | None -> clear ctx seat
 ;;
 
-let output_logical ctx (seat : Seat.t) (dir : Direction.Logical.t) =
+let output_logical ?warp ctx (seat : Seat.t) (dir : Direction.Logical.t) =
   let wm = Ctx.wm ctx in
   match seat.output with
   | None -> Error Messages.seat_missing_output
@@ -136,12 +136,12 @@ let output_logical ctx (seat : Seat.t) (dir : Direction.Logical.t) =
     in
     (match target with
      | Some t when t != o ->
-       focus_output ~warp:true ctx seat t;
+       focus_output ?warp ctx seat t;
        Ok None
      | _ -> Error Messages.no_other_output)
 ;;
 
-let output_spatial ctx (seat : Seat.t) (dir : Direction.Spatial.t) =
+let output_spatial ?warp ctx (seat : Seat.t) (dir : Direction.Spatial.t) =
   let wm = Ctx.wm ctx in
   match seat.output with
   | None -> Error Messages.seat_missing_output
@@ -157,11 +157,11 @@ let output_spatial ctx (seat : Seat.t) (dir : Direction.Spatial.t) =
     (match target with
      | None -> Error (Printf.sprintf "no output %s" (Direction.Spatial.to_string dir))
      | Some o ->
-       focus_output ~warp:true ctx seat o;
+       focus_output ?warp ctx seat o;
        Ok None)
 ;;
 
-let output_name ctx (seat : Seat.t) (name : string) =
+let output_name ?warp ctx (seat : Seat.t) (name : string) =
   let wm = Ctx.wm ctx in
   match
     List.find_opt
@@ -171,8 +171,8 @@ let output_name ctx (seat : Seat.t) (name : string) =
   | None -> Error (Printf.sprintf "no output named %S" name)
   | Some o ->
     (match seat.output with
-     | None -> focus_output ~warp:true ctx seat o
-     | Some o' when o != o' -> focus_output ~warp:true ctx seat o
+     | None -> focus_output ?warp ctx seat o
+     | Some o' when o != o' -> focus_output ?warp ctx seat o
      | _ -> ());
     Ok None
 ;;
@@ -227,7 +227,7 @@ let apply_request ctx (seat : Seat.t) =
   then (
     match seat.focus_state with
     | Refresh w ->
-      focus_window ~force:true ~warp:false ctx seat w;
+      focus_window ~force:true ctx seat w;
       Seat.set_focus_state seat Idle
     | Clear ->
       clear ctx seat;
@@ -239,13 +239,17 @@ let apply_interaction ctx (seat : Seat.t) =
   match seat.interacted with
   | None -> ()
   | Some w ->
-    focus_window ~warp:false ctx seat w;
+    focus_window ctx seat w;
     Seat.set_interacted seat None
 ;;
 
 let apply_warp ctx (seat : Seat.t) =
-  if seat.warp_pending
-  then (
-    Pointer.warp_to_focus ctx seat;
-    Seat.set_warp_pending seat false)
+  let warp =
+    match seat.warp_request with
+    | No_request -> false
+    | Forced b -> b
+    | Follow_config -> (Ctx.wm ctx).config.warp_on_focus
+  in
+  if warp then Pointer.warp_to_focus ctx seat;
+  Seat.set_warp_request seat No_request
 ;;
