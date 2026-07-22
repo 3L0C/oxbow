@@ -119,6 +119,17 @@ val select_scheme
   -> Ocdwm_core.Scheme.t
   -> (Yojson.Safe.t option, string) result
 
+(** [cycle_layout ctx seat dir] sets the current layout's registered neighbor in
+    [dir] on the first selected tag of [seat]'s output. Is [Error msg] when
+    [seat] has no output.
+
+    {b Effects:} mutates WM state *)
+val cycle_layout
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> Ocdwm_core.Direction.Logical.t
+  -> (Yojson.Safe.t option, string) result
+
 (** [cycle_scheme ctx seat dir] sets the current scheme's registered neighbor in
     [dir] on the first selected tag of [seat]'s output; tiled windows leaving
     the [floating] layout remember their geometry. Is [Error msg] when [seat]

@@ -1,22 +1,28 @@
-module Layouts_reply : sig
-  type t =
-    { available : string list
-    ; current : Record.Layout.t list
-    }
+module Reply : sig
+  module Layouts : sig
+    type t = { available : string list }
 
-  val t_of_yojson : Yojson.Safe.t -> t
-  val yojson_of_t : t -> Yojson.Safe.t
-end
+    val t_of_yojson : Yojson.Safe.t -> t
+    val yojson_of_t : t -> Yojson.Safe.t
+  end
 
-module Seat_info : sig
-  type t =
-    { name : string
-    ; mode : string
-    ; output : string option
-    }
+  module Schemes : sig
+    type t = { available : string list }
 
-  val t_of_yojson : Yojson.Safe.t -> t
-  val yojson_of_t : t -> Yojson.Safe.t
+    val t_of_yojson : Yojson.Safe.t -> t
+    val yojson_of_t : t -> Yojson.Safe.t
+  end
+
+  module Seats : sig
+    type t =
+      { name : string
+      ; mode : string
+      ; output : string option
+      }
+
+    val t_of_yojson : Yojson.Safe.t -> t
+    val yojson_of_t : t -> Yojson.Safe.t
+  end
 end
 
 type t =
@@ -27,6 +33,7 @@ type t =
   | Windows of { query : Ocdwm_core.Window_query.t option }
   | Tags of { output : string option }
   | Layouts of { output : string option }
+  | Schemes of { output : string option }
   | Seats
 
 val t_of_yojson : Yojson.Safe.t -> t

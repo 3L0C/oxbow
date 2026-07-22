@@ -88,6 +88,13 @@ module Layout : sig
   val yojson_of_t : t -> Yojson.Safe.t
 end
 
+module Scheme : sig
+  type t = Cycle of Ocdwm_core.Direction.Logical.t
+
+  val t_of_yojson : Yojson.Safe.t -> t
+  val yojson_of_t : t -> Yojson.Safe.t
+end
+
 module Output : sig
   type t =
     | Focus_logical of
@@ -188,6 +195,7 @@ type t =
   | Window of Window.t
   | Tag of Tag.t
   | Layout of Layout.t
+  | Scheme of Scheme.t
   | Output of Output.t
   | Set of Set.t
   | Rule of Rule.t

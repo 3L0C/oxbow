@@ -1,4 +1,3 @@
-open! Ppx_yojson_conv_lib.Yojson_conv
 open! Ocdwm_core
 open! Ocdwm_ipc
 open! Ocdwm_state
@@ -49,6 +48,11 @@ let handle_tag seat (cmd : Command.Tag.t) =
 ;;
 
 let handle_layout ctx seat (cmd : Command.Layout.t) =
+  match cmd with
+  | Cycle dir -> Arrange.cycle_layout ctx seat dir
+;;
+
+let handle_scheme ctx seat (cmd : Command.Scheme.t) =
   match cmd with
   | Cycle dir -> Arrange.cycle_scheme ctx seat dir
 ;;
@@ -143,6 +147,7 @@ let handle_command ctx seat (cmd : Command.t) =
   | Window c -> handle_window ctx seat c
   | Tag c -> handle_tag seat c
   | Layout c -> handle_layout ctx seat c
+  | Scheme c -> handle_scheme ctx seat c
   | Output c -> handle_output ctx seat c
   | Set c -> handle_set ctx seat c
   | Rule c -> handle_rule ctx seat c
@@ -152,79 +157,8 @@ let handle_command ctx seat (cmd : Command.t) =
   | Execute c -> handle_execute c
 ;;
 
-let handle_keymap ctx seat keymap = Bind.handle ctx seat keymap
-
-let handle_query (wm : Wm.t) seat (query : Query.t) =
-  match query with
-  | Rules -> Ok (Some ([%yojson_of: Rule.t list] wm.config.rules))
-  | Keymaps { all } -> Ok (Some (Bind.list wm seat ~all))
-  | Outputs ->
-    Ok
-      (Some
-         ([%yojson_of: string list]
-            (List.filter_map (fun (o : Output.t) -> o.name) wm.outputs)))
-  | Focused ->
-    (match Records.to_focus seat with
-     | None -> Ok None
-     | Some record -> Ok (Some ([%yojson_of: Record.Focus.t] record)))
-  | Windows { query } ->
-    let matcher =
-      match query with
-      | None -> Ok (fun ~title:_ ~app_id:_ ~identifier:_ -> true)
-      | Some q -> Window_query.compile q
-    in
-    (match matcher with
-     | Error _ as e -> e
-     | Ok m ->
-       Ok
-         (Some
-            ([%yojson_of: Record.Window.t list]
-               (List.filter
-                  (fun (w : Window.t) ->
-                     m ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
-                  wm.windows
-                |> List.map (Records.to_window wm)))))
-  | Tags { output } ->
-    let outs =
-      match output with
-      | None -> wm.outputs
-      | Some o ->
-        List.filter
-          (fun (o' : Output.t) ->
-             Option.fold ~none:false ~some:(fun name -> name = o) o'.name)
-          wm.outputs
-    in
-    let records = List.filter_map Records.to_tags outs in
-    Ok (Some ([%yojson_of: Record.Tags.t list] records))
-  | Layouts { output } ->
-    let current =
-      let get_layouts = List.filter_map Records.to_layout in
-      match output with
-      | None -> get_layouts wm.outputs
-      | Some name ->
-        List.filter
-          (fun (o : Output.t) ->
-             match o.name with
-             | None -> true
-             | Some n -> n = name)
-          wm.outputs
-        |> get_layouts
-    in
-    let available = List.map Scheme.to_string Scheme.all in
-    Ok (Some (Query.Layouts_reply.yojson_of_t { available; current }))
-  | Seats ->
-    let records =
-      List.filter_map
-        (fun (s : Seat.t) ->
-           Option.map
-             (fun name ->
-                Query.Seat_info.
-                  { name; mode = s.mode; output = Option.bind s.output (fun o -> o.name) })
-             s.name)
-        wm.seats
-    in
-    Ok (Some ([%yojson_of: Query.Seat_info.t list] records))
-;;
+let handle_keymap = Bind.handle
+let handle_query = Queries.handle
 
 let handle ctx seat ({ body; reply } : Pending_request.t) =
   let result =

@@ -110,25 +110,28 @@ let set_layout ctx seat (l : Layout.t) =
 ;;
 
 let select_scheme ctx (seat : Seat.t) scheme =
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o ->
-    (match set_layout ctx seat Tiling with
-     | Error _ as e -> e
-     | Ok _ ->
-       Output.set_scheme o scheme;
-       Ok None)
+  with_focused_output seat
+  @@ fun o ->
+  match set_layout ctx seat Tiling with
+  | Error _ as e -> e
+  | Ok _ ->
+    Output.set_scheme o scheme;
+    Ok None
+;;
+
+let cycle_layout ctx (seat : Seat.t) dir =
+  with_focused_output seat
+  @@ fun o -> Layout.cycle (Output.current_layout o) dir |> set_layout ctx seat
 ;;
 
 let cycle_scheme ctx (seat : Seat.t) dir =
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o ->
-    (match set_layout ctx seat Tiling with
-     | Error _ as e -> e
-     | Ok _ ->
-       Scheme.cycle (Output.current_scheme o) dir |> Output.set_scheme o;
-       Ok None)
+  with_focused_output seat
+  @@ fun o ->
+  match set_layout ctx seat Tiling with
+  | Error _ as e -> e
+  | Ok _ ->
+    Scheme.cycle (Output.current_scheme o) dir |> Output.set_scheme o;
+    Ok None
 ;;
 
 let retile ctx (output : Output.t) =

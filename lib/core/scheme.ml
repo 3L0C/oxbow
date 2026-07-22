@@ -19,8 +19,8 @@ let of_string s =
   | _ -> None
 ;;
 
-let cycle s (dir : Direction.Logical.t) =
+let cycle t (dir : Direction.Logical.t) =
   match dir with
-  | Next -> Ring.next_or_first s all |> Option.get
-  | Prev -> Ring.prev_or_last s all |> Option.get
+  | Next -> Ring.next_or_first t all |> Option.get
+  | Prev -> Ring.prev_or_last t all |> Option.get
 ;;

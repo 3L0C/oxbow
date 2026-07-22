@@ -84,6 +84,10 @@ module Layout = struct
   type t = Cycle of Direction.Logical.t [@name "cycle"] [@@deriving yojson]
 end
 
+module Scheme = struct
+  type t = Cycle of Direction.Logical.t [@name "cycle"] [@@deriving yojson]
+end
+
 module Output = struct
   type t =
     | Focus_logical of
@@ -104,7 +108,7 @@ end
 
 module Set = struct
   type t =
-    | Scheme of Scheme.t [@name "scheme"]
+    | Scheme of Ocdwm_core.Scheme.t [@name "scheme"]
     | Layout of Ocdwm_core.Layout.t [@name "layout"]
     | Mfact of float Delta.t [@name "mfact"]
     | Nmaster of int Delta.t [@name "nmaster"]
@@ -168,6 +172,7 @@ type t =
   | Window of Window.t [@name "window"]
   | Tag of Tag.t [@name "tag"]
   | Layout of Layout.t [@name "layout"]
+  | Scheme of Scheme.t [@name "scheme"]
   | Output of Output.t [@name "output"]
   | Set of Set.t [@name "set"]
   | Rule of Rule.t [@name "rule"]

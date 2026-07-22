@@ -6,6 +6,8 @@ type t =
   | Floating [@name "floating"]
 [@@deriving yojson]
 
+let all = [ Tiling; Scrolling; Floating ]
+
 let to_string = function
   | Tiling -> "tiling"
   | Scrolling -> "scrolling"
@@ -18,4 +20,10 @@ let of_string s =
   | "scrolling" -> Some Scrolling
   | "floating" -> Some Floating
   | _ -> None
+;;
+
+let cycle t (dir : Direction.Logical.t) =
+  match dir with
+  | Next -> Ring.next_or_first t all |> Option.get
+  | Prev -> Ring.prev_or_last t all |> Option.get
 ;;
