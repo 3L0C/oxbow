@@ -1,5 +1,4 @@
 open! Ocdwm_core
-open! Ocdwm_layout
 open! Ocdwm_state
 
 let with_focused_output (seat : Seat.t) f =
@@ -58,25 +57,17 @@ let set_dir seat dir =
 ;;
 
 let enter_overview ctx (output : Output.t) =
-  let aux prev =
+  if not output.overview
+  then (
     List.iter (fun w -> Window_request.handle ctx w Exit_fullscreen) output.wm_stack;
-    Output.set_arrangement output (Overview prev)
-  in
-  match output.arrangement with
-  | Overview _ -> ()
-  | Tiling -> aux `Tiling
-  | Scrolling -> aux `Scrolling
+    Output.set_overview output true)
 ;;
 
 let exit_overview ctx (output : Output.t) =
-  match output.arrangement with
-  | Tiling | Scrolling -> ()
-  | Overview prev ->
-    let focused = Output.focused_window output in
-    (match prev with
-     | `Tiling -> Output.set_arrangement output Tiling
-     | `Scrolling -> Output.set_arrangement output Scrolling);
-    (match focused with
+  if output.overview
+  then (
+    Output.set_overview output false;
+    (match Output.focused_window output with
      | Some w -> Output.switch_tags ~tags:w.tags output
      | None -> ());
     List.iter
@@ -86,49 +77,59 @@ let exit_overview ctx (output : Output.t) =
          | Floating -> Window.restore_or_seed_float ctx w
          | Maximized { restore } -> Window.maximize ~restore ctx w)
       output.wm_stack;
-    Dirty.mark_output output
+    Dirty.mark_output output)
 ;;
 
 let toggle_overview ctx seat =
   with_focused_output seat
   @@ fun o ->
-  match o.arrangement with
-  | Tiling | Scrolling ->
-    enter_overview ctx o;
-    Ok None
-  | Overview _ ->
-    exit_overview ctx o;
-    Ok None
+  if o.overview then exit_overview ctx o else enter_overview ctx o;
+  Ok None
 ;;
 
-let set_arrangement ctx seat (a : Arrangement.t) =
+let set_layout ctx seat (l : Layout.t) =
   with_focused_output seat
   @@ fun o ->
-  let no_op =
-    match o.arrangement, a with
-    | Overview _, Overview _ | Tiling, Tiling | Scrolling, Scrolling -> true
-    | _ -> false
-  in
-  if no_op
+  let current = Output.current_layout o in
+  if current = l
   then Ok None
   else (
-    match a with
-    | Overview _ ->
-      enter_overview ctx o;
-      Ok None
-    | Tiling | Scrolling ->
-      (match o.arrangement with
-       | Overview prev ->
-         exit_overview ctx o;
-         Ok None
-       | Tiling | Scrolling ->
-         Output.set_arrangement o a;
-         Ok None))
+    (match current, l with
+     | Floating, _ | _, Floating ->
+       Output.tiled_windows o |> List.iter Window.remember_float
+     | _ -> ());
+    Output.set_layout o l;
+    Ok None)
+;;
+
+let select_scheme ctx (seat : Seat.t) scheme =
+  match seat.output with
+  | None -> Error Messages.seat_missing_output
+  | Some o ->
+    (match set_layout ctx seat Tiling with
+     | Error _ as e -> e
+     | Ok _ ->
+       Output.set_scheme o scheme;
+       Ok None)
+;;
+
+let cycle_scheme ctx (seat : Seat.t) dir =
+  match seat.output with
+  | None -> Error Messages.seat_missing_output
+  | Some o ->
+    (match set_layout ctx seat Tiling with
+     | Error _ as e -> e
+     | Ok _ ->
+       Scheme.cycle (Output.current_scheme o) dir |> Output.set_scheme o;
+       Ok None)
 ;;
 
 let retile ctx (output : Output.t) =
-  match output.arrangement with
-  | Overview _ -> Overview.arrange ctx output
-  | Tiling -> Tiling.arrange ctx output
-  | Scrolling -> Scrolling.arrange ctx output
+  if output.overview
+  then Overview.arrange ctx output
+  else (
+    match Output.current_layout output with
+    | Tiling -> Tiling.arrange ctx output
+    | Scrolling -> Scrolling.arrange ctx output
+    | Floating -> Floating.arrange ctx output)
 ;;

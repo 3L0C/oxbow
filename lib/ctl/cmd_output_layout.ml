@@ -1,0 +1,20 @@
+open! Ocdwm_core
+open! Ocdwm_ipc
+
+let leaf mk_term (l : Layout.t) =
+  let name = Layout.to_string l in
+  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Switch to %s layout" name)
+  @@ mk_term
+  @@ Cmdliner.Term.const
+  @@ Command.Output (Layout l)
+;;
+
+let name = "layout"
+let doc = "Set the output layout"
+
+let build mk_term =
+  Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) [ Tiling; Floating; Scrolling ]
+;;
+
+let cmd = build Ctl_cli.command_term
+let bind_cmd = build Ctl_cli.bind_term

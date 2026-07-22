@@ -5,14 +5,14 @@ open! Ocdwm_layout
 let with_focused_column (seat : Seat.t) f =
   match seat.output with
   | None -> Error Messages.seat_missing_output
-  | Some { arrangement = Tiling | Overview _; _ } -> Error Messages.not_scrolling
-  | Some ({ arrangement = Scrolling; _ } as o) ->
+  | Some o when Output.current_layout o <> Scrolling -> Error Messages.not_scrolling
+  | Some o ->
     (match Output.focused_window o with
      | None -> Error Messages.no_focused_window
      | Some w ->
        let cols =
          Strip.columns
-           ~consumes:(fun (w : Window.t) -> w.consumes)
+           ~consumes:(fun (w : Window.t) -> w.scrolling.consumes)
            (Output.tiled_windows o)
        in
        (match List.find_opt (List.memq w) cols with
@@ -75,7 +75,7 @@ let set_width seat (delta : float Delta.t) =
   | Some w ->
     let wf =
       let sw =
-        match w.scroll_width with
+        match w.scrolling.width with
         | None -> (Output.current_layout_params o).mfact
         | Some sw -> Width_fac.to_float sw
       in
@@ -104,7 +104,7 @@ let cycle_width seat =
   | None -> Error "not in a column"
   | Some w ->
     let wf =
-      match w.scroll_width with
+      match w.scrolling.width with
       | None -> (Output.current_layout_params o).mfact |> Width_fac.of_float
       | Some sw -> sw
     in

@@ -137,30 +137,6 @@ val exit_fullscreen
   -> Ocdwm_state.Window.t
   -> unit
 
-(** [select_layout ctx seat name] sets the layout registered as [name] on the
-    first selected tag of [seat]'s output; tiled windows leaving the [floating]
-    layout remember their geometry. Is [Error msg] when no layout is registered as
-    [name] or [seat] has no output.
-
-    {b Effects:} mutates WM state *)
-val select_layout
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
-  -> string
-  -> (Yojson.Safe.t option, string) result
-
-(** [cycle_layout ctx seat dir] sets the current layout's registered neighbor in
-    [dir] on the first selected tag of [seat]'s output; tiled windows leaving
-    the [floating] layout remember their geometry. Is [Error msg] when [seat] has
-    no output.
-
-    {b Effects:} mutates WM state *)
-val cycle_layout
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
-  -> (Yojson.Safe.t option, string) result
-
 (** [close_focused seat] asks [seat]'s focused window to close.
 
     {b Effects:} sends River request *)

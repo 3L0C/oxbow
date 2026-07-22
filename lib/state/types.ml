@@ -17,7 +17,8 @@ module Config = struct
   module Data = struct
     type t =
       { params : Ocdwm_layout.Params.t
-      ; mutable entry : Ocdwm_layout.Entry.t
+      ; mutable layout : Ocdwm_core.Layout.t
+      ; mutable scheme : Ocdwm_core.Scheme.t
       }
   end
 
@@ -88,7 +89,7 @@ and Output : sig
     ; mutable usable : int Ocdwm_core.Rect.t
     ; mutable selected_tags : Ocdwm_core.Tag.Set.t
     ; mutable previous_tags : Ocdwm_core.Tag.Set.t
-    ; mutable arrangement : Ocdwm_core.Arrangement.t
+    ; mutable overview : bool
     ; mutable scroll_offset : int
     ; tag_data : Config.Data.t array
     ; (* Focus stack; most recently focused first *)
@@ -175,6 +176,13 @@ and Window : sig
       | No_preference
   end
 
+  module Scrolling_props : sig
+    type t =
+      { mutable consumes : bool
+      ; mutable width : Ocdwm_core.Width_fac.t option
+      }
+  end
+
   type t =
     { obj : River.V.Window_management.t River.Window_management.River_window_v1.t
     ; node : River.V.Window_management.t River.Window_management.River_node_v1.t
@@ -199,8 +207,7 @@ and Window : sig
     ; mutable is_fixed : bool
     ; mutable is_urgent : bool
     ; mutable is_fake_fullscreen : bool
-    ; mutable consumes : bool
-    ; mutable scroll_width : Ocdwm_core.Width_fac.t option
+    ; mutable scrolling : Scrolling_props.t
     ; mutable is_hidden : bool
     ; mutable presentation : Presentation.t
     ; mutable requests : Request.t list
@@ -360,7 +367,6 @@ and Wm : sig
     ; config : Config.t
     ; init_command : string option
     ; mutable init_handle : Init_script.t option
-    ; layout_registry : Ocdwm_layout.Registry.t
     ; ipc : Ipc.t
     }
 end =

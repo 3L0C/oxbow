@@ -87,7 +87,7 @@ module Output : sig
     | Focus_spatial of Ocdwm_core.Direction.Spatial.t
     | Focus_name of string
     | Toggle_overview
-    | Arrangement of Ocdwm_core.Arrangement.t
+    | Layout of Ocdwm_core.Layout.t
 
   val t_of_yojson : Yojson.Safe.t -> t
   val yojson_of_t : t -> Yojson.Safe.t
@@ -95,7 +95,7 @@ end
 
 module Set : sig
   type t =
-    | Layout of string
+    | Scheme of Ocdwm_core.Scheme.t
     | Mfact of float Ocdwm_core.Delta.t
     | Nmaster of int Ocdwm_core.Delta.t
     | Gaps_inner of int Ocdwm_core.Delta.t

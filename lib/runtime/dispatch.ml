@@ -50,7 +50,7 @@ let handle_tag seat (cmd : Command.Tag.t) =
 
 let handle_layout ctx seat (cmd : Command.Layout.t) =
   match cmd with
-  | Cycle dir -> Placement.cycle_layout ctx seat dir
+  | Cycle dir -> Arrange.cycle_scheme ctx seat dir
 ;;
 
 let handle_output ctx seat (cmd : Command.Output.t) =
@@ -59,13 +59,13 @@ let handle_output ctx seat (cmd : Command.Output.t) =
   | Focus_spatial dir -> Focus.output_spatial ctx seat dir
   | Focus_name name -> Focus.output_name ctx seat name
   | Toggle_overview -> Arrange.toggle_overview ctx seat
-  | Arrangement a -> Arrange.set_arrangement ctx seat a
+  | Layout l -> Arrange.set_layout ctx seat l
 ;;
 
 let handle_set ctx seat (cmd : Command.Set.t) =
   let wm = Ctx.wm ctx in
   match cmd with
-  | Layout name -> Placement.select_layout ctx seat name
+  | Scheme scheme -> Arrange.select_scheme ctx seat scheme
   | Mfact delta -> Arrange.set_mfact seat delta
   | Nmaster delta -> Arrange.set_nmaster seat delta
   | Gaps_inner delta -> Arrange.set_gaps_inner seat delta
@@ -209,7 +209,7 @@ let handle_query (wm : Wm.t) seat (query : Query.t) =
           wm.outputs
         |> get_layouts
     in
-    let available = Registry.names wm.layout_registry in
+    let available = List.map Scheme.to_string Scheme.all in
     Ok (Some (Query.Layouts_reply.yojson_of_t { available; current }))
   | Seats ->
     let records =

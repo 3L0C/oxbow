@@ -89,14 +89,37 @@ val toggle_overview
   -> Ocdwm_state.Seat.t
   -> ('a option, string) result
 
-(** [set_arrangement ctx seat arrangement] sets [seat]'s focused output
-    arrangement to [arrangement]. No-op when already set to [arrangement].
+(** [set_layout ctx seat layout] sets the layout of the first selected tag on
+    [seat]'s focused output. Saves float geometry for tiled windows when the
+    switch enters or leaves the floating layout.
 
-    {b Effects:} mutates WM state *)
-val set_arrangement
+    {b Effects:} mutates WM state; marks dirty *)
+val set_layout
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Arrangement.t
+  -> Ocdwm_core.Layout.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [select_scheme ctx seat scheme] sets [seat]'s focused output to [scheme].
+    Is [Error msg] when [seat] has no output.
+
+    {b Effects:} mutates WM state *)
+val select_scheme
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> Ocdwm_core.Scheme.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [cycle_scheme ctx seat dir] sets the current scheme's registered neighbor in
+    [dir] on the first selected tag of [seat]'s output; tiled windows leaving
+    the [floating] layout remember their geometry. Is [Error msg] when [seat]
+    has no output.
+
+    {b Effects:} mutates WM state *)
+val cycle_scheme
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
 (** [retile ctx output] arranges [output]'s managed windows.

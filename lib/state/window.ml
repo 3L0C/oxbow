@@ -50,8 +50,7 @@ let create (output : Types.Output.t option) river_window : t =
   ; is_fixed = false
   ; is_urgent = false
   ; is_fake_fullscreen = false
-  ; consumes = false
-  ; scroll_width = None
+  ; scrolling = { consumes = false; width = None }
   ; is_hidden = false
   ; presentation = Presentation.Tiled
   ; requests = []
@@ -85,13 +84,16 @@ let set_geom ctx (w : t) g =
   river_sync_geom ctx w g
 ;;
 
+let tag_layout (o : Types.Output.t) =
+  match Tag.Set.first o.selected_tags with
+  | Some i -> o.tag_data.(i - 1)
+  | None -> invalid_arg "Got an output with no selected tags."
+;;
+
 let tag_visible (w : t) =
   match w.output with
   | None -> false
-  | Some o ->
-    (match o.arrangement with
-     | Overview _ -> true
-     | Tiling | Scrolling -> Tag.Set.intersects w.tags o.selected_tags)
+  | Some o -> o.overview || Tag.Set.intersects o.selected_tags w.tags
 ;;
 
 let is_tiled (w : t) = w.presentation = Tiled
@@ -253,7 +255,7 @@ let is_rendered (w : t) =
              o.focus_stack)
   &&
   match w.output with
-  | Some ({ arrangement = Scrolling; _ } as o) when is_tiled w ->
+  | Some o when (tag_layout o).layout = Scrolling && is_tiled w ->
     Rect.(intersect (to_int w.geom) o.usable) |> Option.is_some
   | _ -> true
 ;;
@@ -281,7 +283,8 @@ let sync (ctx : Ctx.manage Ctx.t) (w : t) =
   in
   let desired =
     match w.output with
-    | Some { arrangement = Scrolling; _ } when is_tiled w && should_render -> w.clip
+    | Some o when (tag_layout o).layout = Scrolling && is_tiled w && should_render ->
+      w.clip
     | _ -> None
   in
   if desired <> w.applied_clip
@@ -452,16 +455,16 @@ let set_tags (w : t) tags =
 ;;
 
 let set_consumes (w : t) v =
-  if v <> w.consumes
+  if v <> w.scrolling.consumes
   then (
-    w.consumes <- v;
+    w.scrolling.consumes <- v;
     Option.iter Dirty.mark_output w.output)
 ;;
 
 let set_scroll_width (w : t) v =
-  if w.scroll_width <> v
+  if w.scrolling.width <> v
   then (
-    w.scroll_width <- v;
+    w.scrolling.width <- v;
     Option.iter Dirty.mark_output w.output)
 ;;
 

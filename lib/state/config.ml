@@ -23,10 +23,12 @@ let default_borders =
     }
 ;;
 
-let create_tag_data entry = Data.{ params = default_layout_params; entry }
+let create_tag_data () =
+  Data.{ params = default_layout_params; layout = Tiling; scheme = Tile }
+;;
 
-let default entry =
-  { default_tag_config = { params = default_layout_params; entry }
+let default () =
+  { default_tag_config = create_tag_data ()
   ; borders = default_borders
   ; cursor_theme = None
   ; modkey = River.Window_management.River_seat_v1.Modifiers.(mod4)

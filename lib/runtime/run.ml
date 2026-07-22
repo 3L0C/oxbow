@@ -58,8 +58,7 @@ let loop ~init_command ~net ~clock =
          method on_finished = ignore
        end
   in
-  let layout_registry = Registry.create () in
-  let config = Registry.default_layout_entry layout_registry |> Config.default in
+  let config = Config.default () in
   let wm : Wm.t =
     { river_wm_v1
     ; river_xkb_v1
@@ -82,7 +81,6 @@ let loop ~init_command ~net ~clock =
     ; config
     ; init_command
     ; init_handle = None
-    ; layout_registry
     ; ipc = { subscribers = []; last = [] }
     }
   in

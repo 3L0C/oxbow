@@ -46,16 +46,16 @@ val occupied_tags : t -> Ocdwm_core.Tag.Set.t
     windows. *)
 val urgent_tags : t -> Ocdwm_core.Tag.Set.t
 
-(** [current_layout_entry output] is the layout entry of the first selected tag
-    on [output]. *)
-val current_layout_entry : t -> Ocdwm_layout.Entry.t
+(** [current_layout output] is the layout of the first selected tag of [output]. *)
+val current_layout : t -> Ocdwm_core.Layout.t
 
 (** [current_layout_params output] is the layout params of the first selected
     tag on [output]. *)
 val current_layout_params : t -> Ocdwm_layout.Params.t
 
-(** [current_layout_ctx output] is the current layout context of [output]. *)
-val current_layout_ctx : t -> Ocdwm_layout.Symbol.Ctx.t
+(** [current_scheme output] is the scheme of the first selected tag of
+    [output]. *)
+val current_scheme : t -> Ocdwm_core.Scheme.t
 
 (** [visible_windows output] is the list of visible windows on the selected tags
     of [output]. *)
@@ -68,19 +68,29 @@ val visible_window_count : t -> int
     [output]. *)
 val tiled_windows : t -> Types.Window.t list
 
-(** [set_layout_entry ~entry output] sets the first selected tag on [output]
-    to the layout defined by [entry].
-
-    {b Effects:} mutates WM state; marks dirty *)
-val set_layout_entry : entry:Ocdwm_layout.Entry.t -> t -> unit
-
 (** [has_visible_fullscreen output] is true when a window is fullscreen and tag
     visible on [output]. *)
 val has_visible_fullscreen : t -> bool
 
-(** [is_floating output] is true when the first selected tag is in the Floating
-    layout. *)
+(** [is_floating output] is true when [output] is in the [Floating] layout. *)
 val is_floating : t option -> bool
+
+(** [set_layout output layout] sets the layout of the first selected tag on
+    [output].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_layout : t -> Ocdwm_core.Layout.t -> unit
+
+(** [set_scheme output scheme] sets the scheme of the first selected tag on
+    [output].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_scheme : t -> Ocdwm_core.Scheme.t -> unit
+
+(** [set_overview output v] sets the overview flag on [output].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_overview : t -> bool -> unit
 
 (** [set_mfact output delta] sets the mfact according to [delta] for the first
     selected tag on [output].
@@ -180,12 +190,6 @@ val set_name : t -> string option -> unit
 
     {b Effects:} mutates WM state *)
 val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
-
-(** [set_arrangement output arrangement] sets [output]'s arrangment to
-    [arrangement].
-
-    {b Effects:} mutates WM state *)
-val set_arrangement : t -> Ocdwm_core.Arrangement.t -> unit
 
 (** [set_scroll_offset output offset] sets [output]'s scroll offset to [offset].
 

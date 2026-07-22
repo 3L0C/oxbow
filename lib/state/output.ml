@@ -61,35 +61,6 @@ let visible_windows (o : t) = List.filter Window.tag_visible o.wm_stack
 let visible_window_count (o : t) = visible_windows o |> List.length
 let tiled_windows (o : t) = List.filter Window.is_tiled_on_tag o.wm_stack
 
-let set_layout_entry ~entry o =
-  let td = to_tag_data o in
-  td.entry <- entry;
-  Dirty.mark_output o
-;;
-
-let current_layout_entry o =
-  let td = to_tag_data o in
-  td.entry
-;;
-
-let current_layout_params o =
-  let td = to_tag_data o in
-  td.params
-;;
-
-let current_layout_ctx o =
-  match focused_window o with
-  | None -> Symbol.Ctx.{ focused_index = 0; count = 0 }
-  | Some w ->
-    let ws = visible_windows o in
-    let count = List.length ws in
-    let focused_index =
-      List.find_mapi (fun i w' -> if w == w' then Some i else None) ws
-      |> Option.value ~default:0
-    in
-    Symbol.Ctx.{ focused_index; count }
-;;
-
 let switch_tags ~tags (o : t) =
   if not (Tag.Set.is_empty tags || Tag.Set.equal tags o.selected_tags)
   then (
@@ -112,6 +83,9 @@ let urgent_tags (o : t) =
     o.wm_stack
 ;;
 
+let current_layout o = (to_tag_data o).layout
+let current_layout_params o = (to_tag_data o).params
+let current_scheme o = (to_tag_data o).scheme
 let at_point ~x ~y = List.find_opt (fun (o : t) -> Rect.contains ~x ~y o.geom)
 
 let has_visible_fullscreen (o : Types.Output.t) =
@@ -121,9 +95,22 @@ let has_visible_fullscreen (o : Types.Output.t) =
 let is_floating output =
   match output with
   | None -> false
-  | Some o ->
-    let name = current_layout_entry o |> Entry.name in
-    name = Floating.name
+  | Some o -> current_layout o = Floating
+;;
+
+let set_layout o layout =
+  (to_tag_data o).layout <- layout;
+  Dirty.mark_output o
+;;
+
+let set_scheme o scheme =
+  (to_tag_data o).scheme <- scheme;
+  Dirty.mark_output o
+;;
+
+let set_overview (o : t) v =
+  o.overview <- v;
+  Dirty.mark_output o
 ;;
 
 let set_mfact o (delta : float Delta.t) =
@@ -224,12 +211,6 @@ let set_usable (o : t) usable =
 
 let set_name (o : t) name = o.name <- name
 let set_geom (o : t) geom = o.geom <- geom
-
-let set_arrangement (o : t) (a : Arrangement.t) =
-  o.arrangement <- a;
-  Dirty.mark_output o
-;;
-
 let set_scroll_offset (o : t) offset = o.scroll_offset <- offset
 
 let is_dirty (o : t) =

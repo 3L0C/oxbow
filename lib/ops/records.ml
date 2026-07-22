@@ -41,13 +41,13 @@ let to_layout (output : Output.t) =
   match output.name with
   | None -> None
   | Some name ->
-    let entry = Output.current_layout_entry output in
+    let layout_name = Output.current_layout output |> Layout.to_string in
     Some
       Record.Layout.
         { output = name
-        ; layout = Entry.name entry
-        ; symbol = Entry.symbol (Output.current_layout_ctx output) entry
-        ; arrangement = Arrangement.to_string output.arrangement
+        ; layout = layout_name
+        ; symbol = Output.current_scheme output |> Scheme.to_string
+        ; arrangement = layout_name
         }
 ;;
 

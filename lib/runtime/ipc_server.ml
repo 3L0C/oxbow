@@ -22,10 +22,6 @@ module Handler = struct
     match body with
     | Command c ->
       (match c with
-       | Set (Layout name) ->
-         (match Ocdwm_layout.Registry.find wm.layout_registry name with
-          | Some _ -> Ok ()
-          | None -> Error (Printf.sprintf "unknown layout: %s" name))
        | Execute (Spawn "") -> Error "spawn: empty command"
        | Execute (Exec [||]) | Execute (Exec [| "" |]) -> Error "exec: empty command"
        | _ -> Ok ())

@@ -16,9 +16,7 @@ let zoom ctx (seat : Seat.t) =
        Stacking.push [ w; w' ] o;
        Focus.focus_window ~force:true ~warp:true ctx seat w;
        Ok None
-     | []
-       when let open Ocdwm_layout in
-            Output.current_layout_entry o |> Entry.name <> Floating.name ->
+     | [] when Output.current_layout o <> Floating ->
        Error "focused window is tiled but tiled window list is empty"
      | _ -> Error "no window to zoom with")
   | _ -> Error "focused window is not tiled"
@@ -189,35 +187,6 @@ let exit_fullscreen ctx (window : Window.t) =
   | Fullscreen _ ->
     Window.exit_fullscreen ctx window;
     Option.iter Dirty.mark_output window.output
-;;
-
-let select_layout ctx (seat : Seat.t) name =
-  let wm = Ctx.wm ctx in
-  match Registry.find wm.layout_registry name with
-  | None -> Error (Printf.sprintf "no registered layout named: %S" name)
-  | Some entry ->
-    (match seat.output with
-     | None -> Error Messages.seat_missing_output
-     | Some o ->
-       let old_name = Output.current_layout_entry o |> Entry.name in
-       if old_name = "floating"
-       then Output.tiled_windows o |> List.iter Window.remember_float;
-       Output.set_layout_entry ~entry o;
-       Ok None)
-;;
-
-let cycle_layout ctx (seat : Seat.t) dir =
-  let wm = Ctx.wm ctx in
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o ->
-    let name = Output.current_layout_entry o |> Entry.name in
-    (match Registry.cycle wm.layout_registry name dir with
-     | None -> Error "unable to cycle, no other layouts registered"
-     | Some (_, entry) ->
-       if name = "floating" then Output.tiled_windows o |> List.iter Window.remember_float;
-       Output.set_layout_entry ~entry o;
-       Ok None)
 ;;
 
 let close_focused seat =

@@ -1,10 +1,10 @@
 include module type of Types.Config
 
-(** [create_tag_data entry] is the [Data.t] created from [entry]. *)
-val create_tag_data : Ocdwm_layout.Entry.t -> Data.t
+(** [create_tag_data ()] is the default [Data.t] configuration. *)
+val create_tag_data : unit -> Data.t
 
-(** [default entry] is the default config given [entry]. *)
-val default : Ocdwm_layout.Entry.t -> t
+(** [default ()] is the default config given [entry]. *)
+val default : unit -> t
 
 (** [set_focus_follows_pointer wm focus_follows_pointer] sets [wm]'s "focus
     follows pointer" flag to [focus_follows_pointer].

@@ -12,7 +12,7 @@ let cmd =
     ; Cmd_set_gaps_inner.cmd
     ; Cmd_set_gaps_outer.cmd
     ; Cmd_set_keyboard.cmd
-    ; Cmd_set_layout.cmd
+    ; Cmd_set_scheme.cmd
     ; Cmd_set_mfact.cmd
     ; Cmd_set_nmaster.cmd
     ; Cmd_set_pointer.cmd
@@ -32,7 +32,7 @@ let bind_cmd =
     ; Cmd_set_gaps_inner.bind_cmd
     ; Cmd_set_gaps_outer.bind_cmd
     ; Cmd_set_keyboard.bind_cmd
-    ; Cmd_set_layout.bind_cmd
+    ; Cmd_set_scheme.bind_cmd
     ; Cmd_set_mfact.bind_cmd
     ; Cmd_set_nmaster.bind_cmd
     ; Cmd_set_pointer.bind_cmd

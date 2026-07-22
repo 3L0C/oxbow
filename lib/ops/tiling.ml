@@ -10,17 +10,15 @@ let arrange ctx output =
     let tag_data = Output.to_tag_data output in
     let area = Gaps.pre tag_data.params output.usable in
     let dir = tag_data.params.dir in
-    let compute = Entry.compute tag_data.entry in
+    let compute = Schemes.compute tag_data.scheme in
     let dimensions =
       compute ~params:tag_data.params ~usable_area:(Xform.pre dir area) ~count
       |> List.map (Xform.post dir ~area)
       |> List.map (Gaps.post tag_data.params)
     in
     match windows, dimensions with
-    | _, [] when count <> 0 ->
-      List.iter (fun w -> Window.restore_or_seed_float ctx w) windows
     | _, d_xs when List.length d_xs <> count ->
-      let layout_name = Entry.name tag_data.entry in
+      let layout_name = Layout.to_string tag_data.layout in
       Logs.warn
       @@ fun m ->
       m

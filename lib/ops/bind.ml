@@ -39,8 +39,8 @@ let install_defaults ctx seat =
       ; modkey, K_J, Command.Window (Shift Next)
       ; modkey, K_K, Command.Window (Shift Prev)
       ; modkey, K_comma, Command.Execute (Spawn "uwsm-app -- wk-river")
-      ; modkey, K_i, Command.Set (Layout "monocle")
-      ; modkey, K_y, Command.Set (Layout "tile")
+      ; modkey, K_i, Command.Set (Scheme Monocle)
+      ; modkey, K_y, Command.Set (Scheme Tile)
       ]
   in
   let num_keys = Xkbcommon.Keysym.[ K_1; K_2; K_3; K_4; K_5; K_6; K_7; K_8; K_9 ] in

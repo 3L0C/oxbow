@@ -82,13 +82,13 @@ module Output = struct
     | Focus_spatial of Ocdwm_core.Direction.Spatial.t [@name "focus_spatial"]
     | Focus_name of string [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
-    | Arrangement of Ocdwm_core.Arrangement.t [@name "arrangement"]
+    | Layout of Ocdwm_core.Layout.t [@name "layout"]
   [@@deriving yojson]
 end
 
 module Set = struct
   type t =
-    | Layout of string [@name "layout"]
+    | Scheme of Ocdwm_core.Scheme.t [@name "scheme"]
     | Mfact of float Ocdwm_core.Delta.t [@name "mfact"]
     | Nmaster of int Ocdwm_core.Delta.t [@name "nmaster"]
     | Gaps_inner of int Ocdwm_core.Delta.t [@name "gaps_inner"]

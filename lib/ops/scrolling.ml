@@ -12,11 +12,11 @@ let arrange ctx (output : Output.t) =
       List.map
         (fun (w : Window.t) ->
            let width_fac =
-             match w.scroll_width with
+             match w.scrolling.width with
              | Some wf -> Width_fac.to_float wf
              | None -> tag_data.params.mfact
            in
-           w, Strip.Item.{ consumes = w.consumes; width_fac })
+           w, Strip.Item.{ consumes = w.scrolling.consumes; width_fac })
         windows
     in
     let bw = Int32.to_int (Ctx.wm ctx).config.borders.width in
