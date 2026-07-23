@@ -45,24 +45,28 @@ val set_stack
   -> global:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [set_scroll_policy seat policy ~global] sets the scrolling layout policy on
-    [seat]'s output. Applied to all tags when [global] is [true]. Applied to the
-    first selected tag when [false].
+(** [set_scroll_policy wm seat policy ~global] sets the scrolling layout policy
+    on [seat]'s output. Applied to all tags when [global] is [true]. Applies to
+    all tags on all outputs if [global] is [true]. Applied to the first selected
+    tag when [false].
 
     {b Effects:} mutates WM state *)
 val set_scroll_policy
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Scroll_policy.t
   -> global:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [set_default_width seat delta ~global] sets the default column width
-    according to [delta] on [seat]'s focused output. Applies to all tags if
-    [global] is [true]. Applied to the first selected tag when [false].
+(** [set_default_width wm seat delta ~global] sets the default column width
+    according to [delta] on [seat]'s focused output. Applies to all tags on all
+    outputs if [global] is [true]. Applied to the first selected tag when
+    [false].
 
     {b Effects:} mutates WM state *)
 val set_default_width
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> float Ocdwm_core.Delta.t
   -> global:bool
   -> (Yojson.Safe.t option, string) result

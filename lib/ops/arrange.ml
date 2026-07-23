@@ -42,17 +42,21 @@ let set_stack seat kind ~global =
   Ok None
 ;;
 
-let set_scroll_policy seat policy ~global =
+let set_scroll_policy (wm : Wm.t) seat policy ~global =
   with_focused_output seat
   @@ fun o ->
-  Output.set_scroll_policy o policy ~global;
+  if global
+  then List.iter (fun o' -> Output.set_scroll_policy o' policy ~global) wm.outputs
+  else Output.set_scroll_policy o policy ~global;
   Ok None
 ;;
 
-let set_default_width seat delta ~global =
+let set_default_width (wm : Wm.t) seat delta ~global =
   with_focused_output seat
   @@ fun o ->
-  Output.set_default_width o delta ~global;
+  if global
+  then List.iter (fun o' -> Output.set_default_width o' delta ~global) wm.outputs
+  else Output.set_default_width o delta ~global;
   Ok None
 ;;
 

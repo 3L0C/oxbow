@@ -91,8 +91,10 @@ let manage_new_window ctx (window : Window.t) =
   Rules.apply_for ctx window;
   Window.set_lifecycle window Active;
   match window.output with
-  | Some o when window.presentation = Tiled && Output.current_layout o = Floating ->
-    Window.restore_or_seed_float ctx window
+  | Some o ->
+    if window.presentation = Tiled && Output.current_layout o = Floating
+    then Window.restore_or_seed_float ctx window;
+    (Output.to_tag_data o).scrolling.default_width |> Window.set_scroll_width window
   | _ -> ()
 ;;
 

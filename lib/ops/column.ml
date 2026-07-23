@@ -2,10 +2,11 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_layout
 
-let with_focused_column (seat : Seat.t) f =
+let with_focused_column ?(scroll_required = true) (seat : Seat.t) f =
   match seat.output with
   | None -> Error Messages.seat_missing_output
-  | Some o when Output.current_layout o <> Scrolling -> Error Messages.not_scrolling
+  | Some o when scroll_required && Output.current_layout o <> Scrolling ->
+    Error Messages.not_scrolling
   | Some o ->
     (match Output.focused_window o with
      | None -> Error Messages.no_focused_window
@@ -68,7 +69,7 @@ let move seat (dir : Direction.Logical.t) =
 ;;
 
 let set_width seat (delta : float Delta.t) ~global =
-  with_focused_column seat
+  with_focused_column ~scroll_required:false seat
   @@ fun o _w _cols col ->
   let apply ~f w = Width_fac.of_float f |> Window.set_scroll_width w in
   match List.nth_opt col 0 with

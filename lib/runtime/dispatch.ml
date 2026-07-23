@@ -76,8 +76,8 @@ let handle_set ctx seat (cmd : Command.Set.t) =
   | Gaps_inner delta -> Arrange.set_gaps_inner seat delta
   | Gaps_outer delta -> Arrange.set_gaps_outer seat delta
   | Stack { kind; global } -> Arrange.set_stack seat kind ~global
-  | Scroll_policy { policy; global } -> Arrange.set_scroll_policy seat policy ~global
-  | Default_width { delta; global } -> Arrange.set_default_width seat delta ~global
+  | Scroll_policy { policy; global } -> Arrange.set_scroll_policy wm seat policy ~global
+  | Default_width { delta; global } -> Arrange.set_default_width wm seat delta ~global
   | Orientation { dir; global } -> Arrange.set_orientation seat dir ~global
   | Focus_follows_pointer b ->
     Config.set_focus_follows_pointer wm b;
