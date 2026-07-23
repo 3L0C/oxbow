@@ -51,6 +51,12 @@ let prev_window (o : t) =
     List.rev o.wm_stack |> after
 ;;
 
+let tag_data (o : t) tag =
+  match Tag.Set.first tag with
+  | Some i -> o.tag_data.(i - 1)
+  | None -> invalid_arg "no tag data for the empty set"
+;;
+
 let to_tag_data (o : t) =
   match Tag.Set.first o.selected_tags with
   | Some i -> o.tag_data.(i - 1)
@@ -97,13 +103,19 @@ let is_floating output =
   | Some o -> current_layout o = Floating
 ;;
 
-let set_layout o layout =
-  (to_tag_data o).layout <- layout;
+let set_layout o layout ~global =
+  let apply (td : Types.Config.Data.t) = td.layout <- layout in
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
   Dirty.mark_output o
 ;;
 
-let set_scheme o scheme =
-  (to_tag_data o).tiling.scheme <- scheme;
+let set_scheme o scheme ~global =
+  let apply (td : Types.Config.Data.t) = td.tiling.scheme <- scheme in
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
   Dirty.mark_output o
 ;;
 
@@ -156,20 +168,27 @@ let set_gaps_outer o (delta : int Delta.t) =
   Dirty.mark_output o
 ;;
 
-let set_stack o kind =
-  let params = (to_tag_data o).tiling in
-  params.stack <- kind;
+let set_stack o kind ~global =
+  let apply (td : Types.Config.Data.t) = td.tiling.stack <- kind in
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
   Dirty.mark_output o
 ;;
 
-let set_scroll_policy o policy =
-  (to_tag_data o).scrolling.policy <- policy;
+let set_scroll_policy o policy ~global =
+  let apply (td : Types.Config.Data.t) = td.scrolling.policy <- policy in
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
   Dirty.mark_output o
 ;;
 
-let set_dir o dir =
-  let params = (to_tag_data o).tiling in
-  params.dir <- dir;
+let set_orientation o dir ~global =
+  let apply (td : Types.Config.Data.t) = td.tiling.dir <- dir in
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
   Dirty.mark_output o
 ;;
 
@@ -212,14 +231,19 @@ let set_name (o : t) name = o.name <- name
 let set_geom (o : t) geom = o.geom <- geom
 let set_scroll_offset (o : t) offset = o.scroll_offset <- offset
 
-let set_default_width o (delta : float Delta.t) =
-  let params = (to_tag_data o).scrolling in
-  let f =
-    match delta with
-    | Abs a -> a
-    | Rel r -> Width_fac.to_float params.default_width +. r
+let set_default_width o (delta : float Delta.t) ~global =
+  let apply (td : Types.Config.Data.t) =
+    let f =
+      match delta with
+      | Abs a -> a
+      | Rel r -> Width_fac.to_float td.scrolling.default_width +. r
+    in
+    td.scrolling.default_width <- Width_fac.of_float f
   in
-  params.default_width <- Width_fac.of_float f
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
+  Dirty.mark_output o
 ;;
 
 let is_dirty (o : t) =

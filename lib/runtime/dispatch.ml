@@ -68,16 +68,16 @@ let handle_output ctx seat (cmd : Command.Output.t) =
 let handle_set ctx seat (cmd : Command.Set.t) =
   let wm = Ctx.wm ctx in
   match cmd with
-  | Scheme scheme -> Arrange.select_scheme ctx seat scheme
-  | Layout l -> Arrange.set_layout ctx seat l
+  | Scheme { scheme; global } -> Arrange.select_scheme ctx seat scheme ~global
+  | Layout { layout; global } -> Arrange.set_layout ctx seat layout ~global
   | Mfact delta -> Arrange.set_mfact seat delta
   | Nmaster delta -> Arrange.set_nmaster seat delta
   | Gaps_inner delta -> Arrange.set_gaps_inner seat delta
   | Gaps_outer delta -> Arrange.set_gaps_outer seat delta
-  | Stack kind -> Arrange.set_stack seat kind
-  | Scroll_policy policy -> Arrange.set_scroll_policy seat policy
-  | Default_width delta -> Arrange.set_default_width seat delta
-  | Dir dir -> Arrange.set_dir seat dir
+  | Stack { kind; global } -> Arrange.set_stack seat kind ~global
+  | Scroll_policy { policy; global } -> Arrange.set_scroll_policy seat policy ~global
+  | Default_width { delta; global } -> Arrange.set_default_width seat delta ~global
+  | Orientation { dir; global } -> Arrange.set_orientation seat dir ~global
   | Focus_follows_pointer b ->
     Config.set_focus_follows_pointer wm b;
     Ok None

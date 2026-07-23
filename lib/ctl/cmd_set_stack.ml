@@ -1,6 +1,12 @@
 open! Ocdwm_core
 open! Ocdwm_ipc
 
+let command_term kind =
+  let open Cmdliner.Term.Syntax in
+  let+ global = Ctl_cli.global_flag in
+  Command.Set (Stack { kind; global })
+;;
+
 let stack_targets =
   List.map (fun k -> Stack_kind.to_string k, k) [ Even; Diminish; Dwindle; Spiral ]
 ;;
@@ -8,8 +14,7 @@ let stack_targets =
 let leaf mk_term (name, kind) =
   Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Make the stack %s" name)
   @@ mk_term
-  @@ Cmdliner.Term.const
-  @@ Command.Set (Stack kind)
+  @@ command_term kind
 ;;
 
 let name = "stack"

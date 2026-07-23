@@ -8,7 +8,6 @@ let cmd =
     [ Cmd_set_border.cmd
     ; Cmd_set_cursor.cmd
     ; Cmd_set_default_width.cmd
-    ; Cmd_set_dir.cmd
     ; Cmd_set_focus_follows_pointer.cmd
     ; Cmd_set_gaps_inner.cmd
     ; Cmd_set_gaps_outer.cmd
@@ -17,6 +16,7 @@ let cmd =
     ; Cmd_set_layout.cmd
     ; Cmd_set_mfact.cmd
     ; Cmd_set_nmaster.cmd
+    ; Cmd_set_orientation.cmd
     ; Cmd_set_pointer.cmd
     ; Cmd_set_stack.cmd
     ; Cmd_set_scroll_policy.cmd
@@ -30,7 +30,6 @@ let bind_cmd =
     [ Cmd_set_border.bind_cmd
     ; Cmd_set_cursor.bind_cmd
     ; Cmd_set_default_width.bind_cmd
-    ; Cmd_set_dir.bind_cmd
     ; Cmd_set_focus_follows_pointer.bind_cmd
     ; Cmd_set_gaps_inner.bind_cmd
     ; Cmd_set_gaps_outer.bind_cmd
@@ -40,6 +39,7 @@ let bind_cmd =
     ; Cmd_set_mfact.bind_cmd
     ; Cmd_set_nmaster.bind_cmd
     ; Cmd_set_pointer.bind_cmd
+    ; Cmd_set_orientation.bind_cmd
     ; Cmd_set_stack.bind_cmd
     ; Cmd_set_scroll_policy.bind_cmd
     ]

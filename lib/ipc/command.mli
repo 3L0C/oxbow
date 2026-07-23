@@ -117,16 +117,34 @@ end
 
 module Set : sig
   type t =
-    | Scheme of Ocdwm_core.Scheme.t
-    | Layout of Ocdwm_core.Layout.t
+    | Scheme of
+        { scheme : Ocdwm_core.Scheme.t
+        ; global : bool
+        }
+    | Layout of
+        { layout : Ocdwm_core.Layout.t
+        ; global : bool
+        }
     | Mfact of float Ocdwm_core.Delta.t
     | Nmaster of int Ocdwm_core.Delta.t
     | Gaps_inner of int Ocdwm_core.Delta.t
     | Gaps_outer of int Ocdwm_core.Delta.t
-    | Stack of Ocdwm_core.Stack_kind.t
-    | Scroll_policy of Ocdwm_core.Scroll_policy.t
-    | Default_width of float Ocdwm_core.Delta.t
-    | Dir of Ocdwm_core.Direction.Spatial.t
+    | Stack of
+        { kind : Ocdwm_core.Stack_kind.t
+        ; global : bool
+        }
+    | Scroll_policy of
+        { policy : Ocdwm_core.Scroll_policy.t
+        ; global : bool
+        }
+    | Default_width of
+        { delta : float Ocdwm_core.Delta.t
+        ; global : bool
+        }
+    | Orientation of
+        { dir : Ocdwm_core.Direction.Spatial.t
+        ; global : bool
+        }
     | Focus_follows_pointer of bool
     | Toggle_focus_follows_pointer
     | Keyboard_repeat of

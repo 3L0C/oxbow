@@ -29,9 +29,9 @@ let install_defaults ctx seat =
       ; modkey, K_ISO_Left_Tab, Command.Tag (View_cycle Prev)
       ; Int32.(logor modkey alt), K_Tab, Command.Layout (Cycle Next)
       ; Int32.(logor modkey alt), K_ISO_Left_Tab, Command.Layout (Cycle Prev)
-      ; modkey, K_t, Command.Set (Layout Tiling)
-      ; modkey, K_s, Command.Set (Layout Scrolling)
-      ; modkey, K_f, Command.Set (Layout Floating)
+      ; modkey, K_t, Command.Set (Layout { layout = Tiling; global = false })
+      ; modkey, K_s, Command.Set (Layout { layout = Scrolling; global = false })
+      ; modkey, K_f, Command.Set (Layout { layout = Floating; global = false })
       ; Int32.(logor modkey shift), K_space, Command.Window Toggle_floating
       ; modkey, K_v, Command.Window Toggle_fullscreen
       ; modkey, K_I, Command.Window Toggle_fake_fullscreen

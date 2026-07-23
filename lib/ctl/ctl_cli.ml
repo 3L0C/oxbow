@@ -301,6 +301,10 @@ let warp_flag =
         ])
 ;;
 
+let global_flag =
+  Arg.(value & flag & info [ "all" ] ~doc:"Applies the change to all tags")
+;;
+
 let code_protocol_err = 1
 let code_conn_failed = 2
 

@@ -1,6 +1,12 @@
 open! Ocdwm_core
 open! Ocdwm_ipc
 
+let command_term policy =
+  let open Cmdliner.Term.Syntax in
+  let+ global = Ctl_cli.global_flag in
+  Command.Set (Scroll_policy { policy; global })
+;;
+
 let scroll_targets =
   List.map (fun p -> Scroll_policy.to_string p, p) [ Visible; Left; Centered ]
 ;;
@@ -8,8 +14,7 @@ let scroll_targets =
 let leaf mk_term (name, policy) =
   Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Set the scroll policy to %s" name)
   @@ mk_term
-  @@ Cmdliner.Term.const
-  @@ Command.Set (Scroll_policy policy)
+  @@ command_term policy
 ;;
 
 let name = "scroll"

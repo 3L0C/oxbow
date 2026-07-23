@@ -71,17 +71,19 @@ val has_visible_fullscreen : t -> bool
 (** [is_floating output] is true when [output] is in the [Floating] layout. *)
 val is_floating : t option -> bool
 
-(** [set_layout output layout] sets the layout of the first selected tag on
-    [output].
+(** [set_layout output layout ~global] sets the layout of [output]. Applied to
+    all tags when [global] is true. Applied to the first selected tags when
+    [false].
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_layout : t -> Ocdwm_core.Layout.t -> unit
+val set_layout : t -> Ocdwm_core.Layout.t -> global:bool -> unit
 
-(** [set_scheme output scheme] sets the scheme of the first selected tag on
-    [output].
+(** [set_scheme output scheme ~global] sets the scheme of [output]. Applied to
+    all tags when [global] is true. Applied to the first selected tags when
+    [false].
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_scheme : t -> Ocdwm_core.Scheme.t -> unit
+val set_scheme : t -> Ocdwm_core.Scheme.t -> global:bool -> unit
 
 (** [set_overview output v] sets the overview flag on [output].
 
@@ -112,23 +114,26 @@ val set_gaps_inner : t -> int Ocdwm_core.Delta.t -> unit
     {b Effects:} mutates WM state; marks dirty *)
 val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> unit
 
-(** [set_stack output kind] sets [output]'s stack kind to [kind] for the first
-    selected tag on [output].
+(** [set_stack output kind ~global] sets [output]'s stack kind to [kind].
+    Applied to all tags when [global] is true. Applied to the first selected
+    tags when [false].
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_stack : t -> Ocdwm_core.Stack_kind.t -> unit
+val set_stack : t -> Ocdwm_core.Stack_kind.t -> global:bool -> unit
 
-(** [set_scroll_policy output policy] sets [output]'s scrolling policy to
-    [policy].
-
-    {b Effects:} mutates WM state; marks dirty *)
-val set_scroll_policy : t -> Ocdwm_core.Scroll_policy.t -> unit
-
-(** [set_dir output dir] sets [output]'s stacking direction to [dir] for the
-    first selected tag on [output].
+(** [set_scroll_policy output policy ~global] sets [output]'s scrolling policy to
+    [policy]. Applied to all tags when [global] is true. Applied to the first
+    selected tags when [false].
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_dir : t -> Ocdwm_core.Direction.Spatial.t -> unit
+val set_scroll_policy : t -> Ocdwm_core.Scroll_policy.t -> global:bool -> unit
+
+(** [set_orientation output dir ~global] sets [output]'s stacking orientation to
+    [dir]. Applied to all tags when [global] is true. Applied to the first
+    selected tags when [false].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_orientation : t -> Ocdwm_core.Direction.Spatial.t -> global:bool -> unit
 
 (** [set_wm_stack output ws] replaces [output]'s window stack with [ws].
 
@@ -192,11 +197,12 @@ val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
     {b Effects:} mutates WM state *)
 val set_scroll_offset : t -> int -> unit
 
-(** [set_default_width output delta] sets the default column width according
-    to [delta] for the first selected tag on [output].
+(** [set_default_width output delta ~global] sets the default column width
+    according to [delta]. Applied to all tags when [global] is true. Applied to
+    the first selected tags when [false].
 
     {b Effects:} mutates WM state *)
-val set_default_width : t -> float Ocdwm_core.Delta.t -> unit
+val set_default_width : t -> float Ocdwm_core.Delta.t -> global:bool -> unit
 
 (** [is_dirty output] is true when [output]'s lifecycle is [Dirty _]. *)
 val is_dirty : t -> bool

@@ -90,6 +90,9 @@ val window_query_case_flag : Ocdwm_core.Window_query.Case.t Cmdliner.Term.t
     overrides the warp on focus configuration for one command. *)
 val warp_flag : bool option Cmdliner.Term.t
 
+(** [global_flag] is the [--all] flag used to apply changes to all tags. *)
+val global_flag : bool Cmdliner.Term.t
+
 (** [group ?exits ?man ?man_xrefs ?version ~name ~doc cmds] is command that
     groups the subcommands [cmds]. *)
 val group

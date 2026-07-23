@@ -1,14 +1,19 @@
 open! Ocdwm_core
 open! Ocdwm_ipc
 
+let command_term dir =
+  let open Cmdliner.Term.Syntax in
+  let+ global = Ctl_cli.global_flag in
+  Command.Set (Orientation { dir; global })
+;;
+
 let leaf mk_term (name, dir) =
   Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Position the master stack %s" name)
   @@ mk_term
-  @@ Cmdliner.Term.const
-  @@ Command.Set (Dir dir)
+  @@ command_term dir
 ;;
 
-let name = "dir"
+let name = "orientation"
 let doc = "Set the master orientation for the current layout"
 
 let build mk_term =

@@ -108,16 +108,34 @@ end
 
 module Set = struct
   type t =
-    | Scheme of Ocdwm_core.Scheme.t [@name "scheme"]
-    | Layout of Ocdwm_core.Layout.t [@name "layout"]
+    | Scheme of
+        { scheme : Ocdwm_core.Scheme.t
+        ; global : bool
+        } [@name "scheme"]
+    | Layout of
+        { layout : Ocdwm_core.Layout.t
+        ; global : bool
+        } [@name "layout"]
     | Mfact of float Delta.t [@name "mfact"]
     | Nmaster of int Delta.t [@name "nmaster"]
     | Gaps_inner of int Delta.t [@name "gaps_inner"]
     | Gaps_outer of int Delta.t [@name "gaps_outer"]
-    | Stack of Stack_kind.t [@name "stack"]
-    | Scroll_policy of Scroll_policy.t [@name "scroll_policy"]
-    | Default_width of float Delta.t [@name "default_width"]
-    | Dir of Direction.Spatial.t [@name "dir"]
+    | Stack of
+        { kind : Stack_kind.t
+        ; global : bool
+        } [@name "stack"]
+    | Scroll_policy of
+        { policy : Scroll_policy.t
+        ; global : bool
+        } [@name "scroll_policy"]
+    | Default_width of
+        { delta : float Delta.t
+        ; global : bool
+        } [@name "default_width"]
+    | Orientation of
+        { dir : Direction.Spatial.t
+        ; global : bool
+        } [@name "dir"]
     | Focus_follows_pointer of bool [@name "focus_follows_pointer"]
     | Toggle_focus_follows_pointer [@name "toggle_focus_follows_pointer"]
     | Keyboard_repeat of
