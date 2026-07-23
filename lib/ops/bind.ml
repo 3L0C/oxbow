@@ -13,10 +13,11 @@ let install_defaults ctx seat =
   let modkey = wm.config.modkey in
   let alt = River.Window_management.River_seat_v1.Modifiers.mod1 in
   let shift = River.Window_management.River_seat_v1.Modifiers.shift in
+  let ctrl = River.Window_management.River_seat_v1.Modifiers.ctrl in
   let xkb_bindings =
     Xkbcommon.Keysym.
       [ (* mods, keysym,  command *)
-        modkey, K_Return, Command.Execute (Spawn "uwsm-app -- kitty")
+        modkey, K_Return, Command.Execute (Spawn "kitty")
       ; modkey, K_q, Command.Window Close
       ; modkey, K_j, Command.Window (Focus_logical { dir = Next; warp = None })
       ; modkey, K_k, Command.Window (Focus_logical { dir = Prev; warp = None })
@@ -28,6 +29,9 @@ let install_defaults ctx seat =
       ; modkey, K_ISO_Left_Tab, Command.Tag (View_cycle Prev)
       ; Int32.(logor modkey alt), K_Tab, Command.Layout (Cycle Next)
       ; Int32.(logor modkey alt), K_ISO_Left_Tab, Command.Layout (Cycle Prev)
+      ; modkey, K_t, Command.Set (Layout Tiling)
+      ; modkey, K_s, Command.Set (Layout Scrolling)
+      ; modkey, K_f, Command.Set (Layout Floating)
       ; Int32.(logor modkey shift), K_space, Command.Window Toggle_floating
       ; modkey, K_v, Command.Window Toggle_fullscreen
       ; modkey, K_I, Command.Window Toggle_fake_fullscreen
@@ -38,9 +42,16 @@ let install_defaults ctx seat =
       ; modkey, K_space, Command.Window (Zoom { warp = None })
       ; modkey, K_J, Command.Window (Shift Next)
       ; modkey, K_K, Command.Window (Shift Prev)
-      ; modkey, K_comma, Command.Execute (Spawn "uwsm-app -- wk-river")
-      ; modkey, K_i, Command.Set (Scheme Monocle)
-      ; modkey, K_y, Command.Set (Scheme Tile)
+      ; modkey, K_y, Command.Set (Scheme { scheme = Tile; global = false })
+      ; modkey, K_i, Command.Set (Scheme { scheme = Monocle; global = false })
+      ; modkey, K_comma, Command.Window Column_consume
+      ; modkey, K_period, Command.Window Column_release
+      ; Int32.(logor modkey ctrl), K_h, Command.Window (Column_move Prev)
+      ; Int32.(logor modkey ctrl), K_l, Command.Window (Column_move Next)
+      ; modkey, K_minus, Command.Window (Column_width (Rel (-0.1)))
+      ; modkey, K_equal, Command.Window (Column_width (Rel 0.1))
+      ; modkey, K_r, Command.Window Column_width_cycle
+      ; modkey, K_R, Command.Window Column_width_default
       ]
   in
   let num_keys = Xkbcommon.Keysym.[ K_1; K_2; K_3; K_4; K_5; K_6; K_7; K_8; K_9 ] in
