@@ -40,7 +40,10 @@ let arrange ctx (output : Output.t) =
             ~total_w
             ~offset:output.scroll_offset
             ~col
-        | None -> min output.scroll_offset (total_w - area.w) |> max 0
+        | None ->
+          (match tag_data.scrolling.policy with
+           | Centered -> output.scroll_offset
+           | Left | Visible -> min output.scroll_offset (total_w - area.w) |> max 0)
       in
       Output.set_scroll_offset output offset;
       placed

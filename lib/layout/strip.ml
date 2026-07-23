@@ -66,5 +66,7 @@ let scroll ~(policy : Scroll_policy.t) ~viewport_w ~total_w ~offset ~col:(x, w) 
       then x + w - viewport_w
       else offset
   in
-  min ideal (total_w - viewport_w) |> max 0
+  match policy with
+  | Centered -> ideal
+  | Left | Visible -> min ideal (total_w - viewport_w) |> max 0
 ;;
