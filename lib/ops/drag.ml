@@ -89,8 +89,9 @@ let step ctx (seat : Seat.t) =
       | true, false -> Int32.sub op_r.start_h op_r.dy
       | false, true -> Int32.add op_r.start_h op_r.dy
     in
-    River.Window_management.River_window_v1.propose_dimensions
-      op_r.window.obj
+    Window.propose_dimensions
+      ctx
+      op_r.window
       ~width:(max 1l width)
       ~height:(max 1l height)
   | Some (Move op_m) -> ()

@@ -40,6 +40,7 @@ let create (wm : Types.Wm.t) (output : Types.Output.t option) river_window : t =
   ; float_geom = None
   ; clip = None
   ; applied_clip = None
+  ; last_proposed = None
   ; size_hints = { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l }
   ; tags =
       (match output with
@@ -70,14 +71,21 @@ let destroy (w : t) =
     m "destroy refused: Window is %s not closing" (Lifecycle.to_string w.lifecycle)
 ;;
 
-let set_position (_ : 'p Ctx.t) (w : t) ~(x : int32) ~(y : int32) =
+let set_position (_ : 'p Ctx.t) (w : t) ~x ~y =
   w.geom <- { w.geom with x; y };
   River.Window_management.River_node_v1.set_position w.node ~x ~y
 ;;
 
-let river_sync_geom (_ : Ctx.manage Ctx.t) (w : t) (g : int32 Rect.t) =
+let propose_dimensions (_ : Ctx.manage Ctx.t) (w : t) ~width ~height =
+  if w.last_proposed <> Some (width, height)
+  then (
+    River.Window_management.River_window_v1.propose_dimensions w.obj ~width ~height;
+    w.last_proposed <- Some (width, height))
+;;
+
+let river_sync_geom ctx (w : t) (g : int32 Rect.t) =
   River.Window_management.River_node_v1.set_position w.node ~x:g.x ~y:g.y;
-  River.Window_management.River_window_v1.propose_dimensions w.obj ~width:g.w ~height:g.h
+  propose_dimensions ctx w ~width:g.w ~height:g.h
 ;;
 
 let set_geom ctx (w : t) g =
@@ -236,6 +244,7 @@ let unmaximize (ctx : Ctx.manage Ctx.t) (w : t) =
 let exit_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
   match w.output, w.presentation with
   | Some _, Fullscreen { restore } ->
+    w.last_proposed <- None;
     River.Window_management.River_window_v1.exit_fullscreen w.obj;
     River.Window_management.River_window_v1.inform_not_fullscreen w.obj;
     (match restore with

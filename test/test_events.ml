@@ -62,7 +62,7 @@ let () =
           }));
   check
     ~expect:
-      {|{"event":"layout","output":"DP-1","layout":"tiling","symbol":"[]=","scheme":"even"}|}
+      {|{"event":"layout","output":"DP-1","layout":"tiling","scheme":"even","symbol":"[]="}|}
     (Event.to_line
        (Layout
           { output = "DP-1"; layout = "tiling"; symbol = "[]="; scheme = Some "even" }));

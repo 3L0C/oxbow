@@ -201,6 +201,7 @@ and Window : sig
     ; mutable float_geom : int32 Ocdwm_core.Rect.t option
     ; mutable clip : int Ocdwm_core.Rect.t option
     ; mutable applied_clip : int Ocdwm_core.Rect.t option
+    ; mutable last_proposed : (int32 * int32) option
     ; mutable size_hints : int32 Size_hints.t
     ; mutable tags : Ocdwm_core.Tag.Set.t
     ; mutable output : Output.t option

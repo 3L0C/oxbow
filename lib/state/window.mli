@@ -18,6 +18,12 @@ val destroy : t -> unit
     {b Effects:} mutates WM state; sends River request *)
 val set_position : 'p Ctx.t -> t -> x:int32 -> y:int32 -> unit
 
+(** [propose_dimensions ctx window ~width ~height] proposes content dimensions
+    to [window]. Skips the request when it equals the last proposal.
+
+    {b Effects:} mutates WM state; sends River request *)
+val propose_dimensions : Ctx.manage Ctx.t -> t -> width:int32 -> height:int32 -> unit
+
 (** [set_geom ctx window geom] updates [window]'s geometry to [geom] and
     positions/resizes window to match the new state.
 
