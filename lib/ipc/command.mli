@@ -110,6 +110,7 @@ module Output : sig
         ; warp : bool option
         }
     | Toggle_overview
+    | Column_width of float Ocdwm_core.Delta.t
 
   val t_of_yojson : Yojson.Safe.t -> t
   val yojson_of_t : t -> Yojson.Safe.t

@@ -103,6 +103,7 @@ module Output = struct
         ; warp : bool option [@yojson.option]
         } [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
+    | Column_width of float Delta.t [@name "column_width"]
   [@@deriving yojson]
 end
 

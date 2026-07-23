@@ -22,14 +22,16 @@ val move
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_width seat delta] applies [delta] to the width factor of the focused
-    column. A relative delta applies to the current effective factor. Is
-    [Error msg] when [seat] has no output or no window is focused.
+(** [set_width seat delta ~global] applies [delta] to the width factor of the
+    focused column. Applies to all columns when [global] is [true]. A relative
+    delta applies to the current effective factor. Is [Error msg] when [seat]
+    has no output or no window is focused.
 
     {b Effects:} mutates WM state *)
 val set_width
   :  Ocdwm_state.Seat.t
   -> float Ocdwm_core.Delta.t
+  -> global:bool
   -> (Yojson.Safe.t option, string) result
 
 (** [default_width seat] clears the width override of the focused column; the

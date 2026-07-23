@@ -67,9 +67,10 @@ let move seat (dir : Direction.Logical.t) =
     Ok None
 ;;
 
-let set_width seat (delta : float Delta.t) =
+let set_width seat (delta : float Delta.t) ~global =
   with_focused_column seat
   @@ fun o _w _cols col ->
+  let apply ~f w = Width_fac.of_float f |> Window.set_scroll_width w in
   match List.nth_opt col 0 with
   | None -> Error "not in a column"
   | Some w ->
@@ -78,7 +79,7 @@ let set_width seat (delta : float Delta.t) =
       | Abs a -> a
       | Rel r -> Width_fac.to_float w.scrolling.width +. r
     in
-    Window.set_scroll_width w (Width_fac.of_float f);
+    if global then List.iter (apply ~f) o.wm_stack else apply ~f w;
     Ok None
 ;;
 

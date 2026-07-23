@@ -33,7 +33,7 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Column_consume -> Column.consume seat
   | Column_release -> Column.release seat
   | Column_move dir -> Column.move seat dir
-  | Column_width delta -> Column.set_width seat delta
+  | Column_width delta -> Column.set_width seat delta ~global:false
   | Column_width_default -> Column.default_width seat
   | Column_width_cycle -> Column.cycle_width seat
 ;;
@@ -63,6 +63,7 @@ let handle_output ctx seat (cmd : Command.Output.t) =
   | Focus_spatial { dir; warp } -> Focus.output_spatial ?warp ctx seat dir
   | Focus_name { name; warp } -> Focus.output_name ?warp ctx seat name
   | Toggle_overview -> Arrange.toggle_overview ctx seat
+  | Column_width delta -> Column.set_width seat delta ~global:true
 ;;
 
 let handle_set ctx seat (cmd : Command.Set.t) =
