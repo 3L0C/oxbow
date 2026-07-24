@@ -4,22 +4,17 @@ open! Ocdwm_ipc
 let command_term =
   let open Cmdliner in
   let open Cmdliner.Term.Syntax in
-  let+ first = Arg.(value & pos 0 (some string) None & info [] ~docv:"OUTPUT")
-  and+ second = Arg.(value & pos 1 (some string) None & info [] ~docv:"OUTPUT")
+  let+ target = Ctl_cli.swap_target
   and+ policy = Ctl_cli.policy_flag in
-  Command.Output (Swap_all { first; second; policy })
+  Command.Output (Swap (All { target; policy }))
 ;;
 
 let bind_command_term =
   let open Cmdliner in
   let open Cmdliner.Term.Syntax in
-  let+ outputs = Arg.(value & pos_left ~rev:true 1 string [] & info [] ~docv:"OUTPUT")
+  let+ target = Ctl_cli.bind_swap_target
   and+ policy = Ctl_cli.policy_flag in
-  let payload first second = Command.Output (Swap_all { first; second; policy }) in
-  match outputs with
-  | [] -> payload None None
-  | [ a ] -> payload (Some a) None
-  | a :: b :: _ -> payload (Some a) (Some b)
+  Command.Output (Swap (All { target; policy }))
 ;;
 
 let name = "all"

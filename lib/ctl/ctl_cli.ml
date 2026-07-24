@@ -143,7 +143,7 @@ let tag_set =
 ;;
 
 let occupied_flag =
-  Arg.(value & flag & info [ "occupied" ] ~doc:"Restrict operation to occupied tags")
+  Arg.(value & flag & info [ "occupied" ] ~doc:"Restrict operation to occupied tags.")
 ;;
 
 let policy_flag =
@@ -152,23 +152,67 @@ let policy_flag =
     & vflag
         Tag.Policy.Keep
         [ ( Tag.Policy.Take
-          , info [ "take" ] ~doc:"Window takes the active tags on the destination output"
+          , info [ "take" ] ~doc:"Window takes the active tags on the destination output."
           )
         ])
+;;
+
+let ring_flag =
+  Arg.(
+    value
+    & opt (some (list string)) None
+    & info
+        [ "ring" ]
+        ~docv:"OUTPUTS"
+        ~doc:"Swap around the ring of comma-separated $(docv).")
+;;
+
+let rev_flag =
+  Arg.(value & flag & info [ "rev" ] ~doc:"Go around the ring in the reverse direction.")
+;;
+
+let swap_target =
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ first = Arg.(value & pos 0 (some string) None & info [] ~docv:"OUTPUT")
+     and+ second = Arg.(value & pos 1 (some string) None & info [] ~docv:"OUTPUT")
+     and+ ring = ring_flag
+     and+ rev = rev_flag in
+     match ring, first, rev with
+     | Some members, None, _ -> Ok (Command.Output.Swap.Target.Ring { members; rev })
+     | Some _, Some _, _ -> Error "--ring takes no OUTPUT positional"
+     | None, _, true -> Error "--rev needs --ring"
+     | None, _, false -> Ok (Command.Output.Swap.Target.Pair { first; second })
+;;
+
+let bind_swap_target =
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ outputs = Arg.(value & pos_left ~rev:true 1 string [] & info [] ~docv:"OUTPUT")
+     and+ ring = ring_flag
+     and+ rev = rev_flag in
+     let pair first second = Command.Output.Swap.Target.Pair { first; second } in
+     match ring, outputs, rev with
+     | Some members, [], rev -> Ok (Command.Output.Swap.Target.Ring { members; rev })
+     | Some _, _ :: _, _ -> Error "--ring takes no OUTPUT positional"
+     | None, _, true -> Error "--rev needs --ring"
+     | None, [], false -> Ok (pair None None)
+     | None, [ a ], false -> Ok (pair (Some a) None)
+     | None, a :: b :: _, false -> Ok (pair (Some a) (Some b))
 ;;
 
 let app_id_flag =
   Arg.(
     value
     & opt (some string) None
-    & info [ "app-id" ] ~docv:"REGEX" ~doc:"Match REGEX against the window's app-id")
+    & info [ "app-id" ] ~docv:"REGEX" ~doc:"Match REGEX against the window's app-id.")
 ;;
 
 let title_flag =
   Arg.(
     value
     & opt (some string) None
-    & info [ "title" ] ~docv:"REGEX" ~doc:"Match REGEX against the window's title")
+    & info [ "title" ] ~docv:"REGEX" ~doc:"Match REGEX against the window's title.")
 ;;
 
 let output_name_arg =

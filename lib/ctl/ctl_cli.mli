@@ -41,6 +41,15 @@ val occupied_flag : bool Cmdliner.Term.t
 (** [policy_flag] is the [--take] flag as a tag policy, [Keep] when absent. *)
 val policy_flag : Ocdwm_core.Tag.Policy.t Cmdliner.Term.t
 
+(** [swap_target] is the swap destination: the optional [OUTPUT] positional
+    pair, or [--ring OUTPUTS] with [--rev]. The term rejects [--ring] with a
+    positional, and [--rev] without [--ring]. *)
+val swap_target : Ocdwm_ipc.Command.Output.Swap.Target.t Cmdliner.Term.t
+
+(** [bind_swap_target] is [swap_target] for bind terms: the positionals sit
+    left of the [to KEYBIND] suffix. *)
+val bind_swap_target : Ocdwm_ipc.Command.Output.Swap.Target.t Cmdliner.Term.t
+
 (** [app_id_flag] is the [--app-id REGEX] option. *)
 val app_id_flag : string option Cmdliner.Term.t
 

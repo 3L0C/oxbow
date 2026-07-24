@@ -42,12 +42,11 @@ let handle_output ctx seat (cmd : Command.Output.t) =
   | Focus_name { name; warp } -> Focus.output_name ?warp ctx seat name
   | Toggle_overview -> Arrange.toggle_overview ctx seat
   | Column_width delta -> Column.set_width seat delta ~global:true
-  | Swap_tags { first; second; policy } ->
-    Placement.swap_outputs ctx seat ~first ~second ~policy `Tags
-  | Swap_all { first; second; policy } ->
-    Placement.swap_outputs ctx seat ~first ~second ~policy `All
-  | Swap_visible { first; second; policy } ->
-    Placement.swap_outputs ctx seat ~first ~second ~policy `Visible
+  | Swap (Tags { target; policy }) ->
+    Placement.swap_outputs ctx seat ~target ~policy `Tags
+  | Swap (All { target; policy }) -> Placement.swap_outputs ctx seat ~target ~policy `All
+  | Swap (Visible { target; policy }) ->
+    Placement.swap_outputs ctx seat ~target ~policy `Visible
 ;;
 
 let handle_rule = Rules.handle

@@ -55,9 +55,9 @@ let push windows output = apply (Push windows) output
 let remove_window ~window output = apply (Remove window) output
 
 let restore_focus_order ~like (output : Output.t) =
-  let matches, rest = List.partition (fun w -> List.memq w like) output.focus_stack in
-  let sorted = Ring.rearrange (fun w -> List.memq w like) like matches in
-  Output.set_focus_stack output (sorted @ rest)
+  let arrived = List.filter (fun w -> List.memq w output.focus_stack) like in
+  let stayed = List.filter (fun w -> not @@ List.memq w like) output.focus_stack in
+  Output.set_focus_stack output (arrived @ stayed)
 ;;
 
 let focus_window ctx seat window =

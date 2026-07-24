@@ -1,5 +1,6 @@
 open! Ocdwm_core
 open! Ocdwm_state
+open! Ocdwm_ipc
 open! Ocdwm_layout
 
 let zoom ?warp ctx (seat : Seat.t) =
@@ -225,7 +226,7 @@ let resize_spatial ctx seat dir by =
     Ok None)
 ;;
 
-let swap_outputs ctx seat ~first ~second ~policy scope =
+let swap_outputs ctx seat ~(target : Command.Output.Swap.Target.t) ~policy scope =
   With.focused_output seat
   @@ fun current ->
   let wm = Ctx.wm ctx in
@@ -235,16 +236,31 @@ let swap_outputs ctx seat ~first ~second ~policy scope =
     | Some o -> f o
   in
   let pair =
-    match first, second with
-    | None, None ->
-      (match wm.outputs with
-       | [ a; b ] -> if a == current then Ok (a, b) else Ok (b, a)
-       | os ->
-         Error (Printf.sprintf "needs exactly two outputs, have %d" (List.length os)))
-    | Some n, None -> with_named_output n @@ fun a -> Ok (current, a)
-    | Some n, Some n' ->
-      with_named_output n @@ fun a -> with_named_output n' @@ fun b -> Ok (a, b)
-    | None, Some _ -> Error "swap needs a first output name before a second"
+    match target with
+    | Pair { first; second } ->
+      (match first, second with
+       | None, None ->
+         (match wm.outputs with
+          | [ a; b ] -> if a == current then Ok (a, b) else Ok (b, a)
+          | os ->
+            Error (Printf.sprintf "needs exactly two outputs, have %d" (List.length os)))
+       | Some n, None -> with_named_output n @@ fun a -> Ok (current, a)
+       | Some n, Some n' ->
+         with_named_output n @@ fun a -> with_named_output n' @@ fun b -> Ok (a, b)
+       | None, Some _ -> Error "swap needs a first output name before a second")
+    | Ring { members; rev } ->
+      let resolve name = List.find_opt (Output.matches_name name) wm.outputs in
+      let live = List.filter_map resolve members in
+      if List.length live < 2
+      then Error "the ring needs two connect outputs"
+      else if not @@ List.memq current live
+      then Error "the focused output is not in the ring"
+      else (
+        let dest =
+          (if rev then Ring.prev_or_last current live else Ring.next_or_first current live)
+          |> Option.get
+        in
+        Ok (current, dest))
   in
   match pair with
   | Error _ as e -> e

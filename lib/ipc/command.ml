@@ -119,6 +119,36 @@ module Layout = struct
 end
 
 module Output = struct
+  module Swap = struct
+    module Target = struct
+      type t =
+        | Pair of
+            { first : string option [@yojson.option]
+            ; second : string option [@yojson.option]
+            } [@name "pair"]
+        | Ring of
+            { members : string list
+            ; rev : bool
+            } [@name "ring"]
+      [@@deriving yojson]
+    end
+
+    type t =
+      | Tags of
+          { target : Target.t
+          ; policy : Ocdwm_core.Tag.Policy.t
+          } [@name "swap_tags"]
+      | All of
+          { target : Target.t
+          ; policy : Ocdwm_core.Tag.Policy.t
+          } [@name "swap_all"]
+      | Visible of
+          { target : Target.t
+          ; policy : Ocdwm_core.Tag.Policy.t
+          } [@name "swap_visible"]
+    [@@deriving yojson]
+  end
+
   type t =
     | Column_width of float Delta.t [@name "column_width"]
     | Focus_logical of
@@ -134,21 +164,7 @@ module Output = struct
         ; warp : bool option [@yojson.option]
         } [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
-    | Swap_tags of
-        { first : string option [@yojson.option]
-        ; second : string option [@yojson.option]
-        ; policy : Ocdwm_core.Tag.Policy.t
-        } [@name "swap_tags"]
-    | Swap_all of
-        { first : string option [@yojson.option]
-        ; second : string option [@yojson.option]
-        ; policy : Ocdwm_core.Tag.Policy.t
-        } [@name "swap_all"]
-    | Swap_visible of
-        { first : string option [@yojson.option]
-        ; second : string option [@yojson.option]
-        ; policy : Ocdwm_core.Tag.Policy.t
-        } [@name "swap_visible"]
+    | Swap of Swap.t [@name "swap"]
   [@@deriving yojson]
 end
 
