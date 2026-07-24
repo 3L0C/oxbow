@@ -16,6 +16,15 @@ let leaf mk_term (s : Scheme.t) =
 
 let name = "scheme"
 let doc = "Set the tiling layout scheme"
-let build mk_term = Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) [ Tile; Monocle ]
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term
+
+let build mk_term extra =
+  Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) [ Tile; Monocle ] @ extra
+;;
+
+let cmd =
+  build Ctl_cli.command_term
+  @@ Cmd_layout_tiling_scheme_cycle.cmds
+  @ [ Cmd_layout_tiling_scheme_query.cmd ]
+;;
+
+let bind_cmd = build Ctl_cli.bind_term Cmd_layout_tiling_scheme_cycle.bind_cmds

@@ -3,13 +3,12 @@ open! Ocdwm_state
 open! Ocdwm_layout
 
 let zoom ?warp ctx (seat : Seat.t) =
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o ->
-    (match Output.current_layout o with
-     | Floating -> Error "cannot zoom in the floating layout"
-     | Scrolling -> Column.zoom ?warp ctx seat
-     | Tiling -> Tiling.zoom ?warp ctx seat)
+  With.focused_output seat
+  @@ fun o ->
+  match Output.current_layout o with
+  | Floating -> Error "cannot zoom in the floating layout"
+  | Scrolling -> Column.zoom ?warp ctx seat
+  | Tiling -> Tiling.zoom ?warp ctx seat
 ;;
 
 let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
@@ -52,16 +51,15 @@ let send_to ~(src : Output.t) ~(dst : Output.t) ctx window policy =
 ;;
 
 let send_window_to_logical ctx (window : Window.t) (dir : Direction.Logical.t) policy =
+  With.output window
+  @@ fun current ->
   let wm = Ctx.wm ctx in
-  match window.output with
-  | None -> Error Messages.window_missing_output
-  | Some current ->
-    let target = Output.resolve_output_logical ~dir current wm.outputs in
-    (match target with
-     | Some o when o != current ->
-       send_to ~src:current ~dst:o ctx window policy;
-       Ok None
-     | _ -> Error Messages.no_other_output)
+  let target = Output.resolve_output_logical ~dir current wm.outputs in
+  match target with
+  | Some o when o != current ->
+    send_to ~src:current ~dst:o ctx window policy;
+    Ok None
+  | _ -> Error Messages.no_other_output
 ;;
 
 let send_window_to_spatial ctx (window : Window.t) (dir : Direction.Spatial.t) policy =
@@ -79,48 +77,34 @@ let send_window_to_spatial ctx (window : Window.t) (dir : Direction.Spatial.t) p
 ;;
 
 let send_window_to_name ctx (window : Window.t) name policy =
-  let wm = Ctx.wm ctx in
-  match window.output with
-  | None -> Error Messages.window_missing_output
-  | Some current when Output.matches_name name current -> Ok None
-  | Some current ->
+  With.output window
+  @@ fun current ->
+  if Output.matches_name name current
+  then Ok None
+  else (
+    let wm = Ctx.wm ctx in
     let target = Output.resolve_output_name name wm.outputs in
-    (match target with
-     | Some o when o != current ->
-       send_to ~src:current ~dst:o ctx window policy;
-       Ok None
-     | _ -> Error (Printf.sprintf "no output named %S" name))
+    match target with
+    | Some o when o != current ->
+      send_to ~src:current ~dst:o ctx window policy;
+      Ok None
+    | _ -> Error (Printf.sprintf "no output named %S" name))
 ;;
 
 let send_to_logical ctx seat dir policy =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w -> send_window_to_logical ctx w dir policy
+  With.focused_window seat @@ fun _o w -> send_window_to_logical ctx w dir policy
 ;;
 
 let send_to_spatial ctx seat dir policy =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w -> send_window_to_spatial ctx w dir policy
+  With.focused_window seat @@ fun _o w -> send_window_to_spatial ctx w dir policy
 ;;
 
 let send_to_name ctx seat name policy =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w -> send_window_to_name ctx w name policy
-;;
-
-let with_focused_ctx (seat : Seat.t) f =
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o ->
-    (match Output.focused_window o with
-     | None -> Error Messages.no_focused_window
-     | Some w -> f o w)
+  With.focused_window seat @@ fun _o w -> send_window_to_name ctx w name policy
 ;;
 
 let toggle_floating ctx seat =
-  with_focused_ctx seat
+  With.focused_window seat
   @@ fun o w ->
   if Output.current_layout o = Floating
   then Error "cannot toggle floating from the floating layout"
@@ -191,57 +175,94 @@ let exit_fullscreen ctx (window : Window.t) =
 ;;
 
 let close_focused seat =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some window ->
-    River.Window_management.River_window_v1.close window.obj;
-    Ok None
+  With.focused_window seat
+  @@ fun _o w ->
+  River.Window_management.River_window_v1.close w.obj;
+  Ok None
 ;;
 
 let move_to ~x ~y ctx seat =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
-    if Window.is_fullscreen w
-    then Error "cannot move a fullscreen window"
-    else (
-      Window.move_to ctx w ~x ~y;
-      Option.iter Dirty.mark_output w.output;
-      Ok None)
+  With.focused_window seat
+  @@ fun o w ->
+  if Window.is_fullscreen w
+  then Error "cannot move a fullscreen window"
+  else (
+    Window.move_to ctx w ~x ~y;
+    Option.iter Dirty.mark_output w.output;
+    Ok None)
 ;;
 
 let move_spatial ctx seat dir by =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
-    if Window.is_fullscreen w
-    then Error "cannot move a fullscreen window"
-    else (
-      Window.move_spatial ctx w dir by;
-      Option.iter Dirty.mark_output w.output;
-      Ok None)
+  With.focused_window seat
+  @@ fun o w ->
+  if Window.is_fullscreen w
+  then Error "cannot move a fullscreen window"
+  else (
+    Window.move_spatial ctx w dir by;
+    Option.iter Dirty.mark_output w.output;
+    Ok None)
 ;;
 
 let resize_to ~width ~height ctx seat =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
-    if Window.is_fullscreen w
-    then Error "cannot resize a fullscreen window"
-    else (
-      Window.resize_to ctx w ~width ~height;
-      Option.iter Dirty.mark_output w.output;
-      Ok None)
+  With.focused_window seat
+  @@ fun o w ->
+  if Window.is_fullscreen w
+  then Error "cannot resize a fullscreen window"
+  else (
+    Window.resize_to ctx w ~width ~height;
+    Option.iter Dirty.mark_output w.output;
+    Ok None)
 ;;
 
 let resize_spatial ctx seat dir by =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
-    if Window.is_fullscreen w
-    then Error "cannot resize a fullscreen window"
-    else (
-      Window.resize_spatial ctx w dir by;
-      Option.iter Dirty.mark_output w.output;
-      Ok None)
+  With.focused_window seat
+  @@ fun o w ->
+  if Window.is_fullscreen w
+  then Error "cannot resize a fullscreen window"
+  else (
+    Window.resize_spatial ctx w dir by;
+    Option.iter Dirty.mark_output w.output;
+    Ok None)
+;;
+
+let swap_outputs ctx seat ~first ~second ~policy scope =
+  With.focused_output seat
+  @@ fun current ->
+  let wm = Ctx.wm ctx in
+  let with_named_output name f =
+    match List.find_opt (fun (o : Output.t) -> Output.matches_name name o) wm.outputs with
+    | None -> Error (Printf.sprintf "no output name matching %S" name)
+    | Some o -> f o
+  in
+  let pair =
+    match first, second with
+    | None, None ->
+      (match wm.outputs with
+       | [ a; b ] -> if a == current then Ok (a, b) else Ok (b, a)
+       | os ->
+         Error (Printf.sprintf "needs exactly two outputs, have %d" (List.length os)))
+    | Some n, None -> with_named_output n @@ fun a -> Ok (current, a)
+    | Some n, Some n' ->
+      with_named_output n @@ fun a -> with_named_output n' @@ fun b -> Ok (a, b)
+    | None, Some _ -> Error "swap needs a first output name before a second"
+  in
+  match pair with
+  | Error _ as e -> e
+  | Ok (a, b) when a == b -> Error "cannot swap an output with itself"
+  | Ok (a, b) ->
+    let in_scope =
+      match scope with
+      | `Tags ->
+        fun (o : Output.t) ->
+          if o == a
+          then Output.visible_windows a
+          else Output.windows_on_tags b ~tags:a.selected_tags
+      | `All -> fun (o : Output.t) -> o.wm_stack
+      | `Visible -> Output.visible_windows
+    in
+    let a_ws = in_scope a |> List.rev
+    and b_ws = in_scope b |> List.rev in
+    List.iter (fun w -> send_to ~src:a ~dst:b ctx w policy) a_ws;
+    List.iter (fun w -> send_to ~src:b ~dst:a ctx w policy) b_ws;
+    Ok None
 ;;

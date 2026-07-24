@@ -5,8 +5,8 @@ let () =
     [ Window (Zoom { warp = None })
     ; Execute (Spawn "foot")
     ; Window (Focus_logical { dir = Next; warp = None })
-    ; Set (Mfact (Delta.Rel 0.05))
-    ; Set (Mfact (Delta.Abs 0.55))
+    ; Set (Mfact { delta = Delta.Rel 0.05; global = false })
+    ; Set (Mfact { delta = Delta.Abs 0.55; global = false })
     ; Tag (View (Concrete (Tag.Set.singleton 3)))
     ]
   in

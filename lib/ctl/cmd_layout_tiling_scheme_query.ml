@@ -6,6 +6,6 @@ let term =
   Query.Schemes { output }
 ;;
 
-let name = "scheme"
+let name = "query"
 let doc = "Query current and available tiling schemes"
 let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.query_term term

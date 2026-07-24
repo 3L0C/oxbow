@@ -36,9 +36,9 @@ let install_defaults ctx seat =
       ; modkey, K_v, Command.Window Toggle_fullscreen
       ; modkey, K_I, Command.Window Toggle_fake_fullscreen
       ; modkey, K_F, Command.Window Toggle_maximize
-      ; modkey, K_H, Command.Set (Mfact Delta.(Rel (-0.05)))
-      ; modkey, K_L, Command.Set (Mfact Delta.(Rel 0.05))
-      ; modkey, K_a, Command.Set (Mfact Delta.(Abs 0.55))
+      ; modkey, K_H, Command.Set (Mfact { delta = Delta.(Rel (-0.05)); global = false })
+      ; modkey, K_L, Command.Set (Mfact { delta = Delta.(Rel 0.05); global = false })
+      ; modkey, K_a, Command.Set (Mfact { delta = Delta.(Abs 0.55); global = false })
       ; modkey, K_space, Command.Window (Zoom { warp = None })
       ; modkey, K_J, Command.Window (Shift Next)
       ; modkey, K_K, Command.Window (Shift Prev)

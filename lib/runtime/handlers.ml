@@ -254,7 +254,13 @@ let on_unavailable _proxy =
 
 let on_window _ river_window (wm_box : Wm.t Box.t) =
   let wm = Option.get wm_box.body in
-  let window = Window.create wm (Wm.default_output wm) river_window in
+  let scroll_width =
+    match Wm.default_output wm with
+    | None -> wm.config.default_tag_config.scrolling.default_width
+    | Some o -> (Output.to_tag_data o).scrolling.default_width
+  in
+  let output = Wm.default_output wm in
+  let window = Window.create output scroll_width river_window in
   Wayland.Proxy.Handler.attach
     river_window
     object

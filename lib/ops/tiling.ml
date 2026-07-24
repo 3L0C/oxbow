@@ -35,18 +35,8 @@ let arrange ctx output =
         d_xs)
 ;;
 
-(* FIXME should find a place to put these ops with helpers *)
-let with_focused_ctx (seat : Seat.t) f =
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o ->
-    (match Output.focused_window o with
-     | None -> Error Messages.no_focused_window
-     | Some w -> f o w)
-;;
-
 let zoom ?warp ctx seat =
-  with_focused_ctx seat
+  With.focused_window seat
   @@ fun o w ->
   if Output.current_layout o <> Tiling
   then Error "cannot zoom outside the tiling layout"

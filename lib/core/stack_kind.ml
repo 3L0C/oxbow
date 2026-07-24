@@ -5,6 +5,8 @@ type t =
   | Spiral [@name "spiral"]
 [@@deriving yojson]
 
+let all = [ Even; Diminish; Dwindle; Spiral ]
+
 let to_string = function
   | Even -> "even"
   | Diminish -> "diminish"
@@ -19,4 +21,10 @@ let of_string s =
   | "dwindle" -> Some Dwindle
   | "spiral" -> Some Spiral
   | _ -> None
+;;
+
+let cycle t (dir : Direction.Logical.t) =
+  match dir with
+  | Next -> Ring.next_or_first t all |> Option.get
+  | Prev -> Ring.prev_or_last t all |> Option.get
 ;;

@@ -19,6 +19,10 @@ let leaf mk_term (name, kind) =
 
 let name = "stack"
 let doc = "Set the stacking behavior for the current layout"
-let build mk_term = Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) stack_targets
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term
+
+let build mk_term extra =
+  Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) stack_targets @ extra
+;;
+
+let cmd = build Ctl_cli.command_term Cmd_layout_tiling_stack_cycle.cmds
+let bind_cmd = build Ctl_cli.bind_term Cmd_layout_tiling_stack_cycle.bind_cmds

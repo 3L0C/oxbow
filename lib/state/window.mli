@@ -2,8 +2,8 @@ include module type of Types.Window
 
 (** [create wm output river_window] is a unique window. *)
 val create
-  :  Types.Wm.t
-  -> Types.Output.t option
+  :  Types.Output.t option
+  -> Ocdwm_core.Width_fac.t
   -> River.V.Window_management.t River.Window_management.River_window_v1.t
   -> t
 
@@ -29,6 +29,9 @@ val propose_dimensions : Ctx.manage Ctx.t -> t -> width:int32 -> height:int32 ->
 
     {b Effects:} mutates WM state; sends River request *)
 val set_geom : Ctx.manage Ctx.t -> t -> int32 Ocdwm_core.Rect.t -> unit
+
+(** [on_tags window ~tags] is true when [window]'s tags intersect with [tags]. *)
+val on_tags : t -> tags:Ocdwm_core.Tag.Set.t -> bool
 
 (** [tag_visible window] is [true] if [window]'s output is in overview mode or
     [window]'s tags intersect its output's selected tags. Is [false] otherwise. *)

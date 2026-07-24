@@ -1,49 +1,50 @@
 open! Ocdwm_core
 open! Ocdwm_state
 
-let with_focused_output (seat : Seat.t) f =
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o -> f o
-;;
-
-let set_mfact seat delta =
-  with_focused_output seat
+let set_mfact seat delta ~global =
+  With.focused_output seat
   @@ fun o ->
-  Output.set_mfact o delta;
+  Output.set_mfact o delta ~global;
   Ok None
 ;;
 
-let set_nmaster seat delta =
-  with_focused_output seat
+let set_nmaster seat delta ~global =
+  With.focused_output seat
   @@ fun o ->
-  Output.set_nmaster o delta;
+  Output.set_nmaster o delta ~global;
   Ok None
 ;;
 
-let set_gaps_inner seat delta =
-  with_focused_output seat
+let set_gaps_inner seat delta ~global =
+  With.focused_output seat
   @@ fun o ->
-  Output.set_gaps_inner o delta;
+  Output.set_gaps_inner o delta ~global;
   Ok None
 ;;
 
-let set_gaps_outer seat delta =
-  with_focused_output seat
+let set_gaps_outer seat delta ~global =
+  With.focused_output seat
   @@ fun o ->
-  Output.set_gaps_outer o delta;
+  Output.set_gaps_outer o delta ~global;
   Ok None
 ;;
 
 let set_stack seat kind ~global =
-  with_focused_output seat
+  With.focused_output seat
   @@ fun o ->
   Output.set_stack o kind ~global;
   Ok None
 ;;
 
+let cycle_stack seat dir ~global =
+  With.focused_output seat
+  @@ fun o ->
+  Output.cycle_stack o dir ~global;
+  Ok None
+;;
+
 let set_scroll_policy (wm : Wm.t) seat policy ~global =
-  with_focused_output seat
+  With.focused_output seat
   @@ fun o ->
   if global
   then List.iter (fun o' -> Output.set_scroll_policy o' policy ~global) wm.outputs
@@ -52,7 +53,7 @@ let set_scroll_policy (wm : Wm.t) seat policy ~global =
 ;;
 
 let set_default_width (wm : Wm.t) seat delta ~global =
-  with_focused_output seat
+  With.focused_output seat
   @@ fun o ->
   if global
   then List.iter (fun o' -> Output.set_default_width o' delta ~global) wm.outputs
@@ -61,7 +62,7 @@ let set_default_width (wm : Wm.t) seat delta ~global =
 ;;
 
 let set_orientation seat dir ~global =
-  with_focused_output seat
+  With.focused_output seat
   @@ fun o ->
   Output.set_orientation o dir ~global;
   Ok None
@@ -92,14 +93,14 @@ let exit_overview ctx (output : Output.t) =
 ;;
 
 let toggle_overview ctx seat =
-  with_focused_output seat
+  With.focused_output seat
   @@ fun o ->
   if o.overview then exit_overview ctx o else enter_overview ctx o;
   Ok None
 ;;
 
 let set_layout ctx seat (l : Layout.t) ~global =
-  with_focused_output seat
+  With.focused_output seat
   @@ fun o ->
   let current = Output.current_layout o in
   if current = l
@@ -116,7 +117,7 @@ let set_layout ctx seat (l : Layout.t) ~global =
 ;;
 
 let select_scheme ctx (seat : Seat.t) scheme ~global =
-  with_focused_output seat
+  With.focused_output seat
   @@ fun o ->
   match set_layout ctx seat Tiling ~global with
   | Error _ as e -> e
@@ -126,14 +127,14 @@ let select_scheme ctx (seat : Seat.t) scheme ~global =
 ;;
 
 let cycle_layout ctx (seat : Seat.t) dir =
-  with_focused_output seat
+  With.focused_output seat
   @@ fun o ->
   let layout = Layout.cycle (Output.current_layout o) dir in
   set_layout ctx seat layout ~global:false
 ;;
 
 let cycle_scheme ctx (seat : Seat.t) dir =
-  with_focused_output seat
+  With.focused_output seat
   @@ fun o ->
   match set_layout ctx seat Tiling ~global:false with
   | Error _ as e -> e

@@ -12,7 +12,7 @@ let mk_leaf mk_term (name, doc, command) =
   Ctl_cli.cmd ~name ~doc @@ mk_term @@ Cmdliner.Term.const command
 ;;
 
-let name = "focus-follows-pointer"
+let name = "follow"
 let doc = "Whether pointer motion changes focus"
 let build mk_term = Ctl_cli.group ~name ~doc @@ List.map (mk_leaf mk_term) leaves
 let cmd = build Ctl_cli.command_term

@@ -18,7 +18,7 @@ let command_term =
   Command.Window (Tag_query { query; tags })
 ;;
 
-let name = "query"
+let name = "match"
 let doc = "Set TAGS on all windows matching the search query"
 let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term command_term
 let cmd = build Ctl_cli.command_term

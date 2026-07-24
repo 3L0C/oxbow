@@ -64,6 +64,12 @@ let handle_output ctx seat (cmd : Command.Output.t) =
   | Focus_name { name; warp } -> Focus.output_name ?warp ctx seat name
   | Toggle_overview -> Arrange.toggle_overview ctx seat
   | Column_width delta -> Column.set_width seat delta ~global:true
+  | Swap_tags { first; second; policy } ->
+    Placement.swap_outputs ctx seat ~first ~second ~policy `Tags
+  | Swap_all { first; second; policy } ->
+    Placement.swap_outputs ctx seat ~first ~second ~policy `All
+  | Swap_visible { first; second; policy } ->
+    Placement.swap_outputs ctx seat ~first ~second ~policy `Visible
 ;;
 
 let handle_set ctx seat (cmd : Command.Set.t) =
@@ -71,11 +77,12 @@ let handle_set ctx seat (cmd : Command.Set.t) =
   match cmd with
   | Scheme { scheme; global } -> Arrange.select_scheme ctx seat scheme ~global
   | Layout { layout; global } -> Arrange.set_layout ctx seat layout ~global
-  | Mfact delta -> Arrange.set_mfact seat delta
-  | Nmaster delta -> Arrange.set_nmaster seat delta
-  | Gaps_inner delta -> Arrange.set_gaps_inner seat delta
-  | Gaps_outer delta -> Arrange.set_gaps_outer seat delta
+  | Mfact { delta; global } -> Arrange.set_mfact seat delta ~global
+  | Nmaster { delta; global } -> Arrange.set_nmaster seat delta ~global
+  | Gaps_inner { delta; global } -> Arrange.set_gaps_inner seat delta ~global
+  | Gaps_outer { delta; global } -> Arrange.set_gaps_outer seat delta ~global
   | Stack { kind; global } -> Arrange.set_stack seat kind ~global
+  | Stack_cycle { dir; global } -> Arrange.cycle_stack seat dir ~global
   | Scroll_policy { policy; global } -> Arrange.set_scroll_policy wm seat policy ~global
   | Default_width { delta; global } -> Arrange.set_default_width wm seat delta ~global
   | Orientation { dir; global } -> Arrange.set_orientation seat dir ~global

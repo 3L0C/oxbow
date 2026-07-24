@@ -53,6 +53,9 @@ val current_layout : t -> Ocdwm_core.Layout.t
     [output]. *)
 val current_scheme : t -> Ocdwm_core.Scheme.t
 
+(** [windows_on_tags output ~tags] is the list of [output]'s windows on [tags]. *)
+val windows_on_tags : t -> tags:Ocdwm_core.Tag.Set.t -> Types.Window.t list
+
 (** [visible_windows output] is the list of visible windows on the selected tags
     of [output]. *)
 val visible_windows : t -> Types.Window.t list
@@ -90,29 +93,33 @@ val set_scheme : t -> Ocdwm_core.Scheme.t -> global:bool -> unit
     {b Effects:} mutates WM state; marks dirty *)
 val set_overview : t -> bool -> unit
 
-(** [set_mfact output delta] sets the mfact according to [delta] for the first
-    selected tag on [output].
+(** [set_mfact output delta ~global] sets the mfact according to [delta] for the
+    first selected tag on [output]. When [global] is [true], the change applies
+    to every tag.
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_mfact : t -> float Ocdwm_core.Delta.t -> unit
+val set_mfact : t -> float Ocdwm_core.Delta.t -> global:bool -> unit
 
-(** [set_nmaster output delta] sets the nmaster according to [delta] for the
-    first selected tag on [output].
-
-    {b Effects:} mutates WM state; marks dirty *)
-val set_nmaster : t -> int Ocdwm_core.Delta.t -> unit
-
-(** [set_gaps_inner output delta] sets the gaps_inner according to [delta] for
-    the first selected tag on [output].
+(** [set_nmaster output delta ~global] sets the nmaster according to [delta] for
+    the first selected tag on [output]. When [global] is [true], the change
+    applies to every tag.
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_gaps_inner : t -> int Ocdwm_core.Delta.t -> unit
+val set_nmaster : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
 
-(** [set_gaps_outer output delta] sets the gaps_outer according to [delta] for
-    the first selected tag on [output].
+(** [set_gaps_inner output delta ~global] sets the gaps_inner according to
+    [delta] for the first selected tag on [output]. When [global] is [true], the
+    change applies to every tag.
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> unit
+val set_gaps_inner : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
+
+(** [set_gaps_outer output delta ~global] sets the gaps_outer according to
+    [delta] for the first selected tag on [output]. When [global] is [true], the
+    change applies to every tag.
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
 
 (** [set_stack output kind ~global] sets [output]'s stack kind to [kind].
     Applied to all tags when [global] is true. Applied to the first selected
@@ -120,6 +127,13 @@ val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> unit
 
     {b Effects:} mutates WM state; marks dirty *)
 val set_stack : t -> Ocdwm_core.Stack_kind.t -> global:bool -> unit
+
+(** [cycle_stack output dir ~global] sets [output]'s stack kind to [dir] kind.
+    Applied to all tags when [global] is true. Applied to the first selected
+    tags when [false].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val cycle_stack : t -> Ocdwm_core.Direction.Logical.t -> global:bool -> unit
 
 (** [set_scroll_policy output policy ~global] sets [output]'s scrolling policy to
     [policy]. Applied to all tags when [global] is true. Applied to the first

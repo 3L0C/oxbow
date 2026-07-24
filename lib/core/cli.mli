@@ -13,13 +13,19 @@ val info
   -> doc:string
   -> Cmdliner.Cmd.info
 
-(** [group ?exits ?man ?man_xrefs ?version ~name ~doc cmds] is the [cmds]
-    command group; its default term renders the group's help. *)
+(** [help_term] shows the help of the main command. Pass it as the explicit
+    [?default] of the root command group. *)
+val help_term : 'a Cmdliner.Term.t
+
+(** [group ?exits ?man ?man_xrefs ?version ?default ~name ~doc cmds] is the
+    [cmds] command group. Cmdliner evaluates [default] when the command line
+    names no subcommand. The fallback term renders the group's help. *)
 val group
   :  ?exits:Cmdliner.Cmd.Exit.info list
   -> ?man:Cmdliner.Manpage.block list
   -> ?man_xrefs:Cmdliner.Manpage.xref list
   -> ?version:string
+  -> ?default:'a Cmdliner.Term.t
   -> name:string
   -> doc:string
   -> 'a Cmdliner.Cmd.t list

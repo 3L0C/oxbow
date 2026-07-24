@@ -187,3 +187,20 @@ val resize_spatial
   -> Ocdwm_core.Direction.Spatial.t
   -> Ocdwm_core.Extent.t
   -> (Yojson.Safe.t option, string) result
+
+(** [swap_outputs ctx seat ~first ~second ~policy scope] exchanges the windows
+    of two outputs, in both directions. Without names, the two connected outputs
+    swap. With one name, [seat]'s output swaps with the named output. With two
+    names, the named pair swaps. Each window crosses with [policy], like a send.
+    [scope] controls which windows are swapped. [scope] is one of
+    [`Tags | `All | `Visible].
+
+    {b Effects:} sends River requests *)
+val swap_outputs
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> first:string option
+  -> second:string option
+  -> policy:Ocdwm_core.Tag.Policy.t
+  -> [< `Tags | `All | `Visible ]
+  -> (Yojson.Safe.t option, string) result

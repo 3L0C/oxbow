@@ -33,8 +33,8 @@ let man =
   ; `S Manpage.s_common_options
   ; `S "CONFIGURATION"
   ; `P
-      "On startup $(mname) runs an init script that issues $(b,ocdwmctl)(1) commands to \
-       set keybindings, layouts, and window rules. The script is located by checking, in \
+      "On startup $(mname) runs an init script that issues $(b,octl)(1) commands to set \
+       keybindings, layouts, and window rules. The script is located by checking, in \
        order:"
   ; `I
       ( "1."
@@ -47,7 +47,7 @@ let man =
   ; `P "If none are found or executable, $(mname) starts with only built-in keybindings."
   ; `P
       "The script runs in its own session via $(b,setsid)(2), after the river protocols \
-       are bound, so $(b,ocdwmctl) commands work without racing the WM."
+       are bound, so $(b,octl) commands work without racing the WM."
   ; `P
       "On shutdown $(mname) sends $(b,SIGTERM) to the script process. Children that were \
        backgrounded by the script reparent to PID 1 and survive WM restarts. To kill all \
@@ -56,9 +56,9 @@ let man =
   ; `P "Example $(b,~/.config/ocdwm/init):"
   ; `Pre
       "  #!/usr/bin/env bash\n\
-      \  ocdwmctl bind spawn \"kitty\" to Super+Return\n\
-      \  ocdwmctl bind window close to Super+q\n\
-      \  ocdwmctl set layout floating\n\
+      \  octl bind spawn \"foot\" to Super+Return\n\
+      \  octl bind window close to Super+q\n\
+      \  octl layout floating\n\
       \  pgrep -x waybar >/dev/null || waybar &"
   ; `S Manpage.s_exit_status
   ; `S Manpage.s_see_also
@@ -70,7 +70,7 @@ let cmd =
   let open Cmdliner.Term.Syntax in
   Cli.cmd
     ~man
-    ~man_xrefs:[ `Tool "ocdwmctl"; `Tool "river" ]
+    ~man_xrefs:[ `Tool "octl"; `Tool "river" ]
     ~version
     ~name:"ocdwm"
     ~doc:"ocdwm - dwm-like window manager for river 0.4.x, written in OCaml"

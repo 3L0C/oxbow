@@ -9,6 +9,7 @@ let cmd =
     ; Cmd_output_focus.cmd
     ; Cmd_output_list.cmd
     ; Cmd_output_overview.cmd
+    ; Cmd_output_swap.cmd
     ]
 ;;
 
@@ -19,5 +20,6 @@ let bind_cmd =
     [ Cmd_output_column.bind_cmd
     ; Cmd_output_focus.bind_cmd
     ; Cmd_output_overview.bind_cmd
+    ; Cmd_output_swap.bind_cmd
     ]
 ;;

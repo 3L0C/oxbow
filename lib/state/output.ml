@@ -63,6 +63,7 @@ let to_tag_data (o : t) =
   | None -> invalid_arg "Got an output with no selected tags."
 ;;
 
+let windows_on_tags (o : t) ~tags = List.filter (Window.on_tags ~tags) o.wm_stack
 let visible_windows (o : t) = List.filter Window.tag_visible o.wm_stack
 let visible_window_count (o : t) = visible_windows o |> List.length
 let tiled_windows (o : t) = List.filter Window.is_tiled_on_tag o.wm_stack
@@ -124,52 +125,82 @@ let set_overview (o : t) v =
   Dirty.mark_output o
 ;;
 
-let set_mfact o (delta : float Delta.t) =
-  let params = (to_tag_data o).tiling in
-  let mfact =
-    match delta with
-    | Delta.Abs a -> a
-    | Delta.Rel r -> params.mfact +. r
+let set_mfact o (delta : float Delta.t) ~global =
+  let apply (td : Types.Config.Data.t) =
+    let params = td.tiling in
+    let mfact =
+      match delta with
+      | Delta.Abs a -> a
+      | Delta.Rel r -> params.mfact +. r
+    in
+    params.mfact <- Float.(max 0.05 mfact |> min 0.95)
   in
-  params.mfact <- Float.(max 0.05 mfact |> min 0.95);
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
   Dirty.mark_output o
 ;;
 
-let set_nmaster o (delta : int Delta.t) =
-  let params = (to_tag_data o).tiling in
-  let nmaster =
-    match delta with
-    | Delta.Abs a -> a
-    | Delta.Rel r -> params.nmaster + r
+let set_nmaster o (delta : int Delta.t) ~global =
+  let apply (td : Types.Config.Data.t) =
+    let params = td.tiling in
+    let nmaster =
+      match delta with
+      | Delta.Abs a -> a
+      | Delta.Rel r -> params.nmaster + r
+    in
+    params.nmaster <- max 0 nmaster
   in
-  params.nmaster <- max 0 nmaster;
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
   Dirty.mark_output o
 ;;
 
-let set_gaps_inner o (delta : int Delta.t) =
-  let params = (to_tag_data o).gaps in
-  let gaps_inner =
-    match delta with
-    | Delta.Abs a -> a
-    | Delta.Rel r -> params.inner + r
+let set_gaps_inner o (delta : int Delta.t) ~global =
+  let apply (td : Types.Config.Data.t) =
+    let params = td.gaps in
+    let gaps_inner =
+      match delta with
+      | Delta.Abs a -> a
+      | Delta.Rel r -> params.inner + r
+    in
+    params.inner <- max 0 gaps_inner
   in
-  params.inner <- max 0 gaps_inner;
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
   Dirty.mark_output o
 ;;
 
-let set_gaps_outer o (delta : int Delta.t) =
-  let params = (to_tag_data o).gaps in
-  let gaps_outer =
-    match delta with
-    | Delta.Abs a -> a
-    | Delta.Rel r -> params.outer + r
+let set_gaps_outer o (delta : int Delta.t) ~global =
+  let apply (td : Types.Config.Data.t) =
+    let params = td.gaps in
+    let outer =
+      match delta with
+      | Delta.Abs a -> a
+      | Delta.Rel r -> params.outer + r
+    in
+    params.outer <- max 0 outer
   in
-  params.outer <- max 0 gaps_outer;
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
   Dirty.mark_output o
 ;;
 
 let set_stack o kind ~global =
   let apply (td : Types.Config.Data.t) = td.tiling.stack <- kind in
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
+  Dirty.mark_output o
+;;
+
+let cycle_stack o dir ~global =
+  let apply (td : Types.Config.Data.t) =
+    td.tiling.stack <- Stack_kind.cycle td.tiling.stack dir
+  in
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;

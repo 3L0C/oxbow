@@ -104,6 +104,21 @@ module Output = struct
         } [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
     | Column_width of float Delta.t [@name "column_width"]
+    | Swap_tags of
+        { first : string option [@yojson.option]
+        ; second : string option [@yojson.option]
+        ; policy : Ocdwm_core.Tag.Policy.t
+        } [@name "swap_tags"]
+    | Swap_all of
+        { first : string option [@yojson.option]
+        ; second : string option [@yojson.option]
+        ; policy : Ocdwm_core.Tag.Policy.t
+        } [@name "swap_all"]
+    | Swap_visible of
+        { first : string option [@yojson.option]
+        ; second : string option [@yojson.option]
+        ; policy : Ocdwm_core.Tag.Policy.t
+        } [@name "swap_visible"]
   [@@deriving yojson]
 end
 
@@ -117,14 +132,30 @@ module Set = struct
         { layout : Ocdwm_core.Layout.t
         ; global : bool
         } [@name "layout"]
-    | Mfact of float Delta.t [@name "mfact"]
-    | Nmaster of int Delta.t [@name "nmaster"]
-    | Gaps_inner of int Delta.t [@name "gaps_inner"]
-    | Gaps_outer of int Delta.t [@name "gaps_outer"]
+    | Mfact of
+        { delta : float Delta.t
+        ; global : bool
+        } [@name "mfact"]
+    | Nmaster of
+        { delta : int Delta.t
+        ; global : bool
+        } [@name "nmaster"]
+    | Gaps_inner of
+        { delta : int Delta.t
+        ; global : bool
+        } [@name "gaps_inner"]
+    | Gaps_outer of
+        { delta : int Delta.t
+        ; global : bool
+        } [@name "gaps_outer"]
     | Stack of
         { kind : Stack_kind.t
         ; global : bool
         } [@name "stack"]
+    | Stack_cycle of
+        { dir : Direction.Logical.t
+        ; global : bool
+        } [@name "stack_cycle"]
     | Scroll_policy of
         { policy : Scroll_policy.t
         ; global : bool

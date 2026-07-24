@@ -1,37 +1,45 @@
-(** [set_mfact seat delta] adjusts the master-area fraction on the first
-    selected tag of [seat]'s output.
+(** [set_mfact seat delta ~global] adjusts the master-area fraction on the first
+    selected tag of [seat]'s output. When [global] is [true], the change applies
+    to every tag.
 
     {b Effects:} mutates WM state *)
 val set_mfact
   :  Ocdwm_state.Seat.t
   -> float Ocdwm_core.Delta.t
+  -> global:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [set_nmaster seat delta] adjusts the master window count on the first
-    selected tag of [seat]'s output.
+(** [set_nmaster seat delta ~global] adjusts the master window count on the
+    first selected tag of [seat]'s output. When [global] is [true], the change
+    applies to every tag.
 
     {b Effects:} mutates WM state *)
 val set_nmaster
   :  Ocdwm_state.Seat.t
   -> int Ocdwm_core.Delta.t
+  -> global:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [set_gaps_inner seat delta] adjusts the inner gaps on the first selected tag
-    of [seat]'s output.
+(** [set_gaps_inner seat delta ~global] adjusts the inner gaps on the first
+    selected tag of [seat]'s output. When [global] is [true], the change applies
+    to every tag.
 
     {b Effects:} mutates WM state *)
 val set_gaps_inner
   :  Ocdwm_state.Seat.t
   -> int Ocdwm_core.Delta.t
+  -> global:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [set_gaps_outer seat delta] adjusts the outer gaps on the first selected tag
-    of [seat]'s output.
+(** [set_gaps_outer seat delta ~global] adjusts the outer gaps on the first
+    selected tag of [seat]'s output. When [global] is [true], the change applies
+    to every tag.
 
     {b Effects:} mutates WM state *)
 val set_gaps_outer
   :  Ocdwm_state.Seat.t
   -> int Ocdwm_core.Delta.t
+  -> global:bool
   -> (Yojson.Safe.t option, string) result
 
 (** [set_stack seat kind ~global] sets the [Tiling] stack kind on [seat]'s output.
@@ -42,6 +50,17 @@ val set_gaps_outer
 val set_stack
   :  Ocdwm_state.Seat.t
   -> Ocdwm_core.Stack_kind.t
+  -> global:bool
+  -> (Yojson.Safe.t option, string) result
+
+(** [cycle_stack seat dir ~global] sets the [Tiling] stack to the [dir] kind on
+    [seat]'s output. Applied to all tags when [global] is [true]. Applied to the
+    first selected tag when [false].
+
+    {b Effects:} mutates WM state *)
+val cycle_stack
+  :  Ocdwm_state.Seat.t
+  -> Ocdwm_core.Direction.Logical.t
   -> global:bool
   -> (Yojson.Safe.t option, string) result
 

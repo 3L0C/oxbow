@@ -5,7 +5,7 @@ let cmd =
   Ctl_cli.group
     ~name
     ~doc
-    [ Cmd_window_tag_set.cmd; Cmd_window_tag_query.cmd; Cmd_window_tag_shift.cmd ]
+    [ Cmd_window_tag_set.cmd; Cmd_window_tag_match.cmd; Cmd_window_tag_shift.cmd ]
 ;;
 
 let bind_cmd =
@@ -13,7 +13,7 @@ let bind_cmd =
     ~name
     ~doc
     [ Cmd_window_tag_set.bind_cmd
-    ; Cmd_window_tag_query.bind_cmd
+    ; Cmd_window_tag_match.bind_cmd
     ; Cmd_window_tag_shift.bind_cmd
     ]
 ;;

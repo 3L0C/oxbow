@@ -307,6 +307,7 @@ let global_flag =
 
 let code_protocol_err = 1
 let code_conn_failed = 2
+let exit_success = Cmd.Exit.info 0 ~doc:"on success"
 
 let exit_protocol_err =
   Cmd.Exit.info code_protocol_err ~doc:"on protocol error from ocdwm"
@@ -316,7 +317,7 @@ let exit_conn_failed =
   Cmd.Exit.info code_conn_failed ~doc:"on failure to connect to the ocdwm socket"
 ;;
 
-let exits = [ exit_protocol_err; exit_conn_failed ]
+let exits = [ exit_success; exit_protocol_err; exit_conn_failed ]
 
 let dispatch ?seat ?socket body =
   Eio_posix.run
@@ -357,15 +358,15 @@ let dispatch_stream ?socket ?output ~kinds () =
 
 let group ?(exits = exits) = Cli.group ~exits
 
-let cmd ~name ~doc term =
+let run_term term =
   let open Cmdliner.Term.Syntax in
-  Cli.cmd ~exits ~name ~doc
-  @@
   let+ seat = seat
   and+ socket = socket
   and+ body = term in
   dispatch ?seat ?socket body
 ;;
+
+let cmd ~name ~doc term = Cli.cmd ~exits ~name ~doc (run_term term)
 
 let stream_cmd ~name ~doc term =
   let open Cmdliner.Term.Syntax in

@@ -1,6 +1,8 @@
+open! Ocdwm_ipc
+
 let name = "query"
-let doc = "Query ocdwm for window information"
+let doc = "Query the currently focused window"
 
 let cmd =
-  Ctl_cli.group ~name ~doc [ Cmd_window_query_focused.cmd; Cmd_window_query_list.cmd ]
+  Ctl_cli.cmd ~name ~doc @@ Ctl_cli.query_term @@ Cmdliner.Term.const Query.Focused
 ;;

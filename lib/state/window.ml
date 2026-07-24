@@ -19,7 +19,7 @@ let fresh_id () =
   id
 ;;
 
-let create (wm : Types.Wm.t) (output : Types.Output.t option) river_window : t =
+let create (output : Types.Output.t option) scroll_width river_window : t =
   let node =
     object
       inherit [_] River.Window_management.River_node_v1.v4
@@ -51,8 +51,7 @@ let create (wm : Types.Wm.t) (output : Types.Output.t option) river_window : t =
   ; is_fixed = false
   ; is_urgent = false
   ; is_fake_fullscreen = false
-  ; scrolling =
-      { consumes = false; width = wm.config.default_tag_config.scrolling.default_width }
+  ; scrolling = { consumes = false; width = scroll_width }
   ; is_hidden = false
   ; presentation = Presentation.Tiled
   ; requests = []
@@ -99,10 +98,12 @@ let tag_layout (o : Types.Output.t) =
   | None -> invalid_arg "Got an output with no selected tags."
 ;;
 
+let on_tags (w : t) ~tags = Tag.Set.intersects tags w.tags
+
 let tag_visible (w : t) =
   match w.output with
   | None -> false
-  | Some o -> o.overview || Tag.Set.intersects o.selected_tags w.tags
+  | Some o -> o.overview || on_tags ~tags:o.selected_tags w
 ;;
 
 let is_tiled (w : t) = w.presentation = Tiled
@@ -293,8 +294,11 @@ let sync (ctx : Ctx.manage Ctx.t) (w : t) =
   in
   let desired =
     match w.output with
-    | Some o when (tag_layout o).layout = Scrolling && is_tiled w && should_render ->
-      w.clip
+    | Some o
+      when (not o.overview)
+           && (tag_layout o).layout = Scrolling
+           && is_tiled w
+           && should_render -> w.clip
     | _ -> None
   in
   if desired <> w.applied_clip

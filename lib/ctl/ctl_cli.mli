@@ -93,17 +93,25 @@ val warp_flag : bool option Cmdliner.Term.t
 (** [global_flag] is the [--all] flag used to apply changes to all tags. *)
 val global_flag : bool Cmdliner.Term.t
 
-(** [group ?exits ?man ?man_xrefs ?version ~name ~doc cmds] is command that
-    groups the subcommands [cmds]. *)
+(** [group ?exits ?man ?man_xrefs ?version ?default ~name ~doc cmds] is a
+    command that groups the subcommands [cmds]. Cmdliner evaluates [default]
+    when the command line names no subcommand. The fallback term renders the
+    group's help. *)
 val group
   :  ?exits:Cmdliner.Cmd.Exit.info list
   -> ?man:Cmdliner.Manpage.block list
   -> ?man_xrefs:Cmdliner.Manpage.xref list
   -> ?version:string
+  -> ?default:'a Cmdliner.Term.t
   -> name:string
   -> doc:string
   -> 'a Cmdliner.Cmd.t list
   -> 'a Cmdliner.Cmd.t
+
+(** [run_term term] is the evaluation term of [cmd] without the command wrapper.
+    It sends [term]'s request body to ocdwm, prints any reply, and exits by the
+    outcome. Use it as the [?default] of a command group. *)
+val run_term : Ocdwm_ipc.Request.Body.t Cmdliner.Term.t -> int Cmdliner.Term.t
 
 (** [cmd ~name ~doc term] is a command that, when evaluated, sends [term]'s
     request body to ocdwm, prints any reply, and exits by the outcome. *)

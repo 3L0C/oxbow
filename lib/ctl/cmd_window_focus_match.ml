@@ -26,7 +26,7 @@ let command_term =
   Command.Window (Focus_query { query; cycle; warp })
 ;;
 
-let name = "query"
+let name = "match"
 let doc = "Focus a window matching the search query"
 let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term command_term
 let cmd = build Ctl_cli.command_term

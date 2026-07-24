@@ -25,9 +25,10 @@ let info ?(exits = Exit.exits) ?man ?man_xrefs ?version name ~doc =
   Cmd.info ?man ?man_xrefs ?version name ~doc ~exits
 ;;
 
-let group ?exits ?man ?man_xrefs ?version ~name ~doc =
-  let default = Term.(ret (const (`Help (`Auto, None)))) in
-  Cmd.group (info ?exits ?man ?man_xrefs ?version name ~doc) ~default
+let help_term = Term.(ret (const (`Help (`Auto, None))))
+
+let group ?exits ?man ?man_xrefs ?version ?default ~name ~doc =
+  Cmd.group (info ?exits ?man ?man_xrefs ?version name ~doc) ?default
 ;;
 
 let cmd ?exits ?man ?man_xrefs ?version ~name ~doc =

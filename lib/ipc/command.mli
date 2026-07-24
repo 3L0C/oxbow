@@ -111,6 +111,21 @@ module Output : sig
         }
     | Toggle_overview
     | Column_width of float Ocdwm_core.Delta.t
+    | Swap_tags of
+        { first : string option
+        ; second : string option
+        ; policy : Ocdwm_core.Tag.Policy.t
+        }
+    | Swap_all of
+        { first : string option
+        ; second : string option
+        ; policy : Ocdwm_core.Tag.Policy.t
+        }
+    | Swap_visible of
+        { first : string option
+        ; second : string option
+        ; policy : Ocdwm_core.Tag.Policy.t
+        }
 
   val t_of_yojson : Yojson.Safe.t -> t
   val yojson_of_t : t -> Yojson.Safe.t
@@ -126,12 +141,28 @@ module Set : sig
         { layout : Ocdwm_core.Layout.t
         ; global : bool
         }
-    | Mfact of float Ocdwm_core.Delta.t
-    | Nmaster of int Ocdwm_core.Delta.t
-    | Gaps_inner of int Ocdwm_core.Delta.t
-    | Gaps_outer of int Ocdwm_core.Delta.t
+    | Mfact of
+        { delta : float Ocdwm_core.Delta.t
+        ; global : bool
+        }
+    | Nmaster of
+        { delta : int Ocdwm_core.Delta.t
+        ; global : bool
+        }
+    | Gaps_inner of
+        { delta : int Ocdwm_core.Delta.t
+        ; global : bool
+        }
+    | Gaps_outer of
+        { delta : int Ocdwm_core.Delta.t
+        ; global : bool
+        }
     | Stack of
         { kind : Ocdwm_core.Stack_kind.t
+        ; global : bool
+        }
+    | Stack_cycle of
+        { dir : Ocdwm_core.Direction.Logical.t
         ; global : bool
         }
     | Scroll_policy of

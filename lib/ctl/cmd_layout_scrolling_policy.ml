@@ -12,12 +12,12 @@ let scroll_targets =
 ;;
 
 let leaf mk_term (name, policy) =
-  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Set the scroll policy to %s" name)
+  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Set the scrolling layout policy to %s" name)
   @@ mk_term
   @@ command_term policy
 ;;
 
-let name = "scroll"
+let name = "policy"
 let doc = "Set the scrolling layout policy"
 let build mk_term = Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) scroll_targets
 let cmd = build Ctl_cli.command_term
