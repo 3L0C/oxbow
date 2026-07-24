@@ -58,9 +58,10 @@ val send_window_to_name
   -> Ocdwm_core.Tag.Policy.t
   -> (Yojson.Safe.t option, string) result
 
-(** [send_to_logical ctx seat dir policy] sends [seat]'s focused window to the
-    output in logical direction [dir], resolving its tags per [policy]. Is
-    [Error msg] when [window] has no output, or no other output exists.
+(** [send_to_logical ctx seat dir policy ~follow] sends [seat]'s focused window
+    to the output in logical direction [dir], resolving its tags per [policy].
+    When [follow] is [true] focus follows the moved window. Is [Error msg] when
+    [window] has no output, or no other output exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val send_to_logical
@@ -68,11 +69,13 @@ val send_to_logical
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
   -> Ocdwm_core.Tag.Policy.t
+  -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [send_to_spatial ctx seat dir policy] sends [seat]'s focused window to the
-    output in spatial direction [dir], resolving its tags per [policy]. Is
-    [Error msg] when [window] has no output, or no output exists in [dir].
+(** [send_to_spatial ctx seat dir policy ~follow] sends [seat]'s focused window
+    to the output in spatial direction [dir], resolving its tags per [policy].
+    When [follow] is [true] focus follows the moved window. Is [Error msg] when
+    [window] has no output, or no output exists in [dir].
 
     {b Effects:} mutates WM state; sends River request *)
 val send_to_spatial
@@ -80,11 +83,13 @@ val send_to_spatial
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Spatial.t
   -> Ocdwm_core.Tag.Policy.t
+  -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [send_to_name ctx seat name policy] sends [seat]'s focused window to the
-    output named [name], resolving its tags per [policy]. Is [Error msg] when
-    [window] has no output, or no output named [name] exists.
+(** [send_to_name ctx seat name policy ~follow] sends [seat]'s focused window to
+    the output named [name], resolving its tags per [policy]. When [follow] is
+    [true] focus follows the moved window. Is [Error msg] when [window] has no
+    output, or no output named [name] exists.
 
     {b Effects:} mutates WM state; sends River request *)
 val send_to_name
@@ -92,6 +97,7 @@ val send_to_name
   -> Ocdwm_state.Seat.t
   -> string
   -> Ocdwm_core.Tag.Policy.t
+  -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_floating ctx seat] toggles [seat]'s focused window between tiled and
@@ -188,13 +194,14 @@ val resize_spatial
   -> Ocdwm_core.Extent.t
   -> (Yojson.Safe.t option, string) result
 
-(** [swap_outputs ctx seat ~target ~policy scope] exchanges the windows of two
-    outputs, in both directions. A [Pair] target names the two outputs: without
-    names, the two connected outputs swap; with one name, [seat]'s output swaps
-    with the named output; with two names, the named pair swaps. A [Ring] target
-    swaps the focused output with the next connected ring member, or the
-    previous member when [rev] is set. Each window crosses with [policy], like a
-    send. [scope] controls which windows are swapped. [scope] is one of
+(** [swap_outputs ctx seat ~target ~policy ~follow scope] exchanges the windows
+    of two outputs, in both directions. A [Pair] target names the two outputs:
+    without names, the two connected outputs swap; with one name, [seat]'s
+    output swaps with the named output; with two names, the named pair swaps. A
+    [Ring] target swaps the focused output with the next connected ring member,
+    or the previous member when [rev] is set. Each window crosses with [policy],
+    like a send. When [follow] is [true], focus follows to the second output.
+    [scope] controls which windows are swapped. [scope] is one of
     [`Tags | `All | `Visible].
 
     {b Effects:} sends River requests *)
@@ -203,5 +210,6 @@ val swap_outputs
   -> Ocdwm_state.Seat.t
   -> target:Ocdwm_ipc.Command.Output.Swap.Target.t
   -> policy:Ocdwm_core.Tag.Policy.t
+  -> follow:bool
   -> [< `Tags | `All | `Visible ]
   -> (Yojson.Safe.t option, string) result

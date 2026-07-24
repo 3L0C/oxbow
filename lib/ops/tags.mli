@@ -42,14 +42,17 @@ val view_cycle_occupied
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [tag_window seat arg] assigns the tags resolved from [arg] to [seat]'s
-    focused window. Is [Error msg] when there is no focused window, the set
-    resolves empty, or [arg] is [Occupied] and the window has no output.
+(** [tag_window ctx seat tags ~follow] assigns [tags] to [seat]'s focused
+    window. When [follow] is [true] focus follows the moved window. Is
+    [Error msg] when there is no focused window, the set resolves empty, or
+    [tags] is [Occupied] and the window has no output.
 
     {b Effects:} mutates WM state *)
 val tag_window
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Tag.Arg.t
+  -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_window_tags seat tags] toggles [tags] on [seat]'s focused window.
@@ -73,22 +76,28 @@ val tag_window_query
   -> Ocdwm_core.Tag.Arg.t
   -> (Yojson.Safe.t option, string) result
 
-(** [tag_shift_window seat dir] advances the focused window's lowest tag one
-    position in [dir], wrapping. Is [Error msg] when [seat] has no focused
-    window or the window has no tags.
+(** [tag_shift_window ctx seat dir ~follow] advances the focused window's lowest tag
+    one position in [dir], wrapping. When [follow] is [true] focus follows the
+    moved window. Is [Error msg] when [seat] has no focused window or the window
+    has no tags.
 
     {b Effects:} mutates WM state *)
 val tag_shift_window
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
+  -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [tag_shift_window_occupied seat dir] moves the focused window to the next
-    occupied tag in [dir], wrapping. Is [Error msg] when [seat] has no focused
-    window, the window has no output, or the output has no occupied tags.
+(** [tag_shift_window_occupied ctx seat dir ~follow] moves the focused window to the
+    next occupied tag in [dir], wrapping. When [follow] is true focus follows
+    the moved window. Is [Error msg] when [seat] has no focused window, the
+    window has no output, or the output has no occupied tags.
 
     {b Effects:} mutates WM state *)
 val tag_shift_window_occupied
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
+  -> follow:bool
   -> (Yojson.Safe.t option, string) result

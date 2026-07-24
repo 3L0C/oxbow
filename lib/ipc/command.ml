@@ -137,14 +137,17 @@ module Output = struct
       | Tags of
           { target : Target.t
           ; policy : Ocdwm_core.Tag.Policy.t
+          ; follow : bool
           } [@name "swap_tags"]
       | All of
           { target : Target.t
           ; policy : Ocdwm_core.Tag.Policy.t
+          ; follow : bool
           } [@name "swap_all"]
       | Visible of
           { target : Target.t
           ; policy : Ocdwm_core.Tag.Policy.t
+          ; follow : bool
           } [@name "swap_visible"]
     [@@deriving yojson]
   end
@@ -205,12 +208,22 @@ module Window = struct
         ; cycle : bool
         ; warp : bool option [@yojson.option]
         } [@name "focus_query"]
+    | Tag of
+        { tags : Ocdwm_core.Tag.Arg.t
+        ; follow : bool
+        } [@name "tag"]
+    | Tag_shift of
+        { dir : Direction.Logical.t
+        ; follow : bool
+        } [@name "tag_shift"]
+    | Tag_shift_occupied of
+        { dir : Direction.Logical.t
+        ; follow : bool
+        } [@name "tag_shift_occupied"]
     | Tag_query of
         { query : Window_query.t
         ; tags : Ocdwm_core.Tag.Arg.t
         } [@name "tag_query"]
-    | Tag_shift of Direction.Logical.t [@name "tag_shift"]
-    | Tag_shift_occupied of Direction.Logical.t [@name "tag_shift_occupied"]
     | Move_drag [@name "move_drag"]
     | Move_to of
         { x : Extent.t
@@ -232,17 +245,19 @@ module Window = struct
     | Send_logical of
         { dir : Direction.Logical.t
         ; policy : Ocdwm_core.Tag.Policy.t
+        ; follow : bool
         } [@name "send_logical"]
     | Send_spatial of
         { dir : Direction.Spatial.t
         ; policy : Ocdwm_core.Tag.Policy.t
+        ; follow : bool
         } [@name "send_spatial"]
     | Send_name of
         { name : string
         ; policy : Ocdwm_core.Tag.Policy.t
+        ; follow : bool
         } [@name "send_name"]
     | Shift of Direction.Logical.t [@name "shift"]
-    | Tag of Ocdwm_core.Tag.Arg.t [@name "tag"]
     | Toggle_tag of Ocdwm_core.Tag.Set.t [@name "toggle_tag"]
     | Toggle_floating [@name "toggle_floating"]
     | Toggle_maximize [@name "toggle_maximize"]

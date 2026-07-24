@@ -42,11 +42,12 @@ let handle_output ctx seat (cmd : Command.Output.t) =
   | Focus_name { name; warp } -> Focus.output_name ?warp ctx seat name
   | Toggle_overview -> Arrange.toggle_overview ctx seat
   | Column_width delta -> Column.set_width seat delta ~global:true
-  | Swap (Tags { target; policy }) ->
-    Placement.swap_outputs ctx seat ~target ~policy `Tags
-  | Swap (All { target; policy }) -> Placement.swap_outputs ctx seat ~target ~policy `All
-  | Swap (Visible { target; policy }) ->
-    Placement.swap_outputs ctx seat ~target ~policy `Visible
+  | Swap (Tags { target; policy; follow }) ->
+    Placement.swap_outputs ctx seat ~target ~policy ~follow `Tags
+  | Swap (All { target; policy; follow }) ->
+    Placement.swap_outputs ctx seat ~target ~policy ~follow `All
+  | Swap (Visible { target; policy; follow }) ->
+    Placement.swap_outputs ctx seat ~target ~policy ~follow `Visible
 ;;
 
 let handle_rule = Rules.handle
@@ -75,20 +76,24 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Focus_logical { dir; warp } -> Focus.window_logical ?warp ctx seat dir
   | Focus_spatial { dir; warp } -> Focus.window_spatial ?warp ctx seat dir
   | Focus_query { query; cycle; warp } -> Focus.window_query ?warp ~cycle ctx seat query
+  | Tag { tags; follow } -> Tags.tag_window ctx seat tags ~follow
+  | Tag_shift { dir; follow } -> Tags.tag_shift_window ctx seat dir ~follow
+  | Tag_shift_occupied { dir; follow } ->
+    Tags.tag_shift_window_occupied ctx seat dir ~follow
   | Tag_query { query; tags } -> Tags.tag_window_query ctx query tags
-  | Tag_shift dir -> Tags.tag_shift_window seat dir
-  | Tag_shift_occupied dir -> Tags.tag_shift_window_occupied seat dir
   | Move_drag -> Window_request.move_interactive ctx seat
   | Move_to { x; y } -> Placement.move_to ~x ~y ctx seat
   | Move_spatial { dir; by } -> Placement.move_spatial ctx seat dir by
   | Resize_drag -> Window_request.resize_interactive ctx seat
   | Resize_to { w; h } -> Placement.resize_to ~width:w ~height:h ctx seat
   | Resize_spatial { dir; by } -> Placement.resize_spatial ctx seat dir by
-  | Send_logical { dir; policy } -> Placement.send_to_logical ctx seat dir policy
-  | Send_spatial { dir; policy } -> Placement.send_to_spatial ctx seat dir policy
-  | Send_name { name; policy } -> Placement.send_to_name ctx seat name policy
+  | Send_logical { dir; policy; follow } ->
+    Placement.send_to_logical ctx seat dir policy ~follow
+  | Send_spatial { dir; policy; follow } ->
+    Placement.send_to_spatial ctx seat dir policy ~follow
+  | Send_name { name; policy; follow } ->
+    Placement.send_to_name ctx seat name policy ~follow
   | Shift dir -> Stacking.shift seat dir
-  | Tag arg -> Tags.tag_window seat arg
   | Toggle_tag arg -> Tags.toggle_window_tags seat arg
   | Toggle_floating -> Placement.toggle_floating ctx seat
   | Toggle_maximize -> Window_request.toggle_maximize ctx seat

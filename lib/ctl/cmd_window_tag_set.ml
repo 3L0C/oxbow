@@ -3,8 +3,9 @@ open! Ocdwm_ipc
 
 let command_term =
   let open Cmdliner.Term.Syntax in
-  let+ tag_arg = Ctl_cli.tag_arg in
-  Command.Window (Tag tag_arg)
+  let+ tags = Ctl_cli.tag_arg
+  and+ follow = Ctl_cli.follow_flag in
+  Command.Window (Tag { tags; follow })
 ;;
 
 let name = "set"

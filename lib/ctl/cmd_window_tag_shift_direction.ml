@@ -3,9 +3,10 @@ open! Ocdwm_ipc
 
 let command_term dir =
   let open Cmdliner.Term.Syntax in
-  let+ occupied = Ctl_cli.occupied_flag in
-  let open Direction in
-  Command.Window (if occupied then Tag_shift_occupied dir else Tag_shift dir)
+  let+ occupied = Ctl_cli.occupied_flag
+  and+ follow = Ctl_cli.follow_flag in
+  Command.Window
+    (if occupied then Tag_shift_occupied { dir; follow } else Tag_shift { dir; follow })
 ;;
 
 let build mk_term (name, dir) =

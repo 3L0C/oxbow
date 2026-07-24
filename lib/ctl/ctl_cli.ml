@@ -157,6 +157,10 @@ let policy_flag =
         ])
 ;;
 
+let follow_flag =
+  Arg.(value & flag & info [ "follow" ] ~doc:"Move focus with the manipulated object")
+;;
+
 let ring_flag =
   Arg.(
     value

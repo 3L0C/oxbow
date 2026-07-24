@@ -67,7 +67,7 @@ let view_cycle_occupied (seat : Seat.t) (dir : Direction.Logical.t) =
       Ok None)
 ;;
 
-let tag_window seat (arg : Tag.Arg.t) =
+let tag_window ctx seat (tags : Tag.Arg.t) ~follow =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
   | Some w ->
@@ -76,10 +76,11 @@ let tag_window seat (arg : Tag.Arg.t) =
       then Error Messages.tag_set_is_empty
       else (
         Window.set_tags w s;
+        if follow then Focus.focus_window ~force:true ctx seat w;
         Ok None)
     in
-    (match w.output, arg with
-     | Some o, _ -> Output.resolve_tag_arg arg o |> resolve
+    (match w.output, tags with
+     | Some o, _ -> Output.resolve_tag_arg tags o |> resolve
      | None, Concrete s -> resolve s
      | None, Occupied -> Error "cannot use 'occupied' for window with no output")
 ;;
@@ -127,7 +128,7 @@ let tag_window_query ctx q (arg : Tag.Arg.t) =
           Ok None))
 ;;
 
-let tag_shift_window seat (dir : Direction.Logical.t) =
+let tag_shift_window ctx seat (dir : Direction.Logical.t) ~follow =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
   | Some w ->
@@ -140,10 +141,11 @@ let tag_shift_window seat (dir : Direction.Logical.t) =
     then Error Messages.tag_set_is_empty
     else (
       Window.set_tags w tags;
+      if follow then Focus.focus_window ~force:true ctx seat w;
       Ok None)
 ;;
 
-let tag_shift_window_occupied seat (dir : Direction.Logical.t) =
+let tag_shift_window_occupied ctx seat (dir : Direction.Logical.t) ~follow =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
   | Some w ->
@@ -160,5 +162,6 @@ let tag_shift_window_occupied seat (dir : Direction.Logical.t) =
            | Prev -> Tag.Set.prev_occupied ~selected:w.tags ~occupied
          in
          Window.set_tags w tags;
+         if follow then Focus.focus_window ~force:true ctx seat w;
          Ok None))
 ;;

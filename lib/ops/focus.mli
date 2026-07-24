@@ -80,6 +80,19 @@ val window_query
   -> Ocdwm_core.Window_query.t
   -> (Yojson.Safe.t option, string) result
 
+(** [focus_output ?warp ctx seat output] focuses [output] on [seat].
+    No-op when [outupt] is already focused on [seat]. When [warp] is present, it
+    becomes [seat]'s warp request. When [warp] is absent, the warp request does
+    not change.
+
+    {b Effects:} mutates WM state; sends River request *)
+val focus_output
+  :  ?warp:bool
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> Ocdwm_state.Output.t
+  -> unit
+
 (** [output_logical ?warp ctx seat dir] focuses the output in logical direction
     [dir]. The payload [warp] overrides the warp on focus configuration. Is
     [Error msg] when [seat] has no output or no other output exists.

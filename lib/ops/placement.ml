@@ -92,16 +92,34 @@ let send_window_to_name ctx (window : Window.t) name policy =
     | _ -> Error (Printf.sprintf "no output named %S" name))
 ;;
 
-let send_to_logical ctx seat dir policy =
-  With.focused_window seat @@ fun _o w -> send_window_to_logical ctx w dir policy
+let send_to_logical ctx seat dir policy ~follow =
+  With.focused_window seat
+  @@ fun _o w ->
+  match send_window_to_logical ctx w dir policy with
+  | Ok _ as result when follow ->
+    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config ctx seat w;
+    result
+  | result -> result
 ;;
 
-let send_to_spatial ctx seat dir policy =
-  With.focused_window seat @@ fun _o w -> send_window_to_spatial ctx w dir policy
+let send_to_spatial ctx seat dir policy ~follow =
+  With.focused_window seat
+  @@ fun _o w ->
+  match send_window_to_spatial ctx w dir policy with
+  | Ok _ as result when follow ->
+    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config ctx seat w;
+    result
+  | result -> result
 ;;
 
-let send_to_name ctx seat name policy =
-  With.focused_window seat @@ fun _o w -> send_window_to_name ctx w name policy
+let send_to_name ctx seat name policy ~follow =
+  With.focused_window seat
+  @@ fun _o w ->
+  match send_window_to_name ctx w name policy with
+  | Ok _ as result when follow ->
+    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config ctx seat w;
+    result
+  | result -> result
 ;;
 
 let toggle_floating ctx seat =
@@ -226,7 +244,7 @@ let resize_spatial ctx seat dir by =
     Ok None)
 ;;
 
-let swap_outputs ctx seat ~(target : Command.Output.Swap.Target.t) ~policy scope =
+let swap_outputs ctx seat ~(target : Command.Output.Swap.Target.t) ~policy ~follow scope =
   With.focused_output seat
   @@ fun current ->
   let wm = Ctx.wm ctx in
@@ -257,8 +275,9 @@ let swap_outputs ctx seat ~(target : Command.Output.Swap.Target.t) ~policy scope
       then Error "the focused output is not in the ring"
       else (
         let dest =
-          (if rev then Ring.prev_or_last current live else Ring.next_or_first current live)
-          |> Option.get
+          Option.get
+          @@
+          if rev then Ring.prev_or_last current live else Ring.next_or_first current live
         in
         Ok (current, dest))
   in
@@ -284,5 +303,6 @@ let swap_outputs ctx seat ~(target : Command.Output.Swap.Target.t) ~policy scope
     List.iter (fun w -> send_to ~src:b ~dst:a ctx w policy) b_ws;
     Stacking.restore_focus_order ~like:a_focus b;
     Stacking.restore_focus_order ~like:b_focus a;
+    if follow then Focus.focus_output ctx seat b;
     Ok None
 ;;

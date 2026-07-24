@@ -4,10 +4,11 @@ open! Ocdwm_ipc
 let dir_command_term dir =
   let open Cmdliner.Term.Syntax in
   let open Direction in
-  let+ policy = Ctl_cli.policy_flag in
+  let+ policy = Ctl_cli.policy_flag
+  and+ follow = Ctl_cli.follow_flag in
   match dir with
-  | Logical d -> Command.Window (Send_logical { dir = d; policy })
-  | Spatial d -> Command.Window (Send_spatial { dir = d; policy })
+  | Logical d -> Command.Window (Send_logical { dir = d; policy; follow })
+  | Spatial d -> Command.Window (Send_spatial { dir = d; policy; follow })
 ;;
 
 let dir_leaf mk_term (name, dir) =
@@ -18,8 +19,9 @@ let dir_leaf mk_term (name, dir) =
 let to_command_term =
   let open Cmdliner.Term.Syntax in
   let+ name = Ctl_cli.output_name_arg
-  and+ policy = Ctl_cli.policy_flag in
-  Command.Window (Send_name { name; policy })
+  and+ policy = Ctl_cli.policy_flag
+  and+ follow = Ctl_cli.follow_flag in
+  Command.Window (Send_name { name; policy; follow })
 ;;
 
 let to_leaf mk_term =
