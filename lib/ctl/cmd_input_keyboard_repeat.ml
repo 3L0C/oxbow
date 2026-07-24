@@ -6,7 +6,7 @@ let command_term =
   let open Cmdliner.Term.Syntax in
   let+ rate = Arg.(required & pos 0 (some int) None & info [] ~docv:"RATE")
   and+ delay = Arg.(required & pos 1 (some int) None & info [] ~docv:"DELAY") in
-  Command.Set (Keyboard_repeat { rate; delay })
+  Command.Input (Keyboard (Repeat { rate; delay }))
 ;;
 
 let name = "repeat"

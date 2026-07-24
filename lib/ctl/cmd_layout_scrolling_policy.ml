@@ -4,7 +4,7 @@ open! Ocdwm_ipc
 let command_term policy =
   let open Cmdliner.Term.Syntax in
   let+ global = Ctl_cli.global_flag in
-  Command.Set (Scroll_policy { policy; global })
+  Command.Layout (Scrolling (Policy { policy; global }))
 ;;
 
 let scroll_targets =

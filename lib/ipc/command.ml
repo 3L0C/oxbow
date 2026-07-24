@@ -1,6 +1,178 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
 open! Ocdwm_core
 
+module Border = struct
+  type t =
+    | Width of int32 [@name "width"]
+    | Color of
+        { which : Border_target.t
+        ; color : Color.t
+        } [@name "color"]
+  [@@deriving yojson]
+end
+
+module Gaps = struct
+  type t =
+    | Inner of
+        { delta : int Delta.t
+        ; global : bool
+        } [@name "inner"]
+    | Outer of
+        { delta : int Delta.t
+        ; global : bool
+        } [@name "outer"]
+  [@@deriving yojson]
+end
+
+module Input = struct
+  module Cursor = struct
+    type t =
+      | Theme of
+          { name : string
+          ; size : int32
+          } [@name "theme"]
+    [@@deriving yojson]
+  end
+
+  module Keyboard = struct
+    type t =
+      | Repeat of
+          { rate : int
+          ; delay : int
+          } [@name "repeat"]
+      | Layout_file of string [@name "layout_file"]
+    [@@deriving yojson]
+  end
+
+  module Pointer = struct
+    type t =
+      | Follow of bool [@name "follow"]
+      | Toggle_follow [@name "toggle_follow"]
+      | Warp of bool [@name "warp"]
+      | Toggle_warp [@name "toggle_warp"]
+    [@@deriving yojson]
+  end
+
+  type t =
+    | Cursor of Cursor.t [@name "cursor"]
+    | Keyboard of Keyboard.t [@name "keyboard"]
+    | Pointer of Pointer.t [@name "pointer"]
+  [@@deriving yojson]
+end
+
+module Keymap = struct
+  module Mode = struct
+    type t =
+      | Declare of string [@name "declare"]
+      | Enter of string [@name "enter"]
+    [@@deriving yojson]
+  end
+
+  type t = Mode of Mode.t [@name "mode"] [@@deriving yojson]
+end
+
+module Layout = struct
+  module Scrolling = struct
+    type t =
+      | Column_width of
+          { delta : float Delta.t
+          ; global : bool
+          } [@name "column_width"]
+      | Policy of
+          { policy : Scroll_policy.t
+          ; global : bool
+          } [@name "policy"]
+    [@@deriving yojson]
+  end
+
+  module Tiling = struct
+    type t =
+      | Cycle of Direction.Logical.t [@name "cycle"]
+      | Mfact of
+          { delta : float Delta.t
+          ; global : bool
+          } [@name "mfact"]
+      | Nmaster of
+          { delta : int Delta.t
+          ; global : bool
+          } [@name "nmaster"]
+      | Orientation of
+          { dir : Direction.Spatial.t
+          ; global : bool
+          } [@name "orientation"]
+      | Scheme of
+          { scheme : Ocdwm_core.Scheme.t
+          ; global : bool
+          } [@name "scheme"]
+    [@@deriving yojson]
+  end
+
+  type t =
+    | Cycle of Direction.Logical.t [@name "cycle"]
+    | Select of
+        { layout : Ocdwm_core.Layout.t
+        ; global : bool
+        } [@name "select"]
+    | Scrolling of Scrolling.t [@name "scrolling"]
+    | Tiling of Tiling.t [@name "tiling"]
+  [@@deriving yojson]
+end
+
+module Output = struct
+  type t =
+    | Column_width of float Delta.t [@name "column_width"]
+    | Focus_logical of
+        { dir : Direction.Logical.t
+        ; warp : bool option [@yojson.option]
+        } [@name "focus_logical"]
+    | Focus_spatial of
+        { dir : Direction.Spatial.t
+        ; warp : bool option [@yojson.option]
+        } [@name "focus_spatial"]
+    | Focus_name of
+        { name : string
+        ; warp : bool option [@yojson.option]
+        } [@name "focus_name"]
+    | Toggle_overview [@name "toggle_overview"]
+    | Swap_tags of
+        { first : string option [@yojson.option]
+        ; second : string option [@yojson.option]
+        ; policy : Ocdwm_core.Tag.Policy.t
+        } [@name "swap_tags"]
+    | Swap_all of
+        { first : string option [@yojson.option]
+        ; second : string option [@yojson.option]
+        ; policy : Ocdwm_core.Tag.Policy.t
+        } [@name "swap_all"]
+    | Swap_visible of
+        { first : string option [@yojson.option]
+        ; second : string option [@yojson.option]
+        ; policy : Ocdwm_core.Tag.Policy.t
+        } [@name "swap_visible"]
+  [@@deriving yojson]
+end
+
+module Rule = struct
+  type t =
+    | Add of Rule.t [@name "add"]
+    | Remove of Rule.t [@name "remove"]
+  [@@deriving yojson]
+end
+
+module Session = struct
+  type t = Exit [@name "exit"] [@@deriving yojson]
+end
+
+module Tag = struct
+  type t =
+    | View of Tag.Arg.t [@name "view"]
+    | Toggle_view of Tag.Set.t [@name "toggle_view"]
+    | View_previous [@name "view_previous"]
+    | View_cycle of Direction.Logical.t [@name "view_cycle"]
+    | View_cycle_occupied of Direction.Logical.t [@name "view_cycle_occupied"]
+  [@@deriving yojson]
+end
+
 module Window = struct
   type t =
     | Close [@name "close"]
@@ -19,7 +191,7 @@ module Window = struct
         } [@name "focus_query"]
     | Tag_query of
         { query : Window_query.t
-        ; tags : Tag.Arg.t
+        ; tags : Ocdwm_core.Tag.Arg.t
         } [@name "tag_query"]
     | Tag_shift of Direction.Logical.t [@name "tag_shift"]
     | Tag_shift_occupied of Direction.Logical.t [@name "tag_shift_occupied"]
@@ -43,19 +215,19 @@ module Window = struct
         } [@name "resize_spatial"]
     | Send_logical of
         { dir : Direction.Logical.t
-        ; policy : Tag.Policy.t
+        ; policy : Ocdwm_core.Tag.Policy.t
         } [@name "send_logical"]
     | Send_spatial of
         { dir : Direction.Spatial.t
-        ; policy : Tag.Policy.t
+        ; policy : Ocdwm_core.Tag.Policy.t
         } [@name "send_spatial"]
     | Send_name of
         { name : string
-        ; policy : Tag.Policy.t
+        ; policy : Ocdwm_core.Tag.Policy.t
         } [@name "send_name"]
     | Shift of Direction.Logical.t [@name "shift"]
-    | Tag of Tag.Arg.t [@name "tag"]
-    | Toggle_tag of Tag.Set.t [@name "toggle_tag"]
+    | Tag of Ocdwm_core.Tag.Arg.t [@name "tag"]
+    | Toggle_tag of Ocdwm_core.Tag.Set.t [@name "toggle_tag"]
     | Toggle_floating [@name "toggle_floating"]
     | Toggle_maximize [@name "toggle_maximize"]
     | Toggle_fullscreen [@name "toggle_fullscreen"]
@@ -70,156 +242,22 @@ module Window = struct
   [@@deriving yojson]
 end
 
-module Tag = struct
-  type t =
-    | View of Tag.Arg.t [@name "view"]
-    | Toggle_view of Tag.Set.t [@name "toggle_view"]
-    | View_previous [@name "view_previous"]
-    | View_cycle of Direction.Logical.t [@name "view_cycle"]
-    | View_cycle_occupied of Direction.Logical.t [@name "view_cycle_occupied"]
-  [@@deriving yojson]
-end
-
-module Layout = struct
-  type t = Cycle of Direction.Logical.t [@name "cycle"] [@@deriving yojson]
-end
-
-module Scheme = struct
-  type t = Cycle of Direction.Logical.t [@name "cycle"] [@@deriving yojson]
-end
-
-module Output = struct
-  type t =
-    | Focus_logical of
-        { dir : Direction.Logical.t
-        ; warp : bool option [@yojson.option]
-        } [@name "focus_logical"]
-    | Focus_spatial of
-        { dir : Direction.Spatial.t
-        ; warp : bool option [@yojson.option]
-        } [@name "focus_spatial"]
-    | Focus_name of
-        { name : string
-        ; warp : bool option [@yojson.option]
-        } [@name "focus_name"]
-    | Toggle_overview [@name "toggle_overview"]
-    | Column_width of float Delta.t [@name "column_width"]
-    | Swap_tags of
-        { first : string option [@yojson.option]
-        ; second : string option [@yojson.option]
-        ; policy : Ocdwm_core.Tag.Policy.t
-        } [@name "swap_tags"]
-    | Swap_all of
-        { first : string option [@yojson.option]
-        ; second : string option [@yojson.option]
-        ; policy : Ocdwm_core.Tag.Policy.t
-        } [@name "swap_all"]
-    | Swap_visible of
-        { first : string option [@yojson.option]
-        ; second : string option [@yojson.option]
-        ; policy : Ocdwm_core.Tag.Policy.t
-        } [@name "swap_visible"]
-  [@@deriving yojson]
-end
-
-module Set = struct
-  type t =
-    | Scheme of
-        { scheme : Ocdwm_core.Scheme.t
-        ; global : bool
-        } [@name "scheme"]
-    | Layout of
-        { layout : Ocdwm_core.Layout.t
-        ; global : bool
-        } [@name "layout"]
-    | Mfact of
-        { delta : float Delta.t
-        ; global : bool
-        } [@name "mfact"]
-    | Nmaster of
-        { delta : int Delta.t
-        ; global : bool
-        } [@name "nmaster"]
-    | Gaps_inner of
-        { delta : int Delta.t
-        ; global : bool
-        } [@name "gaps_inner"]
-    | Gaps_outer of
-        { delta : int Delta.t
-        ; global : bool
-        } [@name "gaps_outer"]
-    | Scroll_policy of
-        { policy : Scroll_policy.t
-        ; global : bool
-        } [@name "scroll_policy"]
-    | Default_width of
-        { delta : float Delta.t
-        ; global : bool
-        } [@name "default_width"]
-    | Orientation of
-        { dir : Direction.Spatial.t
-        ; global : bool
-        } [@name "dir"]
-    | Focus_follows_pointer of bool [@name "focus_follows_pointer"]
-    | Toggle_focus_follows_pointer [@name "toggle_focus_follows_pointer"]
-    | Keyboard_repeat of
-        { rate : int
-        ; delay : int
-        } [@name "keyboard_repeat"]
-    | Keyboard_layout_file of string [@name "keyboard_layout_file"]
-    | Pointer_warp of bool [@name "pointer_warp"]
-    | Toggle_pointer_warp [@name "toggle_pointer_warp"]
-    | Cursor_theme of
-        { name : string
-        ; size : int32
-        } [@name "cursor_theme"]
-    | Border_width of int32 [@name "border_width"]
-    | Border_color of
-        { which : Border_target.t
-        ; color : Color.t
-        } [@name "border_color"]
-  [@@deriving yojson]
-end
-
-module Rule = struct
-  type t =
-    | Add of Rule.t [@name "add"]
-    | Remove of Rule.t [@name "remove"]
-  [@@deriving yojson]
-end
-
-module Mode = struct
-  type t =
-    | Declare of string [@name "declare"]
-    | Enter of string [@name "enter"]
-  [@@deriving yojson]
-end
-
-module Session = struct
-  type t = Exit [@name "exit"] [@@deriving yojson]
-end
-
 module Wm = struct
   type t = Close [@name "close"] [@@deriving yojson]
 end
 
-module Execute = struct
-  type t =
-    | Spawn of string [@name "spawn"]
-    | Exec of string array [@name "exec"]
-  [@@deriving yojson]
-end
-
 type t =
-  | Window of Window.t [@name "window"]
-  | Tag of Tag.t [@name "tag"]
+  | Border of Border.t [@name "border"]
+  | Exec of string array [@name "exec"]
+  | Gaps of Gaps.t [@name "gaps"]
+  | Input of Input.t [@name "input"]
+  | Keymap of Keymap.t [@name "keymap"]
   | Layout of Layout.t [@name "layout"]
-  | Scheme of Scheme.t [@name "scheme"]
   | Output of Output.t [@name "output"]
-  | Set of Set.t [@name "set"]
   | Rule of Rule.t [@name "rule"]
-  | Mode of Mode.t [@name "mode"]
   | Session of Session.t [@name "session"]
+  | Spawn of string [@name "spawn"]
+  | Tag of Tag.t [@name "tag"]
+  | Window of Window.t [@name "window"]
   | Wm of Wm.t [@name "wm"]
-  | Execute of Execute.t [@name "execute"]
 [@@deriving yojson]

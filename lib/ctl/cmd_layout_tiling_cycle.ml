@@ -1,7 +1,7 @@
 open! Ocdwm_core
 open! Ocdwm_ipc
 
-let command_term dir = Cmdliner.Term.const @@ Command.Scheme (Cycle dir)
+let command_term dir = Cmdliner.Term.const @@ Command.Layout (Tiling (Cycle dir))
 
 let leaf mk_term (name, dir) =
   Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Cycle to the %s tiling scheme" name)

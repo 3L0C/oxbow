@@ -1,6 +1,7 @@
 open! Ocdwm_core
-open! Ocdwm_layout
 open! Ocdwm_state
+open! Ocdwm_ipc
+open! Ocdwm_layout
 
 let arrange ctx output =
   if not @@ Output.has_visible_fullscreen output

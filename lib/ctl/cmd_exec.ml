@@ -10,7 +10,7 @@ let command_term =
   let+ argv =
     Arg.(non_empty & pos_all string [] & info [] ~docv:docv_term ~doc:doc_term)
   in
-  Command.Execute (Exec (Array.of_list argv))
+  Command.Exec (Array.of_list argv)
 ;;
 
 let bind_term =
@@ -20,7 +20,7 @@ let bind_term =
     Arg.(
       non_empty & pos_left ~rev:true 1 string [] & info [] ~docv:docv_term ~doc:doc_term)
   in
-  Command.Execute (Exec (Array.of_list argv))
+  Command.Exec (Array.of_list argv)
 ;;
 
 let name = "exec"

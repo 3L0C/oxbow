@@ -5,7 +5,7 @@ let command_term =
   let open Cmdliner in
   let open Cmdliner.Term.Syntax in
   let+ width = Arg.(required & pos 0 (some int32) None & info [] ~docv:"WIDTH") in
-  Command.Set (Border_width width)
+  Command.Border (Width width)
 ;;
 
 let name = "width"

@@ -4,6 +4,72 @@ open! Ocdwm_state
 open! Ocdwm_ops
 open! Ocdwm_layout
 
+let handle_border ctx seat (cmd : Command.Border.t) =
+  let wm = Ctx.wm ctx in
+  match cmd with
+  | Width width ->
+    Config.set_border_width wm width;
+    Ok None
+  | Color { which; color } ->
+    Config.set_border_color wm which color;
+    Ok None
+;;
+
+let handle_gaps ctx seat (cmd : Command.Gaps.t) =
+  match cmd with
+  | Inner { delta; global } -> Arrange.set_gaps_inner seat delta ~global
+  | Outer { delta; global } -> Arrange.set_gaps_outer seat delta ~global
+;;
+
+let handle_input ctx seat (cmd : Command.Input.t) =
+  match cmd with
+  | Cursor c -> Cursor.handle ctx seat c
+  | Keyboard c -> Keyboard.handle ctx seat c
+  | Pointer c -> Pointer.handle ctx seat c
+;;
+
+let handle_keymap ctx seat (cmd : Command.Keymap.t) =
+  match cmd with
+  | Mode c -> Modes.handle ctx seat c
+;;
+
+let handle_layout = Layouts.handle
+
+let handle_output ctx seat (cmd : Command.Output.t) =
+  match cmd with
+  | Focus_logical { dir; warp } -> Focus.output_logical ?warp ctx seat dir
+  | Focus_spatial { dir; warp } -> Focus.output_spatial ?warp ctx seat dir
+  | Focus_name { name; warp } -> Focus.output_name ?warp ctx seat name
+  | Toggle_overview -> Arrange.toggle_overview ctx seat
+  | Column_width delta -> Column.set_width seat delta ~global:true
+  | Swap_tags { first; second; policy } ->
+    Placement.swap_outputs ctx seat ~first ~second ~policy `Tags
+  | Swap_all { first; second; policy } ->
+    Placement.swap_outputs ctx seat ~first ~second ~policy `All
+  | Swap_visible { first; second; policy } ->
+    Placement.swap_outputs ctx seat ~first ~second ~policy `Visible
+;;
+
+let handle_rule = Rules.handle
+
+let handle_session ctx seat (cmd : Command.Session.t) =
+  let wm = Ctx.wm ctx in
+  let () =
+    match cmd with
+    | Exit -> Lifecycle.request_exit wm
+  in
+  Ok None
+;;
+
+let handle_tag seat (cmd : Command.Tag.t) =
+  match cmd with
+  | View arg -> Tags.view seat arg
+  | Toggle_view tags -> Tags.toggle_view seat tags
+  | View_previous -> Tags.view_previous seat
+  | View_cycle dir -> Tags.view_cycle seat dir
+  | View_cycle_occupied dir -> Tags.view_cycle_occupied seat dir
+;;
+
 let handle_window ctx seat (cmd : Command.Window.t) =
   match cmd with
   | Close -> Placement.close_focused seat
@@ -38,101 +104,6 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Column_width_cycle -> Column.cycle_width seat
 ;;
 
-let handle_tag seat (cmd : Command.Tag.t) =
-  match cmd with
-  | View arg -> Tags.view seat arg
-  | Toggle_view tags -> Tags.toggle_view seat tags
-  | View_previous -> Tags.view_previous seat
-  | View_cycle dir -> Tags.view_cycle seat dir
-  | View_cycle_occupied dir -> Tags.view_cycle_occupied seat dir
-;;
-
-let handle_layout ctx seat (cmd : Command.Layout.t) =
-  match cmd with
-  | Cycle dir -> Arrange.cycle_layout ctx seat dir
-;;
-
-let handle_scheme ctx seat (cmd : Command.Scheme.t) =
-  match cmd with
-  | Cycle dir -> Arrange.cycle_scheme ctx seat dir
-;;
-
-let handle_output ctx seat (cmd : Command.Output.t) =
-  match cmd with
-  | Focus_logical { dir; warp } -> Focus.output_logical ?warp ctx seat dir
-  | Focus_spatial { dir; warp } -> Focus.output_spatial ?warp ctx seat dir
-  | Focus_name { name; warp } -> Focus.output_name ?warp ctx seat name
-  | Toggle_overview -> Arrange.toggle_overview ctx seat
-  | Column_width delta -> Column.set_width seat delta ~global:true
-  | Swap_tags { first; second; policy } ->
-    Placement.swap_outputs ctx seat ~first ~second ~policy `Tags
-  | Swap_all { first; second; policy } ->
-    Placement.swap_outputs ctx seat ~first ~second ~policy `All
-  | Swap_visible { first; second; policy } ->
-    Placement.swap_outputs ctx seat ~first ~second ~policy `Visible
-;;
-
-let handle_set ctx seat (cmd : Command.Set.t) =
-  let wm = Ctx.wm ctx in
-  match cmd with
-  | Scheme { scheme; global } -> Arrange.select_scheme ctx seat scheme ~global
-  | Layout { layout; global } -> Arrange.set_layout ctx seat layout ~global
-  | Mfact { delta; global } -> Arrange.set_mfact seat delta ~global
-  | Nmaster { delta; global } -> Arrange.set_nmaster seat delta ~global
-  | Gaps_inner { delta; global } -> Arrange.set_gaps_inner seat delta ~global
-  | Gaps_outer { delta; global } -> Arrange.set_gaps_outer seat delta ~global
-  | Scroll_policy { policy; global } -> Arrange.set_scroll_policy wm seat policy ~global
-  | Default_width { delta; global } -> Arrange.set_default_width wm seat delta ~global
-  | Orientation { dir; global } -> Arrange.set_orientation seat dir ~global
-  | Focus_follows_pointer b ->
-    Config.set_focus_follows_pointer wm b;
-    Ok None
-  | Toggle_focus_follows_pointer ->
-    Config.set_focus_follows_pointer wm @@ not wm.config.focus_follows_pointer;
-    Ok None
-  | Keyboard_repeat { rate; delay } ->
-    Config.set_key_repeat ~rate ~delay wm;
-    Ok None
-  | Keyboard_layout_file path -> Keyboard.set_layout_file ~path wm
-  | Pointer_warp b ->
-    Config.set_warp_on_focus wm b;
-    Ok None
-  | Toggle_pointer_warp ->
-    Config.set_warp_on_focus wm @@ not wm.config.warp_on_focus;
-    Ok None
-  | Cursor_theme { name; size } ->
-    Cursor.set_theme wm seat name size;
-    Ok None
-  | Border_width width ->
-    Config.set_border_width wm width;
-    Ok None
-  | Border_color { which; color } ->
-    Config.set_border_color wm which color;
-    Ok None
-;;
-
-let handle_rule ctx seat (cmd : Command.Rule.t) =
-  let wm = Ctx.wm ctx in
-  match cmd with
-  | Add rule -> Rules.add wm rule
-  | Remove rule -> Rules.remove wm rule
-;;
-
-let handle_mode ctx seat (cmd : Command.Mode.t) =
-  match cmd with
-  | Declare mode -> Modes.declare (Ctx.wm ctx) mode
-  | Enter mode -> Modes.enter ctx seat mode
-;;
-
-let handle_session ctx seat (cmd : Command.Session.t) =
-  let wm = Ctx.wm ctx in
-  let () =
-    match cmd with
-    | Exit -> Lifecycle.request_exit wm
-  in
-  Ok None
-;;
-
 let handle_wm ctx seat (cmd : Command.Wm.t) =
   let wm = Ctx.wm ctx in
   let () =
@@ -142,25 +113,21 @@ let handle_wm ctx seat (cmd : Command.Wm.t) =
   Ok None
 ;;
 
-let handle_execute (cmd : Command.Execute.t) =
-  match cmd with
-  | Spawn cmd -> Execute.spawn cmd
-  | Exec argv -> Execute.exec argv
-;;
-
 let handle_command ctx seat (cmd : Command.t) =
   match cmd with
-  | Window c -> handle_window ctx seat c
-  | Tag c -> handle_tag seat c
+  | Border c -> handle_border ctx seat c
+  | Exec argv -> Execute.exec argv
+  | Gaps c -> handle_gaps ctx seat c
+  | Input c -> handle_input ctx seat c
+  | Keymap c -> handle_keymap ctx seat c
   | Layout c -> handle_layout ctx seat c
-  | Scheme c -> handle_scheme ctx seat c
   | Output c -> handle_output ctx seat c
-  | Set c -> handle_set ctx seat c
   | Rule c -> handle_rule ctx seat c
-  | Mode c -> handle_mode ctx seat c
   | Session c -> handle_session ctx seat c
+  | Spawn cmd -> Execute.spawn cmd
+  | Tag c -> handle_tag seat c
+  | Window c -> handle_window ctx seat c
   | Wm c -> handle_wm ctx seat c
-  | Execute c -> handle_execute c
 ;;
 
 let handle_keymap = Bind.handle

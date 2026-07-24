@@ -22,8 +22,8 @@ module Handler = struct
     match body with
     | Command c ->
       (match c with
-       | Execute (Spawn "") -> Error "spawn: empty command"
-       | Execute (Exec [||]) | Execute (Exec [| "" |]) -> Error "exec: empty command"
+       | Spawn "" -> Error "spawn: empty command"
+       | Exec [||] | Exec [| "" |] -> Error "exec: empty command"
        | _ -> Ok ())
     | Keymap _ | Query _ | Subscribe _ -> Ok ()
   ;;

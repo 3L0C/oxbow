@@ -4,7 +4,7 @@ open! Ocdwm_ipc
 let command_term scheme =
   let open Cmdliner.Term.Syntax in
   let+ global = Ctl_cli.global_flag in
-  Command.Set (Scheme { scheme; global })
+  Command.Layout (Tiling (Scheme { scheme; global }))
 ;;
 
 let leaf mk_term (s : Scheme.t) =

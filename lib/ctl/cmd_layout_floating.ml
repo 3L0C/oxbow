@@ -4,7 +4,7 @@ open! Ocdwm_ipc
 let command_term =
   let open Cmdliner.Term.Syntax in
   let+ global = Ctl_cli.global_flag in
-  Command.Set (Layout { layout = Floating; global })
+  Command.Layout (Select { layout = Floating; global })
 ;;
 
 let name = "floating"

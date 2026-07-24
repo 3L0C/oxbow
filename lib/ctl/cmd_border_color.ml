@@ -5,7 +5,7 @@ let command_term which =
   let open Cmdliner in
   let open Cmdliner.Term.Syntax in
   let+ color = Ctl_cli.color_arg in
-  Command.Set (Border_color { which; color })
+  Command.Border (Color { which; color })
 ;;
 
 let leaves =

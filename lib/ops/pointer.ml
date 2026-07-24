@@ -1,5 +1,6 @@
 open! Ocdwm_core
 open! Ocdwm_state
+open! Ocdwm_ipc
 
 let handle_position ~x ~y (wm : Wm.t) seat =
   Seat.set_position seat { x; y };
@@ -28,4 +29,17 @@ let warp_to_focus ctx seat =
   | Some g ->
     let x, y = center g in
     River.Window_management.River_seat_v1.pointer_warp seat.obj ~x ~y
+;;
+
+let handle ctx seat (cmd : Command.Input.Pointer.t) =
+  let wm = Ctx.wm ctx in
+  let () =
+    match cmd with
+    | Follow b -> Config.set_focus_follows_pointer wm b
+    | Toggle_follow ->
+      Config.set_focus_follows_pointer wm @@ not wm.config.focus_follows_pointer
+    | Warp b -> Config.set_warp_on_focus wm b
+    | Toggle_warp -> Config.set_warp_on_focus wm @@ not wm.config.warp_on_focus
+  in
+  Ok None
 ;;

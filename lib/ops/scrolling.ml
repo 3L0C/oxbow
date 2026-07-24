@@ -1,5 +1,6 @@
 open! Ocdwm_core
 open! Ocdwm_state
+open! Ocdwm_ipc
 open! Ocdwm_layout
 
 let arrange ctx (output : Output.t) =

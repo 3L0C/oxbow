@@ -5,7 +5,7 @@ let command_term =
   let open Cmdliner.Term.Syntax in
   let+ delta = Ctl_cli.int_delta
   and+ global = Ctl_cli.global_flag in
-  Command.Set (Gaps_inner { delta; global })
+  Command.Gaps (Inner { delta; global })
 ;;
 
 let name = "inner"

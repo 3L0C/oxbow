@@ -6,7 +6,7 @@ let command_term =
   let open Cmdliner.Term.Syntax in
   let+ name = Arg.(required & pos 0 (some string) None & info [] ~docv:"NAME")
   and+ size = Arg.(required & pos 1 (some int32) None & info [] ~docv:"SIZE") in
-  Command.Set (Cursor_theme { name; size })
+  Command.Input (Cursor (Theme { name; size }))
 ;;
 
 let name = "theme"

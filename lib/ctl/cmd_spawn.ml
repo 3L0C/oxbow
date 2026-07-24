@@ -10,7 +10,7 @@ let command_term =
       & pos 0 (some string) None
       & info [] ~docv:"STRING" ~doc:"The $(i,STRING) to run as a shell command")
   in
-  Command.Execute (Spawn cmd)
+  Command.Spawn cmd
 ;;
 
 let name = "spawn"

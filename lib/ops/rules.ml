@@ -1,5 +1,6 @@
 open! Ocdwm_core
 open! Ocdwm_state
+open! Ocdwm_ipc
 
 let apply wm (window : Window.t) ({ pattern; action } : Rule.t) =
   let search r_str s_str =
@@ -70,4 +71,11 @@ let remove (wm : Wm.t) rule =
     Config.remove_rule wm rule;
     Ok None)
   else Error "no matching rule"
+;;
+
+let handle ctx seat (cmd : Command.Rule.t) =
+  let wm = Ctx.wm ctx in
+  match cmd with
+  | Add rule -> add wm rule
+  | Remove rule -> remove wm rule
 ;;

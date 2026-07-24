@@ -3,10 +3,10 @@ let () =
   let open Ocdwm_ipc in
   let commands : Command.t list =
     [ Window (Zoom { warp = None })
-    ; Execute (Spawn "foot")
+    ; Spawn "foot"
     ; Window (Focus_logical { dir = Next; warp = None })
-    ; Set (Mfact { delta = Delta.Rel 0.05; global = false })
-    ; Set (Mfact { delta = Delta.Abs 0.55; global = false })
+    ; Layout (Tiling (Mfact { delta = Delta.Rel 0.05; global = false }))
+    ; Layout (Tiling (Mfact { delta = Delta.Abs 0.55; global = false }))
     ; Tag (View (Concrete (Tag.Set.singleton 3)))
     ]
   in

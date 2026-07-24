@@ -5,7 +5,7 @@ let command_term =
   let open Cmdliner.Term.Syntax in
   let+ delta = Ctl_cli.float_delta
   and+ global = Ctl_cli.global_flag in
-  Command.Set (Mfact { delta; global })
+  Command.Layout (Tiling (Mfact { delta; global }))
 ;;
 
 let name = "mfact"

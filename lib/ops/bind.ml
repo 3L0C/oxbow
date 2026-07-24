@@ -17,7 +17,7 @@ let install_defaults ctx seat =
   let xkb_bindings =
     Xkbcommon.Keysym.
       [ (* mods, keysym,  command *)
-        modkey, K_Return, Command.Execute (Spawn "kitty")
+        modkey, K_Return, Command.Spawn "kitty"
       ; modkey, K_q, Command.Window Close
       ; modkey, K_j, Command.Window (Focus_logical { dir = Next; warp = None })
       ; modkey, K_k, Command.Window (Focus_logical { dir = Prev; warp = None })
@@ -29,21 +29,28 @@ let install_defaults ctx seat =
       ; modkey, K_ISO_Left_Tab, Command.Tag (View_cycle Prev)
       ; Int32.(logor modkey alt), K_Tab, Command.Layout (Cycle Next)
       ; Int32.(logor modkey alt), K_ISO_Left_Tab, Command.Layout (Cycle Prev)
-      ; modkey, K_t, Command.Set (Layout { layout = Tiling; global = false })
-      ; modkey, K_s, Command.Set (Layout { layout = Scrolling; global = false })
-      ; modkey, K_f, Command.Set (Layout { layout = Floating; global = false })
+      ; modkey, K_t, Command.Layout (Select { layout = Tiling; global = false })
+      ; modkey, K_s, Command.Layout (Select { layout = Scrolling; global = false })
+      ; modkey, K_f, Command.Layout (Select { layout = Floating; global = false })
       ; Int32.(logor modkey shift), K_space, Command.Window Toggle_floating
       ; modkey, K_v, Command.Window Toggle_fullscreen
       ; modkey, K_I, Command.Window Toggle_fake_fullscreen
       ; modkey, K_F, Command.Window Toggle_maximize
-      ; modkey, K_H, Command.Set (Mfact { delta = Delta.(Rel (-0.05)); global = false })
-      ; modkey, K_L, Command.Set (Mfact { delta = Delta.(Rel 0.05); global = false })
-      ; modkey, K_a, Command.Set (Mfact { delta = Delta.(Abs 0.55); global = false })
+      ; ( modkey
+        , K_H
+        , Command.Layout (Tiling (Mfact { delta = Delta.(Rel (-0.05)); global = false }))
+        )
+      ; ( modkey
+        , K_L
+        , Command.Layout (Tiling (Mfact { delta = Delta.(Rel 0.05); global = false })) )
+      ; ( modkey
+        , K_a
+        , Command.Layout (Tiling (Mfact { delta = Delta.(Abs 0.55); global = false })) )
       ; modkey, K_space, Command.Window (Zoom { warp = None })
       ; modkey, K_J, Command.Window (Shift Next)
       ; modkey, K_K, Command.Window (Shift Prev)
-      ; modkey, K_y, Command.Set (Scheme { scheme = Even; global = false })
-      ; modkey, K_i, Command.Set (Scheme { scheme = Monocle; global = false })
+      ; modkey, K_y, Command.Layout (Tiling (Scheme { scheme = Even; global = false }))
+      ; modkey, K_i, Command.Layout (Tiling (Scheme { scheme = Monocle; global = false }))
       ; modkey, K_comma, Command.Window Column_consume
       ; modkey, K_period, Command.Window Column_release
       ; Int32.(logor modkey ctrl), K_h, Command.Window (Column_move Prev)

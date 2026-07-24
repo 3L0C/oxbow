@@ -5,7 +5,7 @@ let command_term =
   let open Cmdliner.Term.Syntax in
   let+ delta = Ctl_cli.float_delta
   and+ global = Ctl_cli.global_flag in
-  Command.Set (Default_width { delta; global })
+  Command.Layout (Scrolling (Column_width { delta; global }))
 ;;
 
 let name = "column-width"

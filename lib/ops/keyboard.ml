@@ -1,4 +1,5 @@
 open! Ocdwm_state
+open! Ocdwm_ipc
 
 let set_device_repeat_info device ~rate ~delay =
   River.Input_management.River_input_device_v1.set_repeat_info device ~rate ~delay
@@ -61,4 +62,13 @@ let set_layout_file wm ~path =
     in
     Unix.close fd;
     Ok None
+;;
+
+let handle (ctx : Ctx.manage Ctx.t) seat (cmd : Command.Input.Keyboard.t) =
+  let wm = Ctx.wm ctx in
+  match cmd with
+  | Repeat { rate; delay } ->
+    set_repeat_info wm ~rate ~delay;
+    Ok None
+  | Layout_file path -> set_layout_file wm ~path
 ;;

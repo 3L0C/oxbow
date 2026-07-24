@@ -6,7 +6,7 @@ let command_term =
   let+ name =
     Arg.(required & pos 0 (some string) None & info [] ~docv:"MODE" ~doc:"The mode name")
   in
-  Command.Mode (Declare name)
+  Command.Keymap (Mode (Declare name))
 ;;
 
 let name = "declare"

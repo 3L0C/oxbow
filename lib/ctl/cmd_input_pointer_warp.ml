@@ -2,9 +2,9 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 
 let leaves =
-  [ "on", "Turn warp-on-focus on", Command.Set (Pointer_warp true)
-  ; "off", "Turn warp-on-focus off", Command.Set (Pointer_warp false)
-  ; "toggle", "Toggle warp-on-focus", Command.Set Toggle_pointer_warp
+  [ "on", "Turn warp-on-focus on", Command.Input (Pointer (Warp true))
+  ; "off", "Turn warp-on-focus off", Command.Input (Pointer (Warp false))
+  ; "toggle", "Toggle warp-on-focus", Command.Input (Pointer Toggle_warp)
   ]
 ;;
 

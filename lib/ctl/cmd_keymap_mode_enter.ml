@@ -6,7 +6,7 @@ let command_term =
   let+ name =
     Arg.(required & pos 0 (some string) None & info [] ~docv:"MODE" ~doc:"The mode name")
   in
-  Command.Mode (Enter name)
+  Command.Keymap (Mode (Enter name))
 ;;
 
 let name = "enter"

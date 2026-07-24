@@ -5,7 +5,7 @@ let command_term =
   let open Cmdliner in
   let open Cmdliner.Term.Syntax in
   let+ path = Arg.(required & pos 0 (some string) None & info [] ~docv:"PATH") in
-  Command.Set (Keyboard_layout_file path)
+  Command.Input (Keyboard (Layout_file path))
 ;;
 
 let name = "layout-file"

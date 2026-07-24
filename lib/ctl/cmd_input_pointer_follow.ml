@@ -2,9 +2,9 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 
 let leaves =
-  [ "on", "Turn focus-follows-pointer on", Command.Set (Focus_follows_pointer true)
-  ; "off", "Turn focus-follows-pointer off", Command.Set (Focus_follows_pointer false)
-  ; "toggle", "Toggle focus-follows-pointer", Command.Set Toggle_focus_follows_pointer
+  [ "on", "Turn focus-follows-pointer on", Command.Input (Pointer (Follow true))
+  ; "off", "Turn focus-follows-pointer off", Command.Input (Pointer (Follow false))
+  ; "toggle", "Toggle focus-follows-pointer", Command.Input (Pointer Toggle_follow)
   ]
 ;;
 
