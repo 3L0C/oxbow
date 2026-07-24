@@ -88,6 +88,13 @@ val set_layout : t -> Ocdwm_core.Layout.t -> global:bool -> unit
     {b Effects:} mutates WM state; marks dirty *)
 val set_scheme : t -> Ocdwm_core.Scheme.t -> global:bool -> unit
 
+(** [cycle_scheme output dir ~global] sets [output]'s tiling scheme to the [dir]
+    scheme. Applied to all tags when [global] is true. Applied to the first
+    selected tags when [false].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val cycle_scheme : t -> Ocdwm_core.Direction.Logical.t -> global:bool -> unit
+
 (** [set_overview output v] sets the overview flag on [output].
 
     {b Effects:} mutates WM state; marks dirty *)
@@ -120,20 +127,6 @@ val set_gaps_inner : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
 
     {b Effects:} mutates WM state; marks dirty *)
 val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
-
-(** [set_stack output kind ~global] sets [output]'s stack kind to [kind].
-    Applied to all tags when [global] is true. Applied to the first selected
-    tags when [false].
-
-    {b Effects:} mutates WM state; marks dirty *)
-val set_stack : t -> Ocdwm_core.Stack_kind.t -> global:bool -> unit
-
-(** [cycle_stack output dir ~global] sets [output]'s stack kind to [dir] kind.
-    Applied to all tags when [global] is true. Applied to the first selected
-    tags when [false].
-
-    {b Effects:} mutates WM state; marks dirty *)
-val cycle_stack : t -> Ocdwm_core.Direction.Logical.t -> global:bool -> unit
 
 (** [set_scroll_policy output policy ~global] sets [output]'s scrolling policy to
     [policy]. Applied to all tags when [global] is true. Applied to the first

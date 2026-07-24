@@ -148,14 +148,6 @@ module Set = struct
         { delta : int Delta.t
         ; global : bool
         } [@name "gaps_outer"]
-    | Stack of
-        { kind : Stack_kind.t
-        ; global : bool
-        } [@name "stack"]
-    | Stack_cycle of
-        { dir : Direction.Logical.t
-        ; global : bool
-        } [@name "stack_cycle"]
     | Scroll_policy of
         { policy : Scroll_policy.t
         ; global : bool

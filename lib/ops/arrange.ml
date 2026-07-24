@@ -29,20 +29,6 @@ let set_gaps_outer seat delta ~global =
   Ok None
 ;;
 
-let set_stack seat kind ~global =
-  With.focused_output seat
-  @@ fun o ->
-  Output.set_stack o kind ~global;
-  Ok None
-;;
-
-let cycle_stack seat dir ~global =
-  With.focused_output seat
-  @@ fun o ->
-  Output.cycle_stack o dir ~global;
-  Ok None
-;;
-
 let set_scroll_policy (wm : Wm.t) seat policy ~global =
   With.focused_output seat
   @@ fun o ->
@@ -126,21 +112,21 @@ let select_scheme ctx (seat : Seat.t) scheme ~global =
     Ok None
 ;;
 
-let cycle_layout ctx (seat : Seat.t) dir =
-  With.focused_output seat
-  @@ fun o ->
-  let layout = Layout.cycle (Output.current_layout o) dir in
-  set_layout ctx seat layout ~global:false
-;;
-
 let cycle_scheme ctx (seat : Seat.t) dir =
   With.focused_output seat
   @@ fun o ->
   match set_layout ctx seat Tiling ~global:false with
   | Error _ as e -> e
   | Ok _ ->
-    Scheme.cycle (Output.current_scheme o) dir |> Output.set_scheme ~global:false o;
+    Output.cycle_scheme o dir ~global:false;
     Ok None
+;;
+
+let cycle_layout ctx (seat : Seat.t) dir =
+  With.focused_output seat
+  @@ fun o ->
+  let layout = Layout.cycle (Output.current_layout o) dir in
+  set_layout ctx seat layout ~global:false
 ;;
 
 let retile ctx (output : Output.t) =

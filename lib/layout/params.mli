@@ -3,7 +3,6 @@ module Tiling : sig
     { mutable scheme : Ocdwm_core.Scheme.t
     ; mutable mfact : float
     ; mutable nmaster : int
-    ; mutable stack : Ocdwm_core.Stack_kind.t
     ; mutable dir : Ocdwm_core.Direction.Spatial.t
     }
 end

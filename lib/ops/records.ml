@@ -50,7 +50,6 @@ let to_layout (output : Output.t) =
       | Some w -> List.find_index (( == ) w) visible |> Option.value ~default:0
     in
     let ctx = Symbol.Ctx.{ focused_index; count = List.length visible } in
-    let stack = (Output.to_tag_data output).tiling.stack in
     Some
       Record.Layout.
         { output = name
@@ -59,7 +58,7 @@ let to_layout (output : Output.t) =
             (match layout with
              | Tiling -> Some (Scheme.to_string scheme)
              | Scrolling | Floating -> None)
-        ; symbol = Symbol.render layout ~scheme ~stack ~ctx
+        ; symbol = Symbol.render layout ~scheme ~ctx
         }
 ;;
 

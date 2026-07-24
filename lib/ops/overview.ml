@@ -17,12 +17,12 @@ let arrange ctx (output : Output.t) =
     let td = Output.to_tag_data output in
     let cols = float n |> sqrt |> ceil |> int_of_float in
     let rows = (n + cols - 1) / cols in
-    let row_heights = Tile.split ~total:usable.h ~count:rows in
+    let row_heights = Schemes.split ~total:usable.h ~count:rows in
     let dimensions =
       List.fold_left_map
         (fun (y, rem) rh ->
            let cells = min cols rem in
-           let widths = Tile.split ~total:usable.w ~count:cells in
+           let widths = Schemes.split ~total:usable.w ~count:cells in
            (y + rh, rem - cells), row ~start:usable.x ~y ~h:rh widths)
         (usable.y, n)
         row_heights

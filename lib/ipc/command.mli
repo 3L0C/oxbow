@@ -157,14 +157,6 @@ module Set : sig
         { delta : int Ocdwm_core.Delta.t
         ; global : bool
         }
-    | Stack of
-        { kind : Ocdwm_core.Stack_kind.t
-        ; global : bool
-        }
-    | Stack_cycle of
-        { dir : Ocdwm_core.Direction.Logical.t
-        ; global : bool
-        }
     | Scroll_policy of
         { policy : Ocdwm_core.Scroll_policy.t
         ; global : bool

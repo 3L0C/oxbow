@@ -1,2 +1,2 @@
-val cmd : int Cmdliner.Cmd.t
-val bind_cmd : int Cmdliner.Cmd.t
+val cmds : int Cmdliner.Cmd.t list
+val bind_cmds : int Cmdliner.Cmd.t list

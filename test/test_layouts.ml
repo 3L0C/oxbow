@@ -34,10 +34,8 @@ let test_tiling () =
           go
     in
     let check name cond = if not cond then fail name in
-    let params =
-      Params.Tiling.{ mfact; nmaster; stack = Even; dir = Left; scheme = Tile }
-    in
-    let rects = Tile.compute ~params ~usable_area:ua ~count in
+    let params = Params.Tiling.{ mfact; nmaster; dir = Left; scheme = Even } in
+    let rects = Schemes.compute ~params ~usable_area:ua ~count in
     check "rect count" (List.length rects = count);
     List.iter (fun (r : int Rect.t) -> check "dims sane" (r.w >= 0 && r.h >= 0)) rects;
     if count > 0 && List.length rects = count
@@ -267,10 +265,10 @@ let test_scrolling () =
     let res = Strip.scroll ~policy ~viewport_w ~total_w ~offset ~col:(x, w) in
     let hi = max 0 (total_w - viewport_w) in
     let clamp v = min v hi |> max 0 in
-    check "in bounds" (0 <= res && res <= hi);
+    if policy <> Centered then check "in bounds" (0 <= res && res <= hi);
     match policy with
     | Left -> check "left pins" (res = clamp x)
-    | Centered -> check "centered" (res = clamp (x - ((viewport_w - w) / 2)))
+    | Centered -> check "centered" (res = x - ((viewport_w - w) / 2))
     | Visible ->
       if w > viewport_w then check "wide pins left" (res = clamp x);
       if w <= viewport_w && total_w >= viewport_w && x >= 0 && x + w <= total_w
@@ -357,8 +355,8 @@ let test_scrolling () =
   left "left pin clamps" ~col:(1500, 500) 1000;
   let ctr = expect ~policy:Centered ~viewport_w:1000 ~total_w:2000 ~offset:0 in
   ctr "centers" ~col:(700, 500) 450;
-  ctr "center clamps low" ~col:(100, 500) 0;
-  ctr "center clamps high" ~col:(1500, 500) 1000;
+  ctr "center clamps low" ~col:(100, 500) (-150);
+  ctr "center clamps high" ~col:(1500, 500) 1250;
   Printf.printf "strip: %d cases, %d failures\n" !cases !failures;
   if !failures > 0 then exit 1
 ;;

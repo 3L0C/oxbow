@@ -7,18 +7,15 @@ module Ctx = struct
     }
 end
 
-let render (layout : Layout.t) ~(scheme : Scheme.t) ~(stack : Stack_kind.t) ~(ctx : Ctx.t)
-  =
+let render (layout : Layout.t) ~(scheme : Scheme.t) ~(ctx : Ctx.t) =
   match layout with
   | Floating -> "∘∘∘"
   | Scrolling -> ">>="
   | Tiling ->
     (match scheme with
-     | Monocle -> Printf.sprintf "[%d]" ctx.focused_index
-     | Tile ->
-       (match stack with
-        | Even -> "[]="
-        | Diminish -> "[]>"
-        | Dwindle -> "[\\]"
-        | Spiral -> "[@]"))
+     | Even -> "[]="
+     | Diminish -> "[]>"
+     | Dwindle -> "[\\]"
+     | Spiral -> "[@]"
+     | Monocle -> Printf.sprintf "[%d]" ctx.focused_index)
 ;;

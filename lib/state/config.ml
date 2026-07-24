@@ -3,7 +3,7 @@ open! Ocdwm_layout
 include Types.Config
 
 let default_tiling () =
-  Params.Tiling.{ scheme = Tile; mfact = 0.55; nmaster = 1; stack = Even; dir = Left }
+  Params.Tiling.{ scheme = Even; mfact = 0.55; nmaster = 1; dir = Left }
 ;;
 
 let default_scrolling () =

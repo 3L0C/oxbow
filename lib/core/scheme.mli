@@ -1,5 +1,8 @@
 type t =
-  | Tile
+  | Even
+  | Diminish
+  | Dwindle
+  | Spiral
   | Monocle
 
 (** [all] is every scheme, in cycle order. *)

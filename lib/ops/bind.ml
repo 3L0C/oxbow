@@ -42,7 +42,7 @@ let install_defaults ctx seat =
       ; modkey, K_space, Command.Window (Zoom { warp = None })
       ; modkey, K_J, Command.Window (Shift Next)
       ; modkey, K_K, Command.Window (Shift Prev)
-      ; modkey, K_y, Command.Set (Scheme { scheme = Tile; global = false })
+      ; modkey, K_y, Command.Set (Scheme { scheme = Even; global = false })
       ; modkey, K_i, Command.Set (Scheme { scheme = Monocle; global = false })
       ; modkey, K_comma, Command.Window Column_consume
       ; modkey, K_period, Command.Window Column_release

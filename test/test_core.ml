@@ -17,14 +17,6 @@ let () =
        assert (c = c');
        Printf.printf "ok: %s\n" (Yojson.Safe.to_string j))
     commands;
-  let stacks : Stack_kind.t list = [ Even; Diminish; Dwindle ] in
-  List.iter
-    (fun s ->
-       let j = Stack_kind.yojson_of_t s in
-       let s' = Stack_kind.t_of_yojson j in
-       assert (s = s');
-       Printf.printf "ok: %s\n" (Yojson.Safe.to_string j))
-    stacks;
   let responses : Response.t list =
     [ { ok = true; err = None; data = None }
     ; { ok = false; err = Some "Had an error"; data = None }

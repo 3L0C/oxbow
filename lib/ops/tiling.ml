@@ -10,9 +10,8 @@ let arrange ctx output =
     let tag_data = Output.to_tag_data output in
     let area = Gaps.pre tag_data.gaps output.usable in
     let dir = tag_data.tiling.dir in
-    let compute = Schemes.compute tag_data.tiling.scheme in
     let dimensions =
-      compute ~params:tag_data.tiling ~usable_area:(Xform.pre dir area) ~count
+      Schemes.compute ~params:tag_data.tiling ~usable_area:(Xform.pre dir area) ~count
       |> List.map (Xform.post dir ~area)
       |> List.map (Gaps.post tag_data.gaps)
     in

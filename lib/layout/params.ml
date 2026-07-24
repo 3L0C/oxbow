@@ -5,7 +5,6 @@ module Tiling = struct
     { mutable scheme : Scheme.t
     ; mutable mfact : float
     ; mutable nmaster : int
-    ; mutable stack : Stack_kind.t
     ; mutable dir : Direction.Spatial.t
     }
 end

@@ -120,6 +120,16 @@ let set_scheme o scheme ~global =
   Dirty.mark_output o
 ;;
 
+let cycle_scheme o dir ~global =
+  let apply (td : Types.Config.Data.t) =
+    td.tiling.scheme <- Scheme.cycle td.tiling.scheme dir
+  in
+  if global
+  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
+  else to_tag_data o |> apply;
+  Dirty.mark_output o
+;;
+
 let set_overview (o : t) v =
   o.overview <- v;
   Dirty.mark_output o
@@ -182,24 +192,6 @@ let set_gaps_outer o (delta : int Delta.t) ~global =
       | Delta.Rel r -> params.outer + r
     in
     params.outer <- max 0 outer
-  in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Dirty.mark_output o
-;;
-
-let set_stack o kind ~global =
-  let apply (td : Types.Config.Data.t) = td.tiling.stack <- kind in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Dirty.mark_output o
-;;
-
-let cycle_stack o dir ~global =
-  let apply (td : Types.Config.Data.t) =
-    td.tiling.stack <- Stack_kind.cycle td.tiling.stack dir
   in
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all

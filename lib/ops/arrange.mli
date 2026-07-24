@@ -42,28 +42,6 @@ val set_gaps_outer
   -> global:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [set_stack seat kind ~global] sets the [Tiling] stack kind on [seat]'s output.
-    Applied to all tags when [global] is [true]. Applied to the first selected
-    tag when [false].
-
-    {b Effects:} mutates WM state *)
-val set_stack
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Stack_kind.t
-  -> global:bool
-  -> (Yojson.Safe.t option, string) result
-
-(** [cycle_stack seat dir ~global] sets the [Tiling] stack to the [dir] kind on
-    [seat]'s output. Applied to all tags when [global] is [true]. Applied to the
-    first selected tag when [false].
-
-    {b Effects:} mutates WM state *)
-val cycle_stack
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
-  -> global:bool
-  -> (Yojson.Safe.t option, string) result
-
 (** [set_scroll_policy wm seat policy ~global] sets the scrolling layout policy
     on [seat]'s output. Applied to all tags when [global] is [true]. Applies to
     all tags on all outputs if [global] is [true]. Applied to the first selected
@@ -154,17 +132,6 @@ val select_scheme
   -> global:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [cycle_layout ctx seat dir] sets the current layout's registered neighbor in
-    [dir] on the first selected tag of [seat]'s output. Is [Error msg] when
-    [seat] has no output.
-
-    {b Effects:} mutates WM state *)
-val cycle_layout
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
-  -> (Yojson.Safe.t option, string) result
-
 (** [cycle_scheme ctx seat dir] sets the current scheme's registered neighbor in
     [dir] on the first selected tag of [seat]'s output; tiled windows leaving
     the [floating] layout remember their geometry. Is [Error msg] when [seat]
@@ -172,6 +139,17 @@ val cycle_layout
 
     {b Effects:} mutates WM state *)
 val cycle_scheme
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> Ocdwm_core.Direction.Logical.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [cycle_layout ctx seat dir] sets the current layout's registered neighbor in
+    [dir] on the first selected tag of [seat]'s output. Is [Error msg] when
+    [seat] has no output.
+
+    {b Effects:} mutates WM state *)
+val cycle_layout
   :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t

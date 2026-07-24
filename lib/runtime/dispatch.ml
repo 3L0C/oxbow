@@ -81,8 +81,6 @@ let handle_set ctx seat (cmd : Command.Set.t) =
   | Nmaster { delta; global } -> Arrange.set_nmaster seat delta ~global
   | Gaps_inner { delta; global } -> Arrange.set_gaps_inner seat delta ~global
   | Gaps_outer { delta; global } -> Arrange.set_gaps_outer seat delta ~global
-  | Stack { kind; global } -> Arrange.set_stack seat kind ~global
-  | Stack_cycle { dir; global } -> Arrange.cycle_stack seat dir ~global
   | Scroll_policy { policy; global } -> Arrange.set_scroll_policy wm seat policy ~global
   | Default_width { delta; global } -> Arrange.set_default_width wm seat delta ~global
   | Orientation { dir; global } -> Arrange.set_orientation seat dir ~global

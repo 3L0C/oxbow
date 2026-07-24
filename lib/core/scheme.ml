@@ -1,20 +1,29 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
 
 type t =
-  | Tile [@name "tile"]
+  | Even [@name "even"]
+  | Diminish [@name "diminish"]
+  | Dwindle [@name "dwindle"]
+  | Spiral [@name "spiral"]
   | Monocle [@name "monocle"]
 [@@deriving yojson]
 
-let all = [ Tile; Monocle ]
+let all = [ Even; Diminish; Dwindle; Spiral; Monocle ]
 
 let to_string = function
-  | Tile -> "tile"
+  | Even -> "even"
+  | Diminish -> "diminish"
+  | Dwindle -> "dwindle"
+  | Spiral -> "spiral"
   | Monocle -> "monocle"
 ;;
 
 let of_string s =
   match String.trim s |> String.lowercase_ascii with
-  | "tile" -> Some Tile
+  | "even" -> Some Even
+  | "diminish" -> Some Diminish
+  | "dwindle" -> Some Dwindle
+  | "spiral" -> Some Spiral
   | "monocle" -> Some Monocle
   | _ -> None
 ;;
