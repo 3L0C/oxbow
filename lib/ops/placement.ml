@@ -260,9 +260,13 @@ let swap_outputs ctx seat ~first ~second ~policy scope =
       | `All -> fun (o : Output.t) -> o.wm_stack
       | `Visible -> Output.visible_windows
     in
-    let a_ws = in_scope a |> List.rev
+    let a_focus = a.focus_stack
+    and b_focus = b.focus_stack
+    and a_ws = in_scope a |> List.rev
     and b_ws = in_scope b |> List.rev in
     List.iter (fun w -> send_to ~src:a ~dst:b ctx w policy) a_ws;
     List.iter (fun w -> send_to ~src:b ~dst:a ctx w policy) b_ws;
+    Stacking.restore_focus_order ~like:a_focus b;
+    Stacking.restore_focus_order ~like:b_focus a;
     Ok None
 ;;

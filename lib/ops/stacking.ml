@@ -54,6 +54,12 @@ let apply (intent : Focus_intent.t) (output : Output.t) =
 let push windows output = apply (Push windows) output
 let remove_window ~window output = apply (Remove window) output
 
+let restore_focus_order ~like (output : Output.t) =
+  let matches, rest = List.partition (fun w -> List.memq w like) output.focus_stack in
+  let sorted = Ring.rearrange (fun w -> List.memq w like) like matches in
+  Output.set_focus_stack output (sorted @ rest)
+;;
+
 let focus_window ctx seat window =
   Option.iter (apply @@ Promote { ctx; window; seat }) window.output
 ;;

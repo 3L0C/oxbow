@@ -72,7 +72,10 @@ let destroy (w : t) =
 
 let set_position (_ : 'p Ctx.t) (w : t) ~x ~y =
   w.geom <- { w.geom with x; y };
-  River.Window_management.River_node_v1.set_position w.node ~x ~y
+  match w.presentation with
+  | Fullscreen _ -> ()
+  | Tiled | Floating | Maximized _ ->
+    River.Window_management.River_node_v1.set_position w.node ~x ~y
 ;;
 
 let propose_dimensions (_ : Ctx.manage Ctx.t) (w : t) ~width ~height =
@@ -83,8 +86,11 @@ let propose_dimensions (_ : Ctx.manage Ctx.t) (w : t) ~width ~height =
 ;;
 
 let river_sync_geom ctx (w : t) (g : int32 Rect.t) =
-  River.Window_management.River_node_v1.set_position w.node ~x:g.x ~y:g.y;
-  propose_dimensions ctx w ~width:g.w ~height:g.h
+  propose_dimensions ctx w ~width:g.w ~height:g.h;
+  match w.presentation with
+  | Fullscreen _ -> ()
+  | Tiled | Floating | Maximized _ ->
+    River.Window_management.River_node_v1.set_position w.node ~x:g.x ~y:g.y
 ;;
 
 let set_geom ctx (w : t) g =
@@ -184,12 +190,13 @@ let is_fullscreen (w : t) =
   | _ -> false
 ;;
 
-let fullscreen ?(force : bool = false) (_ : Ctx.manage Ctx.t) (w : t) =
+let fullscreen ?(force : bool = false) (ctx : Ctx.manage Ctx.t) (w : t) =
   match w.output with
   | None -> ()
   | Some o ->
     let enter restore =
       w.presentation <- Fullscreen { restore };
+      set_geom ctx w o.geom;
       River.Window_management.River_window_v1.fullscreen w.obj ~output:o.obj;
       River.Window_management.River_window_v1.inform_fullscreen w.obj
     in
