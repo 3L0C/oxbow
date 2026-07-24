@@ -58,7 +58,7 @@
 
         devShells.default = import ./shell.nix {
           inherit pkgs;
-          checks = self.checks.${system};
+          checks = self.checks.${pkgs.stdenv.hostPlatform.system};
         };
       }
     )
