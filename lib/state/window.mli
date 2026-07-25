@@ -254,10 +254,16 @@ val set_identifier : t -> string option -> unit
     {b Effects:} mutates WM state *)
 val set_unreliable_pid : t -> int32 option -> unit
 
-(** [set_parent window parent] sets [window]'s parent to [parent].
+(** [set_parent window ~parent] sets [window]'s parent as [parent].
+
+    {b Effects:} mutates WM state; marks dirty *)
+val set_parent : t -> parent:t option -> unit
+
+(** [set_float_seed_pending window pending] sets [window]'s pending float seed
+    flag to [pending].
 
     {b Effects:} mutates WM state *)
-val set_parent : t -> t Box.t -> unit
+val set_float_seed_pending : t -> bool -> unit
 
 (** [set_decoration_hint window decoration_hint] sets [window]'s decoration hint
     to [decoration_hint].

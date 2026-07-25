@@ -79,3 +79,11 @@ let shift (seat : Seat.t) (dir : Direction.Logical.t) =
        Output.set_wm_stack o @@ Ring.hop_left (( == ) w) Window.tag_visible o.wm_stack;
        Ok None)
 ;;
+
+let raise_floats (_ : Ctx.manage Ctx.t) (output : Output.t) =
+  output.focus_stack
+  |> List.filter (fun w -> Window.tag_visible w && w.presentation = Floating)
+  |> List.rev
+  |> List.iter (fun (w : Window.t) ->
+    River.Window_management.River_node_v1.place_top w.node)
+;;

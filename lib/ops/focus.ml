@@ -180,8 +180,21 @@ let output_name ?warp ctx (seat : Seat.t) (name : string) =
     Ok None
 ;;
 
-let remove_window ctx window =
+let focus_parent (child : Window.t) =
+  match child.parent with
+  | Some ({ lifecycle = New | Active; _ } as p) ->
+    With.output_log child @@ fun o -> Stacking.restore_focus_order ~like:[ p ] o
+  | _ -> ()
+;;
+
+let remove_window ctx (window : Window.t) =
+  let was_focused =
+    match window.output with
+    | Some o -> Phys.opt_holds window (Output.focused_window o)
+    | None -> false
+  in
   Option.iter (Stacking.remove_window ~window) window.output;
+  if was_focused then focus_parent window;
   Option.iter (refresh ctx) window.output
 ;;
 

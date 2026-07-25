@@ -34,6 +34,10 @@ let handle_resize ctx seat window edges =
 let handle_set_dimensions ctx window w h =
   let wm = Ctx.wm ctx in
   Window.set_geom ctx window { window.geom with w; h };
+  if window.float_seed_pending
+  then (
+    Window.set_float_seed_pending window false;
+    Window.restore_or_seed_float ctx window);
   let in_resize =
     List.exists
       (fun (s : Seat.t) ->

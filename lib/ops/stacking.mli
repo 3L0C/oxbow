@@ -35,3 +35,12 @@ val shift
   :  Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
+
+(** [raise_floats ctx output] raises every visible floating window of [output]
+    over the tiled windows. The most recently focused float ends on top.
+
+    {b Effects:} sends River request *)
+val raise_floats
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Output.t
+  -> unit

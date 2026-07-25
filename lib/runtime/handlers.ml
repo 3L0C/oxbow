@@ -277,7 +277,11 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
       method on_unreliable_pid _ ~unreliable_pid =
         Window.set_unreliable_pid window @@ Some unreliable_pid
 
-      method on_parent _ ~parent:_ = ()
+      method on_parent _ ~parent =
+        match Option.bind parent (fun p -> Some (Wayland.Proxy.user_data p)) with
+        | Some (Window_data p) -> Window.set_parent window ~parent:(Some p)
+        | _ -> Window.set_parent window ~parent:None
+
       method on_title _ ~title = Window.set_title window title
       method on_identifier _ ~identifier = Window.set_identifier window @@ Some identifier
 

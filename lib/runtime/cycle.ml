@@ -60,10 +60,14 @@ let close_windows ctx =
           | Closing ->
             disconnect_seats w wm.seats;
             Focus.remove_window ctx w;
+            List.iter
+              (fun (c : Window.t) ->
+                 if Phys.opt_holds w c.parent then Window.set_parent c ~parent:None)
+              wm.windows;
             Window.destroy w;
             Option.iter Dirty.mark_output w.output;
             false
-          | _ -> true)
+          | New | Active -> true)
        wm.windows
 ;;
 
@@ -87,13 +91,18 @@ let manage_new_window ctx (window : Window.t) =
       River.Window_management.River_window_v1.Capabilities.(
         Int32.logor maximize fullscreen);
   Option.iter (Stacking.push [ window ]) window.output;
-  if window.is_fixed then Window.set_presentation window Floating;
+  if window.is_fixed || Option.is_some window.parent
+  then Window.set_presentation window Floating;
   Rules.apply_for ctx window;
   Window.set_lifecycle window Active;
   match window.output with
   | Some o ->
-    if window.presentation = Tiled && Output.current_layout o = Floating
-    then Window.restore_or_seed_float ctx window
+    if
+      window.presentation = Floating
+      || (window.presentation = Tiled && Output.current_layout o = Floating)
+    then (
+      Window.propose_dimensions ctx window ~width:0l ~height:0l;
+      Window.set_float_seed_pending window true)
   | _ -> ()
 ;;
 
@@ -176,6 +185,7 @@ let manage (wm : Wm.t) proxy =
            List.iter (manage_window ctx) wm.windows;
            List.iter (manage_seat ctx) wm.seats;
            List.iter (manage_output ctx) wm.outputs;
+           List.iter (Stacking.raise_floats ctx) wm.outputs;
            List.iter (Window.sync ctx) wm.windows;
            List.iter (Focus.apply_warp ctx) wm.seats;
            Events.publish wm))

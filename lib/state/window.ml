@@ -33,7 +33,8 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; title = None
   ; identifier = None
   ; unreliable_pid = None
-  ; parent = { body = None }
+  ; parent = None
+  ; float_seed_pending = false
   ; decoration_hint = None
   ; presentation_hint = None
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
@@ -168,14 +169,16 @@ let restore_or_seed_float (ctx : Ctx.manage Ctx.t) (w : t) =
               ; h = of_int o.usable.h
               })
         in
+        let sized = clamp32 w { w.geom with x = 0l; y = 0l } in
+        let spare_w = Int32.(sub usable.w sized.w |> max 0l) in
+        let spare_h = Int32.(sub usable.h sized.h |> max 0l) in
         Rect.(
           Int32.
-            { x = div usable.w 4l |> add usable.x
-            ; y = div usable.h 4l |> add usable.y
-            ; w = div usable.w 2l
-            ; h = div usable.h 2l
+            { x = div spare_w 2l |> add usable.x
+            ; y = div spare_h 2l |> add usable.y
+            ; w = sized.w
+            ; h = sized.h
             })
-        |> clamp32 w
     in
     w.float_geom <- Some g;
     set_geom ctx w g
@@ -519,7 +522,13 @@ let set_title (w : t) title = w.title <- title
 let set_app_id (w : t) app_id = w.app_id <- app_id
 let set_identifier (w : t) identifier = w.identifier <- identifier
 let set_unreliable_pid (w : t) pid = w.unreliable_pid <- pid
-let set_parent (w : t) parent = w.parent <- parent
+
+let set_parent (w : t) ~parent =
+  w.parent <- parent;
+  Option.iter Dirty.mark_output w.output
+;;
+
+let set_float_seed_pending (w : t) v = w.float_seed_pending <- v
 let set_decoration_hint (w : t) hint = w.decoration_hint <- hint
 let set_presentation_hint (w : t) hint = w.presentation_hint <- hint
 let set_size_hints (w : t) hints = w.size_hints <- hints

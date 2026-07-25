@@ -201,7 +201,8 @@ and Window : sig
     ; mutable title : string option
     ; mutable identifier : string option
     ; mutable unreliable_pid : int32 option
-    ; mutable parent : Window.t Box.t
+    ; mutable parent : t option
+    ; mutable float_seed_pending : bool
     ; mutable decoration_hint : Decoration_hint.t option
     ; mutable presentation_hint :
         River.Window_management.River_output_v1.Presentation_mode.t option
