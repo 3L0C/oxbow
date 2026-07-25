@@ -1,4 +1,3 @@
-open! Ocdwm_core
 open! Ocdwm_ipc
 
 let command_term = Cmdliner.Term.const @@ Command.Wm Close

@@ -1,6 +1,6 @@
 open! Ocdwm_state
 
-let apply (ctx : Ctx.manage Ctx.t) window =
+let apply (_ctx : Ctx.manage Ctx.t) window =
   let tiled = Window.is_tiled window in
   let edges =
     if tiled

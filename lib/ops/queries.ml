@@ -2,7 +2,6 @@ open! Ppx_yojson_conv_lib.Yojson_conv
 open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ipc
-open! Ocdwm_layout
 
 let handle_rules (wm : Wm.t) = Ok (Some ([%yojson_of: Rule.t list] wm.config.rules))
 let handle_keymaps wm seat all = Ok (Some (Bind.list wm seat ~all))
@@ -85,7 +84,7 @@ let handle wm seat (query : Query.t) =
   | Focused -> handle_focused seat
   | Windows { query } -> handle_windows wm query
   | Tags { output } -> handle_tags wm output
-  | Layouts { output } -> handle_layouts
-  | Schemes { output } -> handle_schemes
+  | Layouts _ -> handle_layouts
+  | Schemes _ -> handle_schemes
   | Seats -> handle_seats wm
 ;;

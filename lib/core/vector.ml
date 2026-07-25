@@ -11,7 +11,7 @@ let direction v =
   match v with
   | { x; y } when x = 0 && y = 0 -> None
   | { x; y } when abs y > abs x -> Some (if y > 0 then Down else Up)
-  | { x; y } -> Some (if x > 0 then Right else Left)
+  | { x; _ } -> Some (if x > 0 then Right else Left)
 ;;
 
 let length_squared v = (v.x * v.x) + (v.y * v.y)

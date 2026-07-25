@@ -28,7 +28,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     River.Layer_shell.River_layer_shell_v1.get_output wm.river_lsh_v1 ~output:river_output
     @@ object
          inherit [_] River.Layer_shell.River_layer_shell_output_v1.v1
-         method user_data = Output_box output_box
+         method! user_data = Output_box output_box
 
          method on_non_exclusive_area proxy ~x ~y ~width ~height =
            match Wayland.Proxy.user_data proxy with
@@ -59,7 +59,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     river_output
     object
       inherit [_] River.Window_management.River_output_v1.v4
-      method user_data = Output_data output
+      method! user_data = Output_data output
       method on_removed _ = Output.set_lifecycle output Removed
 
       method on_wl_output _ ~name =
@@ -74,23 +74,23 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
                    Output.set_name output @@ Some name;
                    List.iter (fun w -> Window.rehome wm w name) wm.windows
 
-                 method on_scale _ ~factor = ()
-                 method on_mode _ ~flags ~width ~height ~refresh = ()
+                 method on_scale _ ~factor:_ = ()
+                 method on_mode _ ~flags:_ ~width:_ ~height:_ ~refresh:_ = ()
 
                  method on_geometry
                    _
-                   ~x
-                   ~y
-                   ~physical_width
-                   ~physical_height
-                   ~subpixel
-                   ~make
-                   ~model
-                   ~transform =
+                   ~x:_
+                   ~y:_
+                   ~physical_width:_
+                   ~physical_height:_
+                   ~subpixel:_
+                   ~make:_
+                   ~model:_
+                   ~transform:_ =
                    ()
 
                  method on_done _ = ()
-                 method on_description _ ~description = ()
+                 method on_description _ ~description:_ = ()
                end
              , 4l )
         in
@@ -139,7 +139,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
     River.Layer_shell.River_layer_shell_v1.get_seat wm.river_lsh_v1 ~seat:river_seat
     @@ object
          inherit [_] River.Layer_shell.River_layer_shell_seat_v1.v1
-         method user_data = Seat_box seat_box
+         method! user_data = Seat_box seat_box
 
          method on_focus_none proxy =
            let s =
@@ -191,7 +191,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
     river_seat
     object
       inherit [_] River.Window_management.River_seat_v1.v4
-      method user_data = Seat_data seat
+      method! user_data = Seat_data seat
       method on_removed _ = Seat.set_lifecycle seat Closing
 
       method on_pointer_enter _ ~window =
@@ -221,13 +221,13 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
                    (Logs.info @@ fun m -> m "Seat: Name: %S" name);
                    Seat.set_name seat @@ Some name
 
-                 method on_capabilities _ ~capabilities = ()
+                 method on_capabilities _ ~capabilities:_ = ()
                end
              , 9l )
         in
         ()
 
-      method on_shell_surface_interaction _ ~shell_surface = ()
+      method on_shell_surface_interaction _ ~shell_surface:_ = ()
       method on_pointer_position _ ~x ~y = Pointer.handle_position wm seat ~x ~y
     end;
   Wm.set_seats wm (seat :: wm.seats);
@@ -265,7 +265,7 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
     river_window
     object
       inherit [_] River.Window_management.River_window_v1.v4
-      method user_data = Window_data window
+      method! user_data = Window_data window
       method on_closed _ = Window.set_lifecycle window Closing
 
       method on_dimensions _ ~width ~height =
@@ -277,18 +277,17 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
       method on_unreliable_pid _ ~unreliable_pid =
         Window.set_unreliable_pid window @@ Some unreliable_pid
 
-      method on_parent _ ~parent = ()
+      method on_parent _ ~parent:_ = ()
       method on_title _ ~title = Window.set_title window title
       method on_identifier _ ~identifier = Window.set_identifier window @@ Some identifier
 
       method on_dimensions_hint _ ~min_width ~min_height ~max_width ~max_height =
         Window.set_is_fixed
           window
-          Int32.(
-            min_width > 0l
-            && min_height > 0l
-            && min_width = max_width
-            && min_height = max_height);
+          (min_width > 0l
+           && min_height > 0l
+           && min_width = max_width
+           && min_height = max_height);
         Window.set_size_hints
           window
           { min_w = min_width; max_w = max_width; min_h = min_height; max_h = max_height }
@@ -333,7 +332,7 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
       method on_presentation_hint _ ~hint =
         Window.set_presentation_hint window @@ Some hint
 
-      method on_show_window_menu_requested _ ~x ~y = ()
+      method on_show_window_menu_requested _ ~x:_ ~y:_ = ()
       method on_minimize_requested _ = ()
     end;
   Wm.set_windows wm (window :: wm.windows)
@@ -414,7 +413,7 @@ let on_xkb_keyboard xkb (wm_box : Wm.t Box.t) =
 
        method on_numlock_enabled _ = ()
        method on_numlock_disabled _ = ()
-       method on_layout _ ~index ~name = ()
+       method on_layout _ ~index:_ ~name:_ = ()
        method on_done _ = ()
        method on_capslock_enabled _ = ()
        method on_capslock_disabled _ = ()

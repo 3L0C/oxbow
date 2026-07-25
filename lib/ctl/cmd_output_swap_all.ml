@@ -1,8 +1,6 @@
-open! Ocdwm_core
 open! Ocdwm_ipc
 
 let mk_command_term swap_target =
-  let open Cmdliner in
   let open Cmdliner.Term.Syntax in
   let+ target = swap_target
   and+ policy = Ctl_cli.policy_flag

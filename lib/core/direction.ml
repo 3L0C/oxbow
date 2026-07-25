@@ -1,5 +1,3 @@
-open! Ppx_yojson_conv_lib.Yojson_conv
-
 module Logical = struct
   type t =
     | Next [@name "next"]

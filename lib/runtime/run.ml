@@ -1,7 +1,5 @@
 open! Ocdwm_core
-open! Ocdwm_layout
 open! Ocdwm_state
-open! Ocdwm_ops
 
 let loop ~init_command ~net ~clock =
   Eio.Switch.run

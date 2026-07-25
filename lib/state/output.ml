@@ -1,8 +1,5 @@
 open! Ocdwm_core
-open! Ocdwm_layout
-module Lifecycle = Types.Output.Lifecycle
-
-type t = Types.Output.t
+include Types.Output
 
 let focused_window (o : t) = List.find_opt Window.tag_visible o.focus_stack
 

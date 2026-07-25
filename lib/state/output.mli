@@ -1,6 +1,4 @@
-module Lifecycle = Types.Output.Lifecycle
-
-type t = Types.Output.t
+include module type of Types.Output
 
 (** [focused_window output] is [Some window] when [output] has a focused visible
     window *)

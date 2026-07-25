@@ -90,7 +90,7 @@ let compute ~(params : Params.Tiling.t) ~(usable_area : int Rect.t) ~(count : in
       masters @ clients
     in
     (match params.scheme with
-     | Monocle -> List.init n (fun i -> usable_area)
+     | Monocle -> List.init n (fun _ -> usable_area)
      | Even ->
        tiled
        @@ fun ~c_area ~cw ~c_count ->
@@ -101,10 +101,10 @@ let compute ~(params : Params.Tiling.t) ~(usable_area : int Rect.t) ~(count : in
        diminish_heights ~total:c_area.h c_count |> column ~x:c_area.x ~w:cw ~y:c_area.y
      | Dwindle ->
        tiled
-       @@ fun ~c_area ~cw ~c_count ->
+       @@ fun ~c_area ~cw:_ ~c_count ->
        if c_count = 0 then [] else subdivide ~pick:dwindle_pick c_area 0 c_count
      | Spiral ->
        tiled
-       @@ fun ~c_area ~cw ~c_count ->
+       @@ fun ~c_area ~cw:_ ~c_count ->
        if c_count = 0 then [] else subdivide ~pick:spiral_pick c_area 0 c_count)
 ;;

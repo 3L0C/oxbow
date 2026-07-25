@@ -64,7 +64,7 @@ let set_layout_file wm ~path =
     Ok None
 ;;
 
-let handle (ctx : Ctx.manage Ctx.t) seat (cmd : Command.Input.Keyboard.t) =
+let handle (ctx : Ctx.manage Ctx.t) _seat (cmd : Command.Input.Keyboard.t) =
   let wm = Ctx.wm ctx in
   match cmd with
   | Repeat { rate; delay } ->

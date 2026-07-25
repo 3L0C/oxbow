@@ -140,13 +140,12 @@ let clamp (w : t) (g : int Rect.t) =
 
 let clamp32 (w : t) (g : int32 Rect.t) =
   let h = w.size_hints in
-  Rect.(
-    Int32.
-      { x = g.x
-      ; y = g.y
-      ; w = clamp_dim ~min_v:h.min_w ~max_v:h.max_w g.w
-      ; h = clamp_dim ~min_v:h.min_h ~max_v:h.max_h g.h
-      })
+  Rect.
+    { x = g.x
+    ; y = g.y
+    ; w = clamp_dim ~min_v:h.min_w ~max_v:h.max_w g.w
+    ; h = clamp_dim ~min_v:h.min_h ~max_v:h.max_h g.h
+    }
 ;;
 
 let restore_or_seed_float (ctx : Ctx.manage Ctx.t) (w : t) =
@@ -361,14 +360,14 @@ let at_point ~(x : int32) ~(y : int32) =
   List.find_opt (fun (w : t) -> tag_visible w && Rect.contains ~x ~y w.geom)
 ;;
 
-let fake_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
+let fake_fullscreen (_ctx : Ctx.manage Ctx.t) (w : t) =
   if not w.is_fake_fullscreen
   then (
     w.is_fake_fullscreen <- true;
     River.Window_management.River_window_v1.inform_fullscreen w.obj)
 ;;
 
-let exit_fake_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
+let exit_fake_fullscreen (_ctx : Ctx.manage Ctx.t) (w : t) =
   if w.is_fake_fullscreen
   then (
     w.is_fake_fullscreen <- false;

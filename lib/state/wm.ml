@@ -1,4 +1,3 @@
-open! Ocdwm_core
 include Types.Wm
 
 module Lifecycle = struct
@@ -43,12 +42,12 @@ let add_xkb_stash (wm : t) device xkb =
 ;;
 
 let remove_xkb_stash (wm : t) device =
-  let matches, rest = List.partition (fun (d, _) -> Int32.equal device d) wm.xkb_stash in
+  let _matches, rest = List.partition (fun (d, _) -> Int32.equal device d) wm.xkb_stash in
   wm.xkb_stash <- rest
 ;;
 
 let find_xkb_stash_opt (wm : t) device =
-  let result = List.find_opt (fun (d, xkb) -> Int32.equal device d) wm.xkb_stash in
+  let result = List.find_opt (fun (d, _xkb) -> Int32.equal device d) wm.xkb_stash in
   match result with
   | Some (_, xkb) -> Some xkb
   | None -> None

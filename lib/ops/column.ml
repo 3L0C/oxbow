@@ -96,7 +96,7 @@ let default_width seat =
 
 let cycle_width seat =
   with_focused_column seat
-  @@ fun o _w _cols col ->
+  @@ fun _o _w _cols col ->
   match List.nth_opt col 0 with
   | None -> Error "not in a column"
   | Some w ->

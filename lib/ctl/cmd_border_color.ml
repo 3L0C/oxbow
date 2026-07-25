@@ -2,7 +2,6 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 
 let command_term which =
-  let open Cmdliner in
   let open Cmdliner.Term.Syntax in
   let+ color = Ctl_cli.color_arg in
   Command.Border (Color { which; color })

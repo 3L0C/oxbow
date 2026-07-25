@@ -73,7 +73,7 @@ let remove (wm : Wm.t) rule =
   else Error "no matching rule"
 ;;
 
-let handle ctx seat (cmd : Command.Rule.t) =
+let handle ctx _seat (cmd : Command.Rule.t) =
   let wm = Ctx.wm ctx in
   match cmd with
   | Add rule -> add wm rule

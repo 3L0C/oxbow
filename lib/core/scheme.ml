@@ -1,5 +1,3 @@
-open! Ppx_yojson_conv_lib.Yojson_conv
-
 type t =
   | Even [@name "even"]
   | Diminish [@name "diminish"]

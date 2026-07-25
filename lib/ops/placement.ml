@@ -1,7 +1,6 @@
 open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ipc
-open! Ocdwm_layout
 
 let zoom ?warp ctx (seat : Seat.t) =
   With.focused_output seat
@@ -26,7 +25,7 @@ let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
   match window.output with
   | Some o when o == target -> ()
   | None -> take ()
-  | Some o ->
+  | Some _ ->
     Option.iter (Stacking.remove_window ~window) window.output;
     take ()
 ;;
@@ -202,7 +201,7 @@ let close_focused seat =
 
 let move_to ~x ~y ctx seat =
   With.focused_window seat
-  @@ fun o w ->
+  @@ fun _o w ->
   if Window.is_fullscreen w
   then Error "cannot move a fullscreen window"
   else (
@@ -213,7 +212,7 @@ let move_to ~x ~y ctx seat =
 
 let move_spatial ctx seat dir by =
   With.focused_window seat
-  @@ fun o w ->
+  @@ fun _o w ->
   if Window.is_fullscreen w
   then Error "cannot move a fullscreen window"
   else (
@@ -224,7 +223,7 @@ let move_spatial ctx seat dir by =
 
 let resize_to ~width ~height ctx seat =
   With.focused_window seat
-  @@ fun o w ->
+  @@ fun _o w ->
   if Window.is_fullscreen w
   then Error "cannot resize a fullscreen window"
   else (
@@ -235,7 +234,7 @@ let resize_to ~width ~height ctx seat =
 
 let resize_spatial ctx seat dir by =
   With.focused_window seat
-  @@ fun o w ->
+  @@ fun _o w ->
   if Window.is_fullscreen w
   then Error "cannot resize a fullscreen window"
   else (

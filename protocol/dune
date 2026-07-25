@@ -91,3 +91,8 @@
   (chdir
    %{workspace_root}/protocol
    (run wayland-scanner-ocaml --open River_input_management_v1_proto %{deps}))))
+
+(env
+ (_
+  (flags
+   (:standard -w -a -warn-error -a))))

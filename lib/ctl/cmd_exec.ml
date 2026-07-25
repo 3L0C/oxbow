@@ -1,4 +1,3 @@
-open! Ocdwm_core
 open! Ocdwm_ipc
 
 let docv_term = "COMMAND"
@@ -30,6 +29,5 @@ let doc =
    \"(scratch-buffer)\" )"
 ;;
 
-let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term command_term
 let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.command_term command_term
 let bind_cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.bind_term bind_term

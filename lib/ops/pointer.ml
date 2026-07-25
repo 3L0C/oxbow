@@ -17,7 +17,7 @@ let handle_position ~x ~y (wm : Wm.t) seat =
        | _ -> ()))
 ;;
 
-let warp_to_focus ctx seat =
+let warp_to_focus _ctx seat =
   let center (g : int32 Rect.t) = Int32.(add g.x (div g.w 2l), add g.y (div g.h 2l)) in
   let target =
     match Seat.focused_window seat with
@@ -31,7 +31,7 @@ let warp_to_focus ctx seat =
     River.Window_management.River_seat_v1.pointer_warp seat.obj ~x ~y
 ;;
 
-let handle ctx seat (cmd : Command.Input.Pointer.t) =
+let handle ctx _seat (cmd : Command.Input.Pointer.t) =
   let wm = Ctx.wm ctx in
   let () =
     match cmd with

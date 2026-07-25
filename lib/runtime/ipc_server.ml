@@ -3,7 +3,6 @@
 open! Ocdwm_core
 open! Ocdwm_ipc
 open! Ocdwm_state
-open! Ocdwm_ops
 
 module Handler = struct
   let respond_err flow msg =
@@ -18,7 +17,7 @@ module Handler = struct
     Eio.Flow.copy_string s flow
   ;;
 
-  let validate ~(wm : Wm.t) (body : Request.Body.t) =
+  let validate ~wm:_ (body : Request.Body.t) =
     match body with
     | Command c ->
       (match c with

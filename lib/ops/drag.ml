@@ -94,6 +94,6 @@ let step ctx (seat : Seat.t) =
       op_r.window
       ~width:(max 1l width)
       ~height:(max 1l height)
-  | Some (Move op_m) -> ()
+  | Some (Move _) -> ()
   | None -> ()
 ;;

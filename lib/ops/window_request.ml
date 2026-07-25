@@ -45,7 +45,7 @@ let handle_set_dimensions ctx window w h =
   if window.presentation = Floating && not in_resize then Window.fit_to_output ctx window
 ;;
 
-let handle_set_tags ctx window (arg : Tag.Arg.t) =
+let handle_set_tags _ctx window (arg : Tag.Arg.t) =
   let set_tags s = Window.set_tags window s in
   match window.output, arg with
   | Some o, _ -> Output.resolve_tag_arg arg o |> set_tags

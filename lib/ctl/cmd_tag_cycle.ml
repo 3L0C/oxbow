@@ -2,7 +2,6 @@ open! Ocdwm_core
 open! Ocdwm_ipc
 
 let command_term dir =
-  let open Cmdliner in
   let open Cmdliner.Term.Syntax in
   let+ occupied = Ctl_cli.occupied_flag in
   if occupied then Command.Tag (View_cycle_occupied dir) else Command.Tag (View_cycle dir)

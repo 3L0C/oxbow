@@ -1,8 +1,6 @@
-open Cmdliner
+open! Cmdliner
 
 let log_level_arg =
-  let open Cmdliner in
-  let open Cmdliner.Term.Syntax in
   let levels =
     [ "error", Logs.Error
     ; "warning", Logs.Warning

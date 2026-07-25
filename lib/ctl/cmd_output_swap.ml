@@ -1,6 +1,3 @@
-open! Ocdwm_core
-open! Ocdwm_ipc
-
 let name = "swap"
 let doc = "Swap windows between outputs"
 

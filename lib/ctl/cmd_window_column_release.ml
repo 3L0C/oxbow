@@ -1,4 +1,3 @@
-open! Ocdwm_core
 open! Ocdwm_ipc
 
 let term = Cmdliner.Term.const (Command.Window Column_release)

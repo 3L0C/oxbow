@@ -1,10 +1,10 @@
 let move_to_top x xs = x :: List.filter (fun y -> y != x) xs
 
-let rec wrapped_search p l lst =
+let wrapped_search p l lst =
   let rec aux (wrapped : bool) = function
-    | x :: xs when p x -> Some x
+    | x :: _ when p x -> Some x
     | [ x ] when not wrapped -> l x |> aux true
-    | x :: xs -> aux wrapped xs
+    | _ :: xs -> aux wrapped xs
     | [] -> None
   in
   aux false lst
@@ -14,7 +14,7 @@ let next_or_first e = function
   | [] -> None
   | first :: _ as lst ->
     let rec aux = function
-      | x :: y :: xs when x == e -> Some y
+      | x :: y :: _ when x == e -> Some y
       | [ x ] when x == e -> Some first
       | _ :: rest -> aux rest
       | [] -> None

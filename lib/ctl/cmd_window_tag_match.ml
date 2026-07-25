@@ -3,7 +3,6 @@ open! Ocdwm_ipc
 
 let command_term =
   let open Window_query in
-  let open Cmdliner in
   let open Cmdliner.Term.Syntax in
   let+ pattern = Ctl_cli.window_query_pattern_arg
   and+ field = Ctl_cli.window_query_field_flag

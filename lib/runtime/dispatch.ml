@@ -1,10 +1,8 @@
-open! Ocdwm_core
 open! Ocdwm_ipc
 open! Ocdwm_state
 open! Ocdwm_ops
-open! Ocdwm_layout
 
-let handle_border ctx seat (cmd : Command.Border.t) =
+let handle_border ctx _seat (cmd : Command.Border.t) =
   let wm = Ctx.wm ctx in
   match cmd with
   | Width width ->
@@ -15,7 +13,7 @@ let handle_border ctx seat (cmd : Command.Border.t) =
     Ok None
 ;;
 
-let handle_gaps ctx seat (cmd : Command.Gaps.t) =
+let handle_gaps _ctx seat (cmd : Command.Gaps.t) =
   match cmd with
   | Inner { delta; global } -> Arrange.set_gaps_inner seat delta ~global
   | Outer { delta; global } -> Arrange.set_gaps_outer seat delta ~global
@@ -52,7 +50,7 @@ let handle_output ctx seat (cmd : Command.Output.t) =
 
 let handle_rule = Rules.handle
 
-let handle_session ctx seat (cmd : Command.Session.t) =
+let handle_session ctx _seat (cmd : Command.Session.t) =
   let wm = Ctx.wm ctx in
   let () =
     match cmd with
@@ -108,7 +106,7 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Column_width_cycle -> Column.cycle_width seat
 ;;
 
-let handle_wm ctx seat (cmd : Command.Wm.t) =
+let handle_wm ctx _seat (cmd : Command.Wm.t) =
   let wm = Ctx.wm ctx in
   let () =
     match cmd with

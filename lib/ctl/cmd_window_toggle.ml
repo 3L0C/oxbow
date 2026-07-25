@@ -1,4 +1,3 @@
-open! Ocdwm_core
 open! Ocdwm_ipc
 
 let leaf mk_term (name, doc, command) =
