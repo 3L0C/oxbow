@@ -75,7 +75,7 @@ let exit_overview ctx (output : Output.t) =
          | Floating -> Window.restore_or_seed_float ctx w
          | Maximized { restore } -> Window.maximize ~restore ctx w)
       output.wm_stack;
-    Dirty.mark_output output)
+    Schedule.manage ())
 ;;
 
 let toggle_overview ctx seat =

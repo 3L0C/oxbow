@@ -220,20 +220,8 @@ let wm_sync (ctx : Ctx.manage Ctx.t) =
 
 let seat_sync ctx (seat : Seat.t) =
   (match seat.lifecycle with
-   | Dirty { prev = Closing } -> Seat.set_lifecycle seat Closing
-   | Dirty { prev } ->
-     (* The dirty flag is taken before handling: a handler that re-marks this
-        output schedules another cycle, so handlers must be idempotent. *)
-     Seat.set_lifecycle seat prev;
-     refresh_layer_shell ctx seat;
-     if Seat.is_dirty seat
-     then
-       Logs.debug
-       @@ fun m ->
-       m
-         "seat_sync: %s re-dirtied during its own handling (non-idempotent handler?)"
-         (Option.value seat.name ~default:"<unnamed>")
-   | New | Active | Closing -> ());
+   | Active -> refresh_layer_shell ctx seat
+   | New | Closing -> ());
   Seat.refresh_cursor_target seat
 ;;
 

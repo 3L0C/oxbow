@@ -70,7 +70,7 @@ let switch_tags ~tags (o : t) =
   then (
     o.previous_tags <- o.selected_tags;
     o.selected_tags <- tags;
-    Dirty.mark_output o)
+    Schedule.manage ())
 ;;
 
 let occupied_tags (o : t) =
@@ -106,7 +106,7 @@ let set_layout o layout ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_scheme o scheme ~global =
@@ -114,7 +114,7 @@ let set_scheme o scheme ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let cycle_scheme o dir ~global =
@@ -124,12 +124,12 @@ let cycle_scheme o dir ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_overview (o : t) v =
   o.overview <- v;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_mfact o (delta : float Delta.t) ~global =
@@ -145,7 +145,7 @@ let set_mfact o (delta : float Delta.t) ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_nmaster o (delta : int Delta.t) ~global =
@@ -161,7 +161,7 @@ let set_nmaster o (delta : int Delta.t) ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_gaps_inner o (delta : int Delta.t) ~global =
@@ -177,7 +177,7 @@ let set_gaps_inner o (delta : int Delta.t) ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_gaps_outer o (delta : int Delta.t) ~global =
@@ -193,7 +193,7 @@ let set_gaps_outer o (delta : int Delta.t) ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_scroll_policy o policy ~global =
@@ -201,7 +201,7 @@ let set_scroll_policy o policy ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_orientation o dir ~global =
@@ -209,12 +209,12 @@ let set_orientation o dir ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_wm_stack (o : t) ws =
   o.wm_stack <- ws;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_focus_stack (o : t) ws = o.focus_stack <- ws
@@ -244,7 +244,7 @@ let set_lifecycle (o : t) lifecycle = o.lifecycle <- lifecycle
 
 let set_usable (o : t) usable =
   o.usable <- usable;
-  Dirty.mark_output o
+  Schedule.manage ()
 ;;
 
 let set_name (o : t) name = o.name <- name
@@ -263,11 +263,5 @@ let set_default_width o (delta : float Delta.t) ~global =
   if global
   then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
   else to_tag_data o |> apply;
-  Dirty.mark_output o
-;;
-
-let is_dirty (o : t) =
-  match o.lifecycle with
-  | Dirty _ -> true
-  | _ -> false
+  Schedule.manage ()
 ;;

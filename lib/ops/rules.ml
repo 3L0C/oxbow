@@ -25,19 +25,19 @@ let apply_effects
   e.move_to |>? fun { x; y } -> queue (Move_to { x; y })
 ;;
 
-let apply wm (window : Window.t) ({ pattern; effects } : Rule.t) =
+let apply (window : Window.t) ({ pattern; effects } : Rule.t) =
   match Pattern.compile pattern with
   | Error e -> Logs.debug @@ fun m -> m "%s" e
   | Ok matches ->
     if matches ~title:window.title ~app_id:window.app_id ~identifier:window.identifier
     then (
-      let queue r = Window.queue_request wm window r in
+      let queue r = Window.queue_request window r in
       apply_effects queue effects window)
 ;;
 
 let apply_for ctx window =
   let wm = Ctx.wm ctx in
-  List.iter (apply wm window) wm.config.rules
+  List.iter (apply window) wm.config.rules
 ;;
 
 let same (p : Pattern.t) (r : Rule.t) = Pattern.equal p r.pattern
@@ -49,11 +49,11 @@ let add (wm : Wm.t) (rule : Rule.t) =
       { rule with effects = Rule.Effects.merge ~old:old.effects ~new_:rule.effects }
     in
     Config.replace_rule wm merged;
-    List.iter (fun w -> apply wm w merged) wm.windows;
+    List.iter (fun w -> apply w merged) wm.windows;
     Ok None
   | None ->
     Config.add_rule wm rule;
-    List.iter (fun w -> apply wm w rule) wm.windows;
+    List.iter (fun w -> apply w rule) wm.windows;
     Ok None
 ;;
 

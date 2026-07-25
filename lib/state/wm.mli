@@ -108,14 +108,6 @@ val add_subscriber : t -> Ipc.Subscriber.t -> unit
     {b Effects:} mutates WM state *)
 val remove_subscriber : t -> Ipc.Subscriber.t -> unit
 
-(** [is_dirty wm] is [true] when a dirty mark is pending. *)
-val is_dirty : t -> bool
-
-(** [clean wm] marks [wm] clean.
-
-    {b Effects:} mutates WM state *)
-val clean : t -> unit
-
 (** [set_session_locked wm locked] records whether the session is locked.
 
     {b Effects:} mutates WM state *)

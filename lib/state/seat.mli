@@ -16,10 +16,10 @@ val refresh_cursor_target : t -> unit
     {b Effects:} mutates WM state; sends River request *)
 val op_end : Ctx.manage Ctx.t -> t -> unit
 
-(** [queue_pending wm seat request] adds [request] to [seat]'s queue.
+(** [queue_pending seat request] adds [request] to [seat]'s queue.
 
-    {b Effects:} mutates WM state; marks dirty *)
-val queue_pending : Types.Wm.t -> t -> Pending_request.t -> unit
+    {b Effects:} mutates WM state *)
+val queue_pending : t -> Pending_request.t -> unit
 
 (** [drain_pending seat] removes and returns the next pending request on [seat],
     or [None] when the queue is empty.
@@ -34,7 +34,7 @@ val clear_pending : t -> unit
 
 (** [set_output seat output] sets [seat]'s output to [output].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_output : t -> Types.Output.t option -> unit
 
 (** [focus_output seat output] moves [seat]'s focus to [output] if [output] is
@@ -45,7 +45,7 @@ val focus_output : t -> Types.Output.t option -> unit
 
 (** [set_layer_focus seat layer] sets [seat]'s focused layer to [layer].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_layer_focus : t -> Layer_focus.t option -> unit
 
 (** [set_mode ctx seat mode] sets [seat]'s current mode to [mode]. Is
@@ -117,9 +117,6 @@ val set_interacted : t -> Types.Window.t option -> unit
 
     {b Effects:} mutates WM state *)
 val set_warp_request : t -> Warp_request.t -> unit
-
-(** [is_dirty seat] is true when [seat]'s lifecycle is [Dirty _]. *)
-val is_dirty : t -> bool
 
 (** [bind ctx seat ?mode mods key command] binds the [mods] and [key] to
     [command] in [mode] (default [Mode.normal]). Replaces any existing binding

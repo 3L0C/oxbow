@@ -46,8 +46,7 @@ let send_to ~(src : Output.t) ~(dst : Output.t) ctx window policy =
      Window.remember_float window
    | Maximized { restore } -> Window.maximize ~restore ctx window
    | Fullscreen _ -> Window.fullscreen ~force:true ctx window);
-  Dirty.mark_output src;
-  Dirty.mark_output dst
+  Schedule.manage ()
 ;;
 
 let send_window_to_logical ctx (window : Window.t) (dir : Direction.Logical.t) policy =
@@ -135,11 +134,11 @@ let toggle_floating ctx seat =
     | Floating when w.is_fixed -> Error "cannot tile a fixed window"
     | Tiled ->
       Window.float ctx w;
-      Dirty.mark_output o;
+      Schedule.manage ();
       Ok None
     | Floating ->
       Window.tile w;
-      Dirty.mark_output o;
+      Schedule.manage ();
       Ok None)
 ;;
 
@@ -147,12 +146,12 @@ let maximize ctx window =
   let wm = Ctx.wm ctx in
   List.iter (Seat.op_end ctx) wm.seats;
   Window.maximize ctx window;
-  Option.iter Dirty.mark_output window.output
+  Schedule.manage ()
 ;;
 
 let unmaximize ctx window =
   Window.unmaximize ctx window;
-  Option.iter Dirty.mark_output window.output
+  Schedule.manage ()
 ;;
 
 let fullscreen ctx output (window : Window.t) cb =
@@ -167,20 +166,18 @@ let fullscreen ctx output (window : Window.t) cb =
            then cb ctx w Window.Request.Exit_fullscreen)
         o.focus_stack;
       List.iter (Seat.op_end ctx) wm.seats;
-      Option.iter Dirty.mark_output window.output;
       move_window window o;
-      Dirty.mark_output o;
-      Window.fullscreen ctx window
+      Window.fullscreen ctx window;
+      Schedule.manage ()
   in
   match window.presentation with
   | Tiled | Floating | Maximized _ -> enter ()
   | Fullscreen _ ->
     (match output, window.output with
      | Some o1, Some o2 when o1 != o2 ->
-       Dirty.mark_output o2;
        move_window window o1;
-       Dirty.mark_output o1;
-       Window.fullscreen ~force:true ctx window
+       Window.fullscreen ~force:true ctx window;
+       Schedule.manage ()
      | _, _ -> ())
 ;;
 
@@ -189,7 +186,7 @@ let exit_fullscreen ctx (window : Window.t) =
   | Tiled | Floating | Maximized _ -> ()
   | Fullscreen _ ->
     Window.exit_fullscreen ctx window;
-    Option.iter Dirty.mark_output window.output
+    Schedule.manage ()
 ;;
 
 let close_focused seat =
@@ -204,7 +201,7 @@ let move_window_to ~x ~y ctx w =
   then Error "cannot move a fullscreen window"
   else (
     Window.move_to ctx w ~x ~y;
-    Option.iter Dirty.mark_output w.output;
+    Schedule.manage ();
     Ok None)
 ;;
 
@@ -219,7 +216,7 @@ let move_spatial ctx seat dir by =
   then Error "cannot move a fullscreen window"
   else (
     Window.move_spatial ctx w dir by;
-    Option.iter Dirty.mark_output w.output;
+    Schedule.manage ();
     Ok None)
 ;;
 
@@ -228,7 +225,7 @@ let resize_window_to ~width ~height ctx window =
   then Error "cannot resize a fullscreen window"
   else (
     Window.resize_to ctx window ~width ~height;
-    Option.iter Dirty.mark_output window.output;
+    Schedule.manage ();
     Ok None)
 ;;
 
@@ -243,7 +240,7 @@ let resize_spatial ctx seat dir by =
   then Error "cannot resize a fullscreen window"
   else (
     Window.resize_spatial ctx w dir by;
-    Option.iter Dirty.mark_output w.output;
+    Schedule.manage ();
     Ok None)
 ;;
 

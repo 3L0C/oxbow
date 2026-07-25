@@ -77,7 +77,6 @@ and Output : sig
   module Lifecycle : sig
     type t =
       | Active
-      | Dirty of { prev : t }
       | Removed
   end
 
@@ -237,7 +236,6 @@ and Seat : sig
     type t =
       | New
       | Active
-      | Dirty of { prev : t }
       | Closing
   end
 
@@ -378,7 +376,6 @@ and Wm : sig
     ; registry : Wayland.Registry.t
     ; shutdown : Eio.Condition.t
     ; mutable lifecycle : Lifecycle.t
-    ; mutable is_dirty : bool
     ; mutable session_locked : bool
     ; mutable primary_seat : Seat.t option
       (* TODO verify if this still holds... *)

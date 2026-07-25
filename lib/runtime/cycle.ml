@@ -9,7 +9,7 @@ let remove_outputs ctx =
       (fun (o : Output.t) ->
          match o.lifecycle with
          | Removed -> true
-         | Dirty _ | Active -> false)
+         | Active -> false)
       wm.outputs
   in
   let first = List.nth_opt retained 0 in
@@ -65,7 +65,7 @@ let close_windows ctx =
                  if Phys.opt_holds w c.parent then Window.set_parent c ~parent:None)
               wm.windows;
             Window.destroy w;
-            Option.iter Dirty.mark_output w.output;
+            Schedule.manage ();
             false
           | New | Active -> true)
        wm.windows
@@ -117,7 +117,7 @@ let manage_window ctx (window : Window.t) =
 
 let manage_new_seat ctx (seat : Seat.t) =
   match seat.lifecycle with
-  | Active | Dirty _ | Closing -> ()
+  | Active | Closing -> ()
   | New ->
     Bind.install_defaults ctx seat;
     Seat.set_lifecycle seat Active;
@@ -148,21 +148,10 @@ let manage_seat ctx seat =
 
 let manage_output ctx (output : Output.t) =
   match output.lifecycle with
-  | Dirty { prev = Removed } -> Output.set_lifecycle output Removed
-  | Dirty { prev } ->
-    (* The dirty flag is taken before handling: a handler that re-marks this
-       output schedules another cycle, so handlers must be idempotent. *)
-    Output.set_lifecycle output prev;
+  | Removed -> ()
+  | Active ->
     Arrange.retile ctx output;
-    Focus.refresh ctx output;
-    if Output.is_dirty output
-    then
-      Logs.debug
-      @@ fun m ->
-      m
-        "manage_output: %s re-dirtied during its own handling (non-idempotent handler?)"
-        (Option.value output.name ~default:"<unnamed>")
-  | Active | Removed -> ()
+    Focus.refresh ctx output
 ;;
 
 let manage (wm : Wm.t) proxy =

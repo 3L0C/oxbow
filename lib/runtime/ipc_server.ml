@@ -107,7 +107,7 @@ module Handler = struct
          let p, u = Eio.Promise.create () in
          let open Pending_request in
          let request = { body = req.body; reply = Some u } in
-         Seat.queue_pending wm seat request;
+         Seat.queue_pending seat request;
          (match Eio.Promise.await p with
           | Ok data -> respond_ok flow data
           | Error msg -> respond_err flow msg)

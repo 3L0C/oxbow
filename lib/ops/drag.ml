@@ -48,11 +48,9 @@ let step ctx (seat : Seat.t) =
     let cy = Int32.(div w.geom.h 2l |> add w.geom.y) in
     (match Output.at_point ~x:cx ~y:cy wm.outputs with
      | Some o when not @@ Phys.opt_holds o w.output ->
-       let prev = w.output in
        Placement.move_window ~policy:Tag.Policy.Take w o;
        Focus.focus_window ctx seat w;
-       Option.iter Dirty.mark_output prev;
-       Dirty.mark_output o
+       Schedule.manage ()
      | _ -> ());
     if op_m.window.presentation = Floating && (not @@ Output.is_floating w.output)
     then Window.remember_float op_m.window;

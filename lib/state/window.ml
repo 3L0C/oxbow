@@ -332,9 +332,9 @@ let sync (ctx : Ctx.manage Ctx.t) (w : t) =
     w.committed.clip <- desired)
 ;;
 
-let queue_request wm (w : t) request =
+let queue_request (w : t) request =
   w.requests <- request :: w.requests;
-  Dirty.mark_wm wm
+  Schedule.manage ()
 ;;
 
 let clear_requests (w : t) = w.requests <- []
@@ -474,7 +474,7 @@ let set_tags (w : t) tags =
   if not @@ Tag.Set.is_empty tags
   then (
     w.tags <- tags;
-    Option.iter Dirty.mark_output w.output)
+    Schedule.manage ())
   else invalid_arg "Windows cannot have an empty set of tags."
 ;;
 
@@ -482,20 +482,19 @@ let set_consumes (w : t) v =
   if v <> w.scrolling.consumes
   then (
     w.scrolling.consumes <- v;
-    Option.iter Dirty.mark_output w.output)
+    Schedule.manage ())
 ;;
 
 let set_scroll_width (w : t) v =
   if w.scrolling.width <> v
   then (
     w.scrolling.width <- v;
-    Option.iter Dirty.mark_output w.output)
+    Schedule.manage ())
 ;;
 
 let set_output (w : t) output =
   let aux () =
-    Option.iter Dirty.mark_output w.output;
-    Option.iter Dirty.mark_output output;
+    Schedule.manage ();
     w.output <- output
   in
   match w.output, output with
@@ -507,12 +506,12 @@ let set_output (w : t) output =
 
 let set_presentation (w : t) presentation =
   w.presentation <- presentation;
-  Option.iter Dirty.mark_output w.output
+  Schedule.manage ()
 ;;
 
 let set_is_urgent (w : t) is_urgent =
   w.is_urgent <- is_urgent;
-  Option.iter Dirty.mark_output w.output
+  Schedule.manage ()
 ;;
 
 let set_lifecycle (w : t) lifecycle = w.lifecycle <- lifecycle
@@ -523,7 +522,7 @@ let set_unreliable_pid (w : t) pid = w.unreliable_pid <- pid
 
 let set_parent (w : t) ~parent =
   w.parent <- parent;
-  Option.iter Dirty.mark_output w.output
+  Schedule.manage ()
 ;;
 
 let set_float_seed_pending (w : t) v = w.float_seed_pending <- v
@@ -533,11 +532,11 @@ let set_size_hints (w : t) hints = w.size_hints <- hints
 let set_is_fixed (w : t) is_fixed = w.is_fixed <- is_fixed
 let set_is_hidden (w : t) is_hidden = w.committed.hidden <- is_hidden
 
-let rehome wm (w : t) name =
+let rehome (w : t) name =
   match w.output_before_evac with
   | Some n when String.equal n name ->
     w.output_before_evac <- None;
-    queue_request wm w @@ Send_to_output_name { name; policy = Tag.Policy.Keep }
+    queue_request w @@ Send_to_output_name { name; policy = Tag.Policy.Keep }
   | _ -> ()
 ;;
 

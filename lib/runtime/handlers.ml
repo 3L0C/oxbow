@@ -72,7 +72,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
 
                  method on_name _ ~name =
                    Output.set_name output @@ Some name;
-                   List.iter (fun w -> Window.rehome wm w name) wm.windows
+                   List.iter (fun w -> Window.rehome w name) wm.windows
 
                  method on_scale _ ~factor:_ = ()
                  method on_mode _ ~flags:_ ~width:_ ~height:_ ~refresh:_ = ()
@@ -238,13 +238,13 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
 let on_session_locked _proxy (wm_box : Wm.t Box.t) =
   let wm = Option.get wm_box.body in
   Wm.set_session_locked wm true;
-  Dirty.mark_wm wm
+  Schedule.manage ()
 ;;
 
 let on_session_unlocked _proxy (wm_box : Wm.t Box.t) =
   let wm = Option.get wm_box.body in
   Wm.set_session_locked wm false;
-  Dirty.mark_wm wm
+  Schedule.manage ()
 ;;
 
 let on_unavailable _proxy =
@@ -271,8 +271,8 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
       method on_dimensions _ ~width ~height =
         if window.geom.w <> width || window.geom.h <> height
         then (
-          Option.iter Dirty.mark_output window.output;
-          Window.queue_request wm window @@ Dimensions { width; height })
+          Schedule.manage ();
+          Window.queue_request window @@ Dimensions { width; height })
 
       method on_unreliable_pid _ ~unreliable_pid =
         Window.set_unreliable_pid window @@ Some unreliable_pid
@@ -310,28 +310,27 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
 
       method on_pointer_move_requested _ ~seat =
         match Wayland.Proxy.user_data seat with
-        | Seat_data s -> Window.queue_request wm window @@ Move { seat = s }
+        | Seat_data s -> Window.queue_request window @@ Move { seat = s }
         | _ -> assert false
 
       method on_pointer_resize_requested _ ~seat ~edges =
         match Wayland.Proxy.user_data seat with
-        | Seat_data s -> Window.queue_request wm window @@ Resize { seat = s; edges }
+        | Seat_data s -> Window.queue_request window @@ Resize { seat = s; edges }
         | _ -> assert false
 
-      method on_maximize_requested _ = Window.queue_request wm window Maximize
-      method on_unmaximize_requested _ = Window.queue_request wm window Unmaximize
+      method on_maximize_requested _ = Window.queue_request window Maximize
+      method on_unmaximize_requested _ = Window.queue_request window Unmaximize
 
       method on_fullscreen_requested _ ~output =
         match output with
         | Some o ->
           (match Wayland.Proxy.user_data o with
            | Output_data o ->
-             Window.queue_request wm window @@ Fullscreen { output = Some o }
+             Window.queue_request window @@ Fullscreen { output = Some o }
            | _ -> assert false)
-        | None -> Window.queue_request wm window @@ Fullscreen { output = None }
+        | None -> Window.queue_request window @@ Fullscreen { output = None }
 
-      method on_exit_fullscreen_requested _ =
-        Window.queue_request wm window Exit_fullscreen
+      method on_exit_fullscreen_requested _ = Window.queue_request window Exit_fullscreen
 
       method on_presentation_hint _ ~hint =
         Window.set_presentation_hint window @@ Some hint

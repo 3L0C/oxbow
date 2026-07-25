@@ -21,7 +21,7 @@ val set_warp_on_focus : Types.Wm.t -> bool -> unit
 (** [set_border_width wm width] sets [wm]'s border width to [width].
     Is [Error msg] when [width] is negative.
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_border_width : Types.Wm.t -> int32 -> (Yojson.Safe.t option, string) result
 
 (** [set_cursor_theme wm cursor_theme] sets [wm]'s cursor theme to
@@ -37,7 +37,7 @@ val set_key_repeat : Types.Wm.t -> rate:int -> delay:int -> unit
 
 (** [set_border_color wm border color] sets the target [border] type to [color].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_border_color
   :  Types.Wm.t
   -> Ocdwm_core.Border_target.t

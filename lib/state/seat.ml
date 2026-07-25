@@ -135,9 +135,9 @@ let op_end (_ : Ctx.manage Ctx.t) (s : t) =
     River.Window_management.River_seat_v1.op_end s.obj
 ;;
 
-let queue_pending wm (s : t) request =
+let queue_pending (s : t) request =
   Queue.add request s.pending_requests;
-  Dirty.mark_wm wm
+  Schedule.manage ()
 ;;
 
 let drain_pending (s : t) = Queue.take_opt s.pending_requests
@@ -155,9 +155,8 @@ let set_output (s : t) output =
   | Some o, Some o' when o == o' -> ()
   | None, None -> ()
   | _ ->
-    Option.iter Dirty.mark_output s.output;
-    Option.iter Dirty.mark_output output;
-    s.output <- output
+    s.output <- output;
+    Schedule.manage ()
 ;;
 
 let focus_output (s : t) output =
@@ -166,7 +165,7 @@ let focus_output (s : t) output =
 
 let set_layer_focus (s : t) layer =
   s.layer_focus <- layer;
-  Dirty.mark_seat s
+  Schedule.manage ()
 ;;
 
 let set_mode (ctx : Ctx.manage Ctx.t) (seat : t) mode =
@@ -206,12 +205,6 @@ let set_name (s : t) name = s.name <- name
 let set_hovered (s : t) window = s.hovered <- window
 let set_interacted (s : t) window = s.interacted <- window
 let set_warp_request (s : t) v = s.warp_request <- v
-
-let is_dirty (s : t) =
-  match s.lifecycle with
-  | Dirty _ -> true
-  | _ -> false
-;;
 
 let bind ctx seat ?(mode = Mode.normal) mods (key : Types.Key.t) command =
   if not @@ List.mem mode (Ctx.wm ctx).config.modes

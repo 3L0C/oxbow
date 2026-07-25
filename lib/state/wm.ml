@@ -75,6 +75,4 @@ let remove_subscriber (wm : t) sub =
   wm.ipc.subscribers <- List.filter (( != ) sub) wm.ipc.subscribers
 ;;
 
-let is_dirty (wm : t) = wm.is_dirty
-let clean (wm : t) = wm.is_dirty <- false
 let set_session_locked (wm : t) b = wm.session_locked <- b

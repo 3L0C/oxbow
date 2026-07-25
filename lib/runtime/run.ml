@@ -67,7 +67,6 @@ let loop ~init_command ~net ~clock =
     ; shutdown = Eio.Condition.create ()
     ; lifecycle = Running
     ; primary_seat = None
-    ; is_dirty = false
     ; session_locked = false
     ; outputs = []
     ; windows = []
@@ -87,7 +86,6 @@ let loop ~init_command ~net ~clock =
   Box.fill wm_box wm;
   Schedule.install (fun () ->
     River.Window_management.River_window_manager_v1.manage_dirty wm.river_wm_v1);
-  Dirty.install Schedule.manage;
   Eio.Fiber.fork ~sw (fun () ->
     let outcome =
       Eio.Fiber.first

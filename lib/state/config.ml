@@ -57,7 +57,7 @@ let set_border_width (wm : Types.Wm.t) width =
   then Error "border width cannot be negative"
   else (
     wm.config.borders.width <- width;
-    Dirty.mark_all wm;
+    Schedule.manage ();
     Ok None)
 ;;
 
@@ -71,7 +71,7 @@ let set_key_repeat (wm : Types.Wm.t) ~rate ~delay =
 ;;
 
 let set_border_color (wm : Types.Wm.t) (border : Border_target.t) color =
-  Dirty.mark_all wm;
+  Schedule.manage ();
   match border with
   | Urgent -> wm.config.borders.urgent_color <- color
   | Focused -> wm.config.borders.focused_color <- color

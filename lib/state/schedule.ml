@@ -12,7 +12,7 @@ let manage () =
 
 let with_tick f =
   assert (not !in_tick);
-  Fun.protect f ~finally:(fun () ->
-    in_tick := false;
-    if !requested then !send ())
+  requested := false;
+  in_tick := true;
+  Fun.protect f ~finally:(fun () -> if !requested then !send ())
 ;;

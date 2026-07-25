@@ -99,11 +99,11 @@ val is_rendered : t -> bool
     {b Effects:} mutates WM state; sends River request *)
 val sync : Ctx.manage Ctx.t -> t -> unit
 
-(** [queue_request wm window request] adds [request] to [window]'s request
+(** [queue_request window request] adds [request] to [window]'s request
     queue.
 
-    {b Effects:} mutates WM state; marks [wm] dirty *)
-val queue_request : Types.Wm.t -> t -> Request.t -> unit
+    {b Effects:} mutates WM state *)
+val queue_request : t -> Request.t -> unit
 
 (** [clear_requests window] clears [window]'s request queue.
 
@@ -193,38 +193,37 @@ val resize_spatial
 
     @raise Invalid_argument when [Tag.Set.is_empty tags] is [true].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_tags : t -> Ocdwm_core.Tag.Set.t -> unit
 
-(** [set_consumes window v] sets the consumes chain-bit and marks [window]'s
-    output dirty on change.
+(** [set_consumes window v] sets the consumes chain-bit on [window] to [v].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_consumes : t -> bool -> unit
 
-(** [set_scroll_width window v] sets the scroll-width override and marks
-    [window]'s output dirty on change.
+(** [set_scroll_width window v] sets the scroll-width override on [window] to
+    [v].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_scroll_width : t -> Ocdwm_core.Width_fac.t -> unit
 
 (** [set_output window output] sets [window]'s output to [output]. Setting
     [None] records the current output's name if none has been recorded
     previously.
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_output : t -> Types.Output.t option -> unit
 
 (** [set_presentation window presentation] sets [window]'s presentation to
     [presentation].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_presentation : t -> Presentation.t -> unit
 
 (** [set_is_urgent window is_urgent] sets [window]'s urgent status to
     [is_urgent].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_is_urgent : t -> bool -> unit
 
 (** [set_lifecycle window lifecycle] sets [window]'s lifecycle to [lifecycle].
@@ -256,7 +255,7 @@ val set_unreliable_pid : t -> int32 option -> unit
 
 (** [set_parent window ~parent] sets [window]'s parent as [parent].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_parent : t -> parent:t option -> unit
 
 (** [set_float_seed_pending window pending] sets [window]'s pending float seed
@@ -297,12 +296,12 @@ val set_is_fixed : t -> bool -> unit
     {b Effects:} mutates WM state *)
 val set_is_hidden : t -> bool -> unit
 
-(** [rehome wm window name] queues a request to send [window] to the output
+(** [rehome window name] queues a request to send [window] to the output
     matching [name], when [window]'s home output matches [name]. No-op
     otherwise.
 
-    {b Effects:} mutates WM state; marks dirty *)
-val rehome : Types.Wm.t -> t -> string -> unit
+    {b Effects:} mutates WM state *)
+val rehome : t -> string -> unit
 
 (** [presentation_string window] is [window]'s current presentation as one of
     ["tiled"], ["floating"], ["maximized"], or ["fullscreen"]. *)

@@ -54,7 +54,7 @@ val cycle_width : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
     the next column, and the two consume flags swap with them. The payload
     [warp] overrides the warp on focus configuration.
 
-    {b Effects:} mutates WM state; marks dirty; sends River request *)
+    {b Effects:} mutates WM state; sends River request *)
 val zoom
   :  ?warp:bool
   -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t

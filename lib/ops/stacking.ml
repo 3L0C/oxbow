@@ -42,7 +42,7 @@ let apply (intent : Focus_intent.t) (output : Output.t) =
     if not @@ Tag.Set.intersects window.tags output.selected_tags
     then Output.switch_tags ~tags:window.tags output;
     sync seat;
-    if Output.current_layout output = Scrolling && changed then Dirty.mark_output output
+    if Output.current_layout output = Scrolling && changed then Schedule.manage ()
   | Push windows ->
     Output.set_wm_stack output @@ windows @ List.filter (not_in windows) output.wm_stack;
     splice_focus_stack windows

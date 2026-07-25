@@ -3,15 +3,14 @@ open! Ocdwm_ops
 
 let sync (ctx : Ctx.manage Ctx.t) =
   let wm = Ctx.wm ctx in
-  Focus.layer_shell_sync wm;
-  Wm.clean wm
+  Focus.layer_shell_sync wm
 ;;
 
 let request_exit ?(origin = `Local) (wm : Wm.t) =
   match wm.lifecycle with
   | Running ->
     Wm.set_lifecycle wm @@ Pending_exit origin;
-    Dirty.mark_wm wm
+    Schedule.manage ()
   | Pending_exit _ | Exited | Close_requested ->
     Logs.warn
     @@ fun m ->

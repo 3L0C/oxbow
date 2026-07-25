@@ -33,7 +33,7 @@ val destroy : t -> unit
 (** [switch_tags ~tags output] changes the selected tags of [output] to
     [tags].  No-op if [Tag.Set.is_empty tags] is [true].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val switch_tags : tags:Ocdwm_core.Tag.Set.t -> t -> unit
 
 (** [occupied_tags output] is the tag set containing all tags with active
@@ -76,73 +76,73 @@ val is_floating : t option -> bool
     all tags when [global] is true. Applied to the first selected tags when
     [false].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_layout : t -> Ocdwm_core.Layout.t -> global:bool -> unit
 
 (** [set_scheme output scheme ~global] sets the scheme of [output]. Applied to
     all tags when [global] is true. Applied to the first selected tags when
     [false].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_scheme : t -> Ocdwm_core.Scheme.t -> global:bool -> unit
 
 (** [cycle_scheme output dir ~global] sets [output]'s tiling scheme to the [dir]
     scheme. Applied to all tags when [global] is true. Applied to the first
     selected tags when [false].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val cycle_scheme : t -> Ocdwm_core.Direction.Logical.t -> global:bool -> unit
 
 (** [set_overview output v] sets the overview flag on [output].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_overview : t -> bool -> unit
 
 (** [set_mfact output delta ~global] sets the mfact according to [delta] for the
     first selected tag on [output]. When [global] is [true], the change applies
     to every tag.
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_mfact : t -> float Ocdwm_core.Delta.t -> global:bool -> unit
 
 (** [set_nmaster output delta ~global] sets the nmaster according to [delta] for
     the first selected tag on [output]. When [global] is [true], the change
     applies to every tag.
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_nmaster : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
 
 (** [set_gaps_inner output delta ~global] sets the gaps_inner according to
     [delta] for the first selected tag on [output]. When [global] is [true], the
     change applies to every tag.
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_gaps_inner : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
 
 (** [set_gaps_outer output delta ~global] sets the gaps_outer according to
     [delta] for the first selected tag on [output]. When [global] is [true], the
     change applies to every tag.
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
 
 (** [set_scroll_policy output policy ~global] sets [output]'s scrolling policy to
     [policy]. Applied to all tags when [global] is true. Applied to the first
     selected tags when [false].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_scroll_policy : t -> Ocdwm_core.Scroll_policy.t -> global:bool -> unit
 
 (** [set_orientation output dir ~global] sets [output]'s stacking orientation to
     [dir]. Applied to all tags when [global] is true. Applied to the first
     selected tags when [false].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_orientation : t -> Ocdwm_core.Direction.Spatial.t -> global:bool -> unit
 
 (** [set_wm_stack output ws] replaces [output]'s window stack with [ws].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_wm_stack : t -> Types.Window.t list -> unit
 
 (** [set_focus_stack output ws] replaces [output]'s focus stack with [ws].
@@ -184,7 +184,7 @@ val set_lifecycle : t -> Lifecycle.t -> unit
 
 (** [set_usable output usable] sets [output]'s usable geometry to [usable].
 
-    {b Effects:} mutates WM state; marks dirty *)
+    {b Effects:} mutates WM state *)
 val set_usable : t -> int Ocdwm_core.Rect.t -> unit
 
 (** [set_name output name] sets [output]'s name to [name].
@@ -208,6 +208,3 @@ val set_scroll_offset : t -> int -> unit
 
     {b Effects:} mutates WM state *)
 val set_default_width : t -> float Ocdwm_core.Delta.t -> global:bool -> unit
-
-(** [is_dirty output] is true when [output]'s lifecycle is [Dirty _]. *)
-val is_dirty : t -> bool
