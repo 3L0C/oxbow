@@ -174,7 +174,7 @@ end
 module Rule = struct
   type t =
     | Add of Rule.t [@name "add"]
-    | Remove of Rule.t [@name "remove"]
+    | Remove of Pattern.t [@name "remove"]
   [@@deriving yojson]
 end
 
@@ -203,11 +203,11 @@ module Window = struct
         { dir : Direction.Spatial.t
         ; warp : bool option [@yojson.option]
         } [@name "focus_spatial"]
-    | Focus_query of
-        { query : Window_query.t
+    | Focus_match of
+        { wmatch : Window_match.t
         ; cycle : bool
         ; warp : bool option [@yojson.option]
-        } [@name "focus_query"]
+        } [@name "focus_match"]
     | Tag of
         { tags : Ocdwm_core.Tag.Arg.t
         ; follow : bool
@@ -220,10 +220,10 @@ module Window = struct
         { dir : Direction.Logical.t
         ; follow : bool
         } [@name "tag_shift_occupied"]
-    | Tag_query of
-        { query : Window_query.t
+    | Tag_match of
+        { wmatch : Window_match.t
         ; tags : Ocdwm_core.Tag.Arg.t
-        } [@name "tag_query"]
+        } [@name "tag_match"]
     | Move_drag [@name "move_drag"]
     | Move_to of
         { x : Extent.t

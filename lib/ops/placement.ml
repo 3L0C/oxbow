@@ -199,15 +199,17 @@ let close_focused seat =
   Ok None
 ;;
 
-let move_to ~x ~y ctx seat =
-  With.focused_window seat
-  @@ fun _o w ->
+let move_window_to ~x ~y ctx w =
   if Window.is_fullscreen w
   then Error "cannot move a fullscreen window"
   else (
     Window.move_to ctx w ~x ~y;
     Option.iter Dirty.mark_output w.output;
     Ok None)
+;;
+
+let move_to ~x ~y ctx seat =
+  With.focused_window seat @@ fun _o w -> move_window_to ~x ~y ctx w
 ;;
 
 let move_spatial ctx seat dir by =
@@ -221,15 +223,17 @@ let move_spatial ctx seat dir by =
     Ok None)
 ;;
 
-let resize_to ~width ~height ctx seat =
-  With.focused_window seat
-  @@ fun _o w ->
-  if Window.is_fullscreen w
+let resize_window_to ~width ~height ctx window =
+  if Window.is_fullscreen window
   then Error "cannot resize a fullscreen window"
   else (
-    Window.resize_to ctx w ~width ~height;
-    Option.iter Dirty.mark_output w.output;
+    Window.resize_to ctx window ~width ~height;
+    Option.iter Dirty.mark_output window.output;
     Ok None)
+;;
+
+let resize_to ~width ~height ctx seat =
+  With.focused_window seat @@ fun _o w -> resize_window_to ~width ~height ctx w
 ;;
 
 let resize_spatial ctx seat dir by =

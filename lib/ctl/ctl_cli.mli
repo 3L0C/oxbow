@@ -60,6 +60,17 @@ val app_id_flag : string option Cmdliner.Term.t
 (** [title_flag] is the [--title REGEX] option. *)
 val title_flag : string option Cmdliner.Term.t
 
+(** [identifier_flag] is the [--identifier REGEX] option. *)
+val identifier_flag : string option Cmdliner.Term.t
+
+(** [case_flag] is the [-i] / [--ignore-case] flag for a window match; regex
+    patterns match case-insensitively when set. *)
+val case_flag : Ocdwm_core.Pattern.Case.t Cmdliner.Term.t
+
+(** [invert_flag] is the [--invert] flag for a window match. The match selects
+    the windows that do not match when the flag is set. *)
+val invert_flag : bool Cmdliner.Term.t
+
 (** [output_name_arg] is the required leading [OUTPUT_NAME] positional. *)
 val output_name_arg : string Cmdliner.Term.t
 
@@ -80,31 +91,53 @@ val mode_flag : string option Cmdliner.Term.t
 (** [color_arg] is the required trailing [COLOR] positional. *)
 val color_arg : Ocdwm_core.Color.t Cmdliner.Term.t
 
-(** [window_query_pattern_arg] is the required trailing [PATTERN] positional for
-    a window query. *)
-val window_query_pattern_arg : string Cmdliner.Term.t
-
-(** [window_query_pattern_opt_arg] is the optional trailing [PATTERN] positional
-    for a window query; [None] matches every window. *)
-val window_query_pattern_opt_arg : string option Cmdliner.Term.t
-
-(** [window_query_field_flag] is the [--title], [--app-id], and [--identifier]
-    flags for a window query. *)
-val window_query_field_flag : Ocdwm_core.Window_query.Field.t Cmdliner.Term.t
-
-(** [window_query_regex_flag] is the [--regex] flag for a window query. *)
-val window_query_regex_flag : bool Cmdliner.Term.t
-
-(** [window_query_case_flag] is the [-i] / [--ignore-case] flag for a window
-    query; regex patterns match case-insensitively when set. *)
-val window_query_case_flag : Ocdwm_core.Window_query.Case.t Cmdliner.Term.t
-
 (** [warp_flag] is the exclusive flag pair [--warp] and [--no-warp]. The flag
     overrides the warp on focus configuration for one command. *)
 val warp_flag : bool option Cmdliner.Term.t
 
 (** [global_flag] is the [--all] flag used to apply changes to all tags. *)
 val global_flag : bool Cmdliner.Term.t
+
+(** [pattern_flags] is [title_flag], [app_id_flag], [identifier_flag], and
+    [case_flag] in a [Pattern.t]. Each criterion is a PCRE regex. A pattern with
+    no criterion matches every window. *)
+val pattern_flags : Ocdwm_core.Pattern.t Cmdliner.Term.t
+
+(** [pattern_term] is [pattern_flags], but it rejects an empty pattern. *)
+val pattern_term : Ocdwm_core.Pattern.t Cmdliner.Term.t
+
+(** [scope_term] is the search scope of a window match: [--focused] for the
+    focused output of the seat, [--output NAME] for one named output, and [All]
+    when the command line holds neither flag. The term rejects the two flags
+    together. *)
+val scope_term : Ocdwm_core.Window_match.Scope.t Cmdliner.Term.t
+
+(** [window_match_term] is [pattern_term], [invert_flag], and [scope_term] in a
+    [Window_match.t]. It rejects an empty pattern. *)
+val window_match_term : Ocdwm_core.Window_match.t Cmdliner.Term.t
+
+(** [window_match_any_term] is [window_match_term], but it permits an empty
+    pattern. Such a match selects every window in the scope. *)
+val window_match_any_term : Ocdwm_core.Window_match.t Cmdliner.Term.t
+
+(** [tags_flag] is the [--tags TAGS] option: indices, ranges, a bitmask, or the
+    literal [occupied]. *)
+val tags_flag : Ocdwm_core.Tag.Arg.t option Cmdliner.Term.t
+
+(** [presentation_flag] is the exclusive flag group [--float], [--tile],
+    [--fullscreen], [--windowed], [--maximize], and [--fake-fullscreen]; it is
+    [None] when the command line holds none of them. *)
+val presentation_flag : Ocdwm_core.Rule.Effects.Presentation.t option Cmdliner.Term.t
+
+(** [resize_to_flag] is the [--resize-to W,H] option. Each half is a pixel size
+    or a percentage of the usable area. The term rejects a list that does not
+    hold two values. *)
+val resize_to_flag : Ocdwm_core.Rule.Effects.Resize_to.t option Cmdliner.Term.t
+
+(** [move_to_flag] is the [--move-to X,Y] option. Each half is a pixel offset
+    from the top-left of the usable area, or a percentage of it. The term
+    rejects a list that does not hold two values. *)
+val move_to_flag : Ocdwm_core.Rule.Effects.Move_to.t option Cmdliner.Term.t
 
 (** [group ?exits ?man ?man_xrefs ?version ?default ~name ~doc cmds] is a
     command that groups the subcommands [cmds]. Cmdliner evaluates [default]

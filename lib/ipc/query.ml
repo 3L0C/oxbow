@@ -25,7 +25,7 @@ type t =
   | Keymaps of { all : bool } [@name "keymaps"]
   | Outputs [@name "outputs"]
   | Focused [@name "focused"]
-  | Windows of { query : Window_query.t option } [@name "windows"]
+  | Windows of { filter : Window_match.t } [@name "windows"]
   | Tags of { output : string option } [@name "tags"]
   | Layouts of { output : string option } [@name "layouts"]
   | Schemes of { output : string option } [@name "schemes"]

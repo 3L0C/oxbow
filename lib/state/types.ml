@@ -115,9 +115,17 @@ and Window : sig
   module Request : sig
     type t =
       | Move of { seat : Seat.t }
+      | Move_to of
+          { x : Ocdwm_core.Extent.t
+          ; y : Ocdwm_core.Extent.t
+          }
       | Resize of
           { seat : Seat.t
           ; edges : int32
+          }
+      | Resize_to of
+          { w : Ocdwm_core.Extent.t
+          ; h : Ocdwm_core.Extent.t
           }
       | Maximize
       | Unmaximize

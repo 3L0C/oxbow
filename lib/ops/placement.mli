@@ -150,6 +150,17 @@ val exit_fullscreen
     {b Effects:} sends River request *)
 val close_focused : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
 
+(** [move_to ~x ~y ctx window] moves [window] to the extents [x] and [y]. Is
+    [Error msg] when the window is fullscreen.
+
+    {b Effects:} mutates WM state; sends River request *)
+val move_window_to
+  :  x:Ocdwm_core.Extent.t
+  -> y:Ocdwm_core.Extent.t
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Window.t
+  -> (Yojson.Safe.t option, string) result
+
 (** [move_to ~x ~y ctx seat] moves [seat]'s focused window to the extents [x] and
     [y]. Is [Error msg] when the window is fullscreen.
 
@@ -170,6 +181,17 @@ val move_spatial
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Spatial.t
   -> Ocdwm_core.Extent.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [resize_window_to ~width ~height ctx window] resizes window to the extents
+    [width] and [height]. Is [Error msg] when the window is fullscreen.
+
+    {b Effects:} mutates WM state; sends River request *)
+val resize_window_to
+  :  width:Ocdwm_core.Extent.t
+  -> height:Ocdwm_core.Extent.t
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Window.t
   -> (Yojson.Safe.t option, string) result
 
 (** [resize_to ~width ~height ctx seat] resizes [seat]'s focused window to the

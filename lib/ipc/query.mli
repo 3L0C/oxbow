@@ -30,7 +30,7 @@ type t =
   | Keymaps of { all : bool }
   | Outputs
   | Focused
-  | Windows of { query : Ocdwm_core.Window_query.t option }
+  | Windows of { filter : Ocdwm_core.Window_match.t }
   | Tags of { output : string option }
   | Layouts of { output : string option }
   | Schemes of { output : string option }

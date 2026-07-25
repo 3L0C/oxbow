@@ -19,23 +19,21 @@ let handle_focused seat =
   | Some record -> Ok (Some ([%yojson_of: Record.Focus.t] record))
 ;;
 
-let handle_windows (wm : Wm.t) query =
-  let matcher =
-    match query with
-    | None -> Ok (fun ~title:_ ~app_id:_ ~identifier:_ -> true)
-    | Some q -> Window_query.compile q
-  in
-  match matcher with
-  | Error _ as e -> e
-  | Ok m ->
-    Ok
-      (Some
-         ([%yojson_of: Record.Window.t list]
-            (List.filter
-               (fun (w : Window.t) ->
-                  m ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
-               wm.windows
-             |> List.map (Records.to_window wm))))
+let handle_windows (wm : Wm.t) seat m =
+  match Window_match.compile m with
+  | Error e -> Error e
+  | Ok matches ->
+    (match Window_scope.filter wm seat m.scope with
+     | Error e -> Error e
+     | Ok windows ->
+       Ok
+         (Some
+            ([%yojson_of: Record.Window.t list]
+               (List.filter
+                  (fun (w : Window.t) ->
+                     matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
+                  windows
+                |> List.map (Records.to_window wm)))))
 ;;
 
 let handle_tags (wm : Wm.t) output =
@@ -82,7 +80,7 @@ let handle wm seat (query : Query.t) =
   | Keymaps { all } -> handle_keymaps wm seat all
   | Outputs -> handle_outputs wm
   | Focused -> handle_focused seat
-  | Windows { query } -> handle_windows wm query
+  | Windows { filter } -> handle_windows wm seat filter
   | Tags { output } -> handle_tags wm output
   | Layouts _ -> handle_layouts
   | Schemes _ -> handle_schemes

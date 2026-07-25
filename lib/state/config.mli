@@ -49,10 +49,17 @@ val set_border_color
     {b Effects:} mutates WM state *)
 val add_rule : Types.Wm.t -> Ocdwm_core.Rule.t -> unit
 
-(** [remove_rule wm rule] removes [rule] from [wm]'s configuration.
+(** [remove_rule wm pattern] removes any rule matching [pattern] from [wm]'s
+    configuration.
 
     {b Effects:} mutates WM state *)
-val remove_rule : Types.Wm.t -> Ocdwm_core.Rule.t -> unit
+val remove_rule : Types.Wm.t -> Ocdwm_core.Pattern.t -> unit
+
+(** [replace_rule wm rule] replaces any rules in [wm] with the same pattern as
+    [rule].
+
+    {b Effects:} mutates WM state *)
+val replace_rule : Types.Wm.t -> Ocdwm_core.Rule.t -> unit
 
 (** [declare_mode wm name] appends [name] to the declared modes.
 

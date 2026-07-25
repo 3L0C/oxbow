@@ -100,32 +100,35 @@ let toggle_window_tags seat tags =
         Ok None))
 ;;
 
-let tag_window_query ctx q (arg : Tag.Arg.t) =
+let tag_window_match ctx seat m (arg : Tag.Arg.t) =
   match arg with
   | Concrete s when Tag.Set.is_empty s -> Error Messages.tag_set_is_empty
   | _ ->
-    (match Window_query.compile q with
+    (match Window_match.compile m with
      | Error e -> Error e
      | Ok matches ->
        let wm = Ctx.wm ctx in
-       let targets =
-         List.find_all
-           (fun (w : Window.t) ->
-              matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
-           wm.windows
-       in
-       (match targets with
-        | [] ->
-          Error (Printf.sprintf "no window matches query: %S" (Window_query.to_string q))
-        | ws ->
-          List.iter
-            (fun (w : Window.t) ->
-               match w.output, arg with
-               | Some o, _ -> Window.set_tags w (Output.resolve_tag_arg arg o)
-               | None, Concrete s -> Window.set_tags w s
-               | None, Occupied -> ())
-            ws;
-          Ok None))
+       (match Window_scope.filter wm seat m.scope with
+        | Error e -> Error e
+        | Ok windows ->
+          let targets =
+            List.find_all
+              (fun (w : Window.t) ->
+                 matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
+              windows
+          in
+          (match targets with
+           | [] ->
+             Error (Printf.sprintf "no window matches: %S" (Window_match.to_string m))
+           | ws ->
+             List.iter
+               (fun (w : Window.t) ->
+                  match w.output, arg with
+                  | Some o, _ -> Window.set_tags w (Output.resolve_tag_arg arg o)
+                  | None, Concrete s -> Window.set_tags w s
+                  | None, Occupied -> ())
+               ws;
+             Ok None)))
 ;;
 
 let tag_shift_window ctx seat (dir : Direction.Logical.t) ~follow =

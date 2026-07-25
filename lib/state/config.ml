@@ -76,8 +76,18 @@ let set_border_color (wm : Types.Wm.t) (border : Border_target.t) color =
 
 let add_rule (wm : Types.Wm.t) rule = wm.config.rules <- wm.config.rules @ [ rule ]
 
-let remove_rule (wm : Types.Wm.t) rule =
-  wm.config.rules <- List.filter (Fun.negate (Rule.equal rule)) wm.config.rules
+let remove_rule (wm : Types.Wm.t) pattern =
+  wm.config.rules
+  <- List.filter
+       (fun (rule : Rule.t) -> not @@ Pattern.equal pattern rule.pattern)
+       wm.config.rules
+;;
+
+let replace_rule (wm : Types.Wm.t) (rule : Rule.t) =
+  wm.config.rules
+  <- List.map
+       (fun (r : Rule.t) -> if Pattern.equal rule.pattern r.pattern then rule else r)
+       wm.config.rules
 ;;
 
 let declare_mode (wm : Types.Wm.t) name = wm.config.modes <- wm.config.modes @ [ name ]

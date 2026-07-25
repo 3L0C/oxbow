@@ -73,12 +73,12 @@ let handle_window ctx seat (cmd : Command.Window.t) =
   | Close -> Placement.close_focused seat
   | Focus_logical { dir; warp } -> Focus.window_logical ?warp ctx seat dir
   | Focus_spatial { dir; warp } -> Focus.window_spatial ?warp ctx seat dir
-  | Focus_query { query; cycle; warp } -> Focus.window_query ?warp ~cycle ctx seat query
+  | Focus_match { wmatch; cycle; warp } -> Focus.window_match ?warp ~cycle ctx seat wmatch
   | Tag { tags; follow } -> Tags.tag_window ctx seat tags ~follow
   | Tag_shift { dir; follow } -> Tags.tag_shift_window ctx seat dir ~follow
   | Tag_shift_occupied { dir; follow } ->
     Tags.tag_shift_window_occupied ctx seat dir ~follow
-  | Tag_query { query; tags } -> Tags.tag_window_query ctx query tags
+  | Tag_match { wmatch; tags } -> Tags.tag_window_match ctx seat wmatch tags
   | Move_drag -> Window_request.move_interactive ctx seat
   | Move_to { x; y } -> Placement.move_to ~x ~y ctx seat
   | Move_spatial { dir; by } -> Placement.move_spatial ctx seat dir by

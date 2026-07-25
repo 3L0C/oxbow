@@ -2,39 +2,37 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ipc
 
-let apply wm (window : Window.t) ({ pattern; action } : Rule.t) =
-  let search r_str s_str =
-    let compile () =
-      try Ok (Re.compile (Re.Pcre.re r_str)) with
-      | Re.Pcre.Parse_error | Re.Pcre.Not_supported -> Error ()
-    in
-    match compile () with
-    | Error _ -> false
-    | Ok r -> Re.execp r s_str
-  in
-  let matches_app_id =
-    match pattern.app_id, window.app_id with
-    | None, _ -> false
-    | Some p_str, Some w_str -> search p_str w_str
-    | _, _ -> false
-  in
-  let matches_title =
-    match pattern.title, window.title with
-    | None, _ -> false
-    | Some p_str, Some w_str -> search p_str w_str
-    | _, _ -> false
-  in
-  if matches_app_id || matches_title
-  then (
-    match action with
-    | Set_tags arg -> Window.queue_request wm window @@ Set_tags arg
-    | Send_to_output { name; policy } ->
-      Window.queue_request wm window @@ Send_to_output_name { name; policy }
-    | Float -> Window.queue_request wm window Float
-    | Tile -> Window.queue_request wm window Tile
-    | Fullscreen ->
-      Window.queue_request wm window @@ Fullscreen { output = window.output }
-    | Windowed -> Window.queue_request wm window Exit_fullscreen)
+let ( |>? ) o f = Option.iter f o
+
+let apply_effects
+      (queue : Window.Request.t -> unit)
+      (e : Rule.Effects.t)
+      (window : Window.t)
+  =
+  (e.output
+   |>? fun ({ name; policy } : Rule.Effects.Output.t) ->
+   queue (Send_to_output_name { name; policy }));
+  (e.tags |>? fun arg -> queue (Set_tags arg));
+  (e.presentation
+   |>? function
+   | Float -> queue Float
+   | Tile -> queue Tile
+   | Fullscreen -> queue (Fullscreen { output = window.output })
+   | Windowed -> queue Exit_fullscreen
+   | Maximize -> queue Maximize
+   | Fake_fullscreen -> queue Fake_fullscreen);
+  (e.resize_to |>? fun { w; h } -> queue (Resize_to { w; h }));
+  e.move_to |>? fun { x; y } -> queue (Move_to { x; y })
+;;
+
+let apply wm (window : Window.t) ({ pattern; effects } : Rule.t) =
+  match Pattern.compile pattern with
+  | Error e -> Logs.debug @@ fun m -> m "%s" e
+  | Ok matches ->
+    if matches ~title:window.title ~app_id:window.app_id ~identifier:window.identifier
+    then (
+      let queue r = Window.queue_request wm window r in
+      apply_effects queue effects window)
 ;;
 
 let apply_for ctx window =
@@ -42,35 +40,29 @@ let apply_for ctx window =
   List.iter (apply wm window) wm.config.rules
 ;;
 
-let validate (rule : Rule.t) =
-  match List.filter_map Fun.id [ rule.pattern.title; rule.pattern.app_id ] with
-  | [] -> true
-  | l ->
-    List.exists
-      (fun s ->
-         try
-           ignore @@ Re.compile (Re.Pcre.re s);
-           true
-         with
-         | Re.Pcre.Parse_error | Re.Pcre.Not_supported -> false)
-      l
-;;
+let same (p : Pattern.t) (r : Rule.t) = Pattern.equal p r.pattern
 
-let add (wm : Wm.t) rule =
-  if List.exists (Rule.equal rule) wm.config.rules
-  then Error "rule already exists"
-  else (
+let add (wm : Wm.t) (rule : Rule.t) =
+  match List.find_opt (same rule.pattern) wm.config.rules with
+  | Some old ->
+    let merged =
+      { rule with effects = Rule.Effects.merge ~old:old.effects ~new_:rule.effects }
+    in
+    Config.replace_rule wm merged;
+    List.iter (fun w -> apply wm w merged) wm.windows;
+    Ok None
+  | None ->
     Config.add_rule wm rule;
     List.iter (fun w -> apply wm w rule) wm.windows;
-    Ok None)
+    Ok None
 ;;
 
-let remove (wm : Wm.t) rule =
-  if List.exists (Rule.equal rule) wm.config.rules
-  then (
-    Config.remove_rule wm rule;
-    Ok None)
-  else Error "no matching rule"
+let remove (wm : Wm.t) (pattern : Pattern.t) =
+  match List.find_opt (same pattern) wm.config.rules with
+  | None -> Error "no matching rule"
+  | Some _ ->
+    Config.remove_rule wm pattern;
+    Ok None
 ;;
 
 let handle ctx _seat (cmd : Command.Rule.t) =

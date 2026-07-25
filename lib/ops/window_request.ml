@@ -56,7 +56,13 @@ let handle_set_tags _ctx window (arg : Tag.Arg.t) =
 let rec handle ctx window (request : Window.Request.t) =
   match request with
   | Move r -> handle_move ctx r.seat window
+  | Move_to { x; y } ->
+    Placement.move_window_to ~x ~y ctx window
+    |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e
   | Resize r -> handle_resize ctx r.seat window r.edges
+  | Resize_to { w; h } ->
+    Placement.resize_window_to ~width:w ~height:h ctx window
+    |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e
   | Maximize -> Placement.maximize ctx window
   | Unmaximize -> Placement.unmaximize ctx window
   | Fake_fullscreen -> Window.fake_fullscreen ctx window
@@ -67,7 +73,7 @@ let rec handle ctx window (request : Window.Request.t) =
   | Set_tags arg -> handle_set_tags ctx window arg
   | Send_to_output_name { name; policy } ->
     Placement.send_window_to_name ctx window name policy
-    |> Result.iter_error @@ fun e -> Logs.debug @@ fun m -> m "%s" e
+    |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e
   | Float -> Window.float ctx window
   | Tile -> Window.tile window
 ;;

@@ -219,6 +219,30 @@ let title_flag =
     & info [ "title" ] ~docv:"REGEX" ~doc:"Match REGEX against the window's title.")
 ;;
 
+let identifier_flag =
+  Arg.(
+    value
+    & opt (some string) None
+    & info
+        [ "identifier" ]
+        ~docv:"REGEX"
+        ~doc:"Match REGEX against the window's identifier.")
+;;
+
+let case_flag =
+  Arg.(
+    value
+    & vflag
+        Pattern.Case.Sensitive
+        [ ( Pattern.Case.Insensitive
+          , info [ "i"; "ignore-case" ] ~doc:"Match $(i,PATTERN) case-insensitively." )
+        ])
+;;
+
+let invert_flag =
+  Arg.(value & flag & info [ "invert" ] ~doc:"Select the windows that do not match.")
+;;
+
 let output_name_arg =
   Arg.(
     required
@@ -233,7 +257,7 @@ let output_flag =
   Arg.(
     value
     & opt (some string) None
-    & info [ "output" ] ~docv:"NAME" ~doc:"Filter query to outputs matching $(i,NAME).")
+    & info [ "output" ] ~docv:"NAME" ~doc:"Filter to outputs matching $(i,NAME).")
 ;;
 
 let extent_conv =
@@ -287,48 +311,6 @@ let color_arg =
            $(i,7FB4CA). May be prefixed with $(i,#) or $(i,0x).")
 ;;
 
-let window_query_pattern_arg =
-  Arg.(
-    required
-    & pos 0 (some string) None
-    & info [] ~docv:"PATTERN" ~doc:"Match windows containing STRING in their title/app-id")
-;;
-
-let window_query_pattern_opt_arg =
-  Arg.(
-    value
-    & pos 0 (some string) None
-    & info [] ~docv:"PATTERN" ~doc:"Optional pattern used to filter a window query")
-;;
-
-let window_query_field_flag =
-  let open Ocdwm_core.Window_query in
-  Arg.(
-    value
-    & vflag
-        Field.Any
-        [ Field.Title, info [ "title" ] ~doc:"Match against window title only"
-        ; Field.App_id, info [ "app-id" ] ~doc:"Match against app-id only"
-        ; Field.Identifier, info [ "identifier" ] ~doc:"Match against identifier only"
-        ])
-;;
-
-let window_query_regex_flag =
-  Arg.(
-    value & flag & info [ "regex" ] ~doc:"Interpret $(i,PATTERN) as a regular expression")
-;;
-
-let window_query_case_flag =
-  let open Ocdwm_core.Window_query in
-  Arg.(
-    value
-    & vflag
-        Case.Sensitive
-        [ ( Case.Insensitive
-          , info [ "i"; "ignore-case" ] ~doc:"Match $(i,PATTERN) case-insensitively." )
-        ])
-;;
-
 let warp_flag =
   Arg.(
     value
@@ -351,6 +333,114 @@ let warp_flag =
 
 let global_flag =
   Arg.(value & flag & info [ "all" ] ~doc:"Applies the change to all tags")
+;;
+
+let pattern_flags =
+  let open Ocdwm_core in
+  let open Cmdliner.Term.Syntax in
+  let+ title = title_flag
+  and+ app_id = app_id_flag
+  and+ identifier = identifier_flag
+  and+ case = case_flag in
+  ({ title; app_id; identifier; case } : Pattern.t)
+;;
+
+let pattern_term =
+  let open Ocdwm_core in
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ p = pattern_flags in
+     if Pattern.is_empty p
+     then Error "give at least one of --title, --app-id, or --identifier"
+     else Ok p
+;;
+
+let scope_term =
+  let open Ocdwm_core.Window_match in
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ focused =
+       Arg.(value & flag & info [ "focused" ] ~doc:"Search the focused output only.")
+     and+ output = output_flag in
+     match focused, output with
+     | true, Some _ -> Error "--focused takes no --output"
+     | true, None -> Ok Scope.Focused
+     | false, Some name -> Ok (Scope.Output name)
+     | false, None -> Ok Scope.All
+;;
+
+let window_match_of source =
+  let open Ocdwm_core in
+  let open Cmdliner.Term.Syntax in
+  let+ pattern = source
+  and+ invert = invert_flag
+  and+ scope = scope_term in
+  ({ pattern; invert; scope } : Window_match.t)
+;;
+
+let window_match_term = window_match_of pattern_term
+let window_match_any_term = window_match_of pattern_flags
+
+let tags_flag =
+  Arg.(
+    value
+    & opt (some tag_arg_conv) None
+    & info [ "tags" ] ~docv:"TAGS" ~doc:"Set TAGS on the matching windows.")
+;;
+
+let presentation_flag =
+  let open Ocdwm_core.Rule.Effects.Presentation in
+  Arg.(
+    value
+    & vflag
+        None
+        [ Some Float, info [ "float" ] ~doc:"Manage the window floating."
+        ; Some Tile, info [ "tile" ] ~doc:"Manage the window tiled."
+        ; Some Fullscreen, info [ "fullscreen" ] ~doc:"Manage the window fullscreen."
+        ; Some Windowed, info [ "windowed" ] ~doc:"Exit fullscreen."
+        ; Some Maximize, info [ "maximize" ] ~doc:"Manage the window maximized."
+        ; Some Fake_fullscreen, info [ "fake-fullscreen" ] ~doc:"Fake fullscreen."
+        ])
+;;
+
+let extent_pair name ~docv ~doc =
+  Arg.(value & opt (some (list extent_conv)) None & info [ name ] ~docv ~doc)
+;;
+
+let resize_to_flag =
+  let open Ocdwm_core.Rule.Effects in
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ pair =
+       extent_pair
+         "resize-to"
+         ~docv:"W,H"
+         ~doc:
+           "Resize the matching windows to $(i,W) and $(i,H). Each half is a pixel size \
+            (e.g. $(b,800)) or a percentage of the usable area (e.g. $(b,50%))."
+     in
+     match pair with
+     | None -> Ok None
+     | Some [ w; h ] -> Ok (Some ({ w; h } : Resize_to.t))
+     | Some _ -> Error "--resize-to takes two values: W,H"
+;;
+
+let move_to_flag =
+  let open Ocdwm_core.Rule.Effects in
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ pair =
+       extent_pair
+         "move-to"
+         ~docv:"X,Y"
+         ~doc:
+           "Move the matching windows to $(i,X) and $(i,Y). Each half is a pixel size \
+            (e.g. $(b,800)) or a percentage of the usable area (e.g. $(b,50%))."
+     in
+     match pair with
+     | None -> Ok None
+     | Some [ x; y ] -> Ok (Some ({ x; y } : Move_to.t))
+     | Some _ -> Error "--move-to takes two values: X,Y"
 ;;
 
 let code_protocol_err = 1
