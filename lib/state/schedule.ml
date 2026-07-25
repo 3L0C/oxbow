@@ -1,0 +1,18 @@
+let send = ref (fun () -> ())
+let requested = ref false
+let in_tick = ref false
+let install f = send := f
+
+let manage () =
+  if not !requested
+  then (
+    requested := true;
+    if not !in_tick then !send ())
+;;
+
+let with_tick f =
+  assert (not !in_tick);
+  Fun.protect f ~finally:(fun () ->
+    in_tick := false;
+    if !requested then !send ())
+;;

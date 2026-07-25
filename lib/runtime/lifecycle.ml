@@ -3,10 +3,8 @@ open! Ocdwm_ops
 
 let sync (ctx : Ctx.manage Ctx.t) =
   let wm = Ctx.wm ctx in
-  if wm.is_dirty
-  then (
-    Focus.layer_shell_sync wm;
-    Wm.clean wm)
+  Focus.layer_shell_sync wm;
+  Wm.clean wm
 ;;
 
 let request_exit ?(origin = `Local) (wm : Wm.t) =

@@ -192,6 +192,14 @@ and Window : sig
       }
   end
 
+  module Committed : sig
+    type t =
+      { mutable proposed : (int32 * int32) option
+      ; mutable clip : int Ocdwm_core.Rect.t option
+      ; mutable hidden : bool
+      }
+  end
+
   type t =
     { obj : River.V.Window_management.t River.Window_management.River_window_v1.t
     ; node : River.V.Window_management.t River.Window_management.River_node_v1.t
@@ -209,8 +217,6 @@ and Window : sig
     ; mutable geom : int32 Ocdwm_core.Rect.t
     ; mutable float_geom : int32 Ocdwm_core.Rect.t option
     ; mutable clip : int Ocdwm_core.Rect.t option
-    ; mutable applied_clip : int Ocdwm_core.Rect.t option
-    ; mutable last_proposed : (int32 * int32) option
     ; mutable size_hints : int32 Size_hints.t
     ; mutable tags : Ocdwm_core.Tag.Set.t
     ; mutable output : Output.t option
@@ -219,7 +225,7 @@ and Window : sig
     ; mutable is_urgent : bool
     ; mutable is_fake_fullscreen : bool
     ; mutable scrolling : Scrolling_props.t
-    ; mutable is_hidden : bool
+    ; committed : Committed.t
     ; mutable presentation : Presentation.t
     ; mutable requests : Request.t list
     }

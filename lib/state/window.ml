@@ -40,8 +40,6 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
   ; float_geom = None
   ; clip = None
-  ; applied_clip = None
-  ; last_proposed = None
   ; size_hints = { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l }
   ; tags =
       (match output with
@@ -53,7 +51,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; is_urgent = false
   ; is_fake_fullscreen = false
   ; scrolling = { consumes = false; width = scroll_width }
-  ; is_hidden = false
+  ; committed = { proposed = None; clip = None; hidden = false }
   ; presentation = Presentation.Tiled
   ; requests = []
   }
@@ -80,10 +78,10 @@ let set_position (_ : 'p Ctx.t) (w : t) ~x ~y =
 ;;
 
 let propose_dimensions (_ : Ctx.manage Ctx.t) (w : t) ~width ~height =
-  if w.last_proposed <> Some (width, height)
+  if w.committed.proposed <> Some (width, height)
   then (
     River.Window_management.River_window_v1.propose_dimensions w.obj ~width ~height;
-    w.last_proposed <- Some (width, height))
+    w.committed.proposed <- Some (width, height))
 ;;
 
 let river_sync_geom ctx (w : t) (g : int32 Rect.t) =
@@ -257,7 +255,7 @@ let unmaximize (ctx : Ctx.manage Ctx.t) (w : t) =
 let exit_fullscreen (ctx : Ctx.manage Ctx.t) (w : t) =
   match w.output, w.presentation with
   | Some _, Fullscreen { restore } ->
-    w.last_proposed <- None;
+    w.committed.proposed <- None;
     River.Window_management.River_window_v1.exit_fullscreen w.obj;
     River.Window_management.River_window_v1.inform_not_fullscreen w.obj;
     (match restore with
@@ -295,13 +293,13 @@ let sync (ctx : Ctx.manage Ctx.t) (w : t) =
   in
   let should_render = is_rendered w in
   let () =
-    match should_render, w.is_hidden with
+    match should_render, w.committed.hidden with
     | true, true ->
       River.Window_management.River_window_v1.show w.obj;
-      w.is_hidden <- false
+      w.committed.hidden <- false
     | false, false when not moving ->
       River.Window_management.River_window_v1.hide w.obj;
-      w.is_hidden <- true
+      w.committed.hidden <- true
     | _, _ -> ()
   in
   let desired =
@@ -313,7 +311,7 @@ let sync (ctx : Ctx.manage Ctx.t) (w : t) =
            && should_render -> w.clip
     | _ -> None
   in
-  if desired <> w.applied_clip
+  if desired <> w.committed.clip
   then (
     (match desired with
      | Some r ->
@@ -331,7 +329,7 @@ let sync (ctx : Ctx.manage Ctx.t) (w : t) =
          ~y:0l
          ~width:0l
          ~height:0l);
-    w.applied_clip <- desired)
+    w.committed.clip <- desired)
 ;;
 
 let queue_request wm (w : t) request =
@@ -533,7 +531,7 @@ let set_decoration_hint (w : t) hint = w.decoration_hint <- hint
 let set_presentation_hint (w : t) hint = w.presentation_hint <- hint
 let set_size_hints (w : t) hints = w.size_hints <- hints
 let set_is_fixed (w : t) is_fixed = w.is_fixed <- is_fixed
-let set_is_hidden (w : t) is_hidden = w.is_hidden <- is_hidden
+let set_is_hidden (w : t) is_hidden = w.committed.hidden <- is_hidden
 
 let rehome wm (w : t) name =
   match w.output_before_evac with
