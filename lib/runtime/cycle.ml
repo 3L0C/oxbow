@@ -162,20 +162,23 @@ let manage (wm : Wm.t) proxy =
   | Close_requested -> River.Window_management.River_window_manager_v1.manage_finish proxy
   | Exited -> Logs.err @@ fun m -> m "wayland session should have exited..."
   | Running ->
-    Ctx.with_manage wm (fun ctx ->
-      Lifecycle.sync ctx;
-      remove_outputs ctx;
-      close_windows ctx;
-      close_seats ctx;
-      Focus.wm_sync ctx;
-      List.iter (manage_new_seat ctx) wm.seats;
-      List.iter (manage_window ctx) wm.windows;
-      List.iter (manage_seat ctx) wm.seats;
-      List.iter (manage_output ctx) wm.outputs;
-      List.iter (Window.sync ctx) wm.windows;
-      List.iter (Focus.apply_warp ctx) wm.seats;
-      Events.publish wm;
-      River.Window_management.River_window_manager_v1.manage_finish proxy)
+    Fun.protect
+      ~finally:(fun () ->
+        River.Window_management.River_window_manager_v1.manage_finish proxy)
+      (fun () ->
+         Ctx.with_manage wm (fun ctx ->
+           Lifecycle.sync ctx;
+           remove_outputs ctx;
+           close_windows ctx;
+           close_seats ctx;
+           Focus.wm_sync ctx;
+           List.iter (manage_new_seat ctx) wm.seats;
+           List.iter (manage_window ctx) wm.windows;
+           List.iter (manage_seat ctx) wm.seats;
+           List.iter (manage_output ctx) wm.outputs;
+           List.iter (Window.sync ctx) wm.windows;
+           List.iter (Focus.apply_warp ctx) wm.seats;
+           Events.publish wm))
 ;;
 
 let set_presentation_mode output =

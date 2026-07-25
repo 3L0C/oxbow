@@ -18,11 +18,11 @@ val set_focus_follows_pointer : Types.Wm.t -> bool -> unit
     {b Effects:} mutates WM state *)
 val set_warp_on_focus : Types.Wm.t -> bool -> unit
 
-(** [set_border_width wm border_width] sets [wm]'s border width to
-    [border_width].
+(** [set_border_width wm width] sets [wm]'s border width to [width].
+    Is [Error msg] when [width] is negative.
 
     {b Effects:} mutates WM state; marks dirty *)
-val set_border_width : Types.Wm.t -> int32 -> unit
+val set_border_width : Types.Wm.t -> int32 -> (Yojson.Safe.t option, string) result
 
 (** [set_cursor_theme wm cursor_theme] sets [wm]'s cursor theme to
     [cursor_theme].

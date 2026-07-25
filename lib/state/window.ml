@@ -93,9 +93,12 @@ let river_sync_geom ctx (w : t) (g : int32 Rect.t) =
     River.Window_management.River_node_v1.set_position w.node ~x:g.x ~y:g.y
 ;;
 
+let floor_geom (g : int32 Rect.t) = { g with w = max g.w 0l; h = max g.h 0l }
+
 let set_geom ctx (w : t) g =
-  w.geom <- g;
-  river_sync_geom ctx w g
+  let geom = floor_geom g in
+  w.geom <- geom;
+  river_sync_geom ctx w geom
 ;;
 
 let tag_layout (o : Types.Output.t) =

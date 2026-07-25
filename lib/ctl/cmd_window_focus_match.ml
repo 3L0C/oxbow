@@ -11,8 +11,8 @@ let command_term =
       & info
           [ "cycle" ]
           ~doc:
-            "If the currently focused window matches the search term, focus the next \
-             matching window, if any")
+            "If the currently focused window matches the search, focus the next matching \
+             window, if any")
   and+ warp = Ctl_cli.warp_flag in
   Command.Window (Focus_match { wmatch; cycle; warp })
 ;;

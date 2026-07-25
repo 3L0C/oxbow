@@ -52,9 +52,13 @@ let set_warp_on_focus (wm : Types.Wm.t) warp_on_focus =
   wm.config.warp_on_focus <- warp_on_focus
 ;;
 
-let set_border_width (wm : Types.Wm.t) border_width =
-  wm.config.borders.width <- border_width;
-  Dirty.mark_all wm
+let set_border_width (wm : Types.Wm.t) width =
+  if width < 0l
+  then Error "border width cannot be negative"
+  else (
+    wm.config.borders.width <- width;
+    Dirty.mark_all wm;
+    Ok None)
 ;;
 
 let set_cursor_theme (wm : Types.Wm.t) cursor_theme =

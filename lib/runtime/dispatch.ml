@@ -5,9 +5,7 @@ open! Ocdwm_ops
 let handle_border ctx _seat (cmd : Command.Border.t) =
   let wm = Ctx.wm ctx in
   match cmd with
-  | Width width ->
-    Config.set_border_width wm width;
-    Ok None
+  | Width width -> Config.set_border_width wm width
   | Color { which; color } ->
     Config.set_border_color wm which color;
     Ok None
