@@ -29,6 +29,11 @@ let unbind_xkb_binding ctx (seat : t) mode mods keysym =
   not @@ List.is_empty to_destroy
 ;;
 
+let queue_pending (s : t) request =
+  Queue.add request s.pending_requests;
+  Schedule.manage ()
+;;
+
 let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mode mods keysym command =
   let wm = Ctx.wm ctx in
   let body = Request.Body.Command command in
@@ -42,9 +47,7 @@ let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mode mods keysym command =
             inherit [_] River.Xkb_bindings.River_xkb_binding_v1.v2
             method on_stop_repeat _ = ()
             method on_released _ = ()
-
-            method on_pressed _ =
-              Queue.push Pending_request.{ body; reply = None } seat.pending_requests
+            method on_pressed _ = queue_pending seat { body; reply = None }
           end
           ~keysym:keysym_i32
           ~modifiers:mods
@@ -89,9 +92,7 @@ let pointer_binding_create (ctx : Ctx.manage Ctx.t) (seat : t) mode mods button 
           object
             inherit [_] River.Window_management.River_pointer_binding_v1.v4
             method on_released _ = ()
-
-            method on_pressed _ =
-              Queue.push Pending_request.{ body; reply = None } seat.pending_requests
+            method on_pressed _ = queue_pending seat { body; reply = None }
           end
           ~button:(Pointer_button.to_int32 button)
           ~modifiers:mods
@@ -135,11 +136,6 @@ let op_end (_ : Ctx.manage Ctx.t) (s : t) =
     River.Window_management.River_seat_v1.op_end s.obj
 ;;
 
-let queue_pending (s : t) request =
-  Queue.add request s.pending_requests;
-  Schedule.manage ()
-;;
-
 let drain_pending (s : t) = Queue.take_opt s.pending_requests
 
 let clear_pending (s : t) =
@@ -177,7 +173,12 @@ let set_mode (ctx : Ctx.manage Ctx.t) (seat : t) mode =
 ;;
 
 let set_position (s : t) position = s.position <- position
-let set_cursor_target (s : t) window = s.cursor_target <- window
+
+let set_cursor_target (s : t) window =
+  s.cursor_target <- window;
+  Schedule.manage ()
+;;
+
 let set_focus_state (s : t) state = s.focus_state <- state
 let set_op (s : t) op = s.op <- Some op
 let clear_op (s : t) = s.op <- None
