@@ -11,13 +11,14 @@ val zoom
   -> Ocdwm_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
-(** [move_window ?policy window output] removes [window] from its current
+(** [move_window ctx ?policy window output] removes [window] from its current
     output, if any, and moves it to [output]. No-op when [window] is already
     owned by [output]. If [policy] is not given, [window]'s tags are unchanged.
 
     {b Effects:} mutates WM state *)
 val move_window
   :  ?policy:Ocdwm_core.Tag.Policy.t
+  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Window.t
   -> Ocdwm_state.Output.t
   -> unit
@@ -145,10 +146,13 @@ val exit_fullscreen
   -> Ocdwm_state.Window.t
   -> unit
 
-(** [close_focused seat] asks [seat]'s focused window to close.
+(** [close_focused ctx seat] asks [seat]'s focused window to close.
 
     {b Effects:} sends River request *)
-val close_focused : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
+val close_focused
+  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  -> Ocdwm_state.Seat.t
+  -> (Yojson.Safe.t option, string) result
 
 (** [move_to ~x ~y ctx window] moves [window] to the extents [x] and [y]. Is
     [Error msg] when the window is fullscreen.

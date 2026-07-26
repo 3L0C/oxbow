@@ -14,8 +14,8 @@ let paint ctx (seat : Seat.t) =
     else borders.unfocused_color
   in
   let edges =
-    let open River.Window_management.River_window_v1.Edges in
-    Int32.(logor left right |> logor top |> logor bottom)
+    let open River.Window_management.River_window_v1 in
+    Int32.(logor Edges.left Edges.right |> logor Edges.top |> logor Edges.bottom)
   in
   let width = borders.width in
   List.iter
@@ -24,13 +24,6 @@ let paint ctx (seat : Seat.t) =
        | None -> ()
        | Some o ->
          let r, g, b, a = color w o |> Color.channels in
-         River.Window_management.River_window_v1.set_borders
-           w.obj
-           ~edges
-           ~width
-           ~r
-           ~g
-           ~b
-           ~a)
+         Send.set_borders ctx w ~edges ~width ~r ~g ~b ~a)
     wm.windows
 ;;

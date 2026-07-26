@@ -16,7 +16,7 @@ val destroy : t -> unit
 (** [set_position ctx window ~x ~y] positions [window] at ([x], [y]).
 
     {b Effects:} mutates WM state; sends River request *)
-val set_position : 'p Ctx.t -> t -> x:int32 -> y:int32 -> unit
+val set_position : [< `Manage | `Render ] Ctx.t -> t -> x:int32 -> y:int32 -> unit
 
 (** [propose_dimensions ctx window ~width ~height] proposes content dimensions
     to [window]. Skips the request when it equals the last proposal.

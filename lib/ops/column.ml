@@ -122,14 +122,14 @@ let zoom ?warp ctx seat =
       | Some x -> Window.set_consumes x false
       | None -> assert false);
     Window.set_consumes w false;
-    Stacking.push [ w ] o;
+    Stacking.push ctx [ w ] o;
     Focus.focus_window ~force:true ~warp ctx seat w;
     Ok None
   | [ _ ] ->
     (match cols with
      | [ _ ] -> Error "no other column"
      | first :: _ when first != col ->
-       Stacking.push [ w ] o;
+       Stacking.push ctx [ w ] o;
        Focus.focus_window ~force:true ~warp ctx seat w;
        Ok None
      | _ :: (next_head :: _) :: _ ->

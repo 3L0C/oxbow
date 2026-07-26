@@ -12,7 +12,7 @@ module Focus_intent = struct
     | Remove of Window.t
 end
 
-let apply (intent : Focus_intent.t) (output : Output.t) =
+let apply ctx (intent : Focus_intent.t) (output : Output.t) =
   let not_in lst w = not @@ List.memq w lst in
   let splice_focus_stack windows =
     match output.focus_stack with
@@ -28,8 +28,8 @@ let apply (intent : Focus_intent.t) (output : Output.t) =
     match Output.focused_window output with
     | None -> ()
     | Some w ->
-      River.Window_management.River_seat_v1.focus_window seat.obj ~window:w.obj;
-      River.Window_management.River_node_v1.place_top w.node
+      Send.focus_window ctx seat w;
+      Send.place_top ctx w
   in
   match intent with
   | Promote { window; seat; _ } ->
@@ -51,8 +51,8 @@ let apply (intent : Focus_intent.t) (output : Output.t) =
     Output.set_focus_stack output @@ List.filter (fun w' -> w' != w) output.focus_stack
 ;;
 
-let push windows output = apply (Push windows) output
-let remove_window ~window output = apply (Remove window) output
+let push ctx windows output = apply ctx (Push windows) output
+let remove_window ctx ~window output = apply ctx (Remove window) output
 
 let restore_focus_order ~like (output : Output.t) =
   let arrived = List.filter (fun w -> List.memq w output.focus_stack) like in
@@ -61,7 +61,7 @@ let restore_focus_order ~like (output : Output.t) =
 ;;
 
 let focus_window ctx seat window =
-  Option.iter (apply @@ Promote { ctx; window; seat }) window.output
+  Option.iter (apply ctx @@ Promote { ctx; window; seat }) window.output
 ;;
 
 let shift (seat : Seat.t) (dir : Direction.Logical.t) =
@@ -80,10 +80,9 @@ let shift (seat : Seat.t) (dir : Direction.Logical.t) =
        Ok None)
 ;;
 
-let raise_floats (_ : Ctx.manage Ctx.t) (output : Output.t) =
+let raise_floats ctx (output : Output.t) =
   output.focus_stack
   |> List.filter (fun w -> Window.tag_visible w && w.presentation = Floating)
   |> List.rev
-  |> List.iter (fun (w : Window.t) ->
-    River.Window_management.River_node_v1.place_top w.node)
+  |> List.iter (fun (w : Window.t) -> Send.place_top ctx w)
 ;;

@@ -11,7 +11,7 @@ let zoom ?warp ctx (seat : Seat.t) =
   | Tiling -> Tiling.zoom ?warp ctx seat
 ;;
 
-let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
+let move_window ?(policy = Tag.Policy.Keep) ctx window (target : Output.t) =
   let take () =
     (match policy with
      | Keep -> ()
@@ -20,18 +20,18 @@ let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
        |> Option.fold ~none:window.tags ~some:Tag.Set.singleton
        |> Window.set_tags window);
     Window.set_output window @@ Some target;
-    Stacking.push [ window ] target
+    Stacking.push ctx [ window ] target
   in
   match window.output with
   | Some o when o == target -> ()
   | None -> take ()
   | Some _ ->
-    Option.iter (Stacking.remove_window ~window) window.output;
+    Option.iter (Stacking.remove_window ctx ~window) window.output;
     take ()
 ;;
 
 let send_to ~(src : Output.t) ~(dst : Output.t) ctx window policy =
-  move_window ~policy window dst;
+  move_window ctx ~policy window dst;
   (match window.presentation with
    | Tiled -> ()
    | Floating ->
@@ -166,7 +166,7 @@ let fullscreen ctx output (window : Window.t) cb =
            then cb ctx w Window.Request.Exit_fullscreen)
         o.focus_stack;
       List.iter (Seat.op_end ctx) wm.seats;
-      move_window window o;
+      move_window ctx window o;
       Window.fullscreen ctx window;
       Schedule.manage ()
   in
@@ -175,7 +175,7 @@ let fullscreen ctx output (window : Window.t) cb =
   | Fullscreen _ ->
     (match output, window.output with
      | Some o1, Some o2 when o1 != o2 ->
-       move_window window o1;
+       move_window ctx window o1;
        Window.fullscreen ~force:true ctx window;
        Schedule.manage ()
      | _, _ -> ())
@@ -189,10 +189,10 @@ let exit_fullscreen ctx (window : Window.t) =
     Schedule.manage ()
 ;;
 
-let close_focused seat =
+let close_focused ctx seat =
   With.focused_window seat
   @@ fun _o w ->
-  River.Window_management.River_window_v1.close w.obj;
+  Send.close ctx w;
   Ok None
 ;;
 

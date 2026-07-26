@@ -193,12 +193,12 @@ let remove_window ctx (window : Window.t) =
     | Some o -> Phys.opt_holds window (Output.focused_window o)
     | None -> false
   in
-  Option.iter (Stacking.remove_window ~window) window.output;
+  Option.iter (Stacking.remove_window ctx ~window) window.output;
   if was_focused then focus_parent window;
   Option.iter (refresh ctx) window.output
 ;;
 
-let wm_sync (ctx : Ctx.manage Ctx.t) =
+let wm_sync ctx =
   let wm = Ctx.wm ctx in
   let default = Wm.default_output wm in
   List.iter
@@ -213,7 +213,7 @@ let wm_sync (ctx : Ctx.manage Ctx.t) =
        match w.output with
        | None when not @@ List.is_empty wm.outputs ->
          Window.set_output w default;
-         Option.iter (fun o -> Stacking.push [ w ] o) default
+         Option.iter (fun o -> Stacking.push ctx [ w ] o) default
        | _ -> ())
     wm.windows
 ;;

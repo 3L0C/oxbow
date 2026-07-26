@@ -29,7 +29,7 @@ let remove_outputs ctx =
   List.iter Output.destroy removed
 ;;
 
-let disconnect_seat window (seat : Seat.t) =
+let disconnect_seat ctx window (seat : Seat.t) =
   (match seat.hovered with
    | Some w when w == window -> Seat.set_hovered seat None
    | _ -> ());
@@ -44,12 +44,12 @@ let disconnect_seat window (seat : Seat.t) =
    | _ -> ());
   match seat.op with
   | Some (Move { window = w; _ } | Resize { window = w; _ }) when w == window ->
-    River.Window_management.River_seat_v1.op_end seat.obj;
+    Send.op_end ctx seat;
     Seat.clear_op seat
   | _ -> ()
 ;;
 
-let disconnect_seats window = List.iter (disconnect_seat window)
+let disconnect_seats ctx window = List.iter (disconnect_seat ctx window)
 
 let close_windows ctx =
   let wm = Ctx.wm ctx in
@@ -58,7 +58,7 @@ let close_windows ctx =
        (fun (w : Window.t) ->
           match w.lifecycle with
           | Closing ->
-            disconnect_seats w wm.seats;
+            disconnect_seats ctx w wm.seats;
             Focus.remove_window ctx w;
             List.iter
               (fun (c : Window.t) ->
@@ -85,12 +85,13 @@ let close_seats ctx =
 ;;
 
 let manage_new_window ctx (window : Window.t) =
-  River.Window_management.River_window_v1.set_capabilities
-    window.obj
+  Send.set_capabilities
+    ctx
+    window
     ~caps:
       River.Window_management.River_window_v1.Capabilities.(
         Int32.logor maximize fullscreen);
-  Option.iter (Stacking.push [ window ]) window.output;
+  Option.iter (Stacking.push ctx [ window ]) window.output;
   if window.is_fixed || Option.is_some window.parent
   then Window.set_presentation window Floating;
   Rules.apply_for ctx window;
@@ -180,7 +181,7 @@ let manage (wm : Wm.t) proxy =
            Events.publish wm))
 ;;
 
-let set_presentation_mode output =
+let set_presentation_mode ctx output =
   match Output.focused_window output with
   | Some w when Option.is_some w.output ->
     let mode =
@@ -188,10 +189,11 @@ let set_presentation_mode output =
       | Some p -> p
       | None -> River.Window_management.River_output_v1.Presentation_mode.Vsync
     in
-    River.Window_management.River_output_v1.set_presentation_mode output.obj ~mode
+    Send.set_presentation_mode ctx output ~mode
   | _ ->
-    River.Window_management.River_output_v1.set_presentation_mode
-      output.obj
+    Send.set_presentation_mode
+      ctx
+      output
       ~mode:River.Window_management.River_output_v1.Presentation_mode.Vsync
 ;;
 
@@ -206,18 +208,19 @@ let render_impl ctx (seat : Seat.t) =
        ~x:(Int32.add op_m.start_x op_m.dx)
        ~y:(Int32.add op_m.start_y op_m.dy)
    | Some (Resize op_r) ->
+     let open River.Window_management.River_window_v1.Edges in
      let x =
-       if Int32.logand op_r.edges River.Window_management.River_window_v1.Edges.left <> 0l
+       if Int32.logand op_r.edges left <> 0l
        then Int32.sub op_r.start_w op_r.window.geom.w |> Int32.add op_r.start_x
        else op_r.start_x
      in
      let y =
-       if Int32.logand op_r.edges River.Window_management.River_window_v1.Edges.top <> 0l
+       if Int32.logand op_r.edges top <> 0l
        then Int32.sub op_r.start_h op_r.window.geom.h |> Int32.add op_r.start_y
        else op_r.start_y
      in
      Window.set_position ctx op_r.window ~x ~y);
-  List.iter set_presentation_mode wm.outputs;
+  List.iter (set_presentation_mode ctx) wm.outputs;
   Border.paint ctx seat
 ;;
 

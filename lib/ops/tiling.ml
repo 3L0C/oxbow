@@ -45,11 +45,11 @@ let zoom ?warp ctx seat =
     let warp = Seat.Warp_request.of_override warp in
     match Output.tiled_windows o with
     | w' :: x :: _ when w' == w ->
-      Stacking.push [ x; w ] o;
+      Stacking.push ctx [ x; w ] o;
       Focus.focus_window ~force:true ~warp ctx seat x;
       Ok None
     | w' :: _ when w' != w ->
-      Stacking.push [ w; w' ] o;
+      Stacking.push ctx [ w; w' ] o;
       Focus.focus_window ~force:true ~warp ctx seat w;
       Ok None
     | _ -> Error "no window to zoom with")

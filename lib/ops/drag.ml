@@ -3,7 +3,7 @@ open! Ocdwm_state
 
 let begin_move ctx seat window =
   Focus.focus_window ctx seat window;
-  River.Window_management.River_seat_v1.op_start_pointer seat.obj;
+  Send.op_start_pointer ctx seat;
   Seat.set_op seat
   @@ Move
        { window
@@ -21,9 +21,9 @@ let begin_resize ctx seat window edges =
   let open River.Window_management.River_window_v1 in
   let corner_x = if Int32.logand edges Edges.left <> 0l then g.x else Int32.add g.x g.w in
   let corner_y = if Int32.logand edges Edges.top <> 0l then g.y else Int32.add g.y g.h in
-  River.Window_management.River_seat_v1.pointer_warp seat.obj ~x:corner_x ~y:corner_y;
-  River.Window_management.River_window_v1.inform_resize_start window.obj;
-  River.Window_management.River_seat_v1.op_start_pointer seat.obj;
+  Send.pointer_warp ctx seat ~x:corner_x ~y:corner_y;
+  Send.inform_resize_start ctx window;
+  Send.op_start_pointer ctx seat;
   Seat.set_op seat
   @@ Resize
        { window
@@ -42,13 +42,13 @@ let step ctx (seat : Seat.t) =
   let wm = Ctx.wm ctx in
   match seat.op with
   | Some (Move op_m) when op_m.release ->
-    River.Window_management.River_seat_v1.op_end seat.obj;
+    Send.op_end ctx seat;
     let w = op_m.window in
     let cx = Int32.(div w.geom.w 2l |> add w.geom.x) in
     let cy = Int32.(div w.geom.h 2l |> add w.geom.y) in
     (match Output.at_point ~x:cx ~y:cy wm.outputs with
      | Some o when not @@ Phys.opt_holds o w.output ->
-       Placement.move_window ~policy:Tag.Policy.Take w o;
+       Placement.move_window ctx w o ~policy:Tag.Policy.Take;
        Focus.focus_window ctx seat w;
        Schedule.manage ()
      | _ -> ());
@@ -56,25 +56,18 @@ let step ctx (seat : Seat.t) =
     then Window.remember_float op_m.window;
     Seat.clear_op seat
   | Some (Resize op_r) when op_r.release ->
-    River.Window_management.River_window_v1.inform_resize_end op_r.window.obj;
-    River.Window_management.River_seat_v1.op_end seat.obj;
+    Send.inform_resize_end ctx op_r.window;
+    Send.op_end ctx seat;
     if
       op_r.window.presentation = Floating && (not @@ Output.is_floating op_r.window.output)
     then Window.remember_float op_r.window;
     Seat.clear_op seat
   | Some (Resize op_r) ->
-    let left =
-      Int32.logand op_r.edges River.Window_management.River_window_v1.Edges.left <> 0l
-    in
-    let right =
-      Int32.logand op_r.edges River.Window_management.River_window_v1.Edges.right <> 0l
-    in
-    let top =
-      Int32.logand op_r.edges River.Window_management.River_window_v1.Edges.top <> 0l
-    in
-    let bottom =
-      Int32.logand op_r.edges River.Window_management.River_window_v1.Edges.bottom <> 0l
-    in
+    let open River.Window_management.River_window_v1 in
+    let left = Int32.logand op_r.edges Edges.left <> 0l in
+    let right = Int32.logand op_r.edges Edges.right <> 0l in
+    let top = Int32.logand op_r.edges Edges.top <> 0l in
+    let bottom = Int32.logand op_r.edges Edges.bottom <> 0l in
     let width =
       match left, right with
       | true, true | false, false -> op_r.start_w

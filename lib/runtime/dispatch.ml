@@ -68,7 +68,7 @@ let handle_tag seat (cmd : Command.Tag.t) =
 
 let handle_window ctx seat (cmd : Command.Window.t) =
   match cmd with
-  | Close -> Placement.close_focused seat
+  | Close -> Placement.close_focused ctx seat
   | Focus_logical { dir; warp } -> Focus.window_logical ?warp ctx seat dir
   | Focus_spatial { dir; warp } -> Focus.window_spatial ?warp ctx seat dir
   | Focus_match { wmatch; cycle; warp } -> Focus.window_match ?warp ~cycle ctx seat wmatch

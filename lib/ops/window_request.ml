@@ -11,7 +11,7 @@ let handle_move ctx seat window =
     aux ()
   | Maximized _ ->
     Window.set_presentation window Floating;
-    River.Window_management.River_window_v1.inform_unmaximized window.obj;
+    Send.inform_unmaximized ctx window;
     aux ()
   | Floating -> aux ()
 ;;
@@ -26,7 +26,7 @@ let handle_resize ctx seat window edges =
     resize ()
   | Maximized _ ->
     Window.set_presentation window Floating;
-    River.Window_management.River_window_v1.inform_unmaximized window.obj;
+    Send.inform_unmaximized ctx window;
     resize ()
   | Floating -> resize ()
 ;;

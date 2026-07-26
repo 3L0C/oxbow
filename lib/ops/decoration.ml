@@ -1,19 +1,17 @@
 open! Ocdwm_state
 
-let apply (_ctx : Ctx.manage Ctx.t) window =
+let apply ctx window =
   let tiled = Window.is_tiled window in
   let edges =
+    let open River.Window_management.River_window_v1 in
     if tiled
-    then
-      let open River.Window_management.River_window_v1.Edges in
-      Int32.(logor left right |> logor top |> logor bottom)
-    else River.Window_management.River_window_v1.Edges.none
+    then Int32.(logor Edges.left Edges.right |> logor Edges.top |> logor Edges.bottom)
+    else Edges.none
   in
-  River.Window_management.River_window_v1.set_tiled window.obj ~edges;
+  Send.set_tiled ctx window ~edges;
   match window.decoration_hint with
   | Some Only_csd -> ()
-  | _ when tiled -> River.Window_management.River_window_v1.use_ssd window.obj
-  | Some Prefer_csd -> River.Window_management.River_window_v1.use_csd window.obj
-  | Some Prefer_ssd | Some No_preference | None ->
-    River.Window_management.River_window_v1.use_ssd window.obj
+  | _ when tiled -> Send.use_ssd ctx window
+  | Some Prefer_csd -> Send.use_csd ctx window
+  | Some Prefer_ssd | Some No_preference | None -> Send.use_ssd ctx window
 ;;
