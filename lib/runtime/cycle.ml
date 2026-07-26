@@ -108,9 +108,6 @@ let manage_new_window ctx (window : Window.t) =
 ;;
 
 let manage_window ctx (window : Window.t) =
-  (match window.lifecycle with
-   | New -> manage_new_window ctx window
-   | _ -> ());
   List.rev window.requests |> List.iter (Window_request.handle ctx window);
   Window.clear_requests window;
   Decoration.apply ctx window
@@ -155,6 +152,44 @@ let manage_output ctx (output : Output.t) =
     Focus.refresh ctx output
 ;;
 
+let reap ctx =
+  remove_outputs ctx;
+  close_windows ctx;
+  close_seats ctx
+;;
+
+let admit ctx =
+  let wm = Ctx.wm ctx in
+  Focus.wm_sync ctx;
+  List.iter (manage_new_seat ctx) wm.seats;
+  List.iter
+    (fun (w : Window.t) ->
+       match w.lifecycle with
+       | New -> manage_new_window ctx w
+       | Active | Closing -> ())
+    wm.windows
+;;
+
+let apply ctx =
+  let wm = Ctx.wm ctx in
+  List.iter (manage_window ctx) wm.windows;
+  List.iter (manage_seat ctx) wm.seats
+;;
+
+let arrange ctx =
+  let wm = Ctx.wm ctx in
+  List.iter (manage_output ctx) wm.outputs
+;;
+
+let commit_manage ctx =
+  let wm = Ctx.wm ctx in
+  List.iter (Stacking.raise_floats ctx) wm.outputs;
+  List.iter (Window.sync ctx) wm.windows;
+  List.iter (Focus.apply_warp ctx) wm.seats
+;;
+
+let publish ctx = Ctx.wm ctx |> Events.publish
+
 let manage (wm : Wm.t) proxy =
   match wm.lifecycle with
   | Pending_exit _ -> Lifecycle.dispatch_pending wm
@@ -167,18 +202,12 @@ let manage (wm : Wm.t) proxy =
       (fun () ->
          Ctx.with_manage wm (fun ctx ->
            Lifecycle.sync ctx;
-           remove_outputs ctx;
-           close_windows ctx;
-           close_seats ctx;
-           Focus.wm_sync ctx;
-           List.iter (manage_new_seat ctx) wm.seats;
-           List.iter (manage_window ctx) wm.windows;
-           List.iter (manage_seat ctx) wm.seats;
-           List.iter (manage_output ctx) wm.outputs;
-           List.iter (Stacking.raise_floats ctx) wm.outputs;
-           List.iter (Window.sync ctx) wm.windows;
-           List.iter (Focus.apply_warp ctx) wm.seats;
-           Events.publish wm))
+           reap ctx;
+           admit ctx;
+           apply ctx;
+           arrange ctx;
+           commit_manage ctx;
+           publish ctx))
 ;;
 
 let set_presentation_mode ctx output =
