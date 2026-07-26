@@ -19,7 +19,9 @@ let setup ~log_level =
 
 let run ~init_command ~log_level () =
   setup ~log_level;
-  try Eio_main.run @@ fun env -> Run.loop ~init_command ~net:env#net ~clock:env#clock with
+  try
+    Eio_main.run @@ fun env -> Run.loop ~init_command ~net:env#net ~clock:env#clock ()
+  with
   | Failure s ->
     Printf.eprintf "%s\n" s;
     Exit.software

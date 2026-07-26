@@ -1,10 +1,14 @@
 open! Ocdwm_core
 open! Ocdwm_state
 
-let loop ~init_command ~net ~clock =
+let loop ?transport:trans ~init_command ~net ~clock () =
   Eio.Switch.run
   @@ fun sw ->
-  let transport = Wayland.Unix_transport.connect ~sw ~net () in
+  let transport =
+    match trans with
+    | Some t -> t
+    | None -> Wayland.Unix_transport.connect ~sw ~net ()
+  in
   let display = Wayland.Client.connect ~sw transport in
   let registry = Wayland.Registry.of_display display in
   let wm_box : Wm.t Box.t = { body = None } in

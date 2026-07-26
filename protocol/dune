@@ -5,16 +5,22 @@
  (modules
   river_input_management_v1_client
   river_input_management_v1_proto
+  river_input_management_v1_server
   river_layer_shell_v1_client
   river_layer_shell_v1_proto
+  river_layer_shell_v1_server
   river_libinput_config_v1_client
   river_libinput_config_v1_proto
+  river_libinput_config_v1_server
   river_window_management_v1_client
   river_window_management_v1_proto
+  river_window_management_v1_server
   river_xkb_bindings_v1_client
   river_xkb_bindings_v1_proto
+  river_xkb_bindings_v1_server
   river_xkb_config_v1_client
-  river_xkb_config_v1_proto))
+  river_xkb_config_v1_proto
+  river_xkb_config_v1_server))
 
 (rule
  (mode promote)
@@ -26,7 +32,7 @@
  (action
   (chdir
    %{workspace_root}/protocol
-   (run wayland-scanner-ocaml %{deps}))))
+   (run wayland-scanner-ocaml --open Wayland.Wayland_proto %{deps}))))
 
 (rule
  (mode promote)
@@ -38,7 +44,11 @@
  (action
   (chdir
    %{workspace_root}/protocol
-   (run wayland-scanner-ocaml %{deps}))))
+   (run
+    wayland-scanner-ocaml
+    --open
+    River_window_management_v1_proto
+    %{deps}))))
 
 (rule
  (mode promote)
@@ -62,7 +72,7 @@
  (action
   (chdir
    %{workspace_root}/protocol
-   (run wayland-scanner-ocaml %{deps}))))
+   (run wayland-scanner-ocaml --open Wayland.Wayland_proto %{deps}))))
 
 (rule
  (mode promote)

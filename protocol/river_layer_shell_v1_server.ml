@@ -4,6 +4,7 @@
 open struct
   module Imports = struct
     include River_layer_shell_v1_proto
+    include River_window_management_v1_proto
   end
   
   module Proxy = Wayland.Proxy
