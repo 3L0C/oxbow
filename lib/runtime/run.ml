@@ -1,7 +1,7 @@
 open! Ocdwm_core
 open! Ocdwm_state
 
-let loop ?transport:trans ~init_command ~net ~clock () =
+let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   Eio.Switch.run
   @@ fun sw ->
   let transport =
@@ -105,7 +105,7 @@ let loop ?transport:trans ~init_command ~net ~clock () =
     | `Shutdown -> ());
   Sys.set_signal Sys.sigint @@ Sys.Signal_handle on_signal;
   Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
-  Ipc_server.start ~sw ~net ~wm;
+  Ipc_server.start ?socket_path ~sw ~net ~wm ();
   Lifecycle.await_shutdown wm;
   Lifecycle.teardown ~clock wm;
   Wayland.Client.stop display;

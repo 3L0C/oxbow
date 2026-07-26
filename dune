@@ -1,3 +1,5 @@
+(dirs :standard \ river-wms)
+
 (env
  (dev
   (flags
