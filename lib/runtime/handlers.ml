@@ -216,11 +216,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
             ~name
           @@ ( object
                  inherit [_] Wayland.Wayland_client.Wl_seat.v9
-
-                 method on_name _ ~name =
-                   (Logs.info @@ fun m -> m "Seat: Name: %S" name);
-                   Seat.set_name seat @@ Some name
-
+                 method on_name _ ~name = Seat.set_name seat @@ Some name
                  method on_capabilities _ ~capabilities:_ = ()
                end
              , 9l )
