@@ -1,9 +1,7 @@
 open! Ocdwm_state
 open! Ocdwm_ipc
 
-let apply (seat : Seat.t) ~name ~size =
-  River.Window_management.River_seat_v1.set_xcursor_theme seat.obj ~name ~size
-;;
+let apply = Emit.set_xcursor_theme
 
 let set_theme wm seat name size =
   Config.set_cursor_theme wm @@ Some (name, size);

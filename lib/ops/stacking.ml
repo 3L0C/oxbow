@@ -29,7 +29,7 @@ let apply ctx (intent : Focus_intent.t) (output : Output.t) =
     | None -> ()
     | Some w ->
       Send.focus_window ctx seat w;
-      Send.place_top ctx w
+      Emit.place_top ctx w
   in
   match intent with
   | Promote { window; seat; _ } ->
@@ -84,5 +84,5 @@ let raise_floats ctx (output : Output.t) =
   output.focus_stack
   |> List.filter (fun w -> Window.tag_visible w && w.presentation = Floating)
   |> List.rev
-  |> List.iter (fun (w : Window.t) -> Send.place_top ctx w)
+  |> List.iter (fun (w : Window.t) -> Emit.place_top ctx w)
 ;;

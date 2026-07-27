@@ -1,10 +1,5 @@
 include module type of Types.Seat
 
-(** [destroy ctx seat] destroys the Wayland objects underlying [seat].
-
-    {b Effects:} mutates WM state; sends River request *)
-val destroy : Ctx.manage Ctx.t -> t -> unit
-
 (** [refresh_cursor_target seat] syncs [seat]'s cursor targed with [seat]'s
     hovered if hovered is [Some window]. No-op when hovered is [None].
 

@@ -20,13 +20,8 @@ let fresh_id () =
 ;;
 
 let create (output : Types.Output.t option) scroll_width river_window : t =
-  let node =
-    object
-      inherit [_] River.Window_management.River_node_v1.v4
-    end
-  in
   { obj = river_window
-  ; node = River.Window_management.River_window_v1.get_node river_window node
+  ; node = Emit.create_node river_window
   ; lifecycle = New
   ; id = fresh_id ()
   ; app_id = None
@@ -59,10 +54,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
 
 let destroy (w : t) =
   match w.lifecycle with
-  | Closing ->
-    River.Window_management.River_window_v1.destroy w.obj;
-    Wayland.Proxy.delete w.obj;
-    River.Window_management.River_node_v1.destroy w.node
+  | Closing -> Emit.destroy_window w
   | _ ->
     Logs.warn
     @@ fun m ->

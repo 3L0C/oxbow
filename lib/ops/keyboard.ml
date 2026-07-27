@@ -1,9 +1,7 @@
 open! Ocdwm_state
 open! Ocdwm_ipc
 
-let set_device_repeat_info device ~rate ~delay =
-  River.Input_management.River_input_device_v1.set_repeat_info device ~rate ~delay
-;;
+let set_device_repeat_info = Emit.set_repeat_info
 
 let set_repeat_info wm ~rate ~delay =
   Config.set_key_repeat wm ~rate ~delay;

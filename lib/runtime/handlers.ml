@@ -381,7 +381,7 @@ let on_input_device device (wm_box : Wm.t Box.t) =
        method on_removed _ =
          match entry_box.body with
          | Some entry -> Wm.remove_input_device wm entry
-         | None -> Input_device.remove_device device
+         | None -> Emit.destroy_input_device device
      end
 ;;
 
@@ -402,7 +402,7 @@ let on_xkb_keyboard xkb (wm_box : Wm.t Box.t) =
          | Some entry -> Input_device.set_xkb wm entry xkb
 
        method on_removed _ =
-         Input_device.remove_xkb xkb;
+         Emit.destroy_xkb_keyboard xkb;
          match !device_ref with
          | Some device ->
            (match Wm.find_input_device_opt wm device with

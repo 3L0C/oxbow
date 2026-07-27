@@ -38,7 +38,7 @@ let dispatch_pending (wm : Wm.t) =
   | Pending_exit _ ->
     List.iter Seat.clear_pending wm.seats;
     Wm.set_lifecycle wm Exited;
-    River.Window_management.River_window_manager_v1.exit_session wm.river_wm_v1;
+    Emit.exit_session wm;
     Eio.Condition.broadcast wm.shutdown
   | Running | Exited | Close_requested ->
     Logs.err

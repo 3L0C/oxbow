@@ -19,11 +19,6 @@ val show : Ctx.manage Ctx.t -> Types.Window.t -> unit
     {b Effects:} sends River request *)
 val hide : Ctx.manage Ctx.t -> Types.Window.t -> unit
 
-(** [close ctx window] requests river close [window].
-
-    {b Effects:} sends River request *)
-val close : Ctx.manage Ctx.t -> Types.Window.t -> unit
-
 (** [fullscreen ctx window ~output] makes [window] fullscreen
     on [output].
 
@@ -97,21 +92,6 @@ val focus_window : Ctx.manage Ctx.t -> Types.Seat.t -> Types.Window.t -> unit
     {b Effects:} sends River request *)
 val clear_focus : Ctx.manage Ctx.t -> Types.Seat.t -> unit
 
-(** [op_start_pointer ctx seat] starts a pointer operation on [seat].
-
-    {b Effects:} sends River request *)
-val op_start_pointer : Ctx.manage Ctx.t -> Types.Seat.t -> unit
-
-(** [op_end ctx seat] ends the pointer operation on [seat].
-
-    {b Effects:} sends River request *)
-val op_end : Ctx.manage Ctx.t -> Types.Seat.t -> unit
-
-(** [pointer_warp ctx seat ~x ~y] warps the pointer of [seat] to ([x], [y]).
-
-    {b Effects:} sends River request *)
-val pointer_warp : Ctx.manage Ctx.t -> Types.Seat.t -> x:int32 -> y:int32 -> unit
-
 (** [set_position ctx window ~x ~y] positions the node of [window] at
     ([x], [y]).
 
@@ -122,11 +102,6 @@ val set_position
   -> x:int32
   -> y:int32
   -> unit
-
-(** [place_top ctx window] raises the node of [window].
-
-    {b Effects:} sends River request *)
-val place_top : [< `Manage | `Render ] Ctx.t -> Types.Window.t -> unit
 
 (** [set_clip_box ctx window ~x ~y ~width ~height] clips [window] to the given
     box. All zeros clears the clip.
@@ -165,3 +140,30 @@ val set_presentation_mode
   -> Types.Output.t
   -> mode:River.Window_management.River_output_v1.Presentation_mode.t
   -> unit
+
+(** [set_keymap xkb ~keymap] gives [xkb] the keymap.
+
+    {b Effects:} sends River request *)
+val set_keymap : Types.Input_device.Xkb.t -> keymap:Types.Wm.Keymap.t -> unit
+
+(** [enable_xkb_binding xkb_obj] enables the binding bound to [xkb_obj].
+
+    {b Effects:} sends River request *)
+val enable_xkb_binding : Types.Seat.Xkb_binding.t -> unit
+
+(** [disable_xkb_binding xkb_obj] disables the binding bound to [xkb_obj].
+
+    {b Effects:} sends River request *)
+val disable_xkb_binding : Types.Seat.Xkb_binding.t -> unit
+
+(** [enable_pointer_binding pointer_obj] enables the binding bound to
+    [pointer_obj].
+
+    {b Effects:} sends River request *)
+val enable_pointer_binding : Types.Seat.Pointer_binding.t -> unit
+
+(** [disable_pointer_binding pointer_obj] disables the binding bound to
+    [pointer_obj].
+
+    {b Effects:} sends River request *)
+val disable_pointer_binding : Types.Seat.Pointer_binding.t -> unit

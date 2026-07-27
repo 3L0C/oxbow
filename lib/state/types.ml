@@ -23,12 +23,16 @@ module Config = struct
       }
   end
 
+  module River_modifiers_v1 = struct
+    type t = River.Window_management.River_seat_v1.Modifiers.t
+  end
+
   type t =
     { default_tag_config : Data.t
     ; borders : Border.t
     ; mutable cursor_theme : (string * int32) option
     ; mutable modes : string list
-    ; mutable modkey : River.Window_management.River_seat_v1.Modifiers.t
+    ; mutable modkey : River_modifiers_v1.t
     ; mutable rules : Ocdwm_core.Rule.t list
     ; mutable focus_follows_pointer : bool
     ; mutable warp_on_focus : bool
@@ -80,9 +84,17 @@ and Output : sig
       | Removed
   end
 
+  module Obj_ : sig
+    type t = River.V.Window_management.t River.Window_management.River_output_v1.t
+  end
+
+  module Lsh : sig
+    type t = River.V.Layer_shell.t River.Layer_shell.River_layer_shell_output_v1.t
+  end
+
   type t =
-    { obj : River.V.Window_management.t River.Window_management.River_output_v1.t
-    ; layer_shell : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_output_v1.t
+    { obj : Obj_.t
+    ; layer_shell : Lsh.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable name : string option
     ; mutable geom : int32 Ocdwm_core.Rect.t
@@ -199,9 +211,21 @@ and Window : sig
       }
   end
 
+  module Obj_ : sig
+    type t = River.V.Window_management.t River.Window_management.River_window_v1.t
+  end
+
+  module Node : sig
+    type t = River.V.Window_management.t River.Window_management.River_node_v1.t
+  end
+
+  module River_presentation_hint : sig
+    type t = River.Window_management.River_output_v1.Presentation_mode.t
+  end
+
   type t =
-    { obj : River.V.Window_management.t River.Window_management.River_window_v1.t
-    ; node : River.V.Window_management.t River.Window_management.River_node_v1.t
+    { obj : Obj_.t
+    ; node : Node.t
     ; mutable lifecycle : Lifecycle.t
     ; id : int
     ; mutable app_id : string option
@@ -211,8 +235,7 @@ and Window : sig
     ; mutable parent : t option
     ; mutable float_seed_pending : bool
     ; mutable decoration_hint : Decoration_hint.t option
-    ; mutable presentation_hint :
-        River.Window_management.River_output_v1.Presentation_mode.t option
+    ; mutable presentation_hint : River_presentation_hint.t option
     ; mutable geom : int32 Ocdwm_core.Rect.t
     ; mutable float_geom : int32 Ocdwm_core.Rect.t option
     ; mutable clip : int Ocdwm_core.Rect.t option
@@ -283,8 +306,12 @@ and Seat : sig
   end
 
   module Xkb_binding : sig
+    module Obj_ : sig
+      type t = River.V.Xkb_bindings.t River.Xkb_bindings.River_xkb_binding_v1.t
+    end
+
     type t =
-      { obj : River.V.Xkb_bindings.t River.Xkb_bindings.River_xkb_binding_v1.t
+      { obj : Obj_.t
       ; seat : Seat.t
       ; mode : string
       ; mutable enabled : bool
@@ -295,9 +322,13 @@ and Seat : sig
   end
 
   module Pointer_binding : sig
+    module Obj_ : sig
+      type t =
+        River.V.Window_management.t River.Window_management.River_pointer_binding_v1.t
+    end
+
     type t =
-      { obj :
-          River.V.Window_management.t River.Window_management.River_pointer_binding_v1.t
+      { obj : Obj_.t
       ; seat : Seat.t
       ; mode : string
       ; mutable enabled : bool
@@ -316,9 +347,17 @@ and Seat : sig
     val of_override : bool option -> t
   end
 
+  module Obj_ : sig
+    type t = River.V.Window_management.t River.Window_management.River_seat_v1.t
+  end
+
+  module Lsh : sig
+    type t = River.V.Layer_shell.t River.Layer_shell.River_layer_shell_seat_v1.t
+  end
+
   type t =
-    { obj : River.V.Window_management.t River.Window_management.River_seat_v1.t
-    ; layer_shell : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_seat_v1.t
+    { obj : Obj_.t
+    ; layer_shell : Lsh.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable name : string option
     ; mutable output : Output.t option
@@ -365,14 +404,36 @@ and Wm : sig
       }
   end
 
+  module Rwm : sig
+    type t = River.V.Window_management.t River.Window_management.River_window_manager_v1.t
+  end
+
+  module Xkb : sig
+    type t = River.V.Xkb_bindings.t River.Xkb_bindings.River_xkb_bindings_v1.t
+  end
+
+  module Lsh : sig
+    type t = River.V.Layer_shell.t River.Layer_shell.River_layer_shell_v1.t
+  end
+
+  module Input : sig
+    type t = River.V.Input_management.t River.Input_management.River_input_manager_v1.t
+  end
+
+  module Xkb_config : sig
+    type t = River.V.Xkb_config.t River.Xkb_config.River_xkb_config_v1.t
+  end
+
+  module Keymap : sig
+    type t = River.V.Xkb_config.t River.Xkb_config.River_xkb_keymap_v1.t
+  end
+
   type t =
-    { river_wm_v1 :
-        River.V.Window_management.t River.Window_management.River_window_manager_v1.t
-    ; river_xkb_v1 : River.V.Xkb_bindings.t River.Xkb_bindings.River_xkb_bindings_v1.t
-    ; river_lsh_v1 : River.V.Layer_shell.t River.Layer_shell.River_layer_shell_v1.t
-    ; river_input_v1 :
-        River.V.Input_management.t River.Input_management.River_input_manager_v1.t
-    ; river_xkb_config_v1 : River.V.Xkb_config.t River.Xkb_config.River_xkb_config_v1.t
+    { river_wm_v1 : Rwm.t
+    ; river_xkb_v1 : Xkb.t
+    ; river_lsh_v1 : Lsh.t
+    ; river_input_v1 : Input.t
+    ; river_xkb_config_v1 : Xkb_config.t
     ; registry : Wayland.Registry.t
     ; shutdown : Eio.Condition.t
     ; mutable lifecycle : Lifecycle.t
@@ -385,7 +446,7 @@ and Wm : sig
     ; mutable seats : Seat.t list
     ; mutable input_devices : Input_device.t list
     ; mutable xkb_stash : (int32 * Input_device.Xkb.t) list
-    ; mutable keymap : River.V.Xkb_config.t River.Xkb_config.River_xkb_keymap_v1.t option
+    ; mutable keymap : Keymap.t option
     ; mutable desired_keymap_path : string option
     ; config : Config.t
     ; init_command : string option

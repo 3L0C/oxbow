@@ -88,8 +88,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let signaled = Eio.Condition.create () in
   let on_signal _ = Eio.Condition.broadcast signaled in
   Box.fill wm_box wm;
-  Schedule.install (fun () ->
-    River.Window_management.River_window_manager_v1.manage_dirty wm.river_wm_v1);
+  Schedule.install (fun () -> Emit.manage_dirty wm);
   Eio.Fiber.fork ~sw (fun () ->
     let outcome =
       Eio.Fiber.first

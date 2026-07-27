@@ -4,7 +4,7 @@ open! Ocdwm_state
 let layer_shell_sync (wm : Wm.t) =
   match Wm.focused_output wm with
   | None -> ()
-  | Some o -> River.Layer_shell.River_layer_shell_output_v1.set_default o.layer_shell
+  | Some o -> Emit.set_default o
 ;;
 
 let set_output ctx seat output =
@@ -23,9 +23,7 @@ let focus_window ?(force : bool = false) ?warp ctx (seat : Seat.t) (target : Win
     Option.iter (Seat.set_warp_request seat) warp
 ;;
 
-let clear (_ : Ctx.manage Ctx.t) (seat : Seat.t) =
-  River.Window_management.River_seat_v1.clear_focus seat.obj
-;;
+let clear = Send.clear_focus
 
 let refresh ctx output =
   let wm = Ctx.wm ctx in

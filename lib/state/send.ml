@@ -10,10 +10,6 @@ let hide (_ : Ctx.manage Ctx.t) (w : Types.Window.t) =
   River.Window_management.River_window_v1.hide w.obj
 ;;
 
-let close (_ : Ctx.manage Ctx.t) (w : Types.Window.t) =
-  River.Window_management.River_window_v1.close w.obj
-;;
-
 let fullscreen (_ : Ctx.manage Ctx.t) (w : Types.Window.t) ~(output : Types.Output.t) =
   River.Window_management.River_window_v1.fullscreen w.obj ~output:output.obj
 ;;
@@ -70,24 +66,8 @@ let clear_focus (_ : Ctx.manage Ctx.t) (s : Types.Seat.t) =
   River.Window_management.River_seat_v1.clear_focus s.obj
 ;;
 
-let op_start_pointer (_ : Ctx.manage Ctx.t) (s : Types.Seat.t) =
-  River.Window_management.River_seat_v1.op_start_pointer s.obj
-;;
-
-let op_end (_ : Ctx.manage Ctx.t) (s : Types.Seat.t) =
-  River.Window_management.River_seat_v1.op_end s.obj
-;;
-
-let pointer_warp (_ : Ctx.manage Ctx.t) (s : Types.Seat.t) ~x ~y =
-  River.Window_management.River_seat_v1.pointer_warp s.obj ~x ~y
-;;
-
 let set_position (_ : Ctx.([< manage | render ]) Ctx.t) (w : Types.Window.t) ~x ~y =
   River.Window_management.River_node_v1.set_position w.node ~x ~y
-;;
-
-let place_top (_ : Ctx.([< manage | render ]) Ctx.t) (w : Types.Window.t) =
-  River.Window_management.River_node_v1.place_top w.node
 ;;
 
 let set_clip_box
@@ -120,4 +100,24 @@ let set_presentation_mode
       ~(mode : River.Window_management.River_output_v1.Presentation_mode.t)
   =
   River.Window_management.River_output_v1.set_presentation_mode o.obj ~mode
+;;
+
+let set_keymap (xkb : Types.Input_device.Xkb.t) ~(keymap : Types.Wm.Keymap.t) =
+  River.Xkb_config.River_xkb_keyboard_v1.set_keymap xkb ~keymap
+;;
+
+let enable_xkb_binding (xkb : Types.Seat.Xkb_binding.t) =
+  River.Xkb_bindings.River_xkb_binding_v1.enable xkb.obj
+;;
+
+let disable_xkb_binding (xkb : Types.Seat.Xkb_binding.t) =
+  River.Xkb_bindings.River_xkb_binding_v1.disable xkb.obj
+;;
+
+let enable_pointer_binding (pointer : Types.Seat.Pointer_binding.t) =
+  River.Window_management.River_pointer_binding_v1.enable pointer.obj
+;;
+
+let disable_pointer_binding (pointer : Types.Seat.Pointer_binding.t) =
+  River.Window_management.River_pointer_binding_v1.disable pointer.obj
 ;;

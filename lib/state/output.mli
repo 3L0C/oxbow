@@ -24,12 +24,6 @@ val to_tag_data : t -> Config.Data.t
     [y]). Is [None] when the point is out of bounds. *)
 val at_point : x:int32 -> y:int32 -> t list -> t option
 
-(** [destroy output] destroys the underlying Wayland objects associated with
-    [output].
-
-    {b Effects:} mutates WM state; sends River request *)
-val destroy : t -> unit
-
 (** [switch_tags ~tags output] changes the selected tags of [output] to
     [tags].  No-op if [Tag.Set.is_empty tags] is [true].
 

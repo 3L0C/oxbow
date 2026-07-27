@@ -26,7 +26,7 @@ let remove_outputs ctx =
        | Some o when List.memq o removed -> Window.set_output w None
        | _ -> ())
     wm.windows;
-  List.iter Output.destroy removed
+  List.iter Emit.destroy_output removed
 ;;
 
 let disconnect_seat ctx window (seat : Seat.t) =
@@ -44,7 +44,7 @@ let disconnect_seat ctx window (seat : Seat.t) =
    | _ -> ());
   match seat.op with
   | Some (Move { window = w; _ } | Resize { window = w; _ }) when w == window ->
-    Send.op_end ctx seat;
+    Emit.op_end ctx seat;
     Seat.clear_op seat
   | _ -> ()
 ;;
@@ -78,7 +78,7 @@ let close_seats ctx =
        (fun (s : Seat.t) ->
           match s.lifecycle with
           | Closing ->
-            Seat.destroy ctx s;
+            Emit.destroy_seat s;
             false
           | _ -> true)
        wm.seats

@@ -3,7 +3,7 @@ open! Ocdwm_state
 
 let begin_move ctx seat window =
   Focus.focus_window ctx seat window;
-  Send.op_start_pointer ctx seat;
+  Emit.op_start_pointer ctx seat;
   Seat.set_op seat
   @@ Move
        { window
@@ -21,9 +21,9 @@ let begin_resize ctx seat window edges =
   let open River.Window_management.River_window_v1 in
   let corner_x = if Int32.logand edges Edges.left <> 0l then g.x else Int32.add g.x g.w in
   let corner_y = if Int32.logand edges Edges.top <> 0l then g.y else Int32.add g.y g.h in
-  Send.pointer_warp ctx seat ~x:corner_x ~y:corner_y;
+  Emit.pointer_warp ctx seat ~x:corner_x ~y:corner_y;
   Send.inform_resize_start ctx window;
-  Send.op_start_pointer ctx seat;
+  Emit.op_start_pointer ctx seat;
   Seat.set_op seat
   @@ Resize
        { window
@@ -42,7 +42,7 @@ let step ctx (seat : Seat.t) =
   let wm = Ctx.wm ctx in
   match seat.op with
   | Some (Move op_m) when op_m.release ->
-    Send.op_end ctx seat;
+    Emit.op_end ctx seat;
     let w = op_m.window in
     let cx = Int32.(div w.geom.w 2l |> add w.geom.x) in
     let cy = Int32.(div w.geom.h 2l |> add w.geom.y) in
@@ -57,7 +57,7 @@ let step ctx (seat : Seat.t) =
     Seat.clear_op seat
   | Some (Resize op_r) when op_r.release ->
     Send.inform_resize_end ctx op_r.window;
-    Send.op_end ctx seat;
+    Emit.op_end ctx seat;
     if
       op_r.window.presentation = Floating && (not @@ Output.is_floating op_r.window.output)
     then Window.remember_float op_r.window;

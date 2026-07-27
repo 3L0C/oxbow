@@ -15,16 +15,6 @@ val set_xkb : Types.Wm.t -> t -> Xkb.t -> unit
     {b Effects:} mutates WM state *)
 val clear_xkb : t -> Xkb.t -> unit
 
-(** [remove_xkb xkb] deletes the [xkb] Wayland objects.
-
-    {b Effects:} sends River request *)
-val remove_xkb : Xkb.t -> unit
-
-(** [remove_device device] deletes [device]'s associated Wayland objects.
-
-    {b Effects:} mutates WM state; sends River request *)
-val remove_device : Device.t -> unit
-
 (** [remove_entry entry] deletes [entry]'s associated Wayland objects. Is a
     no-op if [entry] was already removed.
 

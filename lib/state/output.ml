@@ -3,12 +3,6 @@ include Types.Output
 
 let focused_window (o : t) = List.find_opt Window.tag_visible o.focus_stack
 
-let destroy (o : t) =
-  River.Layer_shell.River_layer_shell_output_v1.destroy o.layer_shell;
-  River.Window_management.River_output_v1.destroy o.obj;
-  Wayland.Proxy.delete o.obj
-;;
-
 let next_tiled : Types.Window.t list -> Types.Window.t option =
   Ring.wrapped_search Window.tag_visible (fun w -> (Option.get w.output).wm_stack)
 ;;

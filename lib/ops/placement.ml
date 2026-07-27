@@ -192,7 +192,7 @@ let exit_fullscreen ctx (window : Window.t) =
 let close_focused ctx seat =
   With.focused_window seat
   @@ fun _o w ->
-  Send.close ctx w;
+  Emit.close ctx w;
   Ok None
 ;;
 

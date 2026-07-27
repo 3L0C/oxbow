@@ -14,7 +14,7 @@ let set_xkb (wm : Types.Wm.t) (entry : t) xkb =
   | Keyboard k ->
     k.xkb <- Some xkb;
     (match wm.keymap with
-     | Some keymap -> River.Xkb_config.River_xkb_keyboard_v1.set_keymap xkb ~keymap
+     | Some keymap -> Send.set_keymap xkb ~keymap
      | None -> ())
   | Pointer | Touch | Tablet ->
     Logs.warn
@@ -28,21 +28,11 @@ let clear_xkb (entry : t) xkb =
   | Keyboard _ | Pointer | Touch | Tablet -> ()
 ;;
 
-let remove_xkb xkb =
-  River.Xkb_config.River_xkb_keyboard_v1.destroy xkb;
-  Wayland.Proxy.delete xkb
-;;
-
-let remove_device device =
-  River.Input_management.River_input_device_v1.destroy device;
-  Wayland.Proxy.delete device
-;;
-
 let remove_entry (entry : t) =
   match entry.lifecycle with
   | Removed -> ()
   | Active ->
-    remove_device entry.device;
+    Emit.destroy_input_device entry.device;
     entry.lifecycle <- Removed
 ;;
 
