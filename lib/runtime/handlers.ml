@@ -2,13 +2,6 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ops
 
-type (_, _) Wayland.S.user_data +=
-  | Seat_box of Seat.t Box.t
-  | Seat_data of Seat.t
-  | Output_box of Output.t Box.t
-  | Output_data of Output.t
-  | Window_data of Window.t
-
 let on_finished (wm_box : Wm.t Box.t) =
   match wm_box.body with
   | None -> ()
@@ -28,14 +21,13 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     River.Layer_shell.River_layer_shell_v1.get_output wm.river_lsh_v1 ~output:river_output
     @@ object
          inherit [_] River.Layer_shell.River_layer_shell_output_v1.v1
-         method! user_data = Output_box output_box
 
-         method on_non_exclusive_area proxy ~x ~y ~width ~height =
-           match Wayland.Proxy.user_data proxy with
-           | Output_box { body = Some o } ->
+         method on_non_exclusive_area _ ~x ~y ~width ~height =
+           match output_box.body with
+           | Some o ->
              Output.set_usable o
              @@ Int32.{ x = to_int x; y = to_int y; w = to_int width; h = to_int height }
-           | _ -> assert false
+           | None -> ()
        end
   in
   let output : Output.t =
@@ -59,7 +51,6 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     river_output
     object
       inherit [_] River.Window_management.River_output_v1.v4
-      method! user_data = Output_data output
       method on_removed _ = Output.set_lifecycle output Removed
 
       method on_wl_output _ ~name =
@@ -139,31 +130,17 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
     River.Layer_shell.River_layer_shell_v1.get_seat wm.river_lsh_v1 ~seat:river_seat
     @@ object
          inherit [_] River.Layer_shell.River_layer_shell_seat_v1.v1
-         method! user_data = Seat_box seat_box
 
-         method on_focus_none proxy =
-           let s =
-             match Wayland.Proxy.user_data proxy with
-             | Seat_box { body = Some s } -> s
-             | _ -> invalid_arg "Missing seat data."
-           in
-           Seat.set_layer_focus s None
+         method on_focus_none _ =
+           Option.iter (fun s -> Seat.set_layer_focus s None) seat_box.body
 
-         method on_focus_non_exclusive proxy =
-           let s =
-             match Wayland.Proxy.user_data proxy with
-             | Seat_box { body = Some s } -> s
-             | _ -> invalid_arg "Missing seat data."
-           in
-           Seat.set_layer_focus s @@ Some Non_exclusive
+         method on_focus_non_exclusive _ =
+           Option.iter
+             (fun s -> Seat.set_layer_focus s @@ Some Non_exclusive)
+             seat_box.body
 
-         method on_focus_exclusive proxy =
-           let s =
-             match Wayland.Proxy.user_data proxy with
-             | Seat_box { body = Some s } -> s
-             | _ -> invalid_arg "Missing seat data."
-           in
-           Seat.set_layer_focus s @@ Some Exclusive
+         method on_focus_exclusive _ =
+           Option.iter (fun s -> Seat.set_layer_focus s @@ Some Exclusive) seat_box.body
        end
   in
   let seat : Seat.t =
@@ -191,20 +168,19 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
     river_seat
     object
       inherit [_] River.Window_management.River_seat_v1.v4
-      method! user_data = Seat_data seat
       method on_removed _ = Seat.set_lifecycle seat Closing
 
       method on_pointer_enter _ ~window =
-        match Wayland.Proxy.user_data window with
-        | Window_data w -> Seat.set_hovered seat @@ Some w
-        | _ -> assert false
+        match Wm.find_window_opt wm @@ Wayland.Proxy.id window with
+        | Some w -> Seat.set_hovered seat @@ Some w
+        | None -> ()
 
       method on_pointer_leave _ = Seat.set_hovered seat None
 
       method on_window_interaction _ ~window =
-        match Wayland.Proxy.user_data window with
-        | Window_data w -> Seat.set_interacted seat @@ Some w
-        | _ -> assert false
+        match Wm.find_window_opt wm @@ Wayland.Proxy.id window with
+        | Some w -> Seat.set_interacted seat @@ Some w
+        | None -> ()
 
       method on_op_delta _ ~dx ~dy = Seat.set_op_delta seat dx dy
       method on_op_release _ = Seat.release_op seat
@@ -261,7 +237,6 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
     river_window
     object
       inherit [_] River.Window_management.River_window_v1.v4
-      method! user_data = Window_data window
       method on_closed _ = Window.set_lifecycle window Closing
 
       method on_dimensions _ ~width ~height =
@@ -274,9 +249,9 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
         Window.set_unreliable_pid window @@ Some unreliable_pid
 
       method on_parent _ ~parent =
-        match Option.bind parent (fun p -> Some (Wayland.Proxy.user_data p)) with
-        | Some (Window_data p) -> Window.set_parent window ~parent:(Some p)
-        | _ -> Window.set_parent window ~parent:None
+        let set_parent p = Window.set_parent window ~parent:p in
+        Option.bind parent (fun p -> Wm.find_window_opt wm @@ Wayland.Proxy.id p)
+        |> set_parent
 
       method on_title _ ~title = Window.set_title window title
       method on_identifier _ ~identifier = Window.set_identifier window @@ Some identifier
@@ -293,7 +268,7 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
           { min_w = min_width; max_w = max_width; min_h = min_height; max_h = max_height }
 
       method on_decoration_hint _ ~hint =
-        River.Window_management.River_window_v1.Decoration_hint.(
+        Window.Decoration_hint.(
           Window.set_decoration_hint window
           @@ Some
                (match hint with
@@ -305,31 +280,27 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
       method on_app_id _ ~app_id = Window.set_app_id window app_id
 
       method on_pointer_move_requested _ ~seat =
-        match Wayland.Proxy.user_data seat with
-        | Seat_data s -> Window.queue_request window @@ Move { seat = s }
-        | _ -> assert false
+        match Wm.find_seat_opt wm @@ Wayland.Proxy.id seat with
+        | Some s -> Window.queue_request window @@ Move { seat = s }
+        | None -> ()
 
       method on_pointer_resize_requested _ ~seat ~edges =
-        match Wayland.Proxy.user_data seat with
-        | Seat_data s -> Window.queue_request window @@ Resize { seat = s; edges }
-        | _ -> assert false
+        match Wm.find_seat_opt wm @@ Wayland.Proxy.id seat with
+        | Some s -> Window.queue_request window @@ Resize { seat = s; edges }
+        | None -> ()
 
       method on_maximize_requested _ = Window.queue_request window Maximize
       method on_unmaximize_requested _ = Window.queue_request window Unmaximize
 
       method on_fullscreen_requested _ ~output =
-        match output with
-        | Some o ->
-          (match Wayland.Proxy.user_data o with
-           | Output_data o ->
-             Window.queue_request window @@ Fullscreen { output = Some o }
-           | _ -> assert false)
-        | None -> Window.queue_request window @@ Fullscreen { output = None }
+        let queue_request o = Window.queue_request window @@ Fullscreen { output = o } in
+        Option.bind output (fun o -> Wm.find_output_opt wm @@ Wayland.Proxy.id o)
+        |> queue_request
 
       method on_exit_fullscreen_requested _ = Window.queue_request window Exit_fullscreen
 
       method on_presentation_hint _ ~hint =
-        Window.set_presentation_hint window @@ Some hint
+        Window.set_presentation_mode window @@ Some hint
 
       method on_show_window_menu_requested _ ~x:_ ~y:_ = ()
       method on_minimize_requested _ = ()
@@ -339,7 +310,9 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
 
 let on_input_device device (wm_box : Wm.t Box.t) =
   let wm = Option.get wm_box.body in
-  let entry_kind : Input_device.Kind.t option ref = ref None in
+  let entry_kind : River.Proto.Input.Management.River_input_device_v1.Type.t option ref =
+    ref None
+  in
   let entry_name = ref "" in
   let entry_box : Input_device.t Box.t = { body = None } in
   let resolve_entry entry =
@@ -348,7 +321,7 @@ let on_input_device device (wm_box : Wm.t Box.t) =
   in
   Wayland.Proxy.Handler.attach device
   @@ object
-       inherit [_] River.Input_management.River_input_device_v1.v1
+       inherit [_] River.Input.Management.River_input_device_v1.v1
        method on_type _ ~type_ = entry_kind := Some type_
        method on_name _ ~name = entry_name := name
 
@@ -390,7 +363,7 @@ let on_xkb_keyboard xkb (wm_box : Wm.t Box.t) =
   let device_ref : int32 option ref = ref None in
   Wayland.Proxy.Handler.attach xkb
   @@ object
-       inherit [_] River.Xkb_config.River_xkb_keyboard_v1.v1
+       inherit [_] River.Xkb.Config.River_xkb_keyboard_v1.v1
 
        method on_input_device _ ~device =
          let d = Wayland.Proxy.id device in

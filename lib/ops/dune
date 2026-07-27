@@ -6,10 +6,9 @@
   ocdwm.ipc
   ocdwm.layout
   ocdwm.state
-  ocdwm.protocol
-  wayland
   eio
   eio.unix
+  unix
   logs
   xkbcommon
   yojson

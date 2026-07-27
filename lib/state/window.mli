@@ -4,7 +4,7 @@ include module type of Types.Window
 val create
   :  Types.Output.t option
   -> Ocdwm_core.Width_fac.t
-  -> River.V.Window_management.t River.Window_management.River_window_v1.t
+  -> River.Obj.Window_management.Window.t
   -> t
 
 (** [destroy window] destroys the Wayland objects backing [window].
@@ -264,20 +264,16 @@ val set_parent : t -> parent:t option -> unit
     {b Effects:} mutates WM state *)
 val set_float_seed_pending : t -> bool -> unit
 
-(** [set_decoration_hint window decoration_hint] sets [window]'s decoration hint
-    to [decoration_hint].
+(** [set_decoration_hint window hint] sets [window]'s decoration hint to [hint].
 
     {b Effects:} mutates WM state *)
 val set_decoration_hint : t -> Decoration_hint.t option -> unit
 
-(** [set_presentation_hint window presentation_hint] sets [window]'s
-    presentation hint to [presentation_hint].
+(** [set_presentation_mode window mode] sets [window]'s presentation mode to
+    [mode].
 
     {b Effects:} mutates WM state *)
-val set_presentation_hint
-  :  t
-  -> River.Window_management.River_output_v1.Presentation_mode.t option
-  -> unit
+val set_presentation_mode : t -> Wire.Presentation_mode.t option -> unit
 
 (** [set_size_hints window size_hints] sets [window]'s size hints to
     [size_hints].

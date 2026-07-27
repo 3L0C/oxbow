@@ -1,7 +1,6 @@
 open! Ocdwm_core
 open! Ocdwm_ipc
 open! Ocdwm_state
-module Modifiers = River.Window_management.River_seat_v1.Modifiers
 
 type t =
   { mods : int32
@@ -11,9 +10,9 @@ type t =
 let install_defaults ctx seat =
   let wm = Ctx.wm ctx in
   let modkey = wm.config.modkey in
-  let alt = River.Window_management.River_seat_v1.Modifiers.mod1 in
-  let shift = River.Window_management.River_seat_v1.Modifiers.shift in
-  let ctrl = River.Window_management.River_seat_v1.Modifiers.ctrl in
+  let alt = Wire.Modifiers.mod1 in
+  let shift = Wire.Modifiers.shift in
+  let ctrl = Wire.Modifiers.ctrl in
   let xkb_bindings =
     Xkbcommon.Keysym.
       [ (* mods, keysym,  command *)
@@ -83,13 +82,13 @@ let install_defaults ctx seat =
 ;;
 
 let parse_modifiers = function
-  | "Shift" -> Ok Modifiers.shift
-  | "Control" -> Ok Modifiers.ctrl
-  | "Mod1" | "Alt" -> Ok Modifiers.mod1
-  | "Mod3" -> Ok Modifiers.mod3
-  | "Mod4" | "Super" | "Logo" -> Ok Modifiers.mod4
-  | "Mod5" -> Ok Modifiers.mod5
-  | "None" -> Ok Modifiers.none
+  | "Shift" -> Ok Wire.Modifiers.shift
+  | "Control" -> Ok Wire.Modifiers.ctrl
+  | "Mod1" | "Alt" -> Ok Wire.Modifiers.mod1
+  | "Mod3" -> Ok Wire.Modifiers.mod3
+  | "Mod4" | "Super" | "Logo" -> Ok Wire.Modifiers.mod4
+  | "Mod5" -> Ok Wire.Modifiers.mod5
+  | "None" -> Ok Wire.Modifiers.none
   | s -> Error (Printf.sprintf "unrecognized modifier: %S" s)
 ;;
 
@@ -121,6 +120,7 @@ let parse s =
 ;;
 
 let format_modifiers mods =
+  let open Wire in
   List.fold_left
     (fun acc (m, r) -> if Int32.logand m mods <> 0l then acc @ [ r ] else acc)
     []

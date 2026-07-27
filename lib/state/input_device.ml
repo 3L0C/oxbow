@@ -41,3 +41,5 @@ let to_xkb (entry : t) =
   | Keyboard { xkb = Some xkb } -> Some xkb
   | Keyboard _ | Pointer | Touch | Tablet -> None
 ;;
+
+let id device = Wayland.Proxy.id device

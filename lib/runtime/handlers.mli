@@ -7,8 +7,7 @@ val on_finished : Ocdwm_state.Wm.t Ocdwm_state.Box.t -> unit
 
     {b Effects:} mutates WM state; sends River request *)
 val on_manage_start
-  :  Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_window_manager_v1.t
+  :  River.Obj.Window_management.Wm.t
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
@@ -16,10 +15,8 @@ val on_manage_start
 
     {b Effects:} mutates WM state; sends River request *)
 val on_output
-  :  Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_window_manager_v1.t
-  -> Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_output_v1.t
+  :  River.Obj.Window_management.Wm.t
+  -> River.Obj.Window_management.Output.t
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
@@ -27,8 +24,7 @@ val on_output
 
     {b Effects:} mutates WM state; sends River request *)
 val on_render_start
-  :  Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_window_manager_v1.t
+  :  River.Obj.Window_management.Wm.t
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
@@ -36,10 +32,8 @@ val on_render_start
 
     {b Effects:} mutates WM state; sends River request *)
 val on_seat
-  :  Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_window_manager_v1.t
-  -> Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_seat_v1.t
+  :  River.Obj.Window_management.Wm.t
+  -> River.Obj.Window_management.Seat.t
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
@@ -47,8 +41,7 @@ val on_seat
 
     {b Effects:} mutates WM state; sends River request *)
 val on_session_locked
-  :  Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_window_manager_v1.t
+  :  River.Obj.Window_management.Wm.t
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
@@ -56,8 +49,7 @@ val on_session_locked
 
     {b Effects:} mutates WM state; sends River request *)
 val on_session_unlocked
-  :  Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_window_manager_v1.t
+  :  River.Obj.Window_management.Wm.t
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
@@ -66,19 +58,14 @@ val on_session_unlocked
     {b Effects:} mutates WM state
 
     @raise Exceptions.Unavailable *)
-val on_unavailable
-  :  Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_window_manager_v1.t
-  -> unit
+val on_unavailable : River.Obj.Window_management.Wm.t -> unit
 
 (** [on_window river_wm_v1 river_window wm_box] handles new window creation.
 
     {b Effects:} mutates WM state; sends River request *)
 val on_window
-  :  Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_window_manager_v1.t
-  -> Ocdwm_state.River.V.Window_management.t
-       Ocdwm_state.River.Window_management.River_window_v1.t
+  :  River.Obj.Window_management.Wm.t
+  -> River.Obj.Window_management.Window.t
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
@@ -86,8 +73,7 @@ val on_window
 
     {b Effects:} mutates WM state; sends River request *)
 val on_input_device
-  :  Ocdwm_state.River.V.Input_management.t
-       Ocdwm_state.River.Input_management.River_input_device_v1.t
+  :  River.Obj.Input.Management.Device.t
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
@@ -95,6 +81,6 @@ val on_input_device
 
     {b Effects:} mutates WM state; sends River request *)
 val on_xkb_keyboard
-  :  Ocdwm_state.River.V.Xkb_config.t Ocdwm_state.River.Xkb_config.River_xkb_keyboard_v1.t
+  :  River.Obj.Xkb.Config.Keyboard.t
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit

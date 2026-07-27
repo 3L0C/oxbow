@@ -14,7 +14,7 @@ let paint ctx (seat : Seat.t) =
     else borders.unfocused_color
   in
   let edges =
-    let open River.Window_management.River_window_v1 in
+    let open Wire in
     Int32.(logor Edges.left Edges.right |> logor Edges.top |> logor Edges.bottom)
   in
   let width = borders.width in

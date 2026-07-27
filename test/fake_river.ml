@@ -1,16 +1,16 @@
 module Proxy = Wayland.Proxy
 module Wl = Wayland.Wayland_server
 module Wl_proto = Wayland.Wayland_proto
-module Wm_server = Ocdwm_protocol.River_window_management_v1_server
-module Wm_proto = Ocdwm_protocol.River_window_management_v1_proto
-module Xkb_server = Ocdwm_protocol.River_xkb_bindings_v1_server
-module Xkb_proto = Ocdwm_protocol.River_xkb_bindings_v1_proto
-module Lsh_server = Ocdwm_protocol.River_layer_shell_v1_server
-module Lsh_proto = Ocdwm_protocol.River_layer_shell_v1_proto
-module Input_server = Ocdwm_protocol.River_input_management_v1_server
-module Input_proto = Ocdwm_protocol.River_input_management_v1_proto
-module Cfg_server = Ocdwm_protocol.River_xkb_config_v1_server
-module Cfg_proto = Ocdwm_protocol.River_xkb_config_v1_proto
+module Wm_server = River.Server.Window_management
+module Wm_proto = River.Proto.Window_management
+module Xkb_server = River.Server.Xkb.Bindings
+module Xkb_proto = River.Proto.Xkb.Bindings
+module Lsh_server = River.Server.Layer_shell
+module Lsh_proto = River.Proto.Layer_shell
+module Input_server = River.Server.Input
+module Input_proto = River.Proto.Input
+module Cfg_server = River.Server.Xkb.Config
+module Cfg_proto = River.Proto.Xkb.Config
 
 let output_width = 1920l
 let output_height = 1080l
@@ -297,7 +297,7 @@ let layer_shell_handlers t =
 
 let input_manager_handlers _t =
   (object
-     inherit [_] Input_server.River_input_manager_v1.v1
+     inherit [_] Input_server.Management.River_input_manager_v1.v1
      method on_create_seat _ ~name:_ = ()
      method on_destroy_seat _ ~name:_ = ()
      method on_stop _ = ()
@@ -366,7 +366,7 @@ let registry_handlers t =
         | Lsh_proto.River_layer_shell_v1.T ->
           Proxy.Service_handler.attach proxy
           @@ Proxy.Service_handler.cast_version (layer_shell_handlers t)
-        | Input_proto.River_input_manager_v1.T ->
+        | Input_proto.Management.River_input_manager_v1.T ->
           Proxy.Service_handler.attach proxy
           @@ Proxy.Service_handler.cast_version (input_manager_handlers t)
         | Cfg_proto.River_xkb_config_v1.T ->
@@ -426,7 +426,7 @@ let display_handlers t =
       announce
         t
         ~name:name_input_manager
-        ~interface:Input_proto.River_input_manager_v1.interface
+        ~interface:Input_proto.Management.River_input_manager_v1.interface
         ~version:1l;
       announce
         t

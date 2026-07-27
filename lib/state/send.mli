@@ -138,32 +138,35 @@ val set_borders
 val set_presentation_mode
   :  [< `Manage | `Render ] Ctx.t
   -> Types.Output.t
-  -> mode:River.Window_management.River_output_v1.Presentation_mode.t
+  -> mode:Wire.Presentation_mode.t
   -> unit
 
 (** [set_keymap xkb ~keymap] gives [xkb] the keymap.
 
     {b Effects:} sends River request *)
-val set_keymap : Types.Input_device.Xkb.t -> keymap:Types.Wm.Keymap.t -> unit
+val set_keymap
+  :  River.Obj.Xkb.Config.Keyboard.t
+  -> keymap:River.Obj.Xkb.Config.Keymap.t
+  -> unit
 
 (** [enable_xkb_binding xkb_obj] enables the binding bound to [xkb_obj].
 
     {b Effects:} sends River request *)
-val enable_xkb_binding : Types.Seat.Xkb_binding.t -> unit
+val enable_xkb_binding : River.Obj.Xkb.Bindings.Binding.t -> unit
 
 (** [disable_xkb_binding xkb_obj] disables the binding bound to [xkb_obj].
 
     {b Effects:} sends River request *)
-val disable_xkb_binding : Types.Seat.Xkb_binding.t -> unit
+val disable_xkb_binding : River.Obj.Xkb.Bindings.Binding.t -> unit
 
 (** [enable_pointer_binding pointer_obj] enables the binding bound to
     [pointer_obj].
 
     {b Effects:} sends River request *)
-val enable_pointer_binding : Types.Seat.Pointer_binding.t -> unit
+val enable_pointer_binding : River.Obj.Window_management.Pointer_binding.t -> unit
 
 (** [disable_pointer_binding pointer_obj] disables the binding bound to
     [pointer_obj].
 
     {b Effects:} sends River request *)
-val disable_pointer_binding : Types.Seat.Pointer_binding.t -> unit
+val disable_pointer_binding : River.Obj.Window_management.Pointer_binding.t -> unit

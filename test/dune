@@ -16,9 +16,18 @@
 (library
  (name fake_river)
  (modules fake_river)
- (libraries ocdwm.protocol wayland eio eio.unix logs))
+ (libraries ocdwm.river wayland eio eio.unix logs unix))
 
 (test
  (name test_fake_river)
  (modules test_fake_river)
- (libraries fake_river ocdwm.runtime wayland eio_main eio.unix))
+ (libraries
+  fake_river
+  ocdwm.runtime
+  wayland
+  eio
+  eio_main
+  eio.unix
+  unix
+  logs
+  logs.fmt))

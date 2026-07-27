@@ -1,8 +1,9 @@
 (library
- (name ocdwm_protocol)
- (public_name ocdwm.protocol)
- (libraries wayland)
+ (name river)
+ (public_name ocdwm.river)
+ (libraries wayland fmt unix)
  (modules
+  river
   river_input_management_v1_client
   river_input_management_v1_proto
   river_input_management_v1_server
@@ -30,9 +31,7 @@
   river_input_management_v1_server.ml)
  (deps river-input-management-v1.xml)
  (action
-  (chdir
-   %{workspace_root}/protocol
-   (run wayland-scanner-ocaml --open Wayland.Wayland_proto %{deps}))))
+  (run %{bin:wayland-scanner-ocaml} --open Wayland.Wayland_proto %{deps})))
 
 (rule
  (mode promote)
@@ -42,13 +41,11 @@
   river_layer_shell_v1_server.ml)
  (deps river-layer-shell-v1.xml)
  (action
-  (chdir
-   %{workspace_root}/protocol
-   (run
-    wayland-scanner-ocaml
-    --open
-    River_window_management_v1_proto
-    %{deps}))))
+  (run
+   %{bin:wayland-scanner-ocaml}
+   --open
+   River_window_management_v1_proto
+   %{deps})))
 
 (rule
  (mode promote)
@@ -58,9 +55,11 @@
   river_libinput_config_v1_server.ml)
  (deps river-libinput-config-v1.xml)
  (action
-  (chdir
-   %{workspace_root}/protocol
-   (run wayland-scanner-ocaml --open River_input_management_v1_proto %{deps}))))
+  (run
+   %{bin:wayland-scanner-ocaml}
+   --open
+   River_input_management_v1_proto
+   %{deps})))
 
 (rule
  (mode promote)
@@ -70,9 +69,7 @@
   river_window_management_v1_server.ml)
  (deps river-window-management-v1.xml)
  (action
-  (chdir
-   %{workspace_root}/protocol
-   (run wayland-scanner-ocaml --open Wayland.Wayland_proto %{deps}))))
+  (run %{bin:wayland-scanner-ocaml} --open Wayland.Wayland_proto %{deps})))
 
 (rule
  (mode promote)
@@ -82,13 +79,11 @@
   river_xkb_bindings_v1_server.ml)
  (deps river-xkb-bindings-v1.xml)
  (action
-  (chdir
-   %{workspace_root}/protocol
-   (run
-    wayland-scanner-ocaml
-    --open
-    River_window_management_v1_proto
-    %{deps}))))
+  (run
+   %{bin:wayland-scanner-ocaml}
+   --open
+   River_window_management_v1_proto
+   %{deps})))
 
 (rule
  (mode promote)
@@ -98,11 +93,8 @@
   river_xkb_config_v1_server.ml)
  (deps river-xkb-config-v1.xml)
  (action
-  (chdir
-   %{workspace_root}/protocol
-   (run wayland-scanner-ocaml --open River_input_management_v1_proto %{deps}))))
-
-(env
- (_
-  (flags
-   (:standard -w -a -warn-error -a))))
+  (run
+   %{bin:wayland-scanner-ocaml}
+   --open
+   River_input_management_v1_proto
+   %{deps})))

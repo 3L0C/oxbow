@@ -97,27 +97,19 @@ let set_borders
 let set_presentation_mode
       (_ : Ctx.([< manage | render ]) Ctx.t)
       (o : Types.Output.t)
-      ~(mode : River.Window_management.River_output_v1.Presentation_mode.t)
+      ~mode
   =
   River.Window_management.River_output_v1.set_presentation_mode o.obj ~mode
 ;;
 
-let set_keymap (xkb : Types.Input_device.Xkb.t) ~(keymap : Types.Wm.Keymap.t) =
-  River.Xkb_config.River_xkb_keyboard_v1.set_keymap xkb ~keymap
+let set_keymap xkb ~keymap = River.Xkb.Config.River_xkb_keyboard_v1.set_keymap xkb ~keymap
+let enable_xkb_binding binding = River.Xkb.Bindings.River_xkb_binding_v1.enable binding
+let disable_xkb_binding binding = River.Xkb.Bindings.River_xkb_binding_v1.disable binding
+
+let enable_pointer_binding pointer =
+  River.Window_management.River_pointer_binding_v1.enable pointer
 ;;
 
-let enable_xkb_binding (xkb : Types.Seat.Xkb_binding.t) =
-  River.Xkb_bindings.River_xkb_binding_v1.enable xkb.obj
-;;
-
-let disable_xkb_binding (xkb : Types.Seat.Xkb_binding.t) =
-  River.Xkb_bindings.River_xkb_binding_v1.disable xkb.obj
-;;
-
-let enable_pointer_binding (pointer : Types.Seat.Pointer_binding.t) =
-  River.Window_management.River_pointer_binding_v1.enable pointer.obj
-;;
-
-let disable_pointer_binding (pointer : Types.Seat.Pointer_binding.t) =
-  River.Window_management.River_pointer_binding_v1.disable pointer.obj
+let disable_pointer_binding pointer =
+  River.Window_management.River_pointer_binding_v1.disable pointer
 ;;

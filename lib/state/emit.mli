@@ -41,7 +41,11 @@ val set_default : Types.Output.t -> unit
 (** [set_repeat_info device ~rate ~delay] sets the key repeat of [device].
 
     {b Effects:} sends River request *)
-val set_repeat_info : Types.Input_device.Device.t -> rate:int32 -> delay:int32 -> unit
+val set_repeat_info
+  :  River.Obj.Input.Management.Device.t
+  -> rate:int32
+  -> delay:int32
+  -> unit
 
 (** [place_top ctx window] raises the node of [window].
 
@@ -51,7 +55,9 @@ val place_top : [< `Manage | `Render ] Ctx.t -> Types.Window.t -> unit
 (** [create_node window_obj] makes the node of a window.
 
     {b Effects:} sends River request *)
-val create_node : Types.Window.Obj_.t -> Types.Window.Node.t
+val create_node
+  :  River.Obj.Window_management.Window.t
+  -> River.Obj.Window_management.Node.t
 
 (** [create_xkb_binding wm ~seat ~keysym ~mods ~on_pressed] makes a keyboard
     binding.
@@ -59,22 +65,22 @@ val create_node : Types.Window.Obj_.t -> Types.Window.Node.t
     {b Effects:} sends River request *)
 val create_xkb_binding
   :  Types.Wm.t
-  -> seat:Types.Seat.Obj_.t
+  -> seat:River.Obj.Window_management.Seat.t
   -> keysym:int32
   -> mods:int32
   -> on_pressed:(unit -> unit)
-  -> Types.Seat.Xkb_binding.Obj_.t
+  -> River.Obj.Xkb.Bindings.Binding.t
 
 (** [create_pointer_binding seat_obj ~button ~mods ~on_pressed] makes a pointer
     binding.
 
     {b Effects:} sends River request *)
 val create_pointer_binding
-  :  Types.Seat.Obj_.t
+  :  River.Obj.Window_management.Seat.t
   -> button:int32
   -> mods:int32
   -> on_pressed:(unit -> unit)
-  -> Types.Seat.Pointer_binding.Obj_.t
+  -> River.Obj.Window_management.Pointer_binding.t
 
 (** [destroy_window window] destroys the node and the window object of [window],
     then deletes the window proxy.
@@ -107,9 +113,9 @@ val destroy_pointer_binding : Types.Seat.Pointer_binding.t -> unit
 (** [destroy_xkb_keyboard xkb] destroys [xkb] and deletes the proxy.
 
     {b Effects:} sends River request *)
-val destroy_xkb_keyboard : Types.Input_device.Xkb.t -> unit
+val destroy_xkb_keyboard : River.Obj.Xkb.Config.Keyboard.t -> unit
 
 (** [destroy_input_device device] destroys [device] and deletes the proxy.
 
     {b Effects:} sends River request *)
-val destroy_input_device : Types.Input_device.Device.t -> unit
+val destroy_input_device : River.Obj.Input.Management.Device.t -> unit

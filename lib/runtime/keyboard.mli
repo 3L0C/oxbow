@@ -4,8 +4,7 @@
 
     {b Effects:} sends River request *)
 val set_device_repeat_info
-  :  Ocdwm_state.River.V.Input_management.t
-       Ocdwm_state.River.Input_management.River_input_device_v1.t
+  :  River.Obj.Input.Management.Device.t
   -> rate:int32
   -> delay:int32
   -> unit

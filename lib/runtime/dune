@@ -7,10 +7,11 @@
   ocdwm.layout
   ocdwm.state
   ocdwm.ops
-  ocdwm.protocol
+  ocdwm.river
   wayland
   eio
   eio.unix
+  unix
   logs
   xkbcommon
   yojson

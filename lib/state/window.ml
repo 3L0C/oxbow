@@ -31,7 +31,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; parent = None
   ; float_seed_pending = false
   ; decoration_hint = None
-  ; presentation_hint = None
+  ; presentation_mode = None
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
   ; float_geom = None
   ; clip = None
@@ -504,7 +504,7 @@ let set_parent (w : t) ~parent =
 
 let set_float_seed_pending (w : t) v = w.float_seed_pending <- v
 let set_decoration_hint (w : t) hint = w.decoration_hint <- hint
-let set_presentation_hint (w : t) hint = w.presentation_hint <- hint
+let set_presentation_mode (w : t) mode = w.presentation_mode <- mode
 let set_size_hints (w : t) hints = w.size_hints <- hints
 let set_is_fixed (w : t) is_fixed = w.is_fixed <- is_fixed
 let set_is_hidden (w : t) is_hidden = w.committed.hidden <- is_hidden

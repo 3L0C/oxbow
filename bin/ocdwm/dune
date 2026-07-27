@@ -4,7 +4,7 @@
  (libraries
   ocdwm.core
   ocdwm.runtime
-  ocdwm.protocol
+  ocdwm.state
   dune-build-info
   cmdliner
   eio_main

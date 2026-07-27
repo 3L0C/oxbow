@@ -55,7 +55,7 @@ let find_xkb_stash_opt (wm : t) device =
 
 let add_input_device (wm : t) entry =
   set_input_devices wm @@ (entry :: wm.input_devices);
-  remove_xkb_stash wm @@ Wayland.Proxy.id entry.device
+  remove_xkb_stash wm @@ Input_device.id entry.device
 ;;
 
 let remove_input_device (wm : t) entry =
@@ -63,9 +63,21 @@ let remove_input_device (wm : t) entry =
   Input_device.remove_entry entry
 ;;
 
-let find_input_device_opt (wm : t) device =
+let find_window_opt (wm : t) id =
+  List.find_opt (fun (w : Types.Window.t) -> Wayland.Proxy.id w.obj = id) wm.windows
+;;
+
+let find_seat_opt (wm : t) id =
+  List.find_opt (fun (s : Types.Seat.t) -> Wayland.Proxy.id s.obj = id) wm.seats
+;;
+
+let find_output_opt (wm : t) id =
+  List.find_opt (fun (o : Types.Output.t) -> Wayland.Proxy.id o.obj = id) wm.outputs
+;;
+
+let find_input_device_opt (wm : t) id =
   List.find_opt
-    (fun (e : Types.Input_device.t) -> Int32.equal device (Wayland.Proxy.id e.device))
+    (fun (e : Types.Input_device.t) -> Input_device.id e.device = id)
     wm.input_devices
 ;;
 

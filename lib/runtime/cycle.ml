@@ -88,9 +88,7 @@ let manage_new_window ctx (window : Window.t) =
   Send.set_capabilities
     ctx
     window
-    ~caps:
-      River.Window_management.River_window_v1.Capabilities.(
-        Int32.logor maximize fullscreen);
+    ~caps:Wire.Capabilities.(Int32.logor maximize fullscreen);
   Option.iter (Stacking.push ctx [ window ]) window.output;
   if window.is_fixed || Option.is_some window.parent
   then Window.set_presentation window Floating;
@@ -214,16 +212,12 @@ let set_presentation_mode ctx output =
   match Output.focused_window output with
   | Some w when Option.is_some w.output ->
     let mode =
-      match w.presentation_hint with
+      match w.presentation_mode with
       | Some p -> p
-      | None -> River.Window_management.River_output_v1.Presentation_mode.Vsync
+      | None -> Wire.Presentation_mode.Vsync
     in
     Send.set_presentation_mode ctx output ~mode
-  | _ ->
-    Send.set_presentation_mode
-      ctx
-      output
-      ~mode:River.Window_management.River_output_v1.Presentation_mode.Vsync
+  | _ -> Send.set_presentation_mode ctx output ~mode:Wire.Presentation_mode.Vsync
 ;;
 
 let render_impl ctx (seat : Seat.t) =
@@ -237,14 +231,14 @@ let render_impl ctx (seat : Seat.t) =
        ~x:(Int32.add op_m.start_x op_m.dx)
        ~y:(Int32.add op_m.start_y op_m.dy)
    | Some (Resize op_r) ->
-     let open River.Window_management.River_window_v1.Edges in
+     let open Wire in
      let x =
-       if Int32.logand op_r.edges left <> 0l
+       if Int32.logand op_r.edges Edges.left <> 0l
        then Int32.sub op_r.start_w op_r.window.geom.w |> Int32.add op_r.start_x
        else op_r.start_x
      in
      let y =
-       if Int32.logand op_r.edges top <> 0l
+       if Int32.logand op_r.edges Edges.top <> 0l
        then Int32.sub op_r.start_h op_r.window.geom.h |> Int32.add op_r.start_y
        else op_r.start_y
      in

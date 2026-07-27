@@ -18,7 +18,7 @@ let begin_move ctx seat window =
 let begin_resize ctx seat window edges =
   Focus.focus_window ctx seat window;
   let g = window.geom in
-  let open River.Window_management.River_window_v1 in
+  let open Wire in
   let corner_x = if Int32.logand edges Edges.left <> 0l then g.x else Int32.add g.x g.w in
   let corner_y = if Int32.logand edges Edges.top <> 0l then g.y else Int32.add g.y g.h in
   Emit.pointer_warp ctx seat ~x:corner_x ~y:corner_y;
@@ -63,7 +63,7 @@ let step ctx (seat : Seat.t) =
     then Window.remember_float op_r.window;
     Seat.clear_op seat
   | Some (Resize op_r) ->
-    let open River.Window_management.River_window_v1 in
+    let open Wire in
     let left = Int32.logand op_r.edges Edges.left <> 0l in
     let right = Int32.logand op_r.edges Edges.right <> 0l in
     let top = Int32.logand op_r.edges Edges.top <> 0l in

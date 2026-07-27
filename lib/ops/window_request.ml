@@ -140,7 +140,7 @@ let resize_interactive ctx (seat : Seat.t) =
   | None, Some w when Window.is_fullscreen w -> Error "cannot resize a fullscreen window"
   | None, Some w ->
     let g = w.geom in
-    let open River.Window_management.River_window_v1 in
+    let open Wire in
     let horiz =
       if Int32.(compare seat.position.x (add g.x (div g.w 2l))) < 0
       then Edges.left

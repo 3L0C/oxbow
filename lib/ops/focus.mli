@@ -137,7 +137,7 @@ val remove_window
   -> Ocdwm_state.Window.t
   -> unit
 
-(** [wm_sync ctx] ensures the focus state of ocdwm is synchronized with River.
+(** [wm_sync ctx] synchronizes River and ocdwm focus state.
 
     {b Effects:} mutates WM state; sends River request *)
 val wm_sync : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> unit

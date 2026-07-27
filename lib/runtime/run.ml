@@ -35,7 +35,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let river_xkb_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Xkb_bindings.River_xkb_bindings_v1.v2
+         inherit [_] River.Xkb.Bindings.River_xkb_bindings_v1.v2
        end
   in
   let river_lsh_v1 =
@@ -47,7 +47,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let river_input_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Input_management.River_input_manager_v1.v1
+         inherit [_] River.Input.Management.River_input_manager_v1.v1
          method on_input_device _ device = Handlers.on_input_device device wm_box
          method on_finished = ignore
        end
@@ -55,7 +55,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let river_xkb_config_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Xkb_config.River_xkb_config_v1.v1
+         inherit [_] River.Xkb.Config.River_xkb_config_v1.v1
          method on_xkb_keyboard _ xkb = Handlers.on_xkb_keyboard xkb wm_box
          method on_finished = ignore
        end

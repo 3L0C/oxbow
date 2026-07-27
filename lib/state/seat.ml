@@ -51,7 +51,7 @@ let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mode mods keysym command =
     ; keysym
     }
   in
-  if enabled then Send.enable_xkb_binding binding;
+  if enabled then Send.enable_xkb_binding binding.obj;
   seat.xkb_bindings <- binding :: seat.xkb_bindings
 ;;
 
@@ -89,7 +89,7 @@ let pointer_binding_create (ctx : Ctx.manage Ctx.t) (seat : t) mode mods button 
     ; button
     }
   in
-  if enabled then Send.enable_pointer_binding binding;
+  if enabled then Send.enable_pointer_binding binding.obj;
   seat.pointer_bindings <- binding :: seat.pointer_bindings
 ;;
 
@@ -218,10 +218,10 @@ let sync_bindings ctx (seat : t) =
        match desired, b.enabled with
        | true, true | false, false -> ()
        | true, false ->
-         Send.enable_xkb_binding b;
+         Send.enable_xkb_binding b.obj;
          b.enabled <- desired
        | false, true ->
-         Send.disable_xkb_binding b;
+         Send.disable_xkb_binding b.obj;
          b.enabled <- desired)
     seat.xkb_bindings;
   List.iter
@@ -230,10 +230,10 @@ let sync_bindings ctx (seat : t) =
        match desired, p.enabled with
        | true, true | false, false -> ()
        | true, false ->
-         Send.enable_pointer_binding p;
+         Send.enable_pointer_binding p.obj;
          p.enabled <- desired
        | false, true ->
-         Send.disable_pointer_binding p;
+         Send.disable_pointer_binding p.obj;
          p.enabled <- desired)
     seat.pointer_bindings
 ;;
