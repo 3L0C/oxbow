@@ -78,11 +78,11 @@ let handle_window ctx seat (cmd : Command.Window.t) =
     Tags.tag_shift_window_occupied ctx seat dir ~follow
   | Tag_match { wmatch; tags } -> Tags.tag_window_match ctx seat wmatch tags
   | Move_drag -> Window_request.move_interactive ctx seat
-  | Move_to { x; y } -> Placement.move_to ~x ~y ctx seat
-  | Move_spatial { dir; by } -> Placement.move_spatial ctx seat dir by
+  | Move_to { x; y } -> Placement.move_to ~x ~y seat
+  | Move_spatial { dir; by } -> Placement.move_spatial seat dir by
   | Resize_drag -> Window_request.resize_interactive ctx seat
-  | Resize_to { w; h } -> Placement.resize_to ~width:w ~height:h ctx seat
-  | Resize_spatial { dir; by } -> Placement.resize_spatial ctx seat dir by
+  | Resize_to { w; h } -> Placement.resize_to ~width:w ~height:h seat
+  | Resize_spatial { dir; by } -> Placement.resize_spatial seat dir by
   | Send_logical { dir; policy; follow } ->
     Placement.send_to_logical ctx seat dir policy ~follow
   | Send_spatial { dir; policy; follow } ->
@@ -91,7 +91,7 @@ let handle_window ctx seat (cmd : Command.Window.t) =
     Placement.send_to_name ctx seat name policy ~follow
   | Shift dir -> Stacking.shift seat dir
   | Toggle_tag arg -> Tags.toggle_window_tags seat arg
-  | Toggle_floating -> Placement.toggle_floating ctx seat
+  | Toggle_floating -> Placement.toggle_floating seat
   | Toggle_maximize -> Window_request.toggle_maximize ctx seat
   | Toggle_fullscreen -> Window_request.toggle_fullscreen ctx seat
   | Toggle_fake_fullscreen -> Window_request.toggle_fake_fullscreen ctx seat

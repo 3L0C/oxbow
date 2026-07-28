@@ -182,8 +182,7 @@ and Window : sig
   module Committed : sig
     type t =
       { mutable proposed : (int32 * int32) option
-      ; mutable clip : int Ocdwm_core.Rect.t option
-      ; mutable hidden : bool
+      ; mutable fullscreen_on : int32 option
       }
   end
 
@@ -199,7 +198,7 @@ and Window : sig
     ; mutable parent : t option
     ; mutable float_seed_pending : bool
     ; mutable decoration_hint : Decoration_hint.t option
-    ; mutable presentation_mode : Wire.Presentation_mode.t option
+    ; mutable presentation_hint : Wire.Presentation_mode.t option
     ; mutable geom : int32 Ocdwm_core.Rect.t
     ; mutable float_geom : int32 Ocdwm_core.Rect.t option
     ; mutable clip : int Ocdwm_core.Rect.t option
@@ -308,6 +307,7 @@ and Seat : sig
     ; mutable lifecycle : Lifecycle.t
     ; mutable name : string option
     ; mutable output : Output.t option
+    ; mutable focus_cleared : bool
     ; mutable position : Position.t
     ; mutable layer_focus : Layer_focus.t option
     ; mutable mode : string

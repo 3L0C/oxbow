@@ -1,12 +1,8 @@
-(** [remove_window ctx ~window output] removes [window] from [output] if [output]
+(** [remove_window ~window output] removes [window] from [output] if [output]
     manages [window].
 
     {b Effects:} mutates WM state *)
-val remove_window
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> window:Ocdwm_state.Window.t
-  -> Ocdwm_state.Output.t
-  -> unit
+val remove_window : window:Ocdwm_state.Window.t -> Ocdwm_state.Output.t -> unit
 
 (** [restore_focus_order ~like output] reorders [output]'s focus stack. Windows
     that appear in [like] come first, in the order of [like]. The other windows
@@ -15,24 +11,16 @@ val remove_window
     {b Effects:} mutates WM state *)
 val restore_focus_order : like:Ocdwm_state.Window.t list -> Ocdwm_state.Output.t -> unit
 
-(** [push ctx windows output] pushes [windows] to the top of the tile and focus stack
+(** [push windows output] pushes [windows] to the top of the tile and focus stack
     of [output].
 
     {b Effects:} mutates WM state *)
-val push
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Window.t list
-  -> Ocdwm_state.Output.t
-  -> unit
+val push : Ocdwm_state.Window.t list -> Ocdwm_state.Output.t -> unit
 
-(** [focus_window ctx seat window] focuses [window].
+(** [focus_window window] focuses [window].
 
-    {b Effects:} mutates WM state; sends River request *)
-val focus_window
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_state.Window.t
-  -> unit
+    {b Effects:} mutates WM state *)
+val focus_window : Ocdwm_state.Window.t -> unit
 
 (** [shift seat dir] shifts the focused window one slot in [dir] through the
     tile stack, wrapping at the head and tail. Is [Error msg] when [seat] has no
@@ -44,11 +32,11 @@ val shift
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [raise_floats ctx output] raises every visible floating window of [output]
-    over the tiled windows. The most recently focused float ends on top.
+(** [raise_windows ctx output] raises every visible window of [output] to the
+    correct z-order. The most recently focused float ends on top.
 
     {b Effects:} sends River request *)
-val raise_floats
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+val raise_windows
+  :  Ocdwm_state.Ctx.render Ocdwm_state.Ctx.t
   -> Ocdwm_state.Output.t
   -> unit

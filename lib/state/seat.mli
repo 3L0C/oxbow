@@ -32,6 +32,12 @@ val clear_pending : t -> unit
     {b Effects:} mutates WM state *)
 val set_output : t -> Types.Output.t option -> unit
 
+(** [set_focus_cleared seat cleared] sets [seat]'s focus cleared state to
+    [cleared].
+
+    {b Effects:} mutates WM state *)
+val set_focus_cleared : t -> bool -> unit
+
 (** [focus_output seat output] moves [seat]'s focus to [output] if [output] is
     not already focused.
 

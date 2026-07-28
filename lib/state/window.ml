@@ -31,7 +31,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; parent = None
   ; float_seed_pending = false
   ; decoration_hint = None
-  ; presentation_mode = None
+  ; presentation_hint = None
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
   ; float_geom = None
   ; clip = None
@@ -46,13 +46,13 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; is_urgent = false
   ; is_fake_fullscreen = false
   ; scrolling = { consumes = false; width = scroll_width }
-  ; committed = { proposed = None; clip = None; hidden = false }
+  ; committed = { proposed = None; fullscreen_on = None }
   ; presentation = Presentation.Tiled
   ; requests = []
   }
 ;;
 
-let destroy (w : t) =
+let destroy w =
   match w.lifecycle with
   | Closing -> Emit.destroy_window w
   | _ ->
@@ -61,32 +61,9 @@ let destroy (w : t) =
     m "destroy refused: Window is %s not closing" (Lifecycle.to_string w.lifecycle)
 ;;
 
-let set_position ctx (w : t) ~x ~y =
-  w.geom <- { w.geom with x; y };
-  match w.presentation with
-  | Fullscreen _ -> ()
-  | Tiled | Floating | Maximized _ -> Send.set_position ctx w ~x ~y
-;;
-
-let propose_dimensions ctx (w : t) ~width ~height =
-  if w.committed.proposed <> Some (width, height)
-  then (
-    Send.propose_dimensions ctx w ~width ~height;
-    w.committed.proposed <- Some (width, height))
-;;
-
-let river_sync_geom ctx (w : t) (g : int32 Rect.t) =
-  propose_dimensions ctx w ~width:g.w ~height:g.h;
-  set_position ctx w ~x:g.x ~y:g.y
-;;
-
+let set_position w ~x ~y = w.geom <- { w.geom with x; y }
 let floor_geom (g : int32 Rect.t) = { g with w = max g.w 0l; h = max g.h 0l }
-
-let set_geom ctx (w : t) g =
-  let geom = floor_geom g in
-  w.geom <- geom;
-  river_sync_geom ctx w geom
-;;
+let set_geom w g = w.geom <- floor_geom g
 
 let tag_layout (o : Types.Output.t) =
   match Tag.Set.first o.selected_tags with
@@ -94,19 +71,19 @@ let tag_layout (o : Types.Output.t) =
   | None -> invalid_arg "Got an output with no selected tags."
 ;;
 
-let on_tags (w : t) ~tags = Tag.Set.intersects tags w.tags
+let on_tags w ~tags = Tag.Set.intersects tags w.tags
 
-let tag_visible (w : t) =
+let tag_visible w =
   match w.output with
   | None -> false
   | Some o -> o.overview || on_tags ~tags:o.selected_tags w
 ;;
 
-let is_tiled (w : t) = w.presentation = Tiled
+let is_tiled w = w.presentation = Tiled
 let is_tiled_on_tag w = tag_visible w && is_tiled w
-let remember_float (w : t) = w.float_geom <- Some w.geom
+let remember_float w = w.float_geom <- Some w.geom
 
-let tile (w : t) =
+let tile w =
   if w.presentation = Floating then remember_float w;
   w.presentation <- Tiled
 ;;
@@ -117,7 +94,7 @@ let clamp_dim ~min_v ~max_v v =
   |> if max_v > 0l then Int32.min max_v else Fun.id
 ;;
 
-let clamp (w : t) (g : int Rect.t) =
+let clamp w (g : int Rect.t) =
   let h = w.size_hints in
   Rect.(
     Int32.
@@ -128,7 +105,7 @@ let clamp (w : t) (g : int Rect.t) =
       })
 ;;
 
-let clamp32 (w : t) (g : int32 Rect.t) =
+let clamp32 w (g : int32 Rect.t) =
   let h = w.size_hints in
   Rect.
     { x = g.x
@@ -138,7 +115,7 @@ let clamp32 (w : t) (g : int32 Rect.t) =
     }
 ;;
 
-let restore_or_seed_float (ctx : Ctx.manage Ctx.t) (w : t) =
+let restore_or_seed_float w =
   match w.output with
   | None -> ()
   | Some o ->
@@ -167,41 +144,37 @@ let restore_or_seed_float (ctx : Ctx.manage Ctx.t) (w : t) =
             })
     in
     w.float_geom <- Some g;
-    set_geom ctx w g
+    set_geom w g
 ;;
 
-let float (ctx : Ctx.manage Ctx.t) (w : t) =
+let float w =
   w.presentation <- Floating;
-  restore_or_seed_float ctx w
+  restore_or_seed_float w
 ;;
 
-let is_fullscreen (w : t) =
+let is_fullscreen w =
   match w.presentation with
   | Fullscreen _ -> true
   | _ -> false
 ;;
 
-let fullscreen ?(force : bool = false) ctx (w : t) =
+let fullscreen ?(force : bool = false) w =
   match w.output with
   | None -> ()
   | Some o ->
     let enter restore =
       w.presentation <- Fullscreen { restore };
-      set_geom ctx w o.geom;
-      Send.fullscreen ctx w ~output:o;
-      Send.inform_fullscreen ctx w
+      set_geom w o.geom
     in
     (match w.presentation with
      | Tiled -> enter `Tiled
      | Floating -> enter `Floating
-     | Maximized { restore } ->
-       Send.inform_unmaximized ctx w;
-       enter (`Maximized restore)
+     | Maximized { restore } -> enter (`Maximized restore)
      | Fullscreen { restore } when force -> enter restore
      | Fullscreen _ -> ())
 ;;
 
-let maximize ?restore ctx (w : t) =
+let maximize ?restore w =
   let enter restore =
     match w.output with
     | None -> ()
@@ -216,8 +189,7 @@ let maximize ?restore ctx (w : t) =
             })
       in
       w.presentation <- Maximized { restore };
-      set_geom ctx w g;
-      Send.inform_maximized ctx w
+      set_geom w g
   in
   match restore with
   | None ->
@@ -230,30 +202,29 @@ let maximize ?restore ctx (w : t) =
   | Some r -> enter r
 ;;
 
-let unmaximize ctx (w : t) =
+let unmaximize w =
   match w.presentation with
   | Tiled | Floating | Fullscreen _ -> ()
   | Maximized { restore } ->
-    Send.inform_unmaximized ctx w;
     (match restore with
      | `Tiled -> tile w
-     | `Floating -> float ctx w)
+     | `Floating -> float w)
 ;;
 
-let exit_fullscreen ctx (w : t) =
+let exit_fullscreen w =
   match w.output, w.presentation with
   | Some _, Fullscreen { restore } ->
     w.committed.proposed <- None;
-    Send.exit_fullscreen ctx w;
-    Send.inform_not_fullscreen ctx w;
-    (match restore with
-     | `Tiled -> tile w
-     | `Floating -> float ctx w
-     | `Maximized restore -> maximize ~restore ctx w)
+    w
+    |>
+      (match restore with
+      | `Tiled -> tile
+      | `Floating -> float
+      | `Maximized restore -> maximize ~restore)
   | _, (Tiled | Floating | Maximized _ | Fullscreen _) -> ()
 ;;
 
-let is_rendered (w : t) =
+let is_rendered w =
   tag_visible w
   && (match w.output with
       | None -> false
@@ -269,54 +240,14 @@ let is_rendered (w : t) =
   | _ -> true
 ;;
 
-let sync ctx (w : t) =
-  let wm = Ctx.wm ctx in
-  let moving =
-    List.exists
-      (fun (s : Types.Seat.t) ->
-         match s.op with
-         | Some (Move { window; _ }) when window == w -> true
-         | _ -> false)
-      wm.seats
-  in
-  let should_render = is_rendered w in
-  let () =
-    match should_render, w.committed.hidden with
-    | true, true ->
-      Send.show ctx w;
-      w.committed.hidden <- false
-    | false, false when not moving ->
-      Send.hide ctx w;
-      w.committed.hidden <- true
-    | _, _ -> ()
-  in
-  let desired =
-    match w.output with
-    | Some o
-      when (not o.overview)
-           && (tag_layout o).layout = Scrolling
-           && is_tiled w
-           && should_render -> w.clip
-    | _ -> None
-  in
-  if desired <> w.committed.clip
-  then (
-    (match desired with
-     | Some r ->
-       let g = Rect.to_int32 r in
-       Send.set_clip_box ctx w ~x:g.x ~y:g.y ~width:g.w ~height:g.h
-     | None -> Send.set_clip_box ctx w ~x:0l ~y:0l ~width:0l ~height:0l);
-    w.committed.clip <- desired)
-;;
-
-let queue_request (w : t) request =
+let queue_request w request =
   w.requests <- request :: w.requests;
   Schedule.manage ()
 ;;
 
-let clear_requests (w : t) = w.requests <- []
+let clear_requests w = w.requests <- []
 
-let fit_to_output (ctx : 'p Ctx.t) (w : t) =
+let fit_to_output w =
   match w.output with
   | None -> ()
   | Some o ->
@@ -334,28 +265,14 @@ let fit_to_output (ctx : 'p Ctx.t) (w : t) =
         let max_y = Int32.(sub o.geom.h w.geom.h |> add o.geom.y) in
         Int32.(w.geom.y |> max o.geom.y |> min max_y))
     in
-    if new_x <> w.geom.x || new_y <> w.geom.y then set_position ctx w ~x:new_x ~y:new_y
+    if new_x <> w.geom.x || new_y <> w.geom.y then set_position w ~x:new_x ~y:new_y
 ;;
 
-let at_point ~(x : int32) ~(y : int32) =
-  List.find_opt (fun (w : t) -> tag_visible w && Rect.contains ~x ~y w.geom)
-;;
+let at_point ~x ~y = List.find_opt (fun w -> tag_visible w && Rect.contains ~x ~y w.geom)
+let fake_fullscreen w = if not w.is_fake_fullscreen then w.is_fake_fullscreen <- true
+let exit_fake_fullscreen w = if w.is_fake_fullscreen then w.is_fake_fullscreen <- false
 
-let fake_fullscreen ctx (w : t) =
-  if not w.is_fake_fullscreen
-  then (
-    w.is_fake_fullscreen <- true;
-    Send.inform_fullscreen ctx w)
-;;
-
-let exit_fake_fullscreen ctx (w : t) =
-  if w.is_fake_fullscreen
-  then (
-    w.is_fake_fullscreen <- false;
-    Send.inform_not_fullscreen ctx w)
-;;
-
-let float_in_place (w : t) =
+let float_in_place w =
   match w.presentation with
   | Floating -> ()
   | Fullscreen _ -> Logs.err @@ fun m -> m "unable to float fullscreen window"
@@ -364,12 +281,12 @@ let float_in_place (w : t) =
     w.presentation <- Floating
 ;;
 
-let apply_float_geom ctx w g =
-  clamp w g |> set_geom ctx w;
+let apply_float_geom w g =
+  clamp w g |> set_geom w;
   remember_float w
 ;;
 
-let move_to (ctx : Ctx.manage Ctx.t) (w : t) ~x ~y =
+let move_to w ~x ~y =
   if is_fullscreen w
   then Logs.err @@ fun m -> m "unable to move fullscreen window"
   else (
@@ -384,10 +301,10 @@ let move_to (ctx : Ctx.manage Ctx.t) (w : t) ~x ~y =
         ; y = o.usable.y + Extent.resolve y ~ref:o.usable.h
         }
       in
-      apply_float_geom ctx w g)
+      apply_float_geom w g)
 ;;
 
-let move_spatial ctx (w : t) (dir : Direction.Spatial.t) by =
+let move_spatial w (dir : Direction.Spatial.t) by =
   if is_fullscreen w
   then Logs.err @@ fun m -> m "unable to move fullscreen window"
   else (
@@ -405,10 +322,10 @@ let move_spatial ctx (w : t) (dir : Direction.Spatial.t) by =
         | Left -> { cur with x = cur.x - dx }
         | Right -> { cur with x = cur.x + dx }
       in
-      apply_float_geom ctx w g)
+      apply_float_geom w g)
 ;;
 
-let resize_to ctx (w : t) ~width ~height =
+let resize_to w ~width ~height =
   if is_fullscreen w
   then Logs.err @@ fun m -> m "unable to resize fullscreen window"
   else (
@@ -423,10 +340,10 @@ let resize_to ctx (w : t) ~width ~height =
         ; h = Extent.resolve height ~ref:o.usable.h
         }
       in
-      apply_float_geom ctx w g)
+      apply_float_geom w g)
 ;;
 
-let resize_spatial ctx (w : t) (dir : Direction.Spatial.t) by =
+let resize_spatial w (dir : Direction.Spatial.t) by =
   if is_fullscreen w
   then Logs.err @@ fun m -> m "unable to resize fullscreen window"
   else (
@@ -444,10 +361,10 @@ let resize_spatial ctx (w : t) (dir : Direction.Spatial.t) by =
         | Left -> { cur with x = cur.x - dx; w = cur.w + dx }
         | Right -> { cur with w = cur.w + dx }
       in
-      apply_float_geom ctx w g)
+      apply_float_geom w g)
 ;;
 
-let set_tags (w : t) tags =
+let set_tags w tags =
   if not @@ Tag.Set.is_empty tags
   then (
     w.tags <- tags;
@@ -455,24 +372,26 @@ let set_tags (w : t) tags =
   else invalid_arg "Windows cannot have an empty set of tags."
 ;;
 
-let set_consumes (w : t) v =
+let set_consumes w v =
   if v <> w.scrolling.consumes
   then (
     w.scrolling.consumes <- v;
     Schedule.manage ())
 ;;
 
-let set_scroll_width (w : t) v =
+let set_scroll_width w v =
   if w.scrolling.width <> v
   then (
     w.scrolling.width <- v;
     Schedule.manage ())
 ;;
 
-let set_output (w : t) output =
+let set_output w output =
   let aux () =
     Schedule.manage ();
-    w.output <- output
+    w.output <- output;
+    w.committed.fullscreen_on <- None;
+    w.committed.proposed <- None
   in
   match w.output, output with
   | Some o, None when Option.is_none w.output_before_evac ->
@@ -481,35 +400,34 @@ let set_output (w : t) output =
   | _ -> aux ()
 ;;
 
-let set_presentation (w : t) presentation =
+let set_presentation w presentation =
   w.presentation <- presentation;
   Schedule.manage ()
 ;;
 
-let set_is_urgent (w : t) is_urgent =
+let set_is_urgent w is_urgent =
   w.is_urgent <- is_urgent;
   Schedule.manage ()
 ;;
 
-let set_lifecycle (w : t) lifecycle = w.lifecycle <- lifecycle
-let set_title (w : t) title = w.title <- title
-let set_app_id (w : t) app_id = w.app_id <- app_id
-let set_identifier (w : t) identifier = w.identifier <- identifier
-let set_unreliable_pid (w : t) pid = w.unreliable_pid <- pid
+let set_lifecycle w lifecycle = w.lifecycle <- lifecycle
+let set_title w title = w.title <- title
+let set_app_id w app_id = w.app_id <- app_id
+let set_identifier w identifier = w.identifier <- identifier
+let set_unreliable_pid w pid = w.unreliable_pid <- pid
 
-let set_parent (w : t) ~parent =
+let set_parent w ~parent =
   w.parent <- parent;
   Schedule.manage ()
 ;;
 
-let set_float_seed_pending (w : t) v = w.float_seed_pending <- v
-let set_decoration_hint (w : t) hint = w.decoration_hint <- hint
-let set_presentation_mode (w : t) mode = w.presentation_mode <- mode
-let set_size_hints (w : t) hints = w.size_hints <- hints
-let set_is_fixed (w : t) is_fixed = w.is_fixed <- is_fixed
-let set_is_hidden (w : t) is_hidden = w.committed.hidden <- is_hidden
+let set_float_seed_pending w v = w.float_seed_pending <- v
+let set_decoration_hint w hint = w.decoration_hint <- hint
+let set_presentation_hint w hint = w.presentation_hint <- hint
+let set_size_hints w hints = w.size_hints <- hints
+let set_is_fixed w is_fixed = w.is_fixed <- is_fixed
 
-let rehome (w : t) name =
+let rehome w name =
   match w.output_before_evac with
   | Some n when String.equal n name ->
     w.output_before_evac <- None;
@@ -517,7 +435,7 @@ let rehome (w : t) name =
   | _ -> ()
 ;;
 
-let presentation_string (w : t) =
+let presentation_string w =
   match w.presentation with
   | Tiled -> "tiled"
   | Floating -> "floating"

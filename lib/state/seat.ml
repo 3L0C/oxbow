@@ -11,39 +11,37 @@ module Warp_request = struct
   ;;
 end
 
-let effective_mode ctx (seat : t) =
-  if (Ctx.wm ctx).session_locked then Mode.locked else seat.mode
-;;
+let effective_mode ctx s = if (Ctx.wm ctx).session_locked then Mode.locked else s.mode
 
-let unbind_xkb_binding (seat : t) mode mods keysym =
+let unbind_xkb_binding s mode mods keysym =
   let matches (b : Xkb_binding.t) =
     String.equal b.mode mode && b.mods = mods && b.keysym = keysym
   in
-  let to_destroy, to_keep = List.partition matches seat.xkb_bindings in
+  let to_destroy, to_keep = List.partition matches s.xkb_bindings in
   List.iter Emit.destroy_xkb_binding to_destroy;
-  seat.xkb_bindings <- to_keep;
+  s.xkb_bindings <- to_keep;
   not @@ List.is_empty to_destroy
 ;;
 
-let queue_pending (s : t) request =
+let queue_pending s request =
   Queue.add request s.pending_requests;
   Schedule.manage ()
 ;;
 
-let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mode mods keysym command =
+let xkb_binding_create (ctx : Ctx.manage Ctx.t) s mode mods keysym command =
   let wm = Ctx.wm ctx in
   let body = Request.Body.Command command in
   let keysym_i32 = Int32.of_int (Xkbcommon.Keysym.to_int keysym) in
-  let enabled = String.equal mode (effective_mode ctx seat) in
+  let enabled = String.equal mode (effective_mode ctx s) in
   let binding : Xkb_binding.t =
     { obj =
         Emit.create_xkb_binding
           wm
-          ~seat:seat.obj
+          ~seat:s.obj
           ~keysym:keysym_i32
           ~mods
-          ~on_pressed:(fun () -> queue_pending seat { body; reply = None })
-    ; seat
+          ~on_pressed:(fun () -> queue_pending s { body; reply = None })
+    ; seat = s
     ; mode
     ; enabled
     ; command
@@ -52,36 +50,36 @@ let xkb_binding_create (ctx : Ctx.manage Ctx.t) seat mode mods keysym command =
     }
   in
   if enabled then Send.enable_xkb_binding binding.obj;
-  seat.xkb_bindings <- binding :: seat.xkb_bindings
+  s.xkb_bindings <- binding :: s.xkb_bindings
 ;;
 
-let replace_xkb_binding ctx seat mode mods keysym command =
-  let replaced = unbind_xkb_binding seat mode mods keysym in
-  xkb_binding_create ctx seat mode mods keysym command;
+let replace_xkb_binding ctx s mode mods keysym command =
+  let replaced = unbind_xkb_binding s mode mods keysym in
+  xkb_binding_create ctx s mode mods keysym command;
   replaced
 ;;
 
-let unbind_pointer_binding (seat : t) mode mods button =
+let unbind_pointer_binding s mode mods button =
   let matches (p : Pointer_binding.t) =
     String.equal p.mode mode && p.mods = mods && p.button = button
   in
-  let to_destroy, to_keep = List.partition matches seat.pointer_bindings in
+  let to_destroy, to_keep = List.partition matches s.pointer_bindings in
   List.iter Emit.destroy_pointer_binding to_destroy;
-  seat.pointer_bindings <- to_keep;
+  s.pointer_bindings <- to_keep;
   not @@ List.is_empty to_destroy
 ;;
 
-let pointer_binding_create (ctx : Ctx.manage Ctx.t) (seat : t) mode mods button command =
+let pointer_binding_create (ctx : Ctx.manage Ctx.t) s mode mods button command =
   let body = Request.Body.Command command in
-  let enabled = String.equal mode (effective_mode ctx seat) in
+  let enabled = String.equal mode (effective_mode ctx s) in
   let binding : Pointer_binding.t =
     { obj =
         Emit.create_pointer_binding
-          seat.obj
+          s.obj
           ~button:(Pointer_button.to_int32 button)
           ~mods
-          ~on_pressed:(fun () -> queue_pending seat { body; reply = None })
-    ; seat
+          ~on_pressed:(fun () -> queue_pending s { body; reply = None })
+    ; seat = s
     ; mode
     ; enabled
     ; command
@@ -90,22 +88,22 @@ let pointer_binding_create (ctx : Ctx.manage Ctx.t) (seat : t) mode mods button 
     }
   in
   if enabled then Send.enable_pointer_binding binding.obj;
-  seat.pointer_bindings <- binding :: seat.pointer_bindings
+  s.pointer_bindings <- binding :: s.pointer_bindings
 ;;
 
-let replace_pointer_binding ctx seat mode mods button command =
-  let replaced = unbind_pointer_binding seat mode mods button in
-  pointer_binding_create ctx seat mode mods button command;
+let replace_pointer_binding ctx s mode mods button command =
+  let replaced = unbind_pointer_binding s mode mods button in
+  pointer_binding_create ctx s mode mods button command;
   replaced
 ;;
 
-let refresh_cursor_target (s : t) =
+let refresh_cursor_target s =
   match s.hovered with
   | Some _ -> s.cursor_target <- s.hovered
   | _ -> ()
 ;;
 
-let op_end ctx (s : t) =
+let op_end ctx s =
   match s.op with
   | None -> ()
   | Some (Move _) | Some (Resize _) ->
@@ -113,9 +111,9 @@ let op_end ctx (s : t) =
     Emit.op_end ctx s
 ;;
 
-let drain_pending (s : t) = Queue.take_opt s.pending_requests
+let drain_pending s = Queue.take_opt s.pending_requests
 
-let clear_pending (s : t) =
+let clear_pending s =
   Queue.iter
     (fun (p : Pending_request.t) ->
        Option.iter (fun u -> Eio.Promise.resolve_error u "wm shutting down") p.reply)
@@ -123,7 +121,7 @@ let clear_pending (s : t) =
   Queue.clear s.pending_requests
 ;;
 
-let set_output (s : t) output =
+let set_output s output =
   match s.output, output with
   | Some o, Some o' when o == o' -> ()
   | None, None -> ()
@@ -132,35 +130,37 @@ let set_output (s : t) output =
     Schedule.manage ()
 ;;
 
-let focus_output (s : t) output =
+let set_focus_cleared s v = s.focus_cleared <- v
+
+let focus_output s output =
   if not @@ Phys.opt_equal s.output output then set_output s output
 ;;
 
-let set_layer_focus (s : t) layer =
+let set_layer_focus s layer =
   s.layer_focus <- layer;
   Schedule.manage ()
 ;;
 
-let set_mode (ctx : Ctx.manage Ctx.t) (seat : t) mode =
+let set_mode (ctx : Ctx.manage Ctx.t) s mode =
   if not @@ List.mem mode (Ctx.wm ctx).config.modes
   then Error (Printf.sprintf "mode not declared: %S" mode)
   else if String.equal mode Mode.locked
   then Error "cannot enter 'locked' mode manually"
-  else Ok (seat.mode <- mode)
+  else Ok (s.mode <- mode)
 ;;
 
-let set_position (s : t) position = s.position <- position
+let set_position s position = s.position <- position
 
-let set_cursor_target (s : t) window =
+let set_cursor_target s window =
   s.cursor_target <- window;
   Schedule.manage ()
 ;;
 
-let set_focus_state (s : t) state = s.focus_state <- state
-let set_op (s : t) op = s.op <- Some op
-let clear_op (s : t) = s.op <- None
+let set_focus_state s state = s.focus_state <- state
+let set_op s op = s.op <- Some op
+let clear_op s = s.op <- None
 
-let set_op_delta (s : t) dx dy =
+let set_op_delta s dx dy =
   match s.op with
   | Some (Move d) ->
     d.dx <- dx;
@@ -171,47 +171,47 @@ let set_op_delta (s : t) dx dy =
   | None -> ()
 ;;
 
-let release_op (s : t) =
+let release_op s =
   match s.op with
   | Some (Move d) -> d.release <- true
   | Some (Resize d) -> d.release <- true
   | None -> ()
 ;;
 
-let set_lifecycle (s : t) lifecycle = s.lifecycle <- lifecycle
-let set_name (s : t) name = s.name <- name
-let set_hovered (s : t) window = s.hovered <- window
-let set_interacted (s : t) window = s.interacted <- window
-let set_warp_request (s : t) v = s.warp_request <- v
+let set_lifecycle s lifecycle = s.lifecycle <- lifecycle
+let set_name s name = s.name <- name
+let set_hovered s window = s.hovered <- window
+let set_interacted s window = s.interacted <- window
+let set_warp_request s v = s.warp_request <- v
 
-let bind ctx seat ?(mode = Mode.normal) mods (key : Types.Key.t) command =
+let bind ctx s ?(mode = Mode.normal) mods (key : Types.Key.t) command =
   if not @@ List.mem mode (Ctx.wm ctx).config.modes
   then Error (Printf.sprintf "mode not declared: %S" mode)
   else
     Ok
       (match key with
-       | Keysym keysym -> replace_xkb_binding ctx seat mode mods keysym command
-       | Pointer button -> replace_pointer_binding ctx seat mode mods button command)
+       | Keysym keysym -> replace_xkb_binding ctx s mode mods keysym command
+       | Pointer button -> replace_pointer_binding ctx s mode mods button command)
 ;;
 
-let unbind ctx seat ?(mode = Mode.normal) mods (key : Types.Key.t) =
+let unbind ctx s ?(mode = Mode.normal) mods (key : Types.Key.t) =
   if not @@ List.mem mode (Ctx.wm ctx).config.modes
   then Error (Printf.sprintf "mode not declared: %S" mode)
   else
     Ok
       (match key with
-       | Keysym keysym -> unbind_xkb_binding seat mode mods keysym
-       | Pointer button -> unbind_pointer_binding seat mode mods button)
+       | Keysym keysym -> unbind_xkb_binding s mode mods keysym
+       | Pointer button -> unbind_pointer_binding s mode mods button)
 ;;
 
-let focused_window (seat : t) =
-  match seat.output with
+let focused_window s =
+  match s.output with
   | Some o -> Output.focused_window o
   | None -> None
 ;;
 
-let sync_bindings ctx (seat : t) =
-  let active = effective_mode ctx seat in
+let sync_bindings ctx s =
+  let active = effective_mode ctx s in
   List.iter
     (fun (b : Xkb_binding.t) ->
        let desired = String.equal b.mode active in
@@ -223,7 +223,7 @@ let sync_bindings ctx (seat : t) =
        | false, true ->
          Send.disable_xkb_binding b.obj;
          b.enabled <- desired)
-    seat.xkb_bindings;
+    s.xkb_bindings;
   List.iter
     (fun (p : Pointer_binding.t) ->
        let desired = String.equal p.mode active in
@@ -235,5 +235,5 @@ let sync_bindings ctx (seat : t) =
        | false, true ->
          Send.disable_pointer_binding p.obj;
          p.enabled <- desired)
-    seat.pointer_bindings
+    s.pointer_bindings
 ;;

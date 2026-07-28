@@ -3,16 +3,12 @@ open! Ocdwm_state
 
 module Focus_intent = struct
   type t =
-    | Promote of
-        { ctx : Ctx.manage Ctx.t
-        ; window : Window.t
-        ; seat : Seat.t
-        }
+    | Promote of Window.t
     | Push of Window.t list
     | Remove of Window.t
 end
 
-let apply ctx (intent : Focus_intent.t) (output : Output.t) =
+let apply (intent : Focus_intent.t) (output : Output.t) =
   let not_in lst w = not @@ List.memq w lst in
   let splice_focus_stack windows =
     match output.focus_stack with
@@ -24,15 +20,8 @@ let apply ctx (intent : Focus_intent.t) (output : Output.t) =
       @@ windows
       @ List.filter (not_in windows) output.focus_stack
   in
-  let sync (seat : Seat.t) =
-    match Output.focused_window output with
-    | None -> ()
-    | Some w ->
-      Send.focus_window ctx seat w;
-      Emit.place_top ctx w
-  in
   match intent with
-  | Promote { window; seat; _ } ->
+  | Promote window ->
     let changed =
       match output.focus_stack with
       | hd :: _ -> hd != window
@@ -41,7 +30,6 @@ let apply ctx (intent : Focus_intent.t) (output : Output.t) =
     splice_focus_stack [ window ];
     if not @@ Tag.Set.intersects window.tags output.selected_tags
     then Output.switch_tags ~tags:window.tags output;
-    sync seat;
     if Output.current_layout output = Scrolling && changed then Schedule.manage ()
   | Push windows ->
     Output.set_wm_stack output @@ windows @ List.filter (not_in windows) output.wm_stack;
@@ -51,8 +39,8 @@ let apply ctx (intent : Focus_intent.t) (output : Output.t) =
     Output.set_focus_stack output @@ List.filter (fun w' -> w' != w) output.focus_stack
 ;;
 
-let push ctx windows output = apply ctx (Push windows) output
-let remove_window ctx ~window output = apply ctx (Remove window) output
+let push windows output = apply (Push windows) output
+let remove_window ~window output = apply (Remove window) output
 
 let restore_focus_order ~like (output : Output.t) =
   let arrived = List.filter (fun w -> List.memq w output.focus_stack) like in
@@ -60,9 +48,7 @@ let restore_focus_order ~like (output : Output.t) =
   Output.set_focus_stack output (arrived @ stayed)
 ;;
 
-let focus_window ctx seat window =
-  Option.iter (apply ctx @@ Promote { ctx; window; seat }) window.output
-;;
+let focus_window window = Option.iter (apply (Promote window)) window.output
 
 let shift (seat : Seat.t) (dir : Direction.Logical.t) =
   match seat.output with
@@ -80,9 +66,9 @@ let shift (seat : Seat.t) (dir : Direction.Logical.t) =
        Ok None)
 ;;
 
-let raise_floats ctx (output : Output.t) =
-  output.focus_stack
-  |> List.filter (fun w -> Window.tag_visible w && w.presentation = Floating)
-  |> List.rev
-  |> List.iter (fun (w : Window.t) -> Emit.place_top ctx w)
+let raise_windows ctx (output : Output.t) =
+  let visible = List.filter Window.tag_visible output.focus_stack in
+  let tiled, floating = List.partition Window.is_tiled visible in
+  List.rev tiled |> List.iter (Emit.place_top ctx);
+  List.rev floating |> List.iter (Emit.place_top ctx)
 ;;

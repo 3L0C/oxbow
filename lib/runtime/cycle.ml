@@ -85,11 +85,7 @@ let close_seats ctx =
 ;;
 
 let manage_new_window ctx (window : Window.t) =
-  Send.set_capabilities
-    ctx
-    window
-    ~caps:Wire.Capabilities.(Int32.logor maximize fullscreen);
-  Option.iter (Stacking.push ctx [ window ]) window.output;
+  Option.iter (Stacking.push [ window ]) window.output;
   if window.is_fixed || Option.is_some window.parent
   then Window.set_presentation window Floating;
   Rules.apply_for ctx window;
@@ -99,16 +95,13 @@ let manage_new_window ctx (window : Window.t) =
     if
       window.presentation = Floating
       || (window.presentation = Tiled && Output.current_layout o = Floating)
-    then (
-      Window.propose_dimensions ctx window ~width:0l ~height:0l;
-      Window.set_float_seed_pending window true)
+    then Window.set_float_seed_pending window true
   | _ -> ()
 ;;
 
 let manage_window ctx (window : Window.t) =
   List.rev window.requests |> List.iter (Window_request.handle ctx window);
-  Window.clear_requests window;
-  Decoration.apply ctx window
+  Window.clear_requests window
 ;;
 
 let manage_new_seat ctx (seat : Seat.t) =
@@ -138,7 +131,6 @@ let manage_seat ctx seat =
   Focus.apply_request ctx seat;
   Focus.apply_interaction ctx seat;
   drain ();
-  Seat.sync_bindings ctx seat;
   Drag.step ctx seat
 ;;
 
@@ -181,9 +173,20 @@ let arrange ctx =
 
 let commit_manage ctx =
   let wm = Ctx.wm ctx in
-  List.iter (Stacking.raise_floats ctx) wm.outputs;
-  List.iter (Window.sync ctx) wm.windows;
-  List.iter (Focus.apply_warp ctx) wm.seats
+  List.iter
+    (fun w ->
+       Commit.capabilities ctx w;
+       Commit.dimensions ctx w;
+       Commit.decoration ctx w;
+       Commit.presentation ctx w;
+       Commit.resizing ctx w)
+    wm.windows;
+  List.iter
+    (fun s ->
+       Commit.focus ctx s;
+       Seat.sync_bindings ctx s;
+       Focus.apply_warp ctx s)
+    wm.seats
 ;;
 
 let publish ctx = Ctx.wm ctx |> Events.publish
@@ -208,25 +211,11 @@ let manage (wm : Wm.t) proxy =
            publish ctx))
 ;;
 
-let set_presentation_mode ctx output =
-  match Output.focused_window output with
-  | Some w when Option.is_some w.output ->
-    let mode =
-      match w.presentation_mode with
-      | Some p -> p
-      | None -> Wire.Presentation_mode.Vsync
-    in
-    Send.set_presentation_mode ctx output ~mode
-  | _ -> Send.set_presentation_mode ctx output ~mode:Wire.Presentation_mode.Vsync
-;;
-
 let render_impl ctx (seat : Seat.t) =
-  let wm = Ctx.wm ctx in
   (match seat.op with
    | None -> ()
    | Some (Move op_m) ->
      Window.set_position
-       ctx
        op_m.window
        ~x:(Int32.add op_m.start_x op_m.dx)
        ~y:(Int32.add op_m.start_y op_m.dy)
@@ -242,13 +231,23 @@ let render_impl ctx (seat : Seat.t) =
        then Int32.sub op_r.start_h op_r.window.geom.h |> Int32.add op_r.start_y
        else op_r.start_y
      in
-     Window.set_position ctx op_r.window ~x ~y);
-  List.iter (set_presentation_mode ctx) wm.outputs;
+     Window.set_position op_r.window ~x ~y);
   Border.paint ctx seat
+;;
+
+let commit_render ctx =
+  let wm = Ctx.wm ctx in
+  List.iter (Commit.node ctx) wm.windows;
+  List.iter
+    (fun o ->
+       Stacking.raise_windows ctx o;
+       Commit.presentation_mode ctx o)
+    wm.outputs
 ;;
 
 let render wm proxy =
   Ctx.with_render wm (fun ctx ->
     List.iter (render_impl ctx) wm.seats;
+    commit_render ctx;
     River.Window_management.River_window_manager_v1.render_finish proxy)
 ;;

@@ -13,22 +13,15 @@ val create
     {b Effects:} sends River request *)
 val destroy : t -> unit
 
-(** [set_position ctx window ~x ~y] positions [window] at ([x], [y]).
+(** [set_position window ~x ~y] positions [window] at ([x], [y]).
 
-    {b Effects:} mutates WM state; sends River request *)
-val set_position : [< `Manage | `Render ] Ctx.t -> t -> x:int32 -> y:int32 -> unit
+    {b Effects:} mutates WM state *)
+val set_position : t -> x:int32 -> y:int32 -> unit
 
-(** [propose_dimensions ctx window ~width ~height] proposes content dimensions
-    to [window]. Skips the request when it equals the last proposal.
+(** [set_geom window geom] updates [window]'s geometry to [geom].
 
-    {b Effects:} mutates WM state; sends River request *)
-val propose_dimensions : Ctx.manage Ctx.t -> t -> width:int32 -> height:int32 -> unit
-
-(** [set_geom ctx window geom] updates [window]'s geometry to [geom] and
-    positions/resizes window to match the new state.
-
-    {b Effects:} mutates WM state; sends River request *)
-val set_geom : Ctx.manage Ctx.t -> t -> int32 Ocdwm_core.Rect.t -> unit
+    {b Effects:} mutates WM state *)
+val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
 
 (** [on_tags window ~tags] is true when [window]'s tags intersect with [tags]. *)
 val on_tags : t -> tags:Ocdwm_core.Tag.Set.t -> bool
@@ -58,32 +51,32 @@ val tile : t -> unit
     Converts to [int32 rect] *)
 val clamp : t -> int Ocdwm_core.Rect.t -> int32 Ocdwm_core.Rect.t
 
-(** [restore_or_seed_float ctx window] positions and resizes [window] according
+(** [restore_or_seed_float window] positions and resizes [window] according
     to its last remembered float value. If no such value is stored, [window] is
     centered and sized to 50% of the usable height and width of its output.
     Clamps to [window]'s size hints.
 
-    {b Effects:} mutates WM state; sends River request *)
-val restore_or_seed_float : Ctx.manage Ctx.t -> t -> unit
+    {b Effects:} mutates WM state *)
+val restore_or_seed_float : t -> unit
 
-(** [float ctx window] puts [window] in the floating state.
+(** [float window] puts [window] in the floating state.
 
-    {b Effects:} mutates WM state; sends River request *)
-val float : Ctx.manage Ctx.t -> t -> unit
+    {b Effects:} mutates WM state *)
+val float : t -> unit
 
 (** [is_fullscreen window] is [true] if [window] is fullscreen, [false] otherwise. *)
 val is_fullscreen : t -> bool
 
-(** [fullscreen ?force ctx window] makes [window] fullscreen.
+(** [fullscreen ?force window] makes [window] fullscreen.
 
-    {b Effects:} mutates WM state; sends River request *)
-val fullscreen : ?force:bool -> Ctx.manage Ctx.t -> t -> unit
+    {b Effects:} mutates WM state *)
+val fullscreen : ?force:bool -> t -> unit
 
-(** [exit_fullscreen ctx window] exit fullscreen and restore [window] to
-    previous presentation states.
+(** [exit_fullscreen window] exit fullscreen and restore [window] to previous
+    presentation states.
 
-    {b Effects:} mutates WM state; sends River request *)
-val exit_fullscreen : Ctx.manage Ctx.t -> t -> unit
+    {b Effects:} mutates WM state *)
+val exit_fullscreen : t -> unit
 
 (** [is_rendered window] is [true] when all of the following are true:
     - [tag_visible window] is [true]
@@ -92,12 +85,6 @@ val exit_fullscreen : Ctx.manage Ctx.t -> t -> unit
     - [window]'s output is in the [Scrolling] layout and [window] is within
       output's scrolling viewport *)
 val is_rendered : t -> bool
-
-(** [sync ctx window] ensures [window] is shown or hidden based on window manager
-    state.
-
-    {b Effects:} mutates WM state; sends River request *)
-val sync : Ctx.manage Ctx.t -> t -> unit
 
 (** [queue_request window request] adds [request] to [window]'s request
     queue.
@@ -110,84 +97,63 @@ val queue_request : t -> Request.t -> unit
     {b Effects:} mutates WM state *)
 val clear_requests : t -> unit
 
-(** [fit_to_output ctx window] repositions and resizes [window] to fit
-    on the output it is displayed on.
+(** [fit_to_output window] repositions and resizes [window] to fit on the output
+    it is displayed on.
 
-    {b Effects:} mutates WM state; sends River request *)
-val fit_to_output : Ctx.manage Ctx.t -> t -> unit
+    {b Effects:} mutates WM state *)
+val fit_to_output : t -> unit
 
 (** [at_point ~x ~y lst] returns the first window in [lst] that is
     visible (per {!tag_visible}) and whose [geom] rectangle contains
     the point ([x], [y]), or [None] if none does. *)
 val at_point : x:int32 -> y:int32 -> t list -> t option
 
-(** [fake_fullscreen ctx window] puts the [window] into the fake fullscreen
-    state.
+(** [fake_fullscreen window] puts the [window] into the fake fullscreen state.
 
-    {b Effects:} mutates WM state; sends River request *)
-val fake_fullscreen : Ctx.manage Ctx.t -> t -> unit
+    {b Effects:} mutates WM state *)
+val fake_fullscreen : t -> unit
 
-(** [exit_fake_fullscreen ctx window] exits the fake fullscreen state for
-    [window].
+(** [exit_fake_fullscreen window] exits the fake fullscreen state for [window].
 
-    {b Effects:} mutates WM state; sends River request *)
-val exit_fake_fullscreen : Ctx.manage Ctx.t -> t -> unit
+    {b Effects:} mutates WM state *)
+val exit_fake_fullscreen : t -> unit
 
-(** [maximize ?restore ctx window] informs [window] it is maximized. Saves the
+(** [maximize ?restore window] informs [window] it is maximized. Saves the
     previous presentation state or [restore] if present. No-op when [window] is
     fullscreen.
 
-    {b Effects:} mutates WM state; sends River request *)
-val maximize : ?restore:Presentation.Tile_or_float.t -> Ctx.manage Ctx.t -> t -> unit
+    {b Effects:} mutates WM state *)
+val maximize : ?restore:Presentation.Tile_or_float.t -> t -> unit
 
-(** [unmaximize ctx window] informs [window] it is unmaximized and restores
-    [window] to its previous presentation.
+(** [unmaximize window] informs [window] it is unmaximized and restores [window]
+    to its previous presentation.
 
-    {b Effects:} mutates WM state; sends River request *)
-val unmaximize : Ctx.manage Ctx.t -> t -> unit
+    {b Effects:} mutates WM state *)
+val unmaximize : t -> unit
 
-(** [move_to ctx window ~x ~y] moves [window] according to the extents [~x] and [~y].
+(** [move_to window ~x ~y] moves [window] according to the extents [~x] and
+    [~y].
 
-    {b Effects:} mutates WM state; sends River request *)
-val move_to
-  :  Ctx.manage Ctx.t
-  -> t
-  -> x:Ocdwm_core.Extent.t
-  -> y:Ocdwm_core.Extent.t
-  -> unit
+    {b Effects:} mutates WM state *)
+val move_to : t -> x:Ocdwm_core.Extent.t -> y:Ocdwm_core.Extent.t -> unit
 
-(** [move_spatial ctx window dir by] moves [window] in [dir] according to [by]
+(** [move_spatial window dir by] moves [window] in [dir] according to [by]
     extent.
 
-    {b Effects:} mutates WM state; sends River request *)
-val move_spatial
-  :  Ctx.manage Ctx.t
-  -> t
-  -> Ocdwm_core.Direction.Spatial.t
-  -> Ocdwm_core.Extent.t
-  -> unit
+    {b Effects:} mutates WM state *)
+val move_spatial : t -> Ocdwm_core.Direction.Spatial.t -> Ocdwm_core.Extent.t -> unit
 
-(** [resize_to ctx window ~width ~height] resizes [window] according to the
-    extents [~width] and [~height].
+(** [resize_to window ~width ~height] resizes [window] according to the extents
+    [~width] and [~height].
 
-    {b Effects:} mutates WM state; sends River request *)
-val resize_to
-  :  Ctx.manage Ctx.t
-  -> t
-  -> width:Ocdwm_core.Extent.t
-  -> height:Ocdwm_core.Extent.t
-  -> unit
+    {b Effects:} mutates WM state *)
+val resize_to : t -> width:Ocdwm_core.Extent.t -> height:Ocdwm_core.Extent.t -> unit
 
-(** [resize_spatial ctx window dir by] resizes [window] in [dir] according to
-    [by] extent.
+(** [resize_spatial window dir by] resizes [window] in [dir] according to [by]
+    extent.
 
-    {b Effects:} mutates WM state; sends River request *)
-val resize_spatial
-  :  Ctx.manage Ctx.t
-  -> t
-  -> Ocdwm_core.Direction.Spatial.t
-  -> Ocdwm_core.Extent.t
-  -> unit
+    {b Effects:} mutates WM state *)
+val resize_spatial : t -> Ocdwm_core.Direction.Spatial.t -> Ocdwm_core.Extent.t -> unit
 
 (** [set_tags window tags] sets [window]'s tags to [tags].
 
@@ -269,11 +235,11 @@ val set_float_seed_pending : t -> bool -> unit
     {b Effects:} mutates WM state *)
 val set_decoration_hint : t -> Decoration_hint.t option -> unit
 
-(** [set_presentation_mode window mode] sets [window]'s presentation mode to
-    [mode].
+(** [set_presentation_hint window hint] sets [window]'s presentation mode to
+    [hint].
 
     {b Effects:} mutates WM state *)
-val set_presentation_mode : t -> Wire.Presentation_mode.t option -> unit
+val set_presentation_hint : t -> Wire.Presentation_mode.t option -> unit
 
 (** [set_size_hints window size_hints] sets [window]'s size hints to
     [size_hints].
@@ -285,12 +251,6 @@ val set_size_hints : t -> int32 Size_hints.t -> unit
 
     {b Effects:} mutates WM state *)
 val set_is_fixed : t -> bool -> unit
-
-(** [set_is_hidden window is_hidden] sets [window]'s hidden status to
-    [is_hidden].
-
-    {b Effects:} mutates WM state *)
-val set_is_hidden : t -> bool -> unit
 
 (** [rehome window name] queues a request to send [window] to the output
     matching [name], when [window]'s home output matches [name]. No-op

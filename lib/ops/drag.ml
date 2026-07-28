@@ -22,7 +22,6 @@ let begin_resize ctx seat window edges =
   let corner_x = if Int32.logand edges Edges.left <> 0l then g.x else Int32.add g.x g.w in
   let corner_y = if Int32.logand edges Edges.top <> 0l then g.y else Int32.add g.y g.h in
   Emit.pointer_warp ctx seat ~x:corner_x ~y:corner_y;
-  Send.inform_resize_start ctx window;
   Emit.op_start_pointer ctx seat;
   Seat.set_op seat
   @@ Resize
@@ -48,7 +47,7 @@ let step ctx (seat : Seat.t) =
     let cy = Int32.(div w.geom.h 2l |> add w.geom.y) in
     (match Output.at_point ~x:cx ~y:cy wm.outputs with
      | Some o when not @@ Phys.opt_holds o w.output ->
-       Placement.move_window ctx w o ~policy:Tag.Policy.Take;
+       Placement.move_window w o ~policy:Tag.Policy.Take;
        Focus.focus_window ctx seat w;
        Schedule.manage ()
      | _ -> ());
@@ -56,7 +55,6 @@ let step ctx (seat : Seat.t) =
     then Window.remember_float op_m.window;
     Seat.clear_op seat
   | Some (Resize op_r) when op_r.release ->
-    Send.inform_resize_end ctx op_r.window;
     Emit.op_end ctx seat;
     if
       op_r.window.presentation = Floating && (not @@ Output.is_floating op_r.window.output)
@@ -80,11 +78,9 @@ let step ctx (seat : Seat.t) =
       | true, false -> Int32.sub op_r.start_h op_r.dy
       | false, true -> Int32.add op_r.start_h op_r.dy
     in
-    Window.propose_dimensions
-      ctx
+    Window.set_geom
       op_r.window
-      ~width:(max 1l width)
-      ~height:(max 1l height)
+      { op_r.window.geom with w = max 1l width; h = max 1l height }
   | Some (Move _) -> ()
   | None -> ()
 ;;

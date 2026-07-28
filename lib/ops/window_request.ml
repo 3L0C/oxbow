@@ -11,7 +11,6 @@ let handle_move ctx seat window =
     aux ()
   | Maximized _ ->
     Window.set_presentation window Floating;
-    Send.inform_unmaximized ctx window;
     aux ()
   | Floating -> aux ()
 ;;
@@ -26,18 +25,17 @@ let handle_resize ctx seat window edges =
     resize ()
   | Maximized _ ->
     Window.set_presentation window Floating;
-    Send.inform_unmaximized ctx window;
     resize ()
   | Floating -> resize ()
 ;;
 
 let handle_set_dimensions ctx window w h =
   let wm = Ctx.wm ctx in
-  Window.set_geom ctx window { window.geom with w; h };
+  Window.set_geom window { window.geom with w; h };
   if window.float_seed_pending
   then (
     Window.set_float_seed_pending window false;
-    Window.restore_or_seed_float ctx window);
+    Window.restore_or_seed_float window);
   let in_resize =
     List.exists
       (fun (s : Seat.t) ->
@@ -46,7 +44,7 @@ let handle_set_dimensions ctx window w h =
          | _ -> false)
       wm.seats
   in
-  if window.presentation = Floating && not in_resize then Window.fit_to_output ctx window
+  if window.presentation = Floating && not in_resize then Window.fit_to_output window
 ;;
 
 let handle_set_tags _ctx window (arg : Tag.Arg.t) =
@@ -61,24 +59,24 @@ let rec handle ctx window (request : Window.Request.t) =
   match request with
   | Move r -> handle_move ctx r.seat window
   | Move_to { x; y } ->
-    Placement.move_window_to ~x ~y ctx window
+    Placement.move_window_to ~x ~y window
     |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e
   | Resize r -> handle_resize ctx r.seat window r.edges
   | Resize_to { w; h } ->
-    Placement.resize_window_to ~width:w ~height:h ctx window
+    Placement.resize_window_to ~width:w ~height:h window
     |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e
   | Maximize -> Placement.maximize ctx window
-  | Unmaximize -> Placement.unmaximize ctx window
-  | Fake_fullscreen -> Window.fake_fullscreen ctx window
-  | Exit_fake_fullscreen -> Window.exit_fake_fullscreen ctx window
+  | Unmaximize -> Placement.unmaximize window
+  | Fake_fullscreen -> Window.fake_fullscreen window
+  | Exit_fake_fullscreen -> Window.exit_fake_fullscreen window
   | Fullscreen r -> Placement.fullscreen ctx r.output window handle
-  | Exit_fullscreen -> Placement.exit_fullscreen ctx window
+  | Exit_fullscreen -> Placement.exit_fullscreen window
   | Dimensions d -> handle_set_dimensions ctx window d.width d.height
   | Set_tags arg -> handle_set_tags ctx window arg
   | Send_to_output_name { name; policy } ->
     Placement.send_window_to_name ctx window name policy
     |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e
-  | Float -> Window.float ctx window
+  | Float -> Window.float window
   | Tile -> Window.tile window
 ;;
 

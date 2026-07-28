@@ -1,21 +1,32 @@
 let propose_dimensions (_ : Ctx.manage Ctx.t) (w : Types.Window.t) ~width ~height =
-  River.Window_management.River_window_v1.propose_dimensions w.obj ~width ~height
+  if w.committed.proposed <> Some (width, height)
+  then (
+    River.Window_management.River_window_v1.propose_dimensions w.obj ~width ~height;
+    w.committed.proposed <- Some (width, height))
 ;;
 
-let show (_ : Ctx.manage Ctx.t) (w : Types.Window.t) =
+let show (_ : Ctx.render Ctx.t) (w : Types.Window.t) =
   River.Window_management.River_window_v1.show w.obj
 ;;
 
-let hide (_ : Ctx.manage Ctx.t) (w : Types.Window.t) =
+let hide (_ : Ctx.render Ctx.t) (w : Types.Window.t) =
   River.Window_management.River_window_v1.hide w.obj
 ;;
 
 let fullscreen (_ : Ctx.manage Ctx.t) (w : Types.Window.t) ~(output : Types.Output.t) =
-  River.Window_management.River_window_v1.fullscreen w.obj ~output:output.obj
+  let id = Some (Wayland.Proxy.id output.obj) in
+  if w.committed.fullscreen_on <> id
+  then (
+    River.Window_management.River_window_v1.fullscreen w.obj ~output:output.obj;
+    w.committed.fullscreen_on <- id)
 ;;
 
 let exit_fullscreen (_ : Ctx.manage Ctx.t) (w : Types.Window.t) =
-  River.Window_management.River_window_v1.exit_fullscreen w.obj
+  if w.committed.fullscreen_on <> None
+  then (
+    River.Window_management.River_window_v1.exit_fullscreen w.obj;
+    w.committed.fullscreen_on <- None;
+    w.committed.proposed <- None)
 ;;
 
 let inform_fullscreen (_ : Ctx.manage Ctx.t) (w : Types.Window.t) =
@@ -66,39 +77,19 @@ let clear_focus (_ : Ctx.manage Ctx.t) (s : Types.Seat.t) =
   River.Window_management.River_seat_v1.clear_focus s.obj
 ;;
 
-let set_position (_ : Ctx.([< manage | render ]) Ctx.t) (w : Types.Window.t) ~x ~y =
+let set_position (_ : Ctx.render Ctx.t) (w : Types.Window.t) ~x ~y =
   River.Window_management.River_node_v1.set_position w.node ~x ~y
 ;;
 
-let set_clip_box
-      (_ : Ctx.([< manage | render ]) Ctx.t)
-      (w : Types.Window.t)
-      ~x
-      ~y
-      ~width
-      ~height
-  =
+let set_clip_box (_ : Ctx.render Ctx.t) (w : Types.Window.t) ~x ~y ~width ~height =
   River.Window_management.River_window_v1.set_clip_box w.obj ~x ~y ~width ~height
 ;;
 
-let set_borders
-      (_ : Ctx.([< manage | render ]) Ctx.t)
-      (w : Types.Window.t)
-      ~edges
-      ~width
-      ~r
-      ~g
-      ~b
-      ~a
-  =
+let set_borders (_ : Ctx.render Ctx.t) (w : Types.Window.t) ~edges ~width ~r ~g ~b ~a =
   River.Window_management.River_window_v1.set_borders w.obj ~edges ~width ~r ~g ~b ~a
 ;;
 
-let set_presentation_mode
-      (_ : Ctx.([< manage | render ]) Ctx.t)
-      (o : Types.Output.t)
-      ~mode
-  =
+let set_presentation_mode (_ : Ctx.render Ctx.t) (o : Types.Output.t) ~mode =
   River.Window_management.River_output_v1.set_presentation_mode o.obj ~mode
 ;;
 

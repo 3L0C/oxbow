@@ -11,14 +11,13 @@ val zoom
   -> Ocdwm_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
-(** [move_window ctx ?policy window output] removes [window] from its current
+(** [move_window ?policy window output] removes [window] from its current
     output, if any, and moves it to [output]. No-op when [window] is already
     owned by [output]. If [policy] is not given, [window]'s tags are unchanged.
 
     {b Effects:} mutates WM state *)
 val move_window
   :  ?policy:Ocdwm_core.Tag.Policy.t
-  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Window.t
   -> Ocdwm_state.Output.t
   -> unit
@@ -101,25 +100,22 @@ val send_to_name
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [toggle_floating ctx seat] toggles [seat]'s focused window between tiled and
+(** [toggle_floating seat] toggles [seat]'s focused window between tiled and
     floating. Is [Error msg] when [seat] has no focused window, window has no
     output, or when window is fullscreen, maximized, or fixed.
 
-    {b Effects:} mutates WM state; sends River request *)
-val toggle_floating
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
-  -> (Yojson.Safe.t option, string) result
+    {b Effects:} mutates WM state *)
+val toggle_floating : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [maximize ctx window] ends any seat operation and maximizes [window].
 
     {b Effects:} mutates WM state; sends River request *)
 val maximize : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Window.t -> unit
 
-(** [unmaximize ctx window] restores [window] from its maximized state.
+(** [unmaximize window] restores [window] from its maximized state.
 
-    {b Effects:} mutates WM state; sends River request *)
-val unmaximize : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Window.t -> unit
+    {b Effects:} mutates WM state *)
+val unmaximize : Ocdwm_state.Window.t -> unit
 
 (** [fullscreen ctx output window cb] makes [window] fullscreen on [output], or
     on its own output when [output] is [None], moving it between outputs when
@@ -137,14 +133,11 @@ val fullscreen
       -> unit)
   -> unit
 
-(** [exit_fullscreen ctx window] restores [window] from its fullscreen state.
-    No-op when [window] is not fullscreen.
+(** [exit_fullscreen window] restores [window] from its fullscreen state. No-op
+    when [window] is not fullscreen.
 
-    {b Effects:} mutates WM state; sends River request *)
-val exit_fullscreen
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Window.t
-  -> unit
+    {b Effects:} mutates WM state *)
+val exit_fullscreen : Ocdwm_state.Window.t -> unit
 
 (** [close_focused ctx seat] asks [seat]'s focused window to close.
 
@@ -154,68 +147,62 @@ val close_focused
   -> Ocdwm_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
-(** [move_to ~x ~y ctx window] moves [window] to the extents [x] and [y]. Is
+(** [move_to ~x ~y window] moves [window] to the extents [x] and [y]. Is
     [Error msg] when the window is fullscreen.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val move_window_to
   :  x:Ocdwm_core.Extent.t
   -> y:Ocdwm_core.Extent.t
-  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Window.t
   -> (Yojson.Safe.t option, string) result
 
-(** [move_to ~x ~y ctx seat] moves [seat]'s focused window to the extents [x] and
+(** [move_to ~x ~y seat] moves [seat]'s focused window to the extents [x] and
     [y]. Is [Error msg] when the window is fullscreen.
 
     {b Effects:} mutates WM state; sends River request *)
 val move_to
   :  x:Ocdwm_core.Extent.t
   -> y:Ocdwm_core.Extent.t
-  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
-(** [move_spatial ctx seat dir by] moves [seat]'s focused window in [dir] by
+(** [move_spatial seat dir by] moves [seat]'s focused window in [dir] by
     [by]. Is [Error msg] when the window is fullscreen.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val move_spatial
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
+  :  Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Spatial.t
   -> Ocdwm_core.Extent.t
   -> (Yojson.Safe.t option, string) result
 
-(** [resize_window_to ~width ~height ctx window] resizes window to the extents
+(** [resize_window_to ~width ~height window] resizes window to the extents
     [width] and [height]. Is [Error msg] when the window is fullscreen.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val resize_window_to
   :  width:Ocdwm_core.Extent.t
   -> height:Ocdwm_core.Extent.t
-  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Window.t
   -> (Yojson.Safe.t option, string) result
 
-(** [resize_to ~width ~height ctx seat] resizes [seat]'s focused window to the
+(** [resize_to ~width ~height seat] resizes [seat]'s focused window to the
     extents [width] and [height]. Is [Error msg] when the window is fullscreen.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val resize_to
   :  width:Ocdwm_core.Extent.t
   -> height:Ocdwm_core.Extent.t
-  -> Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
   -> Ocdwm_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
-(** [resize_spatial ctx seat dir by] resizes [seat]'s focused window in [dir] by
+(** [resize_spatial seat dir by] resizes [seat]'s focused window in [dir] by
     [by]. Is [Error msg] when the window is fullscreen.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val resize_spatial
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
+  :  Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Spatial.t
   -> Ocdwm_core.Extent.t
   -> (Yojson.Safe.t option, string) result

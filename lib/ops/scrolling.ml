@@ -52,7 +52,7 @@ let arrange ctx (output : Output.t) =
         Gaps.post tag_data.gaps g
         |> Rect.inset ~by:bw
         |> Window.clamp w
-        |> Window.set_geom ctx w;
+        |> Window.set_geom w;
         let dims = Rect.to_int w.geom in
         let visual = Rect.inset ~by:(-bw) dims in
         match Rect.intersect visual output.usable with

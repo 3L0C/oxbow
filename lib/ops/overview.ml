@@ -34,7 +34,7 @@ let arrange ctx (output : Output.t) =
          Gaps.post td.gaps rect
          |> Rect.inset ~by:bw
          |> Window.clamp window
-         |> Window.set_geom ctx window)
+         |> Window.set_geom window)
       windows
       dimensions)
 ;;

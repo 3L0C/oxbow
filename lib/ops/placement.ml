@@ -11,7 +11,7 @@ let zoom ?warp ctx (seat : Seat.t) =
   | Tiling -> Tiling.zoom ?warp ctx seat
 ;;
 
-let move_window ?(policy = Tag.Policy.Keep) ctx window (target : Output.t) =
+let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
   let take () =
     (match policy with
      | Keep -> ()
@@ -20,32 +20,31 @@ let move_window ?(policy = Tag.Policy.Keep) ctx window (target : Output.t) =
        |> Option.fold ~none:window.tags ~some:Tag.Set.singleton
        |> Window.set_tags window);
     Window.set_output window @@ Some target;
-    Stacking.push ctx [ window ] target
+    Stacking.push [ window ] target
   in
   match window.output with
   | Some o when o == target -> ()
   | None -> take ()
   | Some _ ->
-    Option.iter (Stacking.remove_window ctx ~window) window.output;
+    Option.iter (Stacking.remove_window ~window) window.output;
     take ()
 ;;
 
-let send_to ~(src : Output.t) ~(dst : Output.t) ctx window policy =
-  move_window ctx ~policy window dst;
+let send_to ~(src : Output.t) ~(dst : Output.t) window policy =
+  move_window ~policy window dst;
   (match window.presentation with
    | Tiled -> ()
    | Floating ->
      let dx = Int32.sub dst.geom.x src.geom.x in
      let dy = Int32.sub dst.geom.y src.geom.y in
      Window.set_position
-       ctx
        window
        ~x:(Int32.add window.geom.x dx)
        ~y:(Int32.add window.geom.y dy);
-     Window.fit_to_output ctx window;
+     Window.fit_to_output window;
      Window.remember_float window
-   | Maximized { restore } -> Window.maximize ~restore ctx window
-   | Fullscreen _ -> Window.fullscreen ~force:true ctx window);
+   | Maximized { restore } -> Window.maximize ~restore window
+   | Fullscreen _ -> Window.fullscreen ~force:true window);
   Schedule.manage ()
 ;;
 
@@ -56,7 +55,7 @@ let send_window_to_logical ctx (window : Window.t) (dir : Direction.Logical.t) p
   let target = Output.resolve_output_logical ~dir current wm.outputs in
   match target with
   | Some o when o != current ->
-    send_to ~src:current ~dst:o ctx window policy;
+    send_to ~src:current ~dst:o window policy;
     Ok None
   | _ -> Error Messages.no_other_output
 ;;
@@ -70,7 +69,7 @@ let send_window_to_spatial ctx (window : Window.t) (dir : Direction.Spatial.t) p
     let target = Output.resolve_output_spatial ~from ~dir current wm.outputs in
     (match target with
      | Some o when o != current ->
-       send_to ~src:current ~dst:o ctx window policy;
+       send_to ~src:current ~dst:o window policy;
        Ok None
      | _ -> Error (Printf.sprintf "no output %s" (Direction.Spatial.to_string dir)))
 ;;
@@ -85,7 +84,7 @@ let send_window_to_name ctx (window : Window.t) name policy =
     let target = Output.resolve_output_name name wm.outputs in
     match target with
     | Some o when o != current ->
-      send_to ~src:current ~dst:o ctx window policy;
+      send_to ~src:current ~dst:o window policy;
       Ok None
     | _ -> Error (Printf.sprintf "no output named %S" name))
 ;;
@@ -120,7 +119,7 @@ let send_to_name ctx seat name policy ~follow =
   | result -> result
 ;;
 
-let toggle_floating ctx seat =
+let toggle_floating seat =
   With.focused_window seat
   @@ fun o w ->
   if Output.current_layout o = Floating
@@ -133,7 +132,7 @@ let toggle_floating ctx seat =
     | Maximized _ -> Error "cannot toggle float while window is maximized"
     | Floating when w.is_fixed -> Error "cannot tile a fixed window"
     | Tiled ->
-      Window.float ctx w;
+      Window.float w;
       Schedule.manage ();
       Ok None
     | Floating ->
@@ -145,12 +144,12 @@ let toggle_floating ctx seat =
 let maximize ctx window =
   let wm = Ctx.wm ctx in
   List.iter (Seat.op_end ctx) wm.seats;
-  Window.maximize ctx window;
+  Window.maximize window;
   Schedule.manage ()
 ;;
 
-let unmaximize ctx window =
-  Window.unmaximize ctx window;
+let unmaximize window =
+  Window.unmaximize window;
   Schedule.manage ()
 ;;
 
@@ -166,8 +165,8 @@ let fullscreen ctx output (window : Window.t) cb =
            then cb ctx w Window.Request.Exit_fullscreen)
         o.focus_stack;
       List.iter (Seat.op_end ctx) wm.seats;
-      move_window ctx window o;
-      Window.fullscreen ctx window;
+      move_window window o;
+      Window.fullscreen window;
       Schedule.manage ()
   in
   match window.presentation with
@@ -175,17 +174,17 @@ let fullscreen ctx output (window : Window.t) cb =
   | Fullscreen _ ->
     (match output, window.output with
      | Some o1, Some o2 when o1 != o2 ->
-       move_window ctx window o1;
-       Window.fullscreen ~force:true ctx window;
+       move_window window o1;
+       Window.fullscreen ~force:true window;
        Schedule.manage ()
      | _, _ -> ())
 ;;
 
-let exit_fullscreen ctx (window : Window.t) =
+let exit_fullscreen (window : Window.t) =
   match window.presentation with
   | Tiled | Floating | Maximized _ -> ()
   | Fullscreen _ ->
-    Window.exit_fullscreen ctx window;
+    Window.exit_fullscreen window;
     Schedule.manage ()
 ;;
 
@@ -196,50 +195,48 @@ let close_focused ctx seat =
   Ok None
 ;;
 
-let move_window_to ~x ~y ctx w =
+let move_window_to ~x ~y w =
   if Window.is_fullscreen w
   then Error "cannot move a fullscreen window"
   else (
-    Window.move_to ctx w ~x ~y;
+    Window.move_to w ~x ~y;
     Schedule.manage ();
     Ok None)
 ;;
 
-let move_to ~x ~y ctx seat =
-  With.focused_window seat @@ fun _o w -> move_window_to ~x ~y ctx w
-;;
+let move_to ~x ~y seat = With.focused_window seat @@ fun _o w -> move_window_to ~x ~y w
 
-let move_spatial ctx seat dir by =
+let move_spatial seat dir by =
   With.focused_window seat
   @@ fun _o w ->
   if Window.is_fullscreen w
   then Error "cannot move a fullscreen window"
   else (
-    Window.move_spatial ctx w dir by;
+    Window.move_spatial w dir by;
     Schedule.manage ();
     Ok None)
 ;;
 
-let resize_window_to ~width ~height ctx window =
+let resize_window_to ~width ~height window =
   if Window.is_fullscreen window
   then Error "cannot resize a fullscreen window"
   else (
-    Window.resize_to ctx window ~width ~height;
+    Window.resize_to window ~width ~height;
     Schedule.manage ();
     Ok None)
 ;;
 
-let resize_to ~width ~height ctx seat =
-  With.focused_window seat @@ fun _o w -> resize_window_to ~width ~height ctx w
+let resize_to ~width ~height seat =
+  With.focused_window seat @@ fun _o w -> resize_window_to ~width ~height w
 ;;
 
-let resize_spatial ctx seat dir by =
+let resize_spatial seat dir by =
   With.focused_window seat
   @@ fun _o w ->
   if Window.is_fullscreen w
   then Error "cannot resize a fullscreen window"
   else (
-    Window.resize_spatial ctx w dir by;
+    Window.resize_spatial w dir by;
     Schedule.manage ();
     Ok None)
 ;;
@@ -299,8 +296,8 @@ let swap_outputs ctx seat ~(target : Command.Output.Swap.Target.t) ~policy ~foll
     and b_focus = b.focus_stack
     and a_ws = in_scope a |> List.rev
     and b_ws = in_scope b |> List.rev in
-    List.iter (fun w -> send_to ~src:a ~dst:b ctx w policy) a_ws;
-    List.iter (fun w -> send_to ~src:b ~dst:a ctx w policy) b_ws;
+    List.iter (fun w -> send_to ~src:a ~dst:b w policy) a_ws;
+    List.iter (fun w -> send_to ~src:b ~dst:a w policy) b_ws;
     Stacking.restore_focus_order ~like:a_focus b;
     Stacking.restore_focus_order ~like:b_focus a;
     if follow then Focus.focus_output ctx seat b;

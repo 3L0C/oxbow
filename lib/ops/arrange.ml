@@ -61,7 +61,7 @@ let enter_overview ctx (output : Output.t) =
     Output.set_overview output true)
 ;;
 
-let exit_overview ctx (output : Output.t) =
+let exit_overview (output : Output.t) =
   if output.overview
   then (
     Output.set_overview output false;
@@ -72,8 +72,8 @@ let exit_overview ctx (output : Output.t) =
       (fun (w : Window.t) ->
          match w.presentation with
          | Fullscreen _ | Tiled -> ()
-         | Floating -> Window.restore_or_seed_float ctx w
-         | Maximized { restore } -> Window.maximize ~restore ctx w)
+         | Floating -> Window.restore_or_seed_float w
+         | Maximized { restore } -> Window.maximize ~restore w)
       output.wm_stack;
     Schedule.manage ())
 ;;
@@ -81,11 +81,11 @@ let exit_overview ctx (output : Output.t) =
 let toggle_overview ctx seat =
   With.focused_output seat
   @@ fun o ->
-  if o.overview then exit_overview ctx o else enter_overview ctx o;
+  if o.overview then exit_overview o else enter_overview ctx o;
   Ok None
 ;;
 
-let set_layout ctx seat (l : Layout.t) ~global =
+let set_layout seat (l : Layout.t) ~global =
   With.focused_output seat
   @@ fun o ->
   let current = Output.current_layout o in
@@ -94,7 +94,7 @@ let set_layout ctx seat (l : Layout.t) ~global =
   else (
     (match current, l with
      | (Tiling | Scrolling), Floating ->
-       Output.tiled_windows o |> List.iter (Window.restore_or_seed_float ctx)
+       Output.tiled_windows o |> List.iter Window.restore_or_seed_float
      | Floating, (Tiling | Scrolling) ->
        Output.tiled_windows o |> List.iter Window.remember_float
      | _ -> ());
@@ -102,31 +102,31 @@ let set_layout ctx seat (l : Layout.t) ~global =
     Ok None)
 ;;
 
-let select_scheme ctx (seat : Seat.t) scheme ~global =
+let select_scheme seat scheme ~global =
   With.focused_output seat
   @@ fun o ->
-  match set_layout ctx seat Tiling ~global with
+  match set_layout seat Tiling ~global with
   | Error _ as e -> e
   | Ok _ ->
     Output.set_scheme o scheme ~global;
     Ok None
 ;;
 
-let cycle_scheme ctx (seat : Seat.t) dir =
+let cycle_scheme seat dir =
   With.focused_output seat
   @@ fun o ->
-  match set_layout ctx seat Tiling ~global:false with
+  match set_layout seat Tiling ~global:false with
   | Error _ as e -> e
   | Ok _ ->
     Output.cycle_scheme o dir ~global:false;
     Ok None
 ;;
 
-let cycle_layout ctx (seat : Seat.t) dir =
+let cycle_layout seat dir =
   With.focused_output seat
   @@ fun o ->
   let layout = Layout.cycle (Output.current_layout o) dir in
-  set_layout ctx seat layout ~global:false
+  set_layout seat layout ~global:false
 ;;
 
 let retile ctx (output : Output.t) =

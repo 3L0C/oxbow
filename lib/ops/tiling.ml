@@ -29,7 +29,7 @@ let arrange ctx output =
     | w_xs, d_xs ->
       let bw = Int32.to_int (Ctx.wm ctx).config.borders.width in
       List.iter2
-        (fun w g -> Rect.inset ~by:bw g |> Window.clamp w |> Window.set_geom ctx w)
+        (fun w g -> Rect.inset ~by:bw g |> Window.clamp w |> Window.set_geom w)
         w_xs
         d_xs)
 ;;
@@ -45,11 +45,11 @@ let zoom ?warp ctx seat =
     let warp = Seat.Warp_request.of_override warp in
     match Output.tiled_windows o with
     | w' :: x :: _ when w' == w ->
-      Stacking.push ctx [ x; w ] o;
+      Stacking.push [ x; w ] o;
       Focus.focus_window ~force:true ~warp ctx seat x;
       Ok None
     | w' :: _ when w' != w ->
-      Stacking.push ctx [ w; w' ] o;
+      Stacking.push [ w; w' ] o;
       Focus.focus_window ~force:true ~warp ctx seat w;
       Ok None
     | _ -> Error "no window to zoom with")

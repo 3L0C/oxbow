@@ -19,11 +19,10 @@ let focus_window ?(force : bool = false) ?warp ctx (seat : Seat.t) (target : Win
   | Some w when w == target && not force -> ()
   | _ ->
     set_output ctx seat target.output;
-    Stacking.focus_window ctx seat target;
+    Seat.set_focus_cleared seat false;
+    Stacking.focus_window target;
     Option.iter (Seat.set_warp_request seat) warp
 ;;
-
-let clear = Send.clear_focus
 
 let refresh ctx output =
   let wm = Ctx.wm ctx in
@@ -34,7 +33,7 @@ let refresh ctx output =
        | Some o when o == output ->
          (match target with
           | Some w -> focus_window ~force:true ctx s w
-          | None -> clear ctx s)
+          | None -> ())
        | _ -> ())
     wm.seats
 ;;
@@ -44,7 +43,7 @@ let refresh_layer_shell ctx (seat : Seat.t) =
   then (
     match Seat.focused_window seat with
     | Some w -> focus_window ~force:true ctx seat w
-    | None -> clear ctx seat)
+    | None -> ())
 ;;
 
 let window_logical ?warp ctx seat (dir : Direction.Logical.t) =
@@ -122,7 +121,7 @@ let focus_output ?warp ctx seat output =
   Seat.(Warp_request.of_override warp |> set_warp_request seat);
   match Output.focused_window output with
   | Some w -> focus_window ctx seat w
-  | None -> clear ctx seat
+  | None -> ()
 ;;
 
 let output_logical ?warp ctx (seat : Seat.t) (dir : Direction.Logical.t) =
@@ -191,7 +190,7 @@ let remove_window ctx (window : Window.t) =
     | Some o -> Phys.opt_holds window (Output.focused_window o)
     | None -> false
   in
-  Option.iter (Stacking.remove_window ctx ~window) window.output;
+  Option.iter (Stacking.remove_window ~window) window.output;
   if was_focused then focus_parent window;
   Option.iter (refresh ctx) window.output
 ;;
@@ -211,7 +210,7 @@ let wm_sync ctx =
        match w.output with
        | None when not @@ List.is_empty wm.outputs ->
          Window.set_output w default;
-         Option.iter (fun o -> Stacking.push ctx [ w ] o) default
+         Option.iter (fun o -> Stacking.push [ w ] o) default
        | _ -> ())
     wm.windows
 ;;
@@ -232,7 +231,7 @@ let apply_request ctx (seat : Seat.t) =
       focus_window ~force:true ctx seat w;
       Seat.set_focus_state seat Idle
     | Clear ->
-      clear ctx seat;
+      Seat.set_focus_cleared seat true;
       Seat.set_focus_state seat Idle
     | Idle -> ())
 ;;

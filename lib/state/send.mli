@@ -12,12 +12,12 @@ val propose_dimensions
 (** [show ctx window] makes river show [window].
 
     {b Effects:} sends River request *)
-val show : Ctx.manage Ctx.t -> Types.Window.t -> unit
+val show : Ctx.render Ctx.t -> Types.Window.t -> unit
 
 (** [hide ctx window] makes river hide [window].
 
     {b Effects:} sends River request *)
-val hide : Ctx.manage Ctx.t -> Types.Window.t -> unit
+val hide : Ctx.render Ctx.t -> Types.Window.t -> unit
 
 (** [fullscreen ctx window ~output] makes [window] fullscreen
     on [output].
@@ -96,19 +96,14 @@ val clear_focus : Ctx.manage Ctx.t -> Types.Seat.t -> unit
     ([x], [y]).
 
     {b Effects:} sends River request *)
-val set_position
-  :  [< `Manage | `Render ] Ctx.t
-  -> Types.Window.t
-  -> x:int32
-  -> y:int32
-  -> unit
+val set_position : Ctx.render Ctx.t -> Types.Window.t -> x:int32 -> y:int32 -> unit
 
 (** [set_clip_box ctx window ~x ~y ~width ~height] clips [window] to the given
     box. All zeros clears the clip.
 
     {b Effects:} sends River request *)
 val set_clip_box
-  :  [< `Manage | `Render ] Ctx.t
+  :  Ctx.render Ctx.t
   -> Types.Window.t
   -> x:int32
   -> y:int32
@@ -121,7 +116,7 @@ val set_clip_box
 
     {b Effects:} sends River request *)
 val set_borders
-  :  [< `Manage | `Render ] Ctx.t
+  :  Ctx.render Ctx.t
   -> Types.Window.t
   -> edges:int32
   -> width:int32
@@ -136,7 +131,7 @@ val set_borders
 
     {b Effects:} sends River request *)
 val set_presentation_mode
-  :  [< `Manage | `Render ] Ctx.t
+  :  Ctx.render Ctx.t
   -> Types.Output.t
   -> mode:Wire.Presentation_mode.t
   -> unit

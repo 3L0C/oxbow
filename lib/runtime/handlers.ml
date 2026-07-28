@@ -149,6 +149,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
     ; lifecycle = New
     ; name = None
     ; output = None
+    ; focus_cleared = false
     ; position = { x = 0l; y = 0l }
     ; layer_focus = None
     ; mode = Mode.normal
@@ -300,7 +301,7 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
       method on_exit_fullscreen_requested _ = Window.queue_request window Exit_fullscreen
 
       method on_presentation_hint _ ~hint =
-        Window.set_presentation_mode window @@ Some hint
+        Window.set_presentation_hint window @@ Some hint
 
       method on_show_window_menu_requested _ ~x:_ ~y:_ = ()
       method on_minimize_requested _ = ()

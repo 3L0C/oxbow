@@ -34,7 +34,7 @@ let set_repeat_info device ~rate ~delay =
   River.Input.Management.River_input_device_v1.set_repeat_info device ~rate ~delay
 ;;
 
-let place_top (_ : Ctx.([< manage | render ]) Ctx.t) (w : Types.Window.t) =
+let place_top (_ : Ctx.render Ctx.t) (w : Types.Window.t) =
   River.Window_management.River_node_v1.place_top w.node
 ;;
 

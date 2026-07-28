@@ -32,7 +32,7 @@ let to_window (wm : Wm.t) (window : Window.t) =
          | None -> false
          | Some o -> List.exists (fun (s : Seat.t) -> Phys.opt_holds o s.output) wm.seats)
     ; urgent = window.is_urgent
-    ; hidden = window.committed.hidden
+    ; hidden = not @@ Window.is_rendered window
     ; presentation = Window.presentation_string window
     }
 ;;

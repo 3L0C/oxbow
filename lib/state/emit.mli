@@ -50,7 +50,7 @@ val set_repeat_info
 (** [place_top ctx window] raises the node of [window].
 
     {b Effects:} sends River request *)
-val place_top : [< `Manage | `Render ] Ctx.t -> Types.Window.t -> unit
+val place_top : Ctx.render Ctx.t -> Types.Window.t -> unit
 
 (** [create_node window_obj] makes the node of a window.
 
