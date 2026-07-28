@@ -45,7 +45,7 @@ let set_layout_file wm ~path =
                           River.Xkb.Config.River_xkb_keyboard_v1.set_keymap
                             xkb
                             ~keymap:self)
-                       k.xkb
+                       k.keyboard
                    | _ -> ())
                 wm.input_devices;
               Option.iter River.Xkb.Config.River_xkb_keymap_v1.destroy old

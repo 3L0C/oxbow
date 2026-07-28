@@ -1,8 +1,5 @@
-(** [set_device_repeat_info device ~rate ~delay] sends River request to set the
-    repeat info to [rate] and [delay] for [device]. Is a no-op when [device] is
-    not a keyboard.
-
-    {b Effects:} sends River request *)
+(** [set_device_repeat_info device ~rate ~delay] sets the repeat info to [rate]
+    and [delay] for [device]. Is a no-op when [device] is not a keyboard. *)
 val set_device_repeat_info
   :  River.Obj.Input.Management.Device.t
   -> rate:int32
@@ -13,14 +10,14 @@ val set_device_repeat_info
     calls [set_device_repeat_info] on every entry registered keyboard input
     device.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val set_repeat_info : Ocdwm_state.Wm.t -> rate:int -> delay:int -> unit
 
 (** [set_layout_file wm ~path] opens [path] and asks the compositor to compile
     it into a keymap, applied to every xkb keyboard once the [success] event
     arrives. Is [Error msg] on synchronous failure, [Ok None] otherwise.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val set_layout_file
   :  Ocdwm_state.Wm.t
   -> path:string
@@ -28,9 +25,9 @@ val set_layout_file
 
 (** [handle ctx seat cmd] handles the keyboard command, [cmd].
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val handle
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  Ctx.manage Ctx.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_ipc.Command.Input.Keyboard.t
   -> (Yojson.Safe.t option, string) result

@@ -44,7 +44,7 @@ val set_lifecycle : t -> Lifecycle.t -> unit
 (** [set_keymap wm keymap] sets [wm]'s keymap to [keymap].
 
     {b Effects:} mutates WM state *)
-val set_keymap : t -> River.Obj.Xkb.Config.Keymap.t option -> unit
+val set_keymap : t -> Wire.Obj.Xkb.Config.Keymap.t option -> unit
 
 (** [set_desired_keymap_path wm desired_keymap_path] sets [wm]'s keymap path to
     [desired_keymap_path].
@@ -67,7 +67,7 @@ val set_input_devices : t -> Types.Input_device.t list -> unit
     list.
 
     {b Effects:} mutates WM state *)
-val add_xkb_stash : t -> int32 -> River.Obj.Xkb.Config.Keyboard.t -> unit
+val add_xkb_stash : t -> int32 -> Wire.Obj.Xkb.Config.Keyboard.t -> unit
 
 (** [remove_xkb_stash wm device] removes all pending xkb entries matching
     [device].
@@ -77,7 +77,7 @@ val remove_xkb_stash : t -> int32 -> unit
 
 (** [find_xkb_stash_opt wm device] is the pending xkb object matching [device]
     or [None]. *)
-val find_xkb_stash_opt : t -> int32 -> River.Obj.Xkb.Config.Keyboard.t option
+val find_xkb_stash_opt : t -> int32 -> Wire.Obj.Xkb.Config.Keyboard.t option
 
 (** [add_input_device wm entry] adds [entry] to [wm]'s input device list.
 
@@ -87,7 +87,7 @@ val add_input_device : t -> Types.Input_device.t -> unit
 (** [remove_input_device wm entry] removes [entry] from [wm]'s input device
     list.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val remove_input_device : t -> Types.Input_device.t -> unit
 
 (** [find_window_opt wm id] is the window of [wm] whose river object is [id].

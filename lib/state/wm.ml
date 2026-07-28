@@ -64,15 +64,15 @@ let remove_input_device (wm : t) entry =
 ;;
 
 let find_window_opt (wm : t) id =
-  List.find_opt (fun (w : Types.Window.t) -> Wayland.Proxy.id w.obj = id) wm.windows
+  List.find_opt (fun (w : Types.Window.t) -> Wire.id w.obj = id) wm.windows
 ;;
 
 let find_seat_opt (wm : t) id =
-  List.find_opt (fun (s : Types.Seat.t) -> Wayland.Proxy.id s.obj = id) wm.seats
+  List.find_opt (fun (s : Types.Seat.t) -> Wire.id s.obj = id) wm.seats
 ;;
 
 let find_output_opt (wm : t) id =
-  List.find_opt (fun (o : Types.Output.t) -> Wayland.Proxy.id o.obj = id) wm.outputs
+  List.find_opt (fun (o : Types.Output.t) -> Wire.id o.obj = id) wm.outputs
 ;;
 
 let find_input_device_opt (wm : t) id =

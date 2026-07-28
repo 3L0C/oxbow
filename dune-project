@@ -15,6 +15,8 @@
 
 (maintainers "3L0C")
 
+(implicit_transitive_deps false)
+
 (package
  (name ocdwm)
  (synopsis

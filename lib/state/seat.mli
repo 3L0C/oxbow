@@ -6,11 +6,6 @@ include module type of Types.Seat
     {b Effects:} mutates WM state *)
 val refresh_cursor_target : t -> unit
 
-(** [op_end ctx seat] ends any operation on [seat].
-
-    {b Effects:} mutates WM state; sends River request *)
-val op_end : Ctx.manage Ctx.t -> t -> unit
-
 (** [queue_pending seat request] adds [request] to [seat]'s queue.
 
     {b Effects:} mutates WM state *)
@@ -49,11 +44,11 @@ val focus_output : t -> Types.Output.t option -> unit
     {b Effects:} mutates WM state *)
 val set_layer_focus : t -> Layer_focus.t option -> unit
 
-(** [set_mode ctx seat mode] sets [seat]'s current mode to [mode]. Is
+(** [set_mode wm seat mode] sets [seat]'s current mode to [mode]. Is
     [Error msg] when [mode] is not declared or is [Mode.locked].
 
     {b Effects:} mutates WM state *)
-val set_mode : Ctx.manage Ctx.t -> t -> string -> (unit, string) result
+val set_mode : Types.Wm.t -> t -> string -> (unit, string) result
 
 (** [set_position seat position] positions [seat] at [position].
 
@@ -119,14 +114,14 @@ val set_interacted : t -> Types.Window.t option -> unit
     {b Effects:} mutates WM state *)
 val set_warp_request : t -> Warp_request.t -> unit
 
-(** [bind ctx seat ?mode mods key command] binds the [mods] and [key] to
+(** [bind wm seat ?mode mods key command] binds the [mods] and [key] to
     [command] in [mode] (default [Mode.normal]). Replaces any existing binding
     for [mods] and [key]. Is [Ok true] when a binding was replaced. Is
     [Error msg] when [mode] is not declared.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val bind
-  :  Ctx.manage Ctx.t
+  :  Types.Wm.t
   -> t
   -> ?mode:string
   -> int32
@@ -134,13 +129,13 @@ val bind
   -> Ocdwm_ipc.Command.t
   -> (bool, string) result
 
-(** [unbind ctx seat ?mode mods key] unbinds the command bound to [mods] and
+(** [unbind wm seat ?mode mods key] unbinds the command bound to [mods] and
     [key] in [mode] (default [Mode.normal]). Is [Ok true] when a binding was
     destroyed. Is [Error msg] when [mode] is not declared.
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val unbind
-  :  Ctx.manage Ctx.t
+  :  Types.Wm.t
   -> t
   -> ?mode:string
   -> int32
@@ -150,10 +145,3 @@ val unbind
 (** [focused_window seat] is the focused window on [seat]'s output; [None] when
     the seat has no output. *)
 val focused_window : t -> Types.Window.t option
-
-(** [sync_bindings ctx seat] enables the bindings whose mode is [seat]'s
-    effective mode and disables the rest. Sends requests only for bindings whose
-    enablement changes.
-
-    {b Effects:} mutates WM state; sends River requests *)
-val sync_bindings : Ctx.manage Ctx.t -> t -> unit

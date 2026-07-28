@@ -19,6 +19,17 @@ let log_level_arg =
            $(b,debug).")
 ;;
 
+let socket_arg =
+  Arg.(
+    value
+    & opt (some string) None
+    & info
+        [ "socket" ]
+        ~docv:"PATH"
+        ~docs:Manpage.s_common_options
+        ~doc:"Override $(b,XDG_RUNTIME_DIR) socket path")
+;;
+
 let info ?(exits = Exit.exits) ?man ?man_xrefs ?version name ~doc =
   Cmd.info ?man ?man_xrefs ?version name ~doc ~exits
 ;;

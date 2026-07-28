@@ -2,7 +2,7 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_layout
 
-let arrange ctx output =
+let arrange (wm : Wm.t) output =
   if not @@ Output.has_visible_fullscreen output
   then (
     let windows = Output.tiled_windows output in
@@ -27,14 +27,14 @@ let arrange ctx output =
         count
         (List.length d_xs)
     | w_xs, d_xs ->
-      let bw = Int32.to_int (Ctx.wm ctx).config.borders.width in
+      let bw = Int32.to_int wm.config.borders.width in
       List.iter2
         (fun w g -> Rect.inset ~by:bw g |> Window.clamp w |> Window.set_geom w)
         w_xs
         d_xs)
 ;;
 
-let zoom ?warp ctx seat =
+let zoom ?warp wm seat =
   With.focused_window seat
   @@ fun o w ->
   if Output.current_layout o <> Tiling
@@ -46,11 +46,11 @@ let zoom ?warp ctx seat =
     match Output.tiled_windows o with
     | w' :: x :: _ when w' == w ->
       Stacking.push [ x; w ] o;
-      Focus.focus_window ~force:true ~warp ctx seat x;
+      Focus.focus_window ~force:true ~warp wm seat x;
       Ok None
     | w' :: _ when w' != w ->
       Stacking.push [ w; w' ] o;
-      Focus.focus_window ~force:true ~warp ctx seat w;
+      Focus.focus_window ~force:true ~warp wm seat w;
       Ok None
     | _ -> Error "no window to zoom with")
 ;;

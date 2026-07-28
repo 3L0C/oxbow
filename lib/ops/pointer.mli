@@ -4,18 +4,15 @@
     {b Effects:} mutates WM state *)
 val handle_position : x:int32 -> y:int32 -> Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
 
-(** [warp_to_focus ctx seat] warps the pointer to the center of the [seat]'s
-    focused window. If the seat has no focused window, the pointer warps to the
-    center of its focused output instead.
+(** [warp_target seat] is [Some (x, y)], the center of [seat]'s focused window,
+    or [None] if [seat] has no focused window. *)
+val warp_target : Ocdwm_state.Seat.t -> (int32 * int32) option
 
-    {b Effects:} sends River request *)
-val warp_to_focus : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Seat.t -> unit
+(** [handle wm seat cmd] handles the pointer command, [cmd].
 
-(** [handle ctx seat cmd] handles the pointer command, [cmd].
-
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val handle
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  Ocdwm_state.Wm.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_ipc.Command.Input.Pointer.t
   -> (Yojson.Safe.t option, string) result

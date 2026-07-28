@@ -1,6 +1,4 @@
-(** [arrange ctx output] grids every window on [output] (all tags, floating and
+(** [arrange wm output] grids every window on [output] (all tags, floating and
     maximized included) into a near-square grid over the usable area, gaps and
-    borders applied.
-
-    {b Effects:} sends River requests *)
-val arrange : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Output.t -> unit
+    borders applied. *)
+val arrange : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit

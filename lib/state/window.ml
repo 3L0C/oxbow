@@ -21,7 +21,7 @@ let fresh_id () =
 
 let create (output : Types.Output.t option) scroll_width river_window : t =
   { obj = river_window
-  ; node = Emit.create_node river_window
+  ; node = Emit.get_node river_window
   ; lifecycle = New
   ; id = fresh_id ()
   ; app_id = None
@@ -30,6 +30,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; unreliable_pid = None
   ; parent = None
   ; float_seed_pending = false
+  ; close_pending = false
   ; decoration_hint = None
   ; presentation_hint = None
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
@@ -54,7 +55,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
 
 let destroy w =
   match w.lifecycle with
-  | Closing -> Emit.destroy_window w
+  | Closing -> Emit.destroy_window ~window:w.obj ~node:w.node
   | _ ->
     Logs.warn
     @@ fun m ->
@@ -422,6 +423,7 @@ let set_parent w ~parent =
 ;;
 
 let set_float_seed_pending w v = w.float_seed_pending <- v
+let set_close_pending w v = w.close_pending <- v
 let set_decoration_hint w hint = w.decoration_hint <- hint
 let set_presentation_hint w hint = w.presentation_hint <- hint
 let set_size_hints w hints = w.size_hints <- hints

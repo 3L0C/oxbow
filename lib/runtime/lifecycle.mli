@@ -1,8 +1,3 @@
-(** [sync ctx] syncs ocdwm and River state.
-
-    {b Effects:} mutates WM state; sends River request *)
-val sync : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> unit
-
 (** [request_exit ?origin wm] indicates a request to end the session made by the
     user, a process signal, or River itself. No-op when [wm] is not [Running].
 
@@ -17,7 +12,7 @@ val request_close : Ocdwm_state.Wm.t -> unit
 
 (** [dispatch_pending wm] handles the pending exit/close state for [wm].
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val dispatch_pending : Ocdwm_state.Wm.t -> unit
 
 (** [notify_finished wm] broadcast ocdwm is closing.

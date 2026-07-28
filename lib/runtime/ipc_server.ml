@@ -151,6 +151,7 @@ let accept_loop ~sw ~wm socket =
 
 let start ?socket_path ~sw ~net ~wm () =
   let path = Socket_path.resolve ?override:socket_path () in
+  Unix.putenv "OCDWM_SOCKET" path;
   let socket = Eio.Net.listen ~sw ~backlog:128 ~reuse_addr:true net (`Unix path) in
   Eio.Fiber.fork ~sw (fun () -> accept_loop ~sw ~wm socket);
   Logs.info @@ fun m -> m "ipc: listening on %s" path

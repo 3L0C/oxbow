@@ -13,16 +13,7 @@ let seat =
         ~doc:"Override primary-seat target")
 ;;
 
-let socket =
-  Arg.(
-    value
-    & opt (some string) None
-    & info
-        [ "socket" ]
-        ~docv:"PATH"
-        ~docs:Manpage.s_common_options
-        ~doc:"Override $(b,XDG_RUNTIME_DIR) socket path")
-;;
+let socket = Cli.socket_arg
 
 let spatial_targets =
   let open Direction.Spatial in

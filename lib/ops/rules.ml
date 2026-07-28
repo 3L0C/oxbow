@@ -35,11 +35,7 @@ let apply (window : Window.t) ({ pattern; effects } : Rule.t) =
       apply_effects queue effects window)
 ;;
 
-let apply_for ctx window =
-  let wm = Ctx.wm ctx in
-  List.iter (apply window) wm.config.rules
-;;
-
+let apply_for (wm : Wm.t) window = List.iter (apply window) wm.config.rules
 let same (p : Pattern.t) (r : Rule.t) = Pattern.equal p r.pattern
 
 let add (wm : Wm.t) (rule : Rule.t) =
@@ -65,8 +61,7 @@ let remove (wm : Wm.t) (pattern : Pattern.t) =
     Ok None
 ;;
 
-let handle ctx _seat (cmd : Command.Rule.t) =
-  let wm = Ctx.wm ctx in
+let handle wm _seat (cmd : Command.Rule.t) =
   match cmd with
   | Add rule -> add wm rule
   | Remove rule -> remove wm rule

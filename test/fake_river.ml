@@ -40,54 +40,64 @@ let name_layer_shell = 3l
 let name_input_manager = 4l
 let name_xkb_config = 5l
 
-let sequence_bound =
-  [ "propose_dimensions"
-  ; "show"
-  ; "hide"
-  ; "fullscreen"
-  ; "exit_fullscreen"
-  ; "inform_fullscreen"
-  ; "inform_not_fullscreen"
-  ; "inform_maximized"
-  ; "inform_unmaximized"
+let manage_only =
+  [ "close"
+  ; "propose_dimensions"
+  ; "use_csd"
+  ; "use_ssd"
+  ; "set_tiled"
   ; "inform_resize_start"
   ; "inform_resize_end"
   ; "set_capabilities"
-  ; "set_tiled"
-  ; "use_csd"
-  ; "use_ssd"
+  ; "inform_maximized"
+  ; "inform_unmaximized"
+  ; "inform_fullscreen"
+  ; "inform_not_fullscreen"
+  ; "fullscreen"
+  ; "exit_fullscreen"
+  ; "set_dimension_bounds"
   ; "focus_window"
+  ; "focus_shell_surface"
   ; "clear_focus"
   ; "op_start_pointer"
-  ; "pointer_warp"
-  ; "set_position"
-  ; "place_top"
-  ; "set_clip_box"
-  ; "set_borders"
-  ; "set_presentation_mode"
-  ; "close"
   ; "op_end"
+  ; "pointer_warp"
   ; "enable"
   ; "disable"
-  ; "set_layout_override"
-  ; "focus_shell_surface"
-  ; "place_above"
-  ; "place_below"
-  ; "place_bottom"
+  ]
+;;
+
+let render_only =
+  [ "hide"
+  ; "show"
+  ; "set_borders"
+  ; "set_clip_box"
   ; "set_content_clip_box"
-  ; "set_dimension_bounds"
   ; "set_offset"
   ; "sync_next_commit"
+  ; "set_position"
+  ; "place_top"
+  ; "place_bottom"
+  ; "place_above"
+  ; "place_below"
+  ; "set_presentation_mode"
   ]
 ;;
 
 let record t name =
   match t.phase with
   | Idle ->
-    if List.mem name sequence_bound then failwith ("request outside a sequence: " ^ name);
+    if List.mem name manage_only || List.mem name render_only
+    then failwith ("request outside a sequence: " ^ name);
     t.trace <- ("idle:" ^ name) :: t.trace
-  | In_manage -> t.trace <- ("manage:" ^ name) :: t.trace
-  | In_render -> t.trace <- ("render:" ^ name) :: t.trace
+  | In_manage ->
+    if List.mem name render_only
+    then failwith ("render request in a manage sequence: " ^ name);
+    t.trace <- ("manage:" ^ name) :: t.trace
+  | In_render ->
+    if List.mem name manage_only
+    then failwith ("manage request in a render sequence: " ^ name);
+    t.trace <- ("render:" ^ name) :: t.trace
 ;;
 
 let finish_phase t =

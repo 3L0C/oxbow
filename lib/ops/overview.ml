@@ -6,14 +6,14 @@ let row ~start ~y ~h widths =
   List.fold_left_map (fun x cw -> x + cw, Rect.{ x; y; w = cw; h }) start widths |> snd
 ;;
 
-let arrange ctx (output : Output.t) =
+let arrange (wm : Wm.t) (output : Output.t) =
   let windows = output.wm_stack in
   let n = List.length windows in
   if n = 0
   then ()
   else (
     let usable = output.usable in
-    let bw = (Ctx.wm ctx).config.borders.width |> Int32.to_int in
+    let bw = wm.config.borders.width |> Int32.to_int in
     let td = Output.to_tag_data output in
     let cols = float n |> sqrt |> ceil |> int_of_float in
     let rows = (n + cols - 1) / cols in

@@ -1,0 +1,6 @@
+(library
+ (name ocdwm_wire)
+ (public_name ocdwm.wire)
+ (wrapped false)
+ (modules wire emit)
+ (libraries ocdwm.river wayland))

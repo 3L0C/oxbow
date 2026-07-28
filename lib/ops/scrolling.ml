@@ -2,7 +2,7 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_layout
 
-let arrange ctx (output : Output.t) =
+let arrange (wm : Wm.t) (output : Output.t) =
   if not @@ Output.has_visible_fullscreen output
   then (
     let windows = Output.tiled_windows output in
@@ -15,7 +15,7 @@ let arrange ctx (output : Output.t) =
            w, Strip.Item.{ consumes = w.scrolling.consumes; width_fac })
         windows
     in
-    let bw = Int32.to_int (Ctx.wm ctx).config.borders.width in
+    let bw = Int32.to_int wm.config.borders.width in
     let placed = Strip.layout ~usable:area ~offset:0 items in
     match placed with
     | [] -> ()

@@ -4,13 +4,11 @@ include module type of Types.Window
 val create
   :  Types.Output.t option
   -> Ocdwm_core.Width_fac.t
-  -> River.Obj.Window_management.Window.t
+  -> Wire.Obj.Window_management.Window.t
   -> t
 
 (** [destroy window] destroys the Wayland objects backing [window].
-    No-op (with a warning) when [window]'s lifecycle isn't [Closing].
-
-    {b Effects:} sends River request *)
+    No-op (with a warning) when [window]'s lifecycle isn't [Closing]. *)
 val destroy : t -> unit
 
 (** [set_position window ~x ~y] positions [window] at ([x], [y]).
@@ -229,6 +227,12 @@ val set_parent : t -> parent:t option -> unit
 
     {b Effects:} mutates WM state *)
 val set_float_seed_pending : t -> bool -> unit
+
+(** [set_close_pending window pending] sets [window]'s pending close flag to
+    [pending].
+
+    {b Effects:} mutates WM state *)
+val set_close_pending : t -> bool -> unit
 
 (** [set_decoration_hint window hint] sets [window]'s decoration hint to [hint].
 

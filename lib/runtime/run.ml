@@ -11,6 +11,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   in
   let display = Wayland.Client.connect ~sw transport in
   let registry = Wayland.Registry.of_display display in
+  Handlers.registry := Some registry;
   let wm_box : Wm.t Box.t = { body = None } in
   let river_wm_v1 =
     Wayland.Registry.bind registry
@@ -67,7 +68,6 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
     ; river_lsh_v1
     ; river_input_v1
     ; river_xkb_config_v1
-    ; registry
     ; shutdown = Eio.Condition.create ()
     ; lifecycle = Running
     ; primary_seat = None
@@ -88,7 +88,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let signaled = Eio.Condition.create () in
   let on_signal _ = Eio.Condition.broadcast signaled in
   Box.fill wm_box wm;
-  Schedule.install (fun () -> Emit.manage_dirty wm);
+  Schedule.install (fun () -> Emit.manage_dirty wm.river_wm_v1);
   Eio.Fiber.fork ~sw (fun () ->
     let outcome =
       Eio.Fiber.first

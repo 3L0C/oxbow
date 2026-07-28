@@ -2,13 +2,13 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ipc
 
-let zoom ?warp ctx (seat : Seat.t) =
+let zoom ?warp wm (seat : Seat.t) =
   With.focused_output seat
   @@ fun o ->
   match Output.current_layout o with
   | Floating -> Error "cannot zoom in the floating layout"
-  | Scrolling -> Column.zoom ?warp ctx seat
-  | Tiling -> Tiling.zoom ?warp ctx seat
+  | Scrolling -> Column.zoom ?warp wm seat
+  | Tiling -> Tiling.zoom ?warp wm seat
 ;;
 
 let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
@@ -48,10 +48,14 @@ let send_to ~(src : Output.t) ~(dst : Output.t) window policy =
   Schedule.manage ()
 ;;
 
-let send_window_to_logical ctx (window : Window.t) (dir : Direction.Logical.t) policy =
+let send_window_to_logical
+      (wm : Wm.t)
+      (window : Window.t)
+      (dir : Direction.Logical.t)
+      policy
+  =
   With.output window
   @@ fun current ->
-  let wm = Ctx.wm ctx in
   let target = Output.resolve_output_logical ~dir current wm.outputs in
   match target with
   | Some o when o != current ->
@@ -60,8 +64,12 @@ let send_window_to_logical ctx (window : Window.t) (dir : Direction.Logical.t) p
   | _ -> Error Messages.no_other_output
 ;;
 
-let send_window_to_spatial ctx (window : Window.t) (dir : Direction.Spatial.t) policy =
-  let wm = Ctx.wm ctx in
+let send_window_to_spatial
+      (wm : Wm.t)
+      (window : Window.t)
+      (dir : Direction.Spatial.t)
+      policy
+  =
   match window.output with
   | None -> Error Messages.window_missing_output
   | Some current ->
@@ -74,13 +82,12 @@ let send_window_to_spatial ctx (window : Window.t) (dir : Direction.Spatial.t) p
      | _ -> Error (Printf.sprintf "no output %s" (Direction.Spatial.to_string dir)))
 ;;
 
-let send_window_to_name ctx (window : Window.t) name policy =
+let send_window_to_name (wm : Wm.t) (window : Window.t) name policy =
   With.output window
   @@ fun current ->
   if Output.matches_name name current
   then Ok None
   else (
-    let wm = Ctx.wm ctx in
     let target = Output.resolve_output_name name wm.outputs in
     match target with
     | Some o when o != current ->
@@ -89,32 +96,32 @@ let send_window_to_name ctx (window : Window.t) name policy =
     | _ -> Error (Printf.sprintf "no output named %S" name))
 ;;
 
-let send_to_logical ctx seat dir policy ~follow =
+let send_to_logical wm seat dir policy ~follow =
   With.focused_window seat
   @@ fun _o w ->
-  match send_window_to_logical ctx w dir policy with
+  match send_window_to_logical wm w dir policy with
   | Ok _ as result when follow ->
-    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config ctx seat w;
+    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
     result
   | result -> result
 ;;
 
-let send_to_spatial ctx seat dir policy ~follow =
+let send_to_spatial wm seat dir policy ~follow =
   With.focused_window seat
   @@ fun _o w ->
-  match send_window_to_spatial ctx w dir policy with
+  match send_window_to_spatial wm w dir policy with
   | Ok _ as result when follow ->
-    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config ctx seat w;
+    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
     result
   | result -> result
 ;;
 
-let send_to_name ctx seat name policy ~follow =
+let send_to_name wm seat name policy ~follow =
   With.focused_window seat
   @@ fun _o w ->
-  match send_window_to_name ctx w name policy with
+  match send_window_to_name wm w name policy with
   | Ok _ as result when follow ->
-    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config ctx seat w;
+    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
     result
   | result -> result
 ;;
@@ -141,9 +148,8 @@ let toggle_floating seat =
       Ok None)
 ;;
 
-let maximize ctx window =
-  let wm = Ctx.wm ctx in
-  List.iter (Seat.op_end ctx) wm.seats;
+let maximize (wm : Wm.t) window =
+  List.iter Seat.clear_op wm.seats;
   Window.maximize window;
   Schedule.manage ()
 ;;
@@ -153,8 +159,7 @@ let unmaximize window =
   Schedule.manage ()
 ;;
 
-let fullscreen ctx output (window : Window.t) cb =
-  let wm = Ctx.wm ctx in
+let fullscreen (wm : Wm.t) output (window : Window.t) cb =
   let enter () =
     match output, window.output with
     | None, None -> ()
@@ -162,9 +167,9 @@ let fullscreen ctx output (window : Window.t) cb =
       List.iter
         (fun w ->
            if Window.tag_visible w && Window.is_fullscreen w
-           then cb ctx w Window.Request.Exit_fullscreen)
+           then cb wm w Window.Request.Exit_fullscreen)
         o.focus_stack;
-      List.iter (Seat.op_end ctx) wm.seats;
+      List.iter Seat.clear_op wm.seats;
       move_window window o;
       Window.fullscreen window;
       Schedule.manage ()
@@ -188,10 +193,10 @@ let exit_fullscreen (window : Window.t) =
     Schedule.manage ()
 ;;
 
-let close_focused ctx seat =
+let close_focused seat =
   With.focused_window seat
   @@ fun _o w ->
-  Emit.close ctx w;
+  Window.set_close_pending w true;
   Ok None
 ;;
 
@@ -241,10 +246,16 @@ let resize_spatial seat dir by =
     Ok None)
 ;;
 
-let swap_outputs ctx seat ~(target : Command.Output.Swap.Target.t) ~policy ~follow scope =
+let swap_outputs
+      (wm : Wm.t)
+      seat
+      ~(target : Command.Output.Swap.Target.t)
+      ~policy
+      ~follow
+      scope
+  =
   With.focused_output seat
   @@ fun current ->
-  let wm = Ctx.wm ctx in
   let with_named_output name f =
     match List.find_opt (fun (o : Output.t) -> Output.matches_name name o) wm.outputs with
     | None -> Error (Printf.sprintf "no output name matching %S" name)
@@ -300,6 +311,6 @@ let swap_outputs ctx seat ~(target : Command.Output.Swap.Target.t) ~policy ~foll
     List.iter (fun w -> send_to ~src:b ~dst:a w policy) b_ws;
     Stacking.restore_focus_order ~like:a_focus b;
     Stacking.restore_focus_order ~like:b_focus a;
-    if follow then Focus.focus_output ctx seat b;
+    if follow then Focus.focus_output wm seat b;
     Ok None
 ;;

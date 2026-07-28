@@ -31,12 +31,3 @@ val shift
   :  Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
-
-(** [raise_windows ctx output] raises every visible window of [output] to the
-    correct z-order. The most recently focused float ends on top.
-
-    {b Effects:} sends River request *)
-val raise_windows
-  :  Ocdwm_state.Ctx.render Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Output.t
-  -> unit

@@ -11,14 +11,12 @@ module Warp_request = struct
   ;;
 end
 
-let effective_mode ctx s = if (Ctx.wm ctx).session_locked then Mode.locked else s.mode
-
 let unbind_xkb_binding s mode mods keysym =
   let matches (b : Xkb_binding.t) =
     String.equal b.mode mode && b.mods = mods && b.keysym = keysym
   in
   let to_destroy, to_keep = List.partition matches s.xkb_bindings in
-  List.iter Emit.destroy_xkb_binding to_destroy;
+  List.iter (fun (k : Xkb_binding.t) -> Emit.destroy_xkb_binding k.obj) to_destroy;
   s.xkb_bindings <- to_keep;
   not @@ List.is_empty to_destroy
 ;;
@@ -28,34 +26,31 @@ let queue_pending s request =
   Schedule.manage ()
 ;;
 
-let xkb_binding_create (ctx : Ctx.manage Ctx.t) s mode mods keysym command =
-  let wm = Ctx.wm ctx in
+let xkb_binding_create (wm : Types.Wm.t) s mode mods keysym command =
   let body = Request.Body.Command command in
   let keysym_i32 = Int32.of_int (Xkbcommon.Keysym.to_int keysym) in
-  let enabled = String.equal mode (effective_mode ctx s) in
   let binding : Xkb_binding.t =
     { obj =
         Emit.create_xkb_binding
-          wm
+          wm.river_xkb_v1
           ~seat:s.obj
           ~keysym:keysym_i32
           ~mods
           ~on_pressed:(fun () -> queue_pending s { body; reply = None })
     ; seat = s
     ; mode
-    ; enabled
+    ; enabled = false
     ; command
     ; mods
     ; keysym
     }
   in
-  if enabled then Send.enable_xkb_binding binding.obj;
   s.xkb_bindings <- binding :: s.xkb_bindings
 ;;
 
-let replace_xkb_binding ctx s mode mods keysym command =
+let replace_xkb_binding wm s mode mods keysym command =
   let replaced = unbind_xkb_binding s mode mods keysym in
-  xkb_binding_create ctx s mode mods keysym command;
+  xkb_binding_create wm s mode mods keysym command;
   replaced
 ;;
 
@@ -64,14 +59,13 @@ let unbind_pointer_binding s mode mods button =
     String.equal p.mode mode && p.mods = mods && p.button = button
   in
   let to_destroy, to_keep = List.partition matches s.pointer_bindings in
-  List.iter Emit.destroy_pointer_binding to_destroy;
+  List.iter (fun (p : Pointer_binding.t) -> Emit.destroy_pointer_binding p.obj) to_destroy;
   s.pointer_bindings <- to_keep;
   not @@ List.is_empty to_destroy
 ;;
 
-let pointer_binding_create (ctx : Ctx.manage Ctx.t) s mode mods button command =
+let pointer_binding_create s mode mods button command =
   let body = Request.Body.Command command in
-  let enabled = String.equal mode (effective_mode ctx s) in
   let binding : Pointer_binding.t =
     { obj =
         Emit.create_pointer_binding
@@ -81,19 +75,18 @@ let pointer_binding_create (ctx : Ctx.manage Ctx.t) s mode mods button command =
           ~on_pressed:(fun () -> queue_pending s { body; reply = None })
     ; seat = s
     ; mode
-    ; enabled
+    ; enabled = false
     ; command
     ; mods
     ; button
     }
   in
-  if enabled then Send.enable_pointer_binding binding.obj;
   s.pointer_bindings <- binding :: s.pointer_bindings
 ;;
 
-let replace_pointer_binding ctx s mode mods button command =
+let replace_pointer_binding s mode mods button command =
   let replaced = unbind_pointer_binding s mode mods button in
-  pointer_binding_create ctx s mode mods button command;
+  pointer_binding_create s mode mods button command;
   replaced
 ;;
 
@@ -101,14 +94,6 @@ let refresh_cursor_target s =
   match s.hovered with
   | Some _ -> s.cursor_target <- s.hovered
   | _ -> ()
-;;
-
-let op_end ctx s =
-  match s.op with
-  | None -> ()
-  | Some (Move _) | Some (Resize _) ->
-    s.op <- None;
-    Emit.op_end ctx s
 ;;
 
 let drain_pending s = Queue.take_opt s.pending_requests
@@ -141,8 +126,8 @@ let set_layer_focus s layer =
   Schedule.manage ()
 ;;
 
-let set_mode (ctx : Ctx.manage Ctx.t) s mode =
-  if not @@ List.mem mode (Ctx.wm ctx).config.modes
+let set_mode (wm : Types.Wm.t) s mode =
+  if not @@ List.mem mode wm.config.modes
   then Error (Printf.sprintf "mode not declared: %S" mode)
   else if String.equal mode Mode.locked
   then Error "cannot enter 'locked' mode manually"
@@ -184,18 +169,18 @@ let set_hovered s window = s.hovered <- window
 let set_interacted s window = s.interacted <- window
 let set_warp_request s v = s.warp_request <- v
 
-let bind ctx s ?(mode = Mode.normal) mods (key : Types.Key.t) command =
-  if not @@ List.mem mode (Ctx.wm ctx).config.modes
+let bind (wm : Types.Wm.t) s ?(mode = Mode.normal) mods (key : Types.Key.t) command =
+  if not @@ List.mem mode wm.config.modes
   then Error (Printf.sprintf "mode not declared: %S" mode)
   else
     Ok
       (match key with
-       | Keysym keysym -> replace_xkb_binding ctx s mode mods keysym command
-       | Pointer button -> replace_pointer_binding ctx s mode mods button command)
+       | Keysym keysym -> replace_xkb_binding wm s mode mods keysym command
+       | Pointer button -> replace_pointer_binding s mode mods button command)
 ;;
 
-let unbind ctx s ?(mode = Mode.normal) mods (key : Types.Key.t) =
-  if not @@ List.mem mode (Ctx.wm ctx).config.modes
+let unbind (wm : Types.Wm.t) s ?(mode = Mode.normal) mods (key : Types.Key.t) =
+  if not @@ List.mem mode wm.config.modes
   then Error (Printf.sprintf "mode not declared: %S" mode)
   else
     Ok
@@ -208,32 +193,4 @@ let focused_window s =
   match s.output with
   | Some o -> Output.focused_window o
   | None -> None
-;;
-
-let sync_bindings ctx s =
-  let active = effective_mode ctx s in
-  List.iter
-    (fun (b : Xkb_binding.t) ->
-       let desired = String.equal b.mode active in
-       match desired, b.enabled with
-       | true, true | false, false -> ()
-       | true, false ->
-         Send.enable_xkb_binding b.obj;
-         b.enabled <- desired
-       | false, true ->
-         Send.disable_xkb_binding b.obj;
-         b.enabled <- desired)
-    s.xkb_bindings;
-  List.iter
-    (fun (p : Pointer_binding.t) ->
-       let desired = String.equal p.mode active in
-       match desired, p.enabled with
-       | true, true | false, false -> ()
-       | true, false ->
-         Send.enable_pointer_binding p.obj;
-         p.enabled <- desired
-       | false, true ->
-         Send.disable_pointer_binding p.obj;
-         p.enabled <- desired)
-    s.pointer_bindings
 ;;

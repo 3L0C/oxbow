@@ -17,7 +17,7 @@ let handle_position ~x ~y (wm : Wm.t) seat =
        | _ -> ()))
 ;;
 
-let warp_to_focus ctx seat =
+let warp_target seat =
   let center (g : int32 Rect.t) = Int32.(add g.x (div g.w 2l), add g.y (div g.h 2l)) in
   let target =
     match Seat.focused_window seat with
@@ -25,14 +25,11 @@ let warp_to_focus ctx seat =
     | None -> Option.map (fun (o : Output.t) -> o.geom) seat.output
   in
   match target with
-  | None -> ()
-  | Some g ->
-    let x, y = center g in
-    Emit.pointer_warp ctx seat ~x ~y
+  | None -> None
+  | Some g -> Some (center g)
 ;;
 
-let handle ctx _seat (cmd : Command.Input.Pointer.t) =
-  let wm = Ctx.wm ctx in
+let handle wm _seat (cmd : Command.Input.Pointer.t) =
   let () =
     match cmd with
     | Follow b -> Config.set_focus_follows_pointer wm b

@@ -1,7 +1,9 @@
+open! Ocdwm_state
+
 type plan = [ `Plan ]
 type manage = [ `Manage ]
 type render = [ `Render ]
-type 'p t = { wm : Types.Wm.t }
+type 'p t = { wm : Wm.t }
 
 let wm c = c.wm
 let plan c = { wm = c.wm }

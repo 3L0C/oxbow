@@ -1,8 +1,6 @@
-open! Ocdwm_state
 open! Ocdwm_ipc
 
-let handle_scrolling ctx seat (cmd : Command.Layout.Scrolling.t) =
-  let wm = Ctx.wm ctx in
+let handle_scrolling wm seat (cmd : Command.Layout.Scrolling.t) =
   match cmd with
   | Column_width { delta; global } -> Column.set_width seat delta ~global
   | Policy { policy; global } -> Arrange.set_scroll_policy wm seat policy ~global
@@ -17,10 +15,10 @@ let handle_tiling seat (cmd : Command.Layout.Tiling.t) =
   | Scheme { scheme; global } -> Arrange.select_scheme seat scheme ~global
 ;;
 
-let handle ctx seat (cmd : Command.Layout.t) =
+let handle wm seat (cmd : Command.Layout.t) =
   match cmd with
   | Cycle dir -> Arrange.cycle_layout seat dir
   | Select { layout; global } -> Arrange.set_layout seat layout ~global
-  | Scrolling c -> handle_scrolling ctx seat c
+  | Scrolling c -> handle_scrolling wm seat c
   | Tiling c -> handle_tiling seat c
 ;;

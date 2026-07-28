@@ -2,8 +2,7 @@ open! Ocdwm_ipc
 open! Ocdwm_state
 open! Ocdwm_ops
 
-let handle_border ctx _seat (cmd : Command.Border.t) =
-  let wm = Ctx.wm ctx in
+let handle_border wm _seat (cmd : Command.Border.t) =
   match cmd with
   | Width width -> Config.set_border_width wm width
   | Color { which; color } ->
@@ -18,10 +17,11 @@ let handle_gaps _ctx seat (cmd : Command.Gaps.t) =
 ;;
 
 let handle_input ctx seat (cmd : Command.Input.t) =
+  let wm = Ctx.wm ctx in
   match cmd with
-  | Cursor c -> Cursor.handle ctx seat c
+  | Cursor c -> Cursor.handle wm seat c
   | Keyboard c -> Keyboard.handle ctx seat c
-  | Pointer c -> Pointer.handle ctx seat c
+  | Pointer c -> Pointer.handle wm seat c
 ;;
 
 let handle_keymap ctx seat (cmd : Command.Keymap.t) =
@@ -68,7 +68,7 @@ let handle_tag seat (cmd : Command.Tag.t) =
 
 let handle_window ctx seat (cmd : Command.Window.t) =
   match cmd with
-  | Close -> Placement.close_focused ctx seat
+  | Close -> Placement.close_focused seat
   | Focus_logical { dir; warp } -> Focus.window_logical ?warp ctx seat dir
   | Focus_spatial { dir; warp } -> Focus.window_spatial ?warp ctx seat dir
   | Focus_match { wmatch; cycle; warp } -> Focus.window_match ?warp ~cycle ctx seat wmatch
@@ -114,19 +114,20 @@ let handle_wm ctx _seat (cmd : Command.Wm.t) =
 ;;
 
 let handle_command ctx seat (cmd : Command.t) =
+  let wm = Ctx.wm ctx in
   match cmd with
-  | Border c -> handle_border ctx seat c
+  | Border c -> handle_border wm seat c
   | Exec argv -> Execute.exec argv
   | Gaps c -> handle_gaps ctx seat c
   | Input c -> handle_input ctx seat c
-  | Keymap c -> handle_keymap ctx seat c
-  | Layout c -> handle_layout ctx seat c
-  | Output c -> handle_output ctx seat c
-  | Rule c -> handle_rule ctx seat c
+  | Keymap c -> handle_keymap wm seat c
+  | Layout c -> handle_layout wm seat c
+  | Output c -> handle_output wm seat c
+  | Rule c -> handle_rule wm seat c
   | Session c -> handle_session ctx seat c
   | Spawn cmd -> Execute.spawn cmd
   | Tag c -> handle_tag seat c
-  | Window c -> handle_window ctx seat c
+  | Window c -> handle_window wm seat c
   | Wm c -> handle_wm ctx seat c
 ;;
 
@@ -134,11 +135,12 @@ let handle_keymap = Bind.handle
 let handle_query = Queries.handle
 
 let handle ctx seat ({ body; reply } : Pending_request.t) =
+  let wm = Ctx.wm ctx in
   let result =
     try
       match body with
       | Command c -> handle_command ctx seat c
-      | Keymap keymap -> handle_keymap ctx seat keymap
+      | Keymap keymap -> handle_keymap wm seat keymap
       | Query query -> handle_query (Ctx.wm ctx) seat query
       | Subscribe _ -> Error "subscribe handled at the connection layer"
     with

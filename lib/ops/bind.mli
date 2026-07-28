@@ -3,13 +3,10 @@ type t =
   ; key : Ocdwm_state.Types.Key.t
   }
 
-(** [install_defaults ctx seat] installs system default keybinds to [seat].
+(** [install_defaults wm seat] installs system default keybinds to [seat].
 
     {b Effects:} mutates WM state *)
-val install_defaults
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
-  -> unit
+val install_defaults : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
 
 (** [parse_modifiers s] maps recognized modifier strings to Wayland [int32]
     representations. Recognized strings include:
@@ -81,11 +78,11 @@ val format_keybind : int32 -> Ocdwm_state.Types.Key.t -> string
     [wm] when [all] is [true]. *)
 val list : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> all:bool -> Yojson.Safe.t
 
-(** [handle ctx seat keymap] applies the Bind/Unbind [keymap].
+(** [handle wm seat keymap] applies the Bind/Unbind [keymap].
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val handle
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  Ocdwm_state.Wm.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_ipc.Keymap.t
   -> (Yojson.Safe.t option, string) result

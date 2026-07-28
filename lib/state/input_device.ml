@@ -9,12 +9,12 @@ let role_to_string (role : Role.t) =
   | Tablet -> "tablet"
 ;;
 
-let set_xkb (wm : Types.Wm.t) (entry : t) xkb =
+let set_keyboard (wm : Types.Wm.t) entry keyboard =
   match entry.role with
   | Keyboard k ->
-    k.xkb <- Some xkb;
+    k.keyboard <- Some keyboard;
     (match wm.keymap with
-     | Some keymap -> Send.set_keymap xkb ~keymap
+     | Some keymap -> Emit.set_keymap keyboard ~keymap
      | None -> ())
   | Pointer | Touch | Tablet ->
     Logs.warn
@@ -22,13 +22,13 @@ let set_xkb (wm : Types.Wm.t) (entry : t) xkb =
     m "cannot set 'xkb' attribute for '%s' input device" @@ role_to_string entry.role
 ;;
 
-let clear_xkb (entry : t) xkb =
+let clear_entry entry proxy =
   match entry.role with
-  | Keyboard k when Phys.opt_holds xkb k.xkb -> k.xkb <- None
+  | Keyboard k when Phys.opt_holds proxy k.keyboard -> k.keyboard <- None
   | Keyboard _ | Pointer | Touch | Tablet -> ()
 ;;
 
-let remove_entry (entry : t) =
+let remove_entry entry =
   match entry.lifecycle with
   | Removed -> ()
   | Active ->
@@ -36,10 +36,10 @@ let remove_entry (entry : t) =
     entry.lifecycle <- Removed
 ;;
 
-let to_xkb (entry : t) =
+let to_keyboard entry =
   match entry.role with
-  | Keyboard { xkb = Some xkb } -> Some xkb
+  | Keyboard { keyboard = Some _ as keyboard } -> keyboard
   | Keyboard _ | Pointer | Touch | Tablet -> None
 ;;
 
-let id device = Wayland.Proxy.id device
+let id device = Wire.id device

@@ -2,6 +2,10 @@
     debug. Default is info. *)
 val log_level_arg : Logs.level Cmdliner.Term.t
 
+(** [socket] is the [--socket PATH] common option: [PATH] overrides the resolved
+    ocdwm socket path. *)
+val socket_arg : string option Cmdliner.Term.t
+
 (** [info name ~doc] is [Cmdliner.Cmd.info] with [Exit.exits] as the default
     exit information. *)
 val info

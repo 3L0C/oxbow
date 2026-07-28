@@ -1,8 +1,8 @@
-(** [apply_for ctx window] applies any configured rules matching [window]. For
+(** [apply_for wm window] applies any configured rules matching [window]. For
     rules of the same effect the last rule wins.
 
-    {b Effects:} mutates WM state; sends River request *)
-val apply_for : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Window.t -> unit
+    {b Effects:} mutates WM state *)
+val apply_for : Ocdwm_state.Wm.t -> Ocdwm_state.Window.t -> unit
 
 (** [add wm rule] adds [rule] to [wm]'s configured rules. Merges new [rule] effects
     when an existing rule matches [rule]'s pattern.
@@ -19,11 +19,11 @@ val remove
   -> Ocdwm_core.Pattern.t
   -> (Yojson.Safe.t option, string) result
 
-(** [handle ctx seat cmd] handles the rule command, [cmd].
+(** [handle wm seat cmd] handles the rule command, [cmd].
 
-    {b Effects:} mutates WM state; sends River request *)
+    {b Effects:} mutates WM state *)
 val handle
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
+  :  Ocdwm_state.Wm.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_ipc.Command.Rule.t
   -> (Yojson.Safe.t option, string) result

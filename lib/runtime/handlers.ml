@@ -2,6 +2,14 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ops
 
+let registry : Wayland.Registry.t option ref = ref None
+
+let with_registry f =
+  match !registry with
+  | None -> Logs.err @@ fun m -> m "no registry defined!!!"
+  | Some r -> f r
+;;
+
 let on_finished (wm_box : Wm.t Box.t) =
   match wm_box.body with
   | None -> ()
@@ -15,6 +23,8 @@ let on_manage_start proxy (wm_box : Wm.t Box.t) =
 ;;
 
 let on_output _ river_output (wm_box : Wm.t Box.t) =
+  with_registry
+  @@ fun registry ->
   let wm = Option.get wm_box.body in
   let output_box : Output.t Box.t = { body = None } in
   let layer_shell =
@@ -56,7 +66,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
       method on_wl_output _ ~name =
         let _ =
           Wayland.Wayland_client.Wl_registry.bind
-            (Wayland.Registry.wl_registry wm.registry)
+            (Wayland.Registry.wl_registry registry)
             ~name
           @@ ( object
                  inherit [_] Wayland.Wayland_client.Wl_output.v4
@@ -124,6 +134,8 @@ let on_render_start proxy (wm_box : Wm.t Box.t) =
 ;;
 
 let on_seat _ river_seat (wm_box : Wm.t Box.t) =
+  with_registry
+  @@ fun registry ->
   let wm = Option.get wm_box.body in
   let seat_box : Seat.t Box.t = { body = None } in
   let layer_shell =
@@ -189,7 +201,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
       method on_wl_seat _ ~name =
         let _ =
           Wayland.Wayland_client.Wl_registry.bind
-            (Wayland.Registry.wl_registry wm.registry)
+            (Wayland.Registry.wl_registry registry)
             ~name
           @@ ( object
                  inherit [_] Wayland.Wayland_client.Wl_seat.v9
@@ -331,16 +343,20 @@ let on_input_device device (wm_box : Wm.t Box.t) =
          then (
            match !entry_kind with
            | Some Keyboard ->
-             let xkb = Wm.find_xkb_stash_opt wm @@ Wayland.Proxy.id device in
+             let keyboard = Wm.find_xkb_stash_opt wm @@ Wayland.Proxy.id device in
              let entry : Input_device.t =
-               { device; name = !entry_name; role = Keyboard { xkb }; lifecycle = Active }
+               { device
+               ; name = !entry_name
+               ; role = Keyboard { keyboard }
+               ; lifecycle = Active
+               }
              in
              resolve_entry entry;
              Keyboard.set_device_repeat_info
                device
                ~rate:(Int32.of_int wm.config.repeat_rate)
                ~delay:(Int32.of_int wm.config.repeat_delay);
-             Option.iter (Input_device.set_xkb wm entry) xkb
+             Option.iter (Input_device.set_keyboard wm entry) keyboard
            | Some Pointer ->
              resolve_entry
                { device; name = !entry_name; role = Pointer; lifecycle = Active }
@@ -359,10 +375,10 @@ let on_input_device device (wm_box : Wm.t Box.t) =
      end
 ;;
 
-let on_xkb_keyboard xkb (wm_box : Wm.t Box.t) =
+let on_xkb_keyboard keyboard (wm_box : Wm.t Box.t) =
   let wm = Option.get wm_box.body in
   let device_ref : int32 option ref = ref None in
-  Wayland.Proxy.Handler.attach xkb
+  Wayland.Proxy.Handler.attach keyboard
   @@ object
        inherit [_] River.Xkb.Config.River_xkb_keyboard_v1.v1
 
@@ -371,16 +387,16 @@ let on_xkb_keyboard xkb (wm_box : Wm.t Box.t) =
          device_ref := Some d;
          match Wm.find_input_device_opt wm d with
          | None ->
-           Wm.add_xkb_stash wm d xkb;
+           Wm.add_xkb_stash wm d keyboard;
            Logs.warn @@ fun m -> m "xkb keyboard for unknown device"
-         | Some entry -> Input_device.set_xkb wm entry xkb
+         | Some entry -> Input_device.set_keyboard wm entry keyboard
 
        method on_removed _ =
-         Emit.destroy_xkb_keyboard xkb;
+         Emit.destroy_xkb_keyboard keyboard;
          match !device_ref with
          | Some device ->
            (match Wm.find_input_device_opt wm device with
-            | Some entry -> Input_device.clear_xkb entry xkb
+            | Some entry -> Input_device.clear_entry entry keyboard
             | None -> Wm.remove_xkb_stash wm device)
          | None -> ()
 

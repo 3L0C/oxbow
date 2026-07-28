@@ -104,7 +104,7 @@ let cycle_width seat =
     Ok None
 ;;
 
-let zoom ?warp ctx seat =
+let zoom ?warp wm seat =
   with_focused_column seat
   @@ fun o w cols col ->
   let warp = Seat.Warp_request.of_override warp in
@@ -123,14 +123,14 @@ let zoom ?warp ctx seat =
       | None -> assert false);
     Window.set_consumes w false;
     Stacking.push [ w ] o;
-    Focus.focus_window ~force:true ~warp ctx seat w;
+    Focus.focus_window ~force:true ~warp wm seat w;
     Ok None
   | [ _ ] ->
     (match cols with
      | [ _ ] -> Error "no other column"
      | first :: _ when first != col ->
        Stacking.push [ w ] o;
-       Focus.focus_window ~force:true ~warp ctx seat w;
+       Focus.focus_window ~force:true ~warp wm seat w;
        Ok None
      | _ :: (next_head :: _) :: _ ->
        Window.set_consumes w next_head.scrolling.consumes;
@@ -142,7 +142,7 @@ let zoom ?warp ctx seat =
        in
        Output.set_wm_stack o
        @@ Ring.rearrange (fun x -> List.memq x order) order o.wm_stack;
-       Focus.focus_window ~force:true ~warp ctx seat next_head;
+       Focus.focus_window ~force:true ~warp wm seat next_head;
        Ok None
      | _ -> Error "no other column")
   | [] -> Error "focused window is not in the strip"

@@ -6,6 +6,7 @@
   ocdwm.ipc
   ocdwm.layout
   ocdwm.state
+  ocdwm.wire
   eio
   eio.unix
   unix

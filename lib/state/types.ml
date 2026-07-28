@@ -46,14 +46,14 @@ module rec Input_device : sig
 
   module Role : sig
     type t =
-      | Keyboard of { mutable xkb : River.Obj.Xkb.Config.Keyboard.t option }
+      | Keyboard of { mutable keyboard : Wire.Obj.Xkb.Config.Keyboard.t option }
       | Pointer
       | Touch
       | Tablet
   end
 
   type t =
-    { device : River.Obj.Input.Management.Device.t
+    { device : Wire.Obj.Input.Management.Device.t
     ; name : string
     ; role : Role.t
     ; mutable lifecycle : Lifecycle.t
@@ -69,8 +69,8 @@ and Output : sig
   end
 
   type t =
-    { obj : River.Obj.Window_management.Output.t
-    ; layer_shell : River.Obj.Layer_shell.Output.t
+    { obj : Wire.Obj.Window_management.Output.t
+    ; layer_shell : Wire.Obj.Layer_shell.Output.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable name : string option
     ; mutable geom : int32 Ocdwm_core.Rect.t
@@ -187,8 +187,8 @@ and Window : sig
   end
 
   type t =
-    { obj : River.Obj.Window_management.Window.t
-    ; node : River.Obj.Window_management.Node.t
+    { obj : Wire.Obj.Window_management.Window.t
+    ; node : Wire.Obj.Window_management.Node.t
     ; mutable lifecycle : Lifecycle.t
     ; id : int
     ; mutable app_id : string option
@@ -197,6 +197,7 @@ and Window : sig
     ; mutable unreliable_pid : int32 option
     ; mutable parent : t option
     ; mutable float_seed_pending : bool
+    ; mutable close_pending : bool
     ; mutable decoration_hint : Decoration_hint.t option
     ; mutable presentation_hint : Wire.Presentation_mode.t option
     ; mutable geom : int32 Ocdwm_core.Rect.t
@@ -270,7 +271,7 @@ and Seat : sig
 
   module Xkb_binding : sig
     type t =
-      { obj : River.Obj.Xkb.Bindings.Binding.t
+      { obj : Wire.Obj.Xkb.Bindings.Binding.t
       ; seat : Seat.t
       ; mode : string
       ; mutable enabled : bool
@@ -282,7 +283,7 @@ and Seat : sig
 
   module Pointer_binding : sig
     type t =
-      { obj : River.Obj.Window_management.Pointer_binding.t
+      { obj : Wire.Obj.Window_management.Pointer_binding.t
       ; seat : Seat.t
       ; mode : string
       ; mutable enabled : bool
@@ -297,13 +298,14 @@ and Seat : sig
       | No_request
       | Follow_config
       | Forced of bool
+      | Point of Position.t
 
     val of_override : bool option -> t
   end
 
   type t =
-    { obj : River.Obj.Window_management.Seat.t
-    ; layer_shell : River.Obj.Layer_shell.Seat.t
+    { obj : Wire.Obj.Window_management.Seat.t
+    ; layer_shell : Wire.Obj.Layer_shell.Seat.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable name : string option
     ; mutable output : Output.t option
@@ -352,12 +354,11 @@ and Wm : sig
   end
 
   type t =
-    { river_wm_v1 : River.Obj.Window_management.Wm.t
-    ; river_xkb_v1 : River.Obj.Xkb.Bindings.t
-    ; river_lsh_v1 : River.Obj.Layer_shell.t
-    ; river_input_v1 : River.Obj.Input.Management.t
-    ; river_xkb_config_v1 : River.Obj.Xkb.Config.t
-    ; registry : Wayland.Registry.t
+    { river_wm_v1 : Wire.Obj.Window_management.Wm.t
+    ; river_xkb_v1 : Wire.Obj.Xkb.Bindings.t
+    ; river_lsh_v1 : Wire.Obj.Layer_shell.t
+    ; river_input_v1 : Wire.Obj.Input.Management.t
+    ; river_xkb_config_v1 : Wire.Obj.Xkb.Config.t
     ; shutdown : Eio.Condition.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable session_locked : bool
@@ -368,8 +369,8 @@ and Wm : sig
     ; mutable windows : Window.t list
     ; mutable seats : Seat.t list
     ; mutable input_devices : Input_device.t list
-    ; mutable xkb_stash : (int32 * River.Obj.Xkb.Config.Keyboard.t) list
-    ; mutable keymap : River.Obj.Xkb.Config.Keymap.t option
+    ; mutable xkb_stash : (int32 * Wire.Obj.Xkb.Config.Keyboard.t) list
+    ; mutable keymap : Wire.Obj.Xkb.Config.Keymap.t option
     ; mutable desired_keymap_path : string option
     ; config : Config.t
     ; init_command : string option

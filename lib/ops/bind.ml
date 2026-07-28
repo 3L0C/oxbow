@@ -7,8 +7,7 @@ type t =
   ; key : Types.Key.t
   }
 
-let install_defaults ctx seat =
-  let wm = Ctx.wm ctx in
+let install_defaults (wm : Wm.t) seat =
   let modkey = wm.config.modkey in
   let alt = Wire.Modifiers.mod1 in
   let shift = Wire.Modifiers.shift in
@@ -75,9 +74,9 @@ let install_defaults ctx seat =
       ; modkey, Btn_right, Command.Window Resize_drag
       ]
   in
-  List.iter (fun (m, k, a) -> ignore @@ Seat.bind ctx seat m (Keysym k) a) xkb_bindings;
+  List.iter (fun (m, k, a) -> ignore @@ Seat.bind wm seat m (Keysym k) a) xkb_bindings;
   List.iter
-    (fun (m, b, a) -> ignore @@ Seat.bind ctx seat m (Pointer b) a)
+    (fun (m, b, a) -> ignore @@ Seat.bind wm seat m (Pointer b) a)
     pointer_bindings
 ;;
 
@@ -185,13 +184,13 @@ let list (wm : Wm.t) (seat : Seat.t) ~all =
   if all then `List (List.map seat_json wm.seats) else seat_json seat
 ;;
 
-let handle ctx seat (keymap : Keymap.t) =
+let handle wm seat (keymap : Keymap.t) =
   match keymap with
   | Bind bind ->
     (match parse bind.keybind with
      | Error _ as e -> e
      | Ok { mods; key } ->
-       (match Seat.bind ctx seat ?mode:bind.mode mods key bind.command with
+       (match Seat.bind wm seat ?mode:bind.mode mods key bind.command with
         | Error _ as e -> e
         | Ok true ->
           Ok
@@ -202,7 +201,7 @@ let handle ctx seat (keymap : Keymap.t) =
     (match parse bind.keybind with
      | Error msg -> Error msg
      | Ok { mods; key } ->
-       (match Seat.unbind ctx seat ?mode:bind.mode mods key with
+       (match Seat.unbind wm seat ?mode:bind.mode mods key with
         | Error _ as e -> e
         | Ok true -> Ok None
         | Ok false -> Error (Printf.sprintf "no binding for %S" bind.keybind)))

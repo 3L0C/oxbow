@@ -1,10 +1,4 @@
 open! Ocdwm_state
-open! Ocdwm_ops
-
-let sync (ctx : Ctx.manage Ctx.t) =
-  let wm = Ctx.wm ctx in
-  Focus.layer_shell_sync wm
-;;
 
 let request_exit ?(origin = `Local) (wm : Wm.t) =
   match wm.lifecycle with
@@ -38,7 +32,7 @@ let dispatch_pending (wm : Wm.t) =
   | Pending_exit _ ->
     List.iter Seat.clear_pending wm.seats;
     Wm.set_lifecycle wm Exited;
-    Emit.exit_session wm;
+    Emit.exit_session wm.river_wm_v1;
     Eio.Condition.broadcast wm.shutdown
   | Running | Exited | Close_requested ->
     Logs.err

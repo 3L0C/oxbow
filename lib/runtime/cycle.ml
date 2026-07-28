@@ -17,7 +17,7 @@ let remove_outputs ctx =
   List.iter
     (fun (s : Seat.t) ->
        match s.output with
-       | Some o when List.memq o removed -> Focus.set_output ctx s first
+       | Some o when List.memq o removed -> Focus.set_output (Ctx.wm ctx) s first
        | _ -> ())
     wm.seats;
   List.iter
@@ -26,10 +26,12 @@ let remove_outputs ctx =
        | Some o when List.memq o removed -> Window.set_output w None
        | _ -> ())
     wm.windows;
-  List.iter Emit.destroy_output removed
+  List.iter
+    (fun (o : Output.t) -> Emit.destroy_output ~output:o.obj ~layer_shell:o.layer_shell)
+    removed
 ;;
 
-let disconnect_seat ctx window (seat : Seat.t) =
+let disconnect_seat window (seat : Seat.t) =
   (match seat.hovered with
    | Some w when w == window -> Seat.set_hovered seat None
    | _ -> ());
@@ -44,12 +46,11 @@ let disconnect_seat ctx window (seat : Seat.t) =
    | _ -> ());
   match seat.op with
   | Some (Move { window = w; _ } | Resize { window = w; _ }) when w == window ->
-    Emit.op_end ctx seat;
     Seat.clear_op seat
   | _ -> ()
 ;;
 
-let disconnect_seats ctx window = List.iter (disconnect_seat ctx window)
+let disconnect_seats window = List.iter (disconnect_seat window)
 
 let close_windows ctx =
   let wm = Ctx.wm ctx in
@@ -58,8 +59,8 @@ let close_windows ctx =
        (fun (w : Window.t) ->
           match w.lifecycle with
           | Closing ->
-            disconnect_seats ctx w wm.seats;
-            Focus.remove_window ctx w;
+            disconnect_seats w wm.seats;
+            Focus.remove_window (Ctx.wm ctx) w;
             List.iter
               (fun (c : Window.t) ->
                  if Phys.opt_holds w c.parent then Window.set_parent c ~parent:None)
@@ -78,17 +79,18 @@ let close_seats ctx =
        (fun (s : Seat.t) ->
           match s.lifecycle with
           | Closing ->
-            Emit.destroy_seat s;
+            Emit.destroy_seat ~seat:s.obj ~layer_shell:s.layer_shell;
             false
           | _ -> true)
        wm.seats
 ;;
 
 let manage_new_window ctx (window : Window.t) =
+  let wm = Ctx.wm ctx in
   Option.iter (Stacking.push [ window ]) window.output;
   if window.is_fixed || Option.is_some window.parent
   then Window.set_presentation window Floating;
-  Rules.apply_for ctx window;
+  Rules.apply_for wm window;
   Window.set_lifecycle window Active;
   match window.output with
   | Some o ->
@@ -100,7 +102,8 @@ let manage_new_window ctx (window : Window.t) =
 ;;
 
 let manage_window ctx (window : Window.t) =
-  List.rev window.requests |> List.iter (Window_request.handle ctx window);
+  let wm = Ctx.wm ctx in
+  List.rev window.requests |> List.iter (Window_request.handle wm window);
   Window.clear_requests window
 ;;
 
@@ -108,9 +111,9 @@ let manage_new_seat ctx (seat : Seat.t) =
   match seat.lifecycle with
   | Active | Closing -> ()
   | New ->
-    Bind.install_defaults ctx seat;
-    Seat.set_lifecycle seat Active;
     let wm = Ctx.wm ctx in
+    Bind.install_defaults wm seat;
+    Seat.set_lifecycle seat Active;
     (match wm.init_handle, wm.init_command with
      | None, Some cmd when Phys.opt_holds seat wm.primary_seat ->
        let init_handle = Init_script.fork ~cmd in
@@ -127,11 +130,12 @@ let manage_seat ctx seat =
       Dispatch.handle ctx seat r;
       drain ()
   in
-  Focus.seat_sync ctx seat;
-  Focus.apply_request ctx seat;
-  Focus.apply_interaction ctx seat;
+  let wm = Ctx.wm ctx in
+  Focus.seat_sync wm seat;
+  Focus.apply_request wm seat;
+  Focus.apply_interaction wm seat;
   drain ();
-  Drag.step ctx seat
+  Drag.step wm seat
 ;;
 
 let manage_output ctx (output : Output.t) =
@@ -150,7 +154,7 @@ let reap ctx =
 
 let admit ctx =
   let wm = Ctx.wm ctx in
-  Focus.wm_sync ctx;
+  Focus.wm_sync wm;
   List.iter (manage_new_seat ctx) wm.seats;
   List.iter
     (fun (w : Window.t) ->
@@ -168,25 +172,7 @@ let apply ctx =
 
 let arrange ctx =
   let wm = Ctx.wm ctx in
-  List.iter (manage_output ctx) wm.outputs
-;;
-
-let commit_manage ctx =
-  let wm = Ctx.wm ctx in
-  List.iter
-    (fun w ->
-       Commit.capabilities ctx w;
-       Commit.dimensions ctx w;
-       Commit.decoration ctx w;
-       Commit.presentation ctx w;
-       Commit.resizing ctx w)
-    wm.windows;
-  List.iter
-    (fun s ->
-       Commit.focus ctx s;
-       Seat.sync_bindings ctx s;
-       Focus.apply_warp ctx s)
-    wm.seats
+  List.iter (manage_output wm) wm.outputs
 ;;
 
 let publish ctx = Ctx.wm ctx |> Events.publish
@@ -202,52 +188,17 @@ let manage (wm : Wm.t) proxy =
         River.Window_management.River_window_manager_v1.manage_finish proxy)
       (fun () ->
          Ctx.with_manage wm (fun ctx ->
-           Lifecycle.sync ctx;
+           Focus.layer_shell_sync wm;
            reap ctx;
            admit ctx;
            apply ctx;
            arrange ctx;
-           commit_manage ctx;
+           Commit.manage ctx;
            publish ctx))
-;;
-
-let render_impl ctx (seat : Seat.t) =
-  (match seat.op with
-   | None -> ()
-   | Some (Move op_m) ->
-     Window.set_position
-       op_m.window
-       ~x:(Int32.add op_m.start_x op_m.dx)
-       ~y:(Int32.add op_m.start_y op_m.dy)
-   | Some (Resize op_r) ->
-     let open Wire in
-     let x =
-       if Int32.logand op_r.edges Edges.left <> 0l
-       then Int32.sub op_r.start_w op_r.window.geom.w |> Int32.add op_r.start_x
-       else op_r.start_x
-     in
-     let y =
-       if Int32.logand op_r.edges Edges.top <> 0l
-       then Int32.sub op_r.start_h op_r.window.geom.h |> Int32.add op_r.start_y
-       else op_r.start_y
-     in
-     Window.set_position op_r.window ~x ~y);
-  Border.paint ctx seat
-;;
-
-let commit_render ctx =
-  let wm = Ctx.wm ctx in
-  List.iter (Commit.node ctx) wm.windows;
-  List.iter
-    (fun o ->
-       Stacking.raise_windows ctx o;
-       Commit.presentation_mode ctx o)
-    wm.outputs
 ;;
 
 let render wm proxy =
   Ctx.with_render wm (fun ctx ->
-    List.iter (render_impl ctx) wm.seats;
-    commit_render ctx;
+    Commit.render ctx;
     River.Window_management.River_window_manager_v1.render_finish proxy)
 ;;

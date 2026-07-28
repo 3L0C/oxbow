@@ -5,8 +5,7 @@
   ocdwm.core
   ocdwm.ipc
   ocdwm.layout
-  ocdwm.river
-  wayland
+  ocdwm.wire
   eio
   unix
   logs

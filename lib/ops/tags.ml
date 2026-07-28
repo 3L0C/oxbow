@@ -67,7 +67,7 @@ let view_cycle_occupied (seat : Seat.t) (dir : Direction.Logical.t) =
       Ok None)
 ;;
 
-let tag_window ctx seat (tags : Tag.Arg.t) ~follow =
+let tag_window wm seat (tags : Tag.Arg.t) ~follow =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
   | Some w ->
@@ -76,7 +76,7 @@ let tag_window ctx seat (tags : Tag.Arg.t) ~follow =
       then Error Messages.tag_set_is_empty
       else (
         Window.set_tags w s;
-        if follow then Focus.focus_window ~force:true ctx seat w;
+        if follow then Focus.focus_window ~force:true wm seat w;
         Ok None)
     in
     (match w.output, tags with
@@ -100,14 +100,13 @@ let toggle_window_tags seat tags =
         Ok None))
 ;;
 
-let tag_window_match ctx seat m (arg : Tag.Arg.t) =
+let tag_window_match wm seat m (arg : Tag.Arg.t) =
   match arg with
   | Concrete s when Tag.Set.is_empty s -> Error Messages.tag_set_is_empty
   | _ ->
     (match Window_match.compile m with
      | Error e -> Error e
      | Ok matches ->
-       let wm = Ctx.wm ctx in
        (match Window_scope.filter wm seat m.scope with
         | Error e -> Error e
         | Ok windows ->
@@ -131,7 +130,7 @@ let tag_window_match ctx seat m (arg : Tag.Arg.t) =
              Ok None)))
 ;;
 
-let tag_shift_window ctx seat (dir : Direction.Logical.t) ~follow =
+let tag_shift_window wm seat (dir : Direction.Logical.t) ~follow =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
   | Some w ->
@@ -144,11 +143,11 @@ let tag_shift_window ctx seat (dir : Direction.Logical.t) ~follow =
     then Error Messages.tag_set_is_empty
     else (
       Window.set_tags w tags;
-      if follow then Focus.focus_window ~force:true ctx seat w;
+      if follow then Focus.focus_window ~force:true wm seat w;
       Ok None)
 ;;
 
-let tag_shift_window_occupied ctx seat (dir : Direction.Logical.t) ~follow =
+let tag_shift_window_occupied wm seat (dir : Direction.Logical.t) ~follow =
   match Seat.focused_window seat with
   | None -> Error Messages.no_focused_window
   | Some w ->
@@ -165,6 +164,6 @@ let tag_shift_window_occupied ctx seat (dir : Direction.Logical.t) ~follow =
            | Prev -> Tag.Set.prev_occupied ~selected:w.tags ~occupied
          in
          Window.set_tags w tags;
-         if follow then Focus.focus_window ~force:true ctx seat w;
+         if follow then Focus.focus_window ~force:true wm seat w;
          Ok None))
 ;;

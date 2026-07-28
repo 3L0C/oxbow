@@ -54,10 +54,10 @@ let set_orientation seat dir ~global =
   Ok None
 ;;
 
-let enter_overview ctx (output : Output.t) =
+let enter_overview wm (output : Output.t) =
   if not output.overview
   then (
-    List.iter (fun w -> Window_request.handle ctx w Exit_fullscreen) output.wm_stack;
+    List.iter (fun w -> Window_request.handle wm w Exit_fullscreen) output.wm_stack;
     Output.set_overview output true)
 ;;
 
@@ -78,10 +78,10 @@ let exit_overview (output : Output.t) =
     Schedule.manage ())
 ;;
 
-let toggle_overview ctx seat =
+let toggle_overview wm seat =
   With.focused_output seat
   @@ fun o ->
-  if o.overview then exit_overview o else enter_overview ctx o;
+  if o.overview then exit_overview o else enter_overview wm o;
   Ok None
 ;;
 
@@ -129,13 +129,13 @@ let cycle_layout seat dir =
   set_layout seat layout ~global:false
 ;;
 
-let retile ctx (output : Output.t) =
+let retile wm (output : Output.t) =
   if output.overview
-  then Overview.arrange ctx output
+  then Overview.arrange wm output
   else (
     match Output.current_layout output with
-    | Tiling -> Tiling.arrange ctx output
-    | Scrolling -> Scrolling.arrange ctx output
+    | Tiling -> Tiling.arrange wm output
+    | Scrolling -> Scrolling.arrange wm output
     | Floating ->
       ()
       (* NOTE: no call to Floating.arrange as floating windows don't need to be

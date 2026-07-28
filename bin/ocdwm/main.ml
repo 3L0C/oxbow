@@ -17,10 +17,11 @@ let setup ~log_level =
   Printexc.record_backtrace true
 ;;
 
-let run ~init_command ~log_level () =
+let run ~init_command ~log_level ?socket_path () =
   setup ~log_level;
   try
-    Eio_main.run @@ fun env -> Run.loop ~init_command ~net:env#net ~clock:env#clock ()
+    Eio_main.run
+    @@ fun env -> Run.loop ?socket_path ~init_command ~net:env#net ~clock:env#clock ()
   with
   | Failure s ->
     Printf.eprintf "%s\n" s;
@@ -88,9 +89,10 @@ let cmd =
             "Override the default search paths for an init executable: instead \
              $(i,SHELL_COMMAND) will be run with /bin/sh -c. See the CONFIGURATION \
              section for more details.")
-  and+ log_level = Cli.log_level_arg in
+  and+ log_level = Cli.log_level_arg
+  and+ socket_path = Cli.socket_arg in
   let init_command = Init_script.resolve ?override_path () in
-  run ~init_command ~log_level ()
+  run ~init_command ~log_level ?socket_path ()
 ;;
 
 let main () = Cmdliner.Cmd.eval' cmd

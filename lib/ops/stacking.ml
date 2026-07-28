@@ -65,10 +65,3 @@ let shift (seat : Seat.t) (dir : Direction.Logical.t) =
        Output.set_wm_stack o @@ Ring.hop_left (( == ) w) Window.tag_visible o.wm_stack;
        Ok None)
 ;;
-
-let raise_windows ctx (output : Output.t) =
-  let visible = List.filter Window.tag_visible output.focus_stack in
-  let tiled, floating = List.partition Window.is_tiled visible in
-  List.rev tiled |> List.iter (Emit.place_top ctx);
-  List.rev floating |> List.iter (Emit.place_top ctx)
-;;

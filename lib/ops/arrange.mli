@@ -79,14 +79,11 @@ val set_orientation
   -> global:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [enter_overview ctx output] handles the transition to the [Overview] layout.
+(** [enter_overview wm output] handles the transition to the [Overview] layout.
     No-op when [output] is already in [Overview].
 
     {b Effects:} mutates WM state *)
-val enter_overview
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Output.t
-  -> unit
+val enter_overview : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit
 
 (** [exit_overview output] handles the transition from [Overview] to any other
     layout. No-op when [output] is not in [Overview].
@@ -94,15 +91,12 @@ val enter_overview
     {b Effects:} mutates WM state *)
 val exit_overview : Ocdwm_state.Output.t -> unit
 
-(** [toggle_overview ctx seat] enters or leaves overview on [seat]'s output.  Entering
+(** [toggle_overview wm seat] enters or leaves overview on [seat]'s output.  Entering
     exits fullscreen. Leaving views exactly the focused window's tags and
     restores floating and maximized geometry.
 
-    {b Effects:} mutates WM state; sends River requests *)
-val toggle_overview
-  :  Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t
-  -> Ocdwm_state.Seat.t
-  -> ('a option, string) result
+    {b Effects:} mutates WM states *)
+val toggle_overview : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> ('a option, string) result
 
 (** [set_layout seat layout ~global] sets the layout on [seat]'s focused output.
     Applied to all tags when [global] is [true]. Applied to the first selected
@@ -148,7 +142,7 @@ val cycle_layout
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [retile ctx output] arranges [output]'s managed windows.
+(** [retile wm output] arranges [output]'s managed windows.
 
-    {b Effects:} mutates WM state; sends River request *)
-val retile : Ocdwm_state.Ctx.manage Ocdwm_state.Ctx.t -> Ocdwm_state.Output.t -> unit
+    {b Effects:} mutates WM state *)
+val retile : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit

@@ -1,9 +1,8 @@
 open! Ocdwm_core
 open! Ocdwm_state
 
-let begin_move ctx seat window =
-  Focus.focus_window ctx seat window;
-  Emit.op_start_pointer ctx seat;
+let begin_move wm seat window =
+  Focus.focus_window wm seat window;
   Seat.set_op seat
   @@ Move
        { window
@@ -15,14 +14,16 @@ let begin_move ctx seat window =
        }
 ;;
 
-let begin_resize ctx seat window edges =
-  Focus.focus_window ctx seat window;
+let begin_resize wm seat window edges =
+  Focus.focus_window wm seat window;
   let g = window.geom in
   let open Wire in
-  let corner_x = if Int32.logand edges Edges.left <> 0l then g.x else Int32.add g.x g.w in
-  let corner_y = if Int32.logand edges Edges.top <> 0l then g.y else Int32.add g.y g.h in
-  Emit.pointer_warp ctx seat ~x:corner_x ~y:corner_y;
-  Emit.op_start_pointer ctx seat;
+  Seat.set_warp_request seat
+  @@ Point
+       Int32.
+         { x = (if logand edges Edges.left <> 0l then g.x else add g.x g.w)
+         ; y = (if logand edges Edges.top <> 0l then g.y else add g.y g.h)
+         };
   Seat.set_op seat
   @@ Resize
        { window
@@ -37,25 +38,22 @@ let begin_resize ctx seat window edges =
        }
 ;;
 
-let step ctx (seat : Seat.t) =
-  let wm = Ctx.wm ctx in
+let step (wm : Wm.t) (seat : Seat.t) =
   match seat.op with
   | Some (Move op_m) when op_m.release ->
-    Emit.op_end ctx seat;
     let w = op_m.window in
     let cx = Int32.(div w.geom.w 2l |> add w.geom.x) in
     let cy = Int32.(div w.geom.h 2l |> add w.geom.y) in
     (match Output.at_point ~x:cx ~y:cy wm.outputs with
      | Some o when not @@ Phys.opt_holds o w.output ->
        Placement.move_window w o ~policy:Tag.Policy.Take;
-       Focus.focus_window ctx seat w;
+       Focus.focus_window wm seat w;
        Schedule.manage ()
      | _ -> ());
     if op_m.window.presentation = Floating && (not @@ Output.is_floating w.output)
     then Window.remember_float op_m.window;
     Seat.clear_op seat
   | Some (Resize op_r) when op_r.release ->
-    Emit.op_end ctx seat;
     if
       op_r.window.presentation = Floating && (not @@ Output.is_floating op_r.window.output)
     then Window.remember_float op_r.window;
