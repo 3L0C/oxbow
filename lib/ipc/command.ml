@@ -82,6 +82,10 @@ module Layout = struct
           { policy : Scroll_policy.t
           ; global : bool
           } [@name "policy"]
+      | Default_width of
+          { delta : float Delta.t
+          ; global : bool
+          } [@name "default_width"]
     [@@deriving yojson]
   end
 

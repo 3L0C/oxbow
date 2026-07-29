@@ -44,6 +44,16 @@ val set_border_color
   -> Ocdwm_core.Color.t
   -> unit
 
+(** [set_default_width td ~delta] applies [delta] to the default column width of
+    [td].
+
+    {b Effects:} mutates [td] *)
+val set_default_width : Data.t -> delta:float Ocdwm_core.Delta.t -> unit
+
+(** [copy_tag_data td] is a copy of [td] that shares no mutable record with
+    [td]. *)
+val copy_tag_data : Data.t -> Data.t
+
 (** [add_rule wm rule] adds [rule] to [wm]'s configuration.
 
     {b Effects:} mutates WM state *)

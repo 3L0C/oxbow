@@ -4,6 +4,7 @@ let handle_scrolling wm seat (cmd : Command.Layout.Scrolling.t) =
   match cmd with
   | Column_width { delta; global } -> Column.set_width seat delta ~global
   | Policy { policy; global } -> Arrange.set_scroll_policy wm seat policy ~global
+  | Default_width { delta; global } -> Arrange.set_default_width wm seat delta ~global
 ;;
 
 let handle_tiling seat (cmd : Command.Layout.Tiling.t) =

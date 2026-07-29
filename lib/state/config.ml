@@ -78,6 +78,30 @@ let set_border_color (wm : Types.Wm.t) (border : Border_target.t) color =
   | Unfocused -> wm.config.borders.unfocused_color <- color
 ;;
 
+let set_default_width (td : Data.t) ~(delta : float Delta.t) =
+  let f =
+    match delta with
+    | Abs a -> a
+    | Rel r -> Width_fac.to_float td.scrolling.default_width +. r
+  in
+  td.scrolling.default_width <- Width_fac.of_float f
+;;
+
+let copy_tag_data (td : Data.t) =
+  Data.
+    { layout = td.layout
+    ; tiling =
+        { scheme = td.tiling.scheme
+        ; mfact = td.tiling.mfact
+        ; nmaster = td.tiling.nmaster
+        ; dir = td.tiling.dir
+        }
+    ; scrolling =
+        { policy = td.scrolling.policy; default_width = td.scrolling.default_width }
+    ; gaps = { inner = td.gaps.inner; outer = td.gaps.outer }
+    }
+;;
+
 let add_rule (wm : Types.Wm.t) rule = wm.config.rules <- wm.config.rules @ [ rule ]
 
 let remove_rule (wm : Types.Wm.t) pattern =

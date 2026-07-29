@@ -51,7 +51,8 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     ; previous_tags = Tag.Set.singleton 1
     ; overview = false
     ; scroll_offset = 0
-    ; tag_data = Array.init 32 (fun _ -> Config.create_tag_data ())
+    ; tag_data =
+        Array.init 32 (fun _ -> Config.copy_tag_data wm.config.default_tag_config)
     ; focus_stack = []
     ; wm_stack = []
     }

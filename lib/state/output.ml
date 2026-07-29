@@ -246,16 +246,11 @@ let set_geom (o : t) geom = o.geom <- geom
 let set_scroll_offset (o : t) offset = o.scroll_offset <- offset
 
 let set_default_width o (delta : float Delta.t) ~global =
-  let apply (td : Types.Config.Data.t) =
-    let f =
-      match delta with
-      | Abs a -> a
-      | Rel r -> Width_fac.to_float td.scrolling.default_width +. r
-    in
-    td.scrolling.default_width <- Width_fac.of_float f
-  in
   if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
+  then
+    Tag.Set.iter
+      (fun i -> Tag.Set.singleton i |> tag_data o |> Config.set_default_width ~delta)
+      Tag.Set.all
+  else to_tag_data o |> Config.set_default_width ~delta;
   Schedule.manage ()
 ;;

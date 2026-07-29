@@ -42,7 +42,9 @@ let set_default_width (wm : Wm.t) seat delta ~global =
   With.focused_output seat
   @@ fun o ->
   if global
-  then List.iter (fun o' -> Output.set_default_width o' delta ~global) wm.outputs
+  then (
+    List.iter (fun o' -> Output.set_default_width o' delta ~global) wm.outputs;
+    Config.set_default_width wm.config.default_tag_config ~delta)
   else Output.set_default_width o delta ~global;
   Ok None
 ;;
