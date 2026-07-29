@@ -22,14 +22,26 @@ let arrange (wm : Wm.t) (output : Output.t) =
     | _ ->
       let _, last = List.rev placed |> List.hd in
       let max_offset = last.x - area.x in
+      let nearest_col () =
+        let view_center = output.scroll_offset + (area.w / 2) in
+        List.fold_left
+          (fun best (_, (g : int Rect.t)) ->
+             let x = g.x - area.x in
+             let d = abs (x + (g.w / 2) - view_center) in
+             match best with
+             | Some (d', _) when d' <= d -> best
+             | _ -> Some (d, (x, g.w)))
+          None
+          placed
+        |> Option.map snd
+      in
       let col =
         match Output.focused_window output with
-        | Some f when (not @@ Window.is_fullscreen f) && Window.is_tiled f ->
-          let hit = List.find_opt (fun (w, _) -> w == f) placed in
-          (match hit with
-           | None -> None
-           | Some (_, g) -> Some (g.x - area.x, g.w))
-        | _ -> None
+        | Some f when Window.is_tiled f && (not @@ Window.is_fullscreen f) ->
+          (match List.find_opt (fun (w, _) -> w == f) placed with
+           | Some (_, g) -> Some (g.x - area.x, g.w)
+           | None -> nearest_col ())
+        | _ -> nearest_col ()
       in
       let offset =
         match col with
@@ -40,10 +52,7 @@ let arrange (wm : Wm.t) (output : Output.t) =
             ~max_offset
             ~offset:output.scroll_offset
             ~col
-        | None ->
-          (match tag_data.scrolling.policy with
-           | Centered -> output.scroll_offset
-           | Left | Visible -> min output.scroll_offset max_offset |> max 0)
+        | None -> min output.scroll_offset max_offset |> max 0
       in
       Output.set_scroll_offset output offset;
       placed
