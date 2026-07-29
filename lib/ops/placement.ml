@@ -311,6 +311,12 @@ let swap_outputs
     List.iter (fun w -> send_to ~src:b ~dst:a w policy) b_ws;
     Stacking.restore_focus_order ~like:a_focus b;
     Stacking.restore_focus_order ~like:b_focus a;
-    if follow then Focus.focus_output wm seat b;
+    if follow
+    then (
+      let arrived w = List.memq w a_focus in
+      match List.find_opt arrived b.focus_stack with
+      | Some w ->
+        Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w
+      | None -> Focus.focus_output wm seat b);
     Ok None
 ;;

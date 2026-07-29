@@ -205,7 +205,9 @@ val resize_spatial
     output swaps with the named output; with two names, the named pair swaps. A
     [Ring] target swaps the focused output with the next connected ring member,
     or the previous member when [rev] is set. Each window crosses with [policy],
-    like a send. When [follow] is [true], focus follows to the second output.
+    like a send. When [follow] is [true], focus moves to the window that arrived
+    at the head of the focus order of the second output, and the view switches
+    to its tags. When no window arrived, focus moves to the second output.
     [scope] controls which windows are swapped. [scope] is one of
     [`Tags | `All | `Visible]. *)
 val swap_outputs
