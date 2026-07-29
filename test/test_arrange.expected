@@ -1,0 +1,24 @@
+0: (24, 24) 1021x1032
+1: (1063, 24) 833x507
+2: (1063, 549) 833x507
+0: set_capabilities
+0: propose_dimensions
+0: set_tiled
+0: use_ssd
+0: inform_unmaximized
+0: inform_not_fullscreen
+0: inform_resize_end
+1: set_capabilities
+1: propose_dimensions
+1: set_tiled
+1: use_ssd
+1: inform_unmaximized
+1: inform_not_fullscreen
+1: inform_resize_end
+2: set_capabilities
+2: propose_dimensions
+2: set_tiled
+2: use_ssd
+2: inform_unmaximized
+2: inform_not_fullscreen
+2: inform_resize_end

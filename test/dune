@@ -31,3 +31,19 @@
   unix
   logs
   logs.fmt))
+
+(test
+ (name test_arrange)
+ (modules test_arrange)
+ (libraries
+  ocdwm.core
+  ocdwm.state
+  ocdwm.ops
+  ocdwm.runtime
+  ocdwm.wire
+  ocdwm.river
+  wayland
+  cstruct
+  eio
+  eio_main
+  eio.unix))
