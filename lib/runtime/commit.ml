@@ -127,8 +127,7 @@ let close ctx (w : Window.t) =
     Window.set_close_pending w false)
 ;;
 
-let manage ctx =
-  let wm = Ctx.wm ctx in
+let manage_windows ctx windows =
   List.iter
     (fun w ->
        capabilities ctx w;
@@ -137,14 +136,23 @@ let manage ctx =
        presentation ctx w;
        resizing ctx w;
        close ctx w)
-    wm.windows;
+    windows
+;;
+
+let manage_seats ctx seats =
   List.iter
     (fun s ->
        focus ctx s;
        bindings ctx s;
        warp ctx s;
        op ctx s)
-    wm.seats
+    seats
+;;
+
+let manage ctx =
+  let wm = Ctx.wm ctx in
+  manage_windows ctx wm.windows;
+  manage_seats ctx wm.seats
 ;;
 
 let seat_op (seat : Seat.t) =
@@ -234,6 +242,12 @@ let window_z_order ctx (output : Output.t) =
   List.rev floating |> List.iter (Send.place_top ctx)
 ;;
 
+let op_window_top ctx (seat : Seat.t) =
+  match seat.op with
+  | Some (Move { window; _ }) -> Send.place_top ctx window
+  | _ -> ()
+;;
+
 let presentation_mode ctx output =
   match Output.focused_window output with
   | Some w when Option.is_some w.output ->
@@ -246,17 +260,33 @@ let presentation_mode ctx output =
   | _ -> Send.set_presentation_mode ctx output ~mode:Wire.Presentation_mode.Vsync
 ;;
 
-let render ctx =
-  let wm = Ctx.wm ctx in
+let render_seats ctx seats =
   List.iter
     (fun s ->
        seat_op s;
        borders ctx s)
-    wm.seats;
-  List.iter (node ctx) wm.windows;
+    seats
+;;
+
+let render_windows ctx windows = List.iter (node ctx) windows
+
+let render_outputs ctx outputs =
   List.iter
     (fun o ->
        window_z_order ctx o;
        presentation_mode ctx o)
-    wm.outputs
+    outputs
+;;
+
+let render_edge_cases ctx =
+  let wm = Ctx.wm ctx in
+  List.iter (fun s -> op_window_top ctx s) wm.seats
+;;
+
+let render ctx =
+  let wm = Ctx.wm ctx in
+  render_seats ctx wm.seats;
+  render_windows ctx wm.windows;
+  render_outputs ctx wm.outputs;
+  render_edge_cases ctx
 ;;
