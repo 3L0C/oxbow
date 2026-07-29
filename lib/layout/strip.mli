@@ -21,15 +21,16 @@ val layout
   -> ('a * Item.t) list
   -> ('a * int Ocdwm_core.Rect.t) list
 
-(** [scroll ~policy ~viewport_w ~total_w ~offset ~col:(x, w)] is the strip
+(** [scroll ~policy ~viewport_w ~max_offset ~offset ~col:(x, w)] is the strip
     offset after applying [policy] to the focused column [col], where [x] is its
     strip-relative position (offset-0 placement minus the usable origin), [w]
-    its width. The result is clamped to [0, max 0 (total_w - viewport_w)], so
-    stale offsets self-heal. *)
+    its width. [max_offset] is the strip-relative x of the last column. For
+    [Left] and [Visible] the result is clamped to [0, max 0 max_offset], so
+    stale offsets self-heal and the tail column can anchor at the left edge. *)
 val scroll
   :  policy:Ocdwm_core.Scroll_policy.t
   -> viewport_w:int
-  -> total_w:int
+  -> max_offset:int
   -> offset:int
   -> col:int * int
   -> int

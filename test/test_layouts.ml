@@ -136,7 +136,7 @@ let test_tiling () =
    positions advance by exactly one column width. A consumes chain puts its
    members in one shared column, and the member heights split the usable height
    exactly. A non-zero offset only shifts x. [Strip.scroll] keeps the result
-   inside [0, max 0 (total_w - viewport_w)] for all inputs; concrete cases pin
+   inside [0, max 0 max_offset] for all inputs; concrete cases pin
    the policy rules. *)
 
 let test_scrolling () =
@@ -242,7 +242,7 @@ let test_scrolling () =
       check "first x" (r0.x = ua.x - offset)
     | _ -> fail "rect count"
   in
-  let run_scroll ~(policy : Scroll_policy.t) ~viewport_w ~total_w ~offset ~col:(x, w) =
+  let run_scroll ~(policy : Scroll_policy.t) ~viewport_w ~max_offset ~offset ~col:(x, w) =
     incr cases;
     let fail name =
       incr failures;
@@ -256,14 +256,14 @@ let test_scrolling () =
            | Left -> "left"
            | Centered -> "centered")
           viewport_w
-          total_w
+          max_offset
           offset
           x
           w
     in
     let check name cond = if not cond then fail name in
-    let res = Strip.scroll ~policy ~viewport_w ~total_w ~offset ~col:(x, w) in
-    let hi = max 0 (total_w - viewport_w) in
+    let res = Strip.scroll ~policy ~viewport_w ~max_offset ~offset ~col:(x, w) in
+    let hi = max 0 max_offset in
     let clamp v = min v hi |> max 0 in
     if policy <> Centered then check "in bounds" (0 <= res && res <= hi);
     match policy with
@@ -271,14 +271,14 @@ let test_scrolling () =
     | Centered -> check "centered" (res = x - ((viewport_w - w) / 2))
     | Visible ->
       if w > viewport_w then check "wide pins left" (res = clamp x);
-      if w <= viewport_w && total_w >= viewport_w && x >= 0 && x + w <= total_w
+      if w <= viewport_w && max_offset >= viewport_w && x >= 0 && x <= max_offset
       then check "focus visible after" (res <= x && x + w <= res + viewport_w);
       if x >= offset && x + w <= offset + viewport_w && 0 <= offset && offset <= hi
       then check "in view stays" (res = offset)
   in
-  let expect name ~policy ~viewport_w ~total_w ~offset ~col v =
+  let expect name ~policy ~viewport_w ~max_offset ~offset ~col v =
     incr cases;
-    let res = Strip.scroll ~policy ~viewport_w ~total_w ~offset ~col in
+    let res = Strip.scroll ~policy ~viewport_w ~max_offset ~offset ~col in
     if res <> v
     then (
       incr failures;
@@ -312,33 +312,38 @@ let test_scrolling () =
        List.iter
          (fun viewport_w ->
             List.iter
-              (fun total_w ->
+              (fun max_offset ->
                  List.iter
                    (fun offset ->
                       List.iter
                         (fun x ->
                            List.iter
                              (fun w ->
-                                run_scroll ~policy ~viewport_w ~total_w ~offset ~col:(x, w))
+                                run_scroll
+                                  ~policy
+                                  ~viewport_w
+                                  ~max_offset
+                                  ~offset
+                                  ~col:(x, w))
                              [ 1; 300; 500; 1200 ])
                         [ 0; 450; 999; 1500; 4500 ])
                    [ 0; 1; 450; 5000 ])
               [ 200; 1000; 2000; 5000 ])
          [ 500; 1000 ])
     Scroll_policy.[ Visible; Left; Centered ];
-  let vis = expect ~policy:Visible ~viewport_w:1000 ~total_w:2000 in
+  let vis = expect ~policy:Visible ~viewport_w:1000 ~max_offset:2000 in
   vis "fully visible stays" ~offset:0 ~col:(0, 500) 0;
   vis "edge flush stays" ~offset:0 ~col:(500, 500) 0;
   vis "right slides minimally" ~offset:0 ~col:(1000, 500) 500;
   vis "right slide clamps" ~offset:0 ~col:(1500, 500) 1000;
   vis "left slides onto" ~offset:500 ~col:(0, 500) 0;
   vis "in view from offset stays" ~offset:500 ~col:(700, 500) 500;
-  vis "stale offset heals" ~offset:5000 ~col:(1500, 500) 1000;
+  vis "stale offset heals" ~offset:5000 ~col:(1500, 500) 1500;
   expect
     "short strip zeroes"
     ~policy:Visible
     ~viewport_w:1000
-    ~total_w:600
+    ~max_offset:600
     ~offset:400
     ~col:(0, 500)
     0;
@@ -346,14 +351,14 @@ let test_scrolling () =
     "wide column pins left"
     ~policy:Visible
     ~viewport_w:1000
-    ~total_w:3000
+    ~max_offset:3000
     ~offset:0
     ~col:(300, 1500)
     300;
-  let left = expect ~policy:Left ~viewport_w:1000 ~total_w:2000 ~offset:0 in
+  let left = expect ~policy:Left ~viewport_w:1000 ~max_offset:2000 ~offset:0 in
   left "left pins" ~col:(700, 500) 700;
-  left "left pin clamps" ~col:(1500, 500) 1000;
-  let ctr = expect ~policy:Centered ~viewport_w:1000 ~total_w:2000 ~offset:0 in
+  left "tail anchors left" ~col:(1500, 500) 1500;
+  let ctr = expect ~policy:Centered ~viewport_w:1000 ~max_offset:2000 ~offset:0 in
   ctr "centers" ~col:(700, 500) 450;
   ctr "center clamps low" ~col:(100, 500) (-150);
   ctr "center clamps high" ~col:(1500, 500) 1250;

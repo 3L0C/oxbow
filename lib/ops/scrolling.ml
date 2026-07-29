@@ -18,10 +18,10 @@ let arrange (wm : Wm.t) (output : Output.t) =
     let bw = Int32.to_int wm.config.borders.width in
     let placed = Strip.layout ~usable:area ~offset:0 items in
     match placed with
-    | [] -> ()
+    | [] -> Output.set_scroll_offset output 0
     | _ ->
       let _, last = List.rev placed |> List.hd in
-      let total_w = last.x + last.w - area.x in
+      let max_offset = last.x - area.x in
       let col =
         match Output.focused_window output with
         | Some f when (not @@ Window.is_fullscreen f) && Window.is_tiled f ->
@@ -37,13 +37,13 @@ let arrange (wm : Wm.t) (output : Output.t) =
           Strip.scroll
             ~policy:tag_data.scrolling.policy
             ~viewport_w:area.w
-            ~total_w
+            ~max_offset
             ~offset:output.scroll_offset
             ~col
         | None ->
           (match tag_data.scrolling.policy with
            | Centered -> output.scroll_offset
-           | Left | Visible -> min output.scroll_offset (total_w - area.w) |> max 0)
+           | Left | Visible -> min output.scroll_offset max_offset |> max 0)
       in
       Output.set_scroll_offset output offset;
       placed

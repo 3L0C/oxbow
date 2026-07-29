@@ -52,7 +52,7 @@ let layout ~(usable : int Rect.t) ~offset (items : ('a * Item.t) list) =
   List.concat per_column
 ;;
 
-let scroll ~(policy : Scroll_policy.t) ~viewport_w ~total_w ~offset ~col:(x, w) =
+let scroll ~(policy : Scroll_policy.t) ~viewport_w ~max_offset ~offset ~col:(x, w) =
   let ideal =
     match policy with
     | Left -> x
@@ -68,5 +68,5 @@ let scroll ~(policy : Scroll_policy.t) ~viewport_w ~total_w ~offset ~col:(x, w) 
   in
   match policy with
   | Centered -> ideal
-  | Left | Visible -> min ideal (total_w - viewport_w) |> max 0
+  | Left | Visible -> min ideal max_offset |> max 0
 ;;
