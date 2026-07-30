@@ -17,7 +17,7 @@ let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
     (match policy with
      | Keep -> ()
      | Take ->
-       Tag.Set.first target.tags.selected
+       Tag.Set.first_index target.tags.selected
        |> Option.fold ~none:window.tags ~some:Tag.Set.singleton
        |> Window.set_tags window);
     Window.set_output window @@ Some target;

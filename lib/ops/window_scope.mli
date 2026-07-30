@@ -3,5 +3,5 @@
 val filter
   :  Ocdwm_state.Wm.t
   -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Window_match.Scope.t
+  -> Ocdwm_core.Scope.t
   -> (Ocdwm_state.Window.t list, string) result

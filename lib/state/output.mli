@@ -16,6 +16,10 @@ val next_window : t -> Types.Window.t option
     Wraps at stack edges. *)
 val prev_window : t -> Types.Window.t option
 
+(** [tag_data output tags] is the tag data of [output] the first set tag of
+    [tags]. Raises [Invalid_argument] if [tags] is the empty set. *)
+val tag_data : t -> Ocdwm_core.Tag.Set.t -> Config.Data.t
+
 (** [to_tag_data output] is the tag data of the first selected tag of [output].
     Raises [Invalid_argument] if [output] has no selected tags. *)
 val to_tag_data : t -> Config.Data.t
@@ -66,26 +70,15 @@ val has_visible_fullscreen : t -> bool
 (** [is_floating output] is true when [output] is in the [Floating] layout. *)
 val is_floating : t option -> bool
 
-(** [set_layout output layout ~global] sets the layout of [output]. Applied to
-    all tags when [global] is true. Applied to the first selected tags when
-    [false].
+(** [apply_layout td ~layout] applies [layout] to the layout of [td].
 
     {b Effects:} mutates WM state *)
-val set_layout : t -> Ocdwm_core.Layout.t -> global:bool -> unit
+val apply_layout : Types.Config.Data.t -> layout:Ocdwm_core.Layout.t -> unit
 
-(** [set_scheme output scheme ~global] sets the scheme of [output]. Applied to
-    all tags when [global] is true. Applied to the first selected tags when
-    [false].
+(** [apply_scheme td ~scheme] applies [scheme] to the scheme of [td].
 
     {b Effects:} mutates WM state *)
-val set_scheme : t -> Ocdwm_core.Scheme.t -> global:bool -> unit
-
-(** [cycle_scheme output dir ~global] sets [output]'s tiling scheme to the [dir]
-    scheme. Applied to all tags when [global] is true. Applied to the first
-    selected tags when [false].
-
-    {b Effects:} mutates WM state *)
-val cycle_scheme : t -> Ocdwm_core.Direction.Logical.t -> global:bool -> unit
+val apply_scheme : Types.Config.Data.t -> scheme:Ocdwm_core.Scheme.t -> unit
 
 (** [enter_overview output] activates overview mode for [output] if not already
     active.
@@ -98,33 +91,36 @@ val enter_overview : t -> unit
     {b Effects:} mutates WM state *)
 val exit_overview : t -> unit
 
-(** [set_mfact output delta ~global] sets the mfact according to [delta] for the
-    first selected tag on [output]. When [global] is [true], the change applies
-    to every tag.
+(** [apply_mfact td ~delta] applies [delta] to the mfact of [td].
 
     {b Effects:} mutates WM state *)
-val set_mfact : t -> float Ocdwm_core.Delta.t -> global:bool -> unit
+val apply_mfact : Types.Config.Data.t -> delta:float Ocdwm_core.Delta.t -> unit
 
-(** [set_nmaster output delta ~global] sets the nmaster according to [delta] for
-    the first selected tag on [output]. When [global] is [true], the change
-    applies to every tag.
+(** [apply_nmaster td ~delta] applies [delta] to the nmaster of [td]
 
     {b Effects:} mutates WM state *)
-val set_nmaster : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
+val apply_nmaster : Types.Config.Data.t -> delta:int Ocdwm_core.Delta.t -> unit
 
-(** [set_gaps_inner output delta ~global] sets the gaps_inner according to
-    [delta] for the first selected tag on [output]. When [global] is [true], the
-    change applies to every tag.
+(** [apply_gaps_inner td ~delta] applies [delta] to the inner gaps of [td].
 
     {b Effects:} mutates WM state *)
-val set_gaps_inner : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
+val apply_gaps_inner : Types.Config.Data.t -> delta:int Ocdwm_core.Delta.t -> unit
 
-(** [set_gaps_outer output delta ~global] sets the gaps_outer according to
-    [delta] for the first selected tag on [output]. When [global] is [true], the
-    change applies to every tag.
+(** [apply_gaps_outer td ~delta] applies [delta] to the outer gaps of [td].
 
     {b Effects:} mutates WM state *)
-val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
+val apply_gaps_outer : Types.Config.Data.t -> delta:int Ocdwm_core.Delta.t -> unit
+
+(** [apply_scroll_policy td ~policy] applies [policy] to the scroll policy of
+    [td].
+
+    {b Effects:} mutates WM state *)
+val apply_scroll_policy : Types.Config.Data.t -> policy:Ocdwm_core.Scroll_policy.t -> unit
+
+(** [apply_orientation td ~dir] applies [dir] to the orientation of [td].
+
+    {b Effects:} mutates WM state *)
+val apply_orientation : Types.Config.Data.t -> dir:Ocdwm_core.Direction.Spatial.t -> unit
 
 (** [set_gaps_overview output ~delta] sets the overview gaps for [output]
     according to [delta].
@@ -137,20 +133,6 @@ val set_gaps_overview : t -> delta:int Ocdwm_core.Delta.t -> unit
 
     {b Effects:} mutates WM state *)
 val set_overview_head : t -> Types.Window.t option -> unit
-
-(** [set_scroll_policy output policy ~global] sets [output]'s scrolling policy to
-    [policy]. Applied to all tags when [global] is true. Applied to the first
-    selected tags when [false].
-
-    {b Effects:} mutates WM state *)
-val set_scroll_policy : t -> Ocdwm_core.Scroll_policy.t -> global:bool -> unit
-
-(** [set_orientation output dir ~global] sets [output]'s stacking orientation to
-    [dir]. Applied to all tags when [global] is true. Applied to the first
-    selected tags when [false].
-
-    {b Effects:} mutates WM state *)
-val set_orientation : t -> Ocdwm_core.Direction.Spatial.t -> global:bool -> unit
 
 (** [set_wm_stack output ws] replaces [output]'s window stack with [ws].
 
@@ -214,9 +196,7 @@ val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
     {b Effects:} mutates WM state *)
 val set_scroll_offset : t -> int -> unit
 
-(** [set_default_width output delta ~global] sets the default column width
-    according to [delta]. Applied to all tags when [global] is true. Applied to
-    the first selected tags when [false].
+(** [apply_default_width td ~delta] applies [delta] to the default width of [td].
 
     {b Effects:} mutates WM state *)
-val set_default_width : t -> float Ocdwm_core.Delta.t -> global:bool -> unit
+val apply_default_width : Types.Config.Data.t -> delta:float Ocdwm_core.Delta.t -> unit

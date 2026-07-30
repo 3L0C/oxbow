@@ -70,7 +70,7 @@ let set_clip w clip = w.clip <- clip
 let set_offscreen w v = w.offscreen <- v
 
 let tag_layout (o : Types.Output.t) =
-  match Tag.Set.first o.tags.selected with
+  match Tag.Set.first_index o.tags.selected with
   | Some i -> o.tag_data.(i - 1)
   | None -> invalid_arg "Got an output with no selected tags."
 ;;

@@ -53,11 +53,17 @@ module Set : sig
   (** [symmetric_diff a b] is the set of tags in exactly one of [a] or [b]. *)
   val symmetric_diff : t -> t -> t
 
-  (** [first s] is the smallest tag index in [s], or [None] if [s] is empty. *)
-  val first : t -> int option
+  (** [first s] is the smallest tag in [s], or [None] if [s] is empty. *)
+  val first : t -> t option
 
-  (** [last s] is the largest tag index in [s], or [None] if [s] is empty. *)
-  val last : t -> int option
+  (** [first_index s] is the smallest tag index in [s], or [None] if [s] is empty. *)
+  val first_index : t -> int option
+
+  (** [last s] is the largest tag in [s], or [None] if [s] is empty. *)
+  val last : t -> t option
+
+  (** [last_index s] is the largest tag index in [s], or [None] if [s] is empty. *)
+  val last_index : t -> int option
 
   (** [cardinality s] is the number of tags in [s]. *)
   val cardinality : t -> int
@@ -66,11 +72,18 @@ module Set : sig
       the tag indices in [s] in ascending order. *)
   val fold : (int -> 'a -> 'a) -> t -> 'a -> 'a
 
-  (** [iter f s] applies [f] to each tag index in [s] in ascending order. *)
-  val iter : (int -> unit) -> t -> unit
+  (** [iter f s] applies [f] to each tag in [s] in ascending order. *)
+  val iter : (t -> unit) -> t -> unit
 
-  (** [to_list s] is the tag indices in [s] in ascending order. *)
-  val to_list : t -> int list
+  (** [iteri f s] same as {iter}, but [f] is applied to the index of the set as
+      first argument, and the element itself as the second argument. *)
+  val iteri : (int -> t -> unit) -> t -> unit
+
+  (** [to_list s] is the tag set [s] as a singleton set list in ascending order. *)
+  val to_list : t -> t list
+
+  (** [to_index_list s] is the tag indices in [s] in ascending order. *)
+  val to_index_list : t -> int list
 
   (** [next s] is [s] with its lowest set tag advanced by one position,
       wrapping from [max_tag] to [min_tag], or [empty] if [s] is empty. *)

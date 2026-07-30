@@ -14,6 +14,25 @@ val focused_output_log
   -> (Types.Output.t -> unit)
   -> unit
 
+(** [named_output ~name wm f] applies [f] to the first output matching [name].
+    Is [Error msg] if [wm] contains no output matching [name]. *)
+val named_output
+  :  name:string
+  -> Types.Wm.t
+  -> (Types.Output.t -> ('a, string) result)
+  -> ('a, string) result
+
+(** [named_output_log ?out ~name wm f] applies [f] to the first output matching
+    [name]. Logs any [Error msg] according to [out] if [wm] contains no output
+    matching [name]. If [out] is not present, [Error msg] will be logged to
+    [`Debug]. *)
+val named_output_log
+  :  ?out:[ `Debug | `Info | `Error | `Warn ]
+  -> name:string
+  -> Types.Wm.t
+  -> (Types.Output.t -> unit)
+  -> unit
+
 (** [focused_window seat f] applies [f] to [seat]'s focused output and window.
     Is [Error msg] if [seat] has no output or focused window. *)
 val focused_window

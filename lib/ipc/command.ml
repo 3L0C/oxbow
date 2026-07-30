@@ -15,15 +15,15 @@ module Gaps = struct
   type t =
     | Inner of
         { delta : int Delta.t
-        ; global : bool
+        ; scope : Scope.t
         } [@name "inner"]
     | Outer of
         { delta : int Delta.t
-        ; global : bool
+        ; scope : Scope.t
         } [@name "outer"]
     | Overview of
         { delta : int Delta.t
-        ; global : bool
+        ; scope : Scope.t
         } [@name "overview"]
   [@@deriving yojson]
 end
@@ -78,17 +78,13 @@ end
 module Layout = struct
   module Scrolling = struct
     type t =
-      | Column_width of
-          { delta : float Delta.t
-          ; global : bool
-          } [@name "column_width"]
       | Policy of
           { policy : Scroll_policy.t
-          ; global : bool
+          ; scope : Scope.t
           } [@name "policy"]
       | Default_width of
           { delta : float Delta.t
-          ; global : bool
+          ; scope : Scope.t
           } [@name "default_width"]
     [@@deriving yojson]
   end
@@ -98,19 +94,19 @@ module Layout = struct
       | Cycle of Direction.Logical.t [@name "cycle"]
       | Mfact of
           { delta : float Delta.t
-          ; global : bool
+          ; scope : Scope.t
           } [@name "mfact"]
       | Nmaster of
           { delta : int Delta.t
-          ; global : bool
+          ; scope : Scope.t
           } [@name "nmaster"]
       | Orientation of
           { dir : Direction.Spatial.t
-          ; global : bool
+          ; scope : Scope.t
           } [@name "orientation"]
       | Scheme of
           { scheme : Ocdwm_core.Scheme.t
-          ; global : bool
+          ; scope : Scope.t
           } [@name "scheme"]
     [@@deriving yojson]
   end
@@ -119,7 +115,7 @@ module Layout = struct
     | Cycle of Direction.Logical.t [@name "cycle"]
     | Select of
         { layout : Ocdwm_core.Layout.t
-        ; global : bool
+        ; scope : Scope.t
         } [@name "select"]
     | Scrolling of Scrolling.t [@name "scrolling"]
     | Tiling of Tiling.t [@name "tiling"]

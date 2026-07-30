@@ -35,6 +35,15 @@ module Set = struct
   let first s =
     let rec aux = function
       | i when not @@ in_range i -> None
+      | i when singleton i |> intersects s -> Some (singleton i)
+      | i -> aux (i + 1)
+    in
+    aux 1
+  ;;
+
+  let first_index s =
+    let rec aux = function
+      | i when not @@ in_range i -> None
       | i when singleton i |> intersects s -> Some i
       | i -> aux (i + 1)
     in
@@ -42,6 +51,15 @@ module Set = struct
   ;;
 
   let last s =
+    let rec aux = function
+      | _ when is_empty s -> None
+      | i when s lsr i |> is_empty -> Some (singleton i)
+      | i -> aux (i + 1)
+    in
+    aux 1
+  ;;
+
+  let last_index s =
     let rec aux = function
       | _ when is_empty s -> None
       | i when s lsr i |> is_empty -> Some i
@@ -72,7 +90,18 @@ module Set = struct
     let rec aux = function
       | i when not @@ in_range i -> ()
       | i when mem i s ->
-        f i;
+        singleton i |> f;
+        aux (i + 1)
+      | i -> aux (i + 1)
+    in
+    aux 1
+  ;;
+
+  let iteri f s =
+    let rec aux = function
+      | i when not @@ in_range i -> ()
+      | i when mem i s ->
+        singleton i |> f i;
         aux (i + 1)
       | i -> aux (i + 1)
     in
@@ -80,6 +109,15 @@ module Set = struct
   ;;
 
   let to_list s =
+    let rec aux acc = function
+      | i when not @@ in_range i -> List.rev acc
+      | i when mem i s -> aux (singleton i :: acc) (i + 1)
+      | i -> aux acc (i + 1)
+    in
+    aux [] 1
+  ;;
+
+  let to_index_list s =
     let rec aux acc = function
       | i when not @@ in_range i -> List.rev acc
       | i when mem i s -> aux (i :: acc) (i + 1)

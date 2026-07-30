@@ -95,9 +95,6 @@ val color_arg : Ocdwm_core.Color.t Cmdliner.Term.t
     overrides the warp on focus configuration for one command. *)
 val warp_flag : bool option Cmdliner.Term.t
 
-(** [global_flag] is the [--all] flag used to apply changes to all tags. *)
-val global_flag : bool Cmdliner.Term.t
-
 (** [pattern_flags] is [title_flag], [app_id_flag], [identifier_flag], and
     [case_flag] in a [Pattern.t]. Each criterion is a PCRE regex. A pattern with
     no criterion matches every window. *)
@@ -110,7 +107,13 @@ val pattern_term : Ocdwm_core.Pattern.t Cmdliner.Term.t
     focused output of the seat, [--output NAME] for one named output, and [All]
     when the command line holds neither flag. The term rejects the two flags
     together. *)
-val scope_term : Ocdwm_core.Window_match.Scope.t Cmdliner.Term.t
+val scope_term : Ocdwm_core.Scope.t Cmdliner.Term.t
+
+(** [setting_scope_term] is the target scope of a setting command: the bare form
+    for the selected tags on the focused output, [--output NAME] for every tag
+    on one named output, and [--all] for every tag on every output. The term
+    rejects the two flags together. *)
+val setting_scope_term : Ocdwm_core.Scope.t Cmdliner.Term.t
 
 (** [window_match_term] is [pattern_term], [invert_flag], and [scope_term] in a
     [Window_match.t]. It rejects an empty pattern. *)

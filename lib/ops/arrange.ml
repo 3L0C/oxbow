@@ -1,66 +1,60 @@
 open! Ocdwm_core
 open! Ocdwm_state
 
-let set_mfact seat delta ~global =
-  With.focused_output seat
-  @@ fun o ->
-  Output.set_mfact o delta ~global;
+let outputs_of_scope wm seat (scope : Scope.t) =
+  match scope with
+  | Focused -> With.focused_output seat @@ fun o -> Ok [ o ]
+  | Output name -> With.named_output wm ~name @@ fun o -> Ok [ o ]
+  | All -> Ok wm.outputs
+;;
+
+let apply_scoped wm seat scope ~f =
+  Result.bind (outputs_of_scope wm seat scope)
+  @@ fun outputs ->
+  let apply o =
+    match scope with
+    | Focused -> f (Output.to_tag_data o)
+    | Output _ | All -> Tag.Set.iter (fun s -> Output.tag_data o s |> f) Tag.Set.all
+  in
+  List.iter apply outputs;
+  if scope = All then f wm.config.default_tag_config;
+  Schedule.manage ();
   Ok None
 ;;
 
-let set_nmaster seat delta ~global =
-  With.focused_output seat
-  @@ fun o ->
-  Output.set_nmaster o delta ~global;
-  Ok None
+let set_mfact wm seat delta scope =
+  apply_scoped wm seat scope ~f:(Output.apply_mfact ~delta)
 ;;
 
-let set_gaps_inner seat delta ~global =
-  With.focused_output seat
-  @@ fun o ->
-  Output.set_gaps_inner o delta ~global;
-  Ok None
+let set_nmaster wm seat delta scope =
+  apply_scoped wm seat scope ~f:(Output.apply_nmaster ~delta)
 ;;
 
-let set_gaps_outer seat delta ~global =
-  With.focused_output seat
-  @@ fun o ->
-  Output.set_gaps_outer o delta ~global;
-  Ok None
+let set_gaps_inner wm seat delta scope =
+  apply_scoped wm seat scope ~f:(Output.apply_gaps_inner ~delta)
 ;;
 
-let set_gaps_overview seat delta =
-  With.focused_output seat
-  @@ fun o ->
-  Output.set_gaps_overview o ~delta;
-  Ok None
+let set_gaps_outer wm seat delta scope =
+  apply_scoped wm seat scope ~f:(Output.apply_gaps_outer ~delta)
 ;;
 
-let set_scroll_policy (wm : Wm.t) seat policy ~global =
-  With.focused_output seat
-  @@ fun o ->
-  if global
-  then List.iter (fun o' -> Output.set_scroll_policy o' policy ~global) wm.outputs
-  else Output.set_scroll_policy o policy ~global;
-  Ok None
+let set_gaps_overview wm seat delta scope =
+  Result.bind (outputs_of_scope wm seat scope) (fun outputs ->
+    List.iter (Output.set_gaps_overview ~delta) outputs;
+    Schedule.manage ();
+    Ok None)
 ;;
 
-let set_default_width (wm : Wm.t) seat delta ~global =
-  With.focused_output seat
-  @@ fun o ->
-  if global
-  then (
-    List.iter (fun o' -> Output.set_default_width o' delta ~global) wm.outputs;
-    Config.set_default_width wm.config.default_tag_config ~delta)
-  else Output.set_default_width o delta ~global;
-  Ok None
+let set_scroll_policy wm seat policy scope =
+  apply_scoped wm seat scope ~f:(Output.apply_scroll_policy ~policy)
 ;;
 
-let set_orientation seat dir ~global =
-  With.focused_output seat
-  @@ fun o ->
-  Output.set_orientation o dir ~global;
-  Ok None
+let set_default_width wm seat delta scope =
+  apply_scoped wm seat scope ~f:(Output.apply_default_width ~delta)
+;;
+
+let set_orientation wm seat dir scope =
+  apply_scoped wm seat scope ~f:(Output.apply_orientation ~dir)
 ;;
 
 let enter_overview wm (output : Output.t) =
@@ -123,48 +117,57 @@ let cycle_overview wm (seat : Seat.t) (dir : Direction.Logical.t) ~until_release
     Ok None
 ;;
 
-let set_layout seat (l : Layout.t) ~global =
-  With.focused_output seat
-  @@ fun o ->
-  let current = Output.current_layout o in
-  if current = l
-  then Ok None
-  else (
-    (match current, l with
-     | (Tiling | Scrolling), Floating ->
-       Output.tiled_windows o |> List.iter Window.restore_or_seed_float
-     | Floating, (Tiling | Scrolling) ->
-       Output.tiled_windows o |> List.iter Window.remember_float
-     | _ -> ());
-    Output.set_layout o l ~global;
-    Ok None)
-;;
-
-let select_scheme seat scheme ~global =
-  With.focused_output seat
-  @@ fun o ->
-  match set_layout seat Tiling ~global with
+let set_layout wm seat (layout : Layout.t) scope =
+  match outputs_of_scope wm seat scope with
   | Error _ as e -> e
-  | Ok _ ->
-    Output.set_scheme o scheme ~global;
-    Ok None
+  | Ok outputs ->
+    let target_floats = layout = Floating in
+    let fixup (o : Output.t) =
+      let tags_written =
+        match scope with
+        | Focused ->
+          Tag.Set.first o.tags.selected |> Option.value ~default:(Tag.Set.singleton 1)
+        | Output _ | All -> Tag.Set.all
+      in
+      let crossed =
+        Tag.Set.to_list tags_written
+        |> List.filter (fun s ->
+          let td = Output.tag_data o s in
+          td.layout = Floating <> target_floats)
+      in
+      let windows =
+        List.filter
+          (fun w ->
+             Window.is_tiled w && List.exists (fun s -> Window.on_tags w ~tags:s) crossed)
+          o.wm_stack
+      in
+      let fix =
+        if target_floats then Window.restore_or_seed_float else Window.remember_float
+      in
+      List.iter fix windows
+    in
+    List.iter fixup outputs;
+    apply_scoped wm seat scope ~f:(Output.apply_layout ~layout)
 ;;
 
-let cycle_scheme seat dir =
+let select_scheme wm seat scheme scope =
+  match set_layout wm seat Tiling scope with
+  | Error _ as e -> e
+  | Ok _ -> apply_scoped wm seat scope ~f:(Output.apply_scheme ~scheme)
+;;
+
+let cycle_scheme wm seat dir =
   With.focused_output seat
   @@ fun o ->
-  match set_layout seat Tiling ~global:false with
-  | Error _ as e -> e
-  | Ok _ ->
-    Output.cycle_scheme o dir ~global:false;
-    Ok None
+  let scheme = Scheme.cycle (Output.current_scheme o) dir in
+  select_scheme wm seat scheme Focused
 ;;
 
-let cycle_layout seat dir =
+let cycle_layout wm seat dir =
   With.focused_output seat
   @@ fun o ->
   let layout = Layout.cycle (Output.current_layout o) dir in
-  set_layout seat layout ~global:false
+  set_layout wm seat layout Focused
 ;;
 
 let retile wm (output : Output.t) =

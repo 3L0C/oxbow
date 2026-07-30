@@ -14,6 +14,19 @@ let focused_output (seat : Types.Seat.t) f =
   | Some o -> f o
 ;;
 
+let named_output ~name (wm : Types.Wm.t) f =
+  match Output.resolve_output_name name wm.outputs with
+  | Some o -> f o
+  | None -> Error (Printf.sprintf "no output named %s" name)
+;;
+
+let named_output_log ?out ~name (wm : Types.Wm.t) f =
+  named_output ~name wm (fun o ->
+    f o;
+    Ok None)
+  |> Result.iter_error @@ fun e -> log_of_out out @@ fun m -> m "%s" e
+;;
+
 let focused_output_log ?out seat f =
   focused_output seat (fun o ->
     f o;

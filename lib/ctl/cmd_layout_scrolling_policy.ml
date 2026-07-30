@@ -3,8 +3,8 @@ open! Ocdwm_ipc
 
 let command_term policy =
   let open Cmdliner.Term.Syntax in
-  let+ global = Ctl_cli.global_flag in
-  Command.Layout (Scrolling (Policy { policy; global }))
+  let+ scope = Ctl_cli.setting_scope_term in
+  Command.Layout (Scrolling (Policy { policy; scope }))
 ;;
 
 let scroll_targets =

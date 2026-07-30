@@ -58,13 +58,13 @@ let prev_window o =
 ;;
 
 let tag_data o tag =
-  match Tag.Set.first tag with
+  match Tag.Set.first_index tag with
   | Some i -> o.tag_data.(i - 1)
   | None -> invalid_arg "no tag data for the empty set"
 ;;
 
 let to_tag_data o =
-  match Tag.Set.first o.tags.selected with
+  match Tag.Set.first_index o.tags.selected with
   | Some i -> o.tag_data.(i - 1)
   | None -> invalid_arg "Got an output with no selected tags."
 ;;
@@ -110,31 +110,8 @@ let is_floating output =
   | Some o -> current_layout o = Floating
 ;;
 
-let set_layout o layout ~global =
-  let apply (td : Types.Config.Data.t) = td.layout <- layout in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Schedule.manage ()
-;;
-
-let set_scheme o scheme ~global =
-  let apply (td : Types.Config.Data.t) = td.tiling.scheme <- scheme in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Schedule.manage ()
-;;
-
-let cycle_scheme o dir ~global =
-  let apply (td : Types.Config.Data.t) =
-    td.tiling.scheme <- Scheme.cycle td.tiling.scheme dir
-  in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Schedule.manage ()
-;;
+let apply_layout (td : Types.Config.Data.t) ~layout = td.layout <- layout
+let apply_scheme (td : Types.Config.Data.t) ~scheme = td.tiling.scheme <- scheme
 
 let enter_overview o =
   if not o.overview.enabled
@@ -153,69 +130,48 @@ let exit_overview o =
     Schedule.manage ())
 ;;
 
-let set_mfact o (delta : float Delta.t) ~global =
-  let apply (td : Types.Config.Data.t) =
-    let params = td.tiling in
-    let mfact =
-      match delta with
-      | Delta.Abs a -> a
-      | Delta.Rel r -> params.mfact +. r
-    in
-    params.mfact <- Float.(max 0.05 mfact |> min 0.95)
+let apply_mfact (td : Types.Config.Data.t) ~(delta : float Delta.t) =
+  let params = td.tiling in
+  let mfact =
+    match delta with
+    | Delta.Abs a -> a
+    | Delta.Rel r -> params.mfact +. r
   in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Schedule.manage ()
+  params.mfact <- Float.(max 0.05 mfact |> min 0.95)
 ;;
 
-let set_nmaster o (delta : int Delta.t) ~global =
-  let apply (td : Types.Config.Data.t) =
-    let params = td.tiling in
-    let nmaster =
-      match delta with
-      | Delta.Abs a -> a
-      | Delta.Rel r -> params.nmaster + r
-    in
-    params.nmaster <- max 0 nmaster
+let apply_nmaster (td : Types.Config.Data.t) ~(delta : int Delta.t) =
+  let params = td.tiling in
+  let nmaster =
+    match delta with
+    | Delta.Abs a -> a
+    | Delta.Rel r -> params.nmaster + r
   in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Schedule.manage ()
+  params.nmaster <- max 0 nmaster
 ;;
 
-let set_gaps_inner o (delta : int Delta.t) ~global =
-  let apply (td : Types.Config.Data.t) =
-    let params = td.gaps in
-    let gaps_inner =
-      match delta with
-      | Delta.Abs a -> a
-      | Delta.Rel r -> params.inner + r
-    in
-    params.inner <- max 0 gaps_inner
+let apply_gaps_inner (td : Types.Config.Data.t) ~(delta : int Delta.t) =
+  let params = td.gaps in
+  let gaps_inner =
+    match delta with
+    | Delta.Abs a -> a
+    | Delta.Rel r -> params.inner + r
   in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Schedule.manage ()
+  params.inner <- max 0 gaps_inner
 ;;
 
-let set_gaps_outer o (delta : int Delta.t) ~global =
-  let apply (td : Types.Config.Data.t) =
-    let params = td.gaps in
-    let outer =
-      match delta with
-      | Delta.Abs a -> a
-      | Delta.Rel r -> params.outer + r
-    in
-    params.outer <- max 0 outer
+let apply_gaps_outer (td : Types.Config.Data.t) ~(delta : int Delta.t) =
+  let params = td.gaps in
+  let outer =
+    match delta with
+    | Delta.Abs a -> a
+    | Delta.Rel r -> params.outer + r
   in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Schedule.manage ()
+  params.outer <- max 0 outer
 ;;
+
+let apply_scroll_policy (td : Types.Config.Data.t) ~policy = td.scrolling.policy <- policy
+let apply_orientation (td : Types.Config.Data.t) ~dir = td.tiling.dir <- dir
 
 let set_gaps_overview o ~(delta : int Delta.t) =
   let gaps =
@@ -227,22 +183,6 @@ let set_gaps_overview o ~(delta : int Delta.t) =
 ;;
 
 let set_overview_head o head = o.overview.head <- head
-
-let set_scroll_policy o policy ~global =
-  let apply (td : Types.Config.Data.t) = td.scrolling.policy <- policy in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Schedule.manage ()
-;;
-
-let set_orientation o dir ~global =
-  let apply (td : Types.Config.Data.t) = td.tiling.dir <- dir in
-  if global
-  then Tag.Set.iter (fun i -> Tag.Set.singleton i |> tag_data o |> apply) Tag.Set.all
-  else to_tag_data o |> apply;
-  Schedule.manage ()
-;;
 
 let set_wm_stack o ws =
   o.wm_stack <- ws;
@@ -282,13 +222,4 @@ let set_usable o usable =
 let set_name o name = o.name <- name
 let set_geom o geom = o.geom <- geom
 let set_scroll_offset o offset = o.scroll.offset <- offset
-
-let set_default_width o (delta : float Delta.t) ~global =
-  if global
-  then
-    Tag.Set.iter
-      (fun i -> Tag.Set.singleton i |> tag_data o |> Config.set_default_width ~delta)
-      Tag.Set.all
-  else to_tag_data o |> Config.set_default_width ~delta;
-  Schedule.manage ()
-;;
+let apply_default_width td ~delta = Config.set_default_width ~delta td

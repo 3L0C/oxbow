@@ -10,12 +10,13 @@ let to_tags (output : Output.t) =
     Some
       Record.Tags.
         { output = name
-        ; viewed = Tag.Set.to_list output.tags.selected
-        ; occupied = Output.occupied_tags output |> Tag.Set.to_list
-        ; urgent = Output.urgent_tags output |> Tag.Set.to_list
+        ; viewed = Tag.Set.to_index_list output.tags.selected
+        ; occupied = Output.occupied_tags output |> Tag.Set.to_index_list
+        ; urgent = Output.urgent_tags output |> Tag.Set.to_index_list
         ; focused =
             Output.focused_window output
-            |> Option.fold ~none:[] ~some:(fun (w : Window.t) -> Tag.Set.to_list w.tags)
+            |> Option.fold ~none:[] ~some:(fun (w : Window.t) ->
+              Tag.Set.to_index_list w.tags)
         }
 ;;
 
@@ -26,7 +27,7 @@ let to_window (wm : Wm.t) (window : Window.t) =
     ; title = window.title
     ; app_id = window.app_id
     ; output = Option.bind window.output (fun o -> o.name)
-    ; tags = Tag.Set.to_list window.tags
+    ; tags = Tag.Set.to_index_list window.tags
     ; focused =
         (match window.output with
          | None -> false
@@ -79,6 +80,6 @@ let to_focus (seat : Seat.t) =
         ; output = Option.bind seat.output (fun o -> o.name)
         ; title = Option.bind focused_window (fun w -> w.title)
         ; app_id = Option.bind focused_window (fun w -> w.app_id)
-        ; tags = Option.bind focused_window (fun w -> Some (Tag.Set.to_list w.tags))
+        ; tags = Option.bind focused_window (fun w -> Some (Tag.Set.to_index_list w.tags))
         }
 ;;

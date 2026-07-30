@@ -5,8 +5,8 @@ let () =
     [ Window (Zoom { warp = None })
     ; Spawn "foot"
     ; Window (Focus_logical { dir = Next; warp = None })
-    ; Layout (Tiling (Mfact { delta = Delta.Rel 0.05; global = false }))
-    ; Layout (Tiling (Mfact { delta = Delta.Abs 0.55; global = false }))
+    ; Layout (Tiling (Mfact { delta = Delta.Rel 0.05; scope = Focused }))
+    ; Layout (Tiling (Mfact { delta = Delta.Abs 0.55; scope = Focused }))
     ; Tag (View (Concrete (Tag.Set.singleton 3)))
     ]
   in

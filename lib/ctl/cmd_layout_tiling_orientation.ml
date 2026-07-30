@@ -2,8 +2,8 @@ open! Ocdwm_ipc
 
 let command_term dir =
   let open Cmdliner.Term.Syntax in
-  let+ global = Ctl_cli.global_flag in
-  Command.Layout (Tiling (Orientation { dir; global }))
+  let+ scope = Ctl_cli.setting_scope_term in
+  Command.Layout (Tiling (Orientation { dir; scope }))
 ;;
 
 let leaf mk_term (name, dir) =

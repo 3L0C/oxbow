@@ -1,91 +1,114 @@
-(** [set_mfact seat delta ~global] adjusts the master-area fraction on the first
-    selected tag of [seat]'s output. When [global] is [true], the change applies
-    to every tag.
+(** [outputs_of_scope wm seat scope] is the outputs that [scope] selects: the
+    focused output of [seat], the named output, or every output. Errors when
+    [seat] has no output or when no output has the name.
+
+    {b Effects:} mutates WM state *)
+val outputs_of_scope
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
+  -> Ocdwm_core.Scope.t
+  -> (Ocdwm_state.Types.Output.t list, string) result
+
+(** [apply_scoped wm seat scope ~f] applies [f] to each tag config that [scope]
+    selects. [Focused] selects the config of the selected tags on the focused
+    output. [Output name] selects the config of every tag on the named output.
+    [All] selects the config of every tag on every output, and the default tag
+    config.
+
+    {b Effects:} mutates WM state *)
+val apply_scoped
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
+  -> Ocdwm_core.Scope.t
+  -> f:(Ocdwm_state.Types.Config.Data.t -> unit)
+  -> (Yojson.Safe.t option, string) result
+
+(** [set_mfact wm seat delta scope] adjusts the master-area fraction on output
+    according to [scope].
 
     {b Effects:} mutates WM state *)
 val set_mfact
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> float Ocdwm_core.Delta.t
-  -> global:bool
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_nmaster seat delta ~global] adjusts the master window count on the
-    first selected tag of [seat]'s output. When [global] is [true], the change
-    applies to every tag.
+(** [set_nmaster wm seat delta scope] adjusts the master window count on output
+    according to [scope].
 
     {b Effects:} mutates WM state *)
 val set_nmaster
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> int Ocdwm_core.Delta.t
-  -> global:bool
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_gaps_inner seat delta ~global] adjusts the inner gaps on the first
-    selected tag of [seat]'s output. When [global] is [true], the change applies
-    to every tag.
+(** [set_gaps_inner wm seat delta scope] adjusts the inner gaps on output
+    according to [scope].
 
     {b Effects:} mutates WM state *)
 val set_gaps_inner
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> int Ocdwm_core.Delta.t
-  -> global:bool
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_gaps_outer seat delta ~global] adjusts the outer gaps on the first
-    selected tag of [seat]'s output. When [global] is [true], the change applies
-    to every tag.
+(** [set_gaps_outer wm seat delta scope] adjusts the outer gaps on the output
+    according to [scope].
 
     {b Effects:} mutates WM state *)
 val set_gaps_outer
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> int Ocdwm_core.Delta.t
-  -> global:bool
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_gaps_overview seat delta] adjusts the overview gaps on [seat]'s focused
-    output.
+(** [set_gaps_overview wm seat delta scope] adjusts the overview gaps on the
+    output according to [scope].
 
     {b Effects:} mutates WM state *)
 val set_gaps_overview
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> int Ocdwm_core.Delta.t
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_scroll_policy wm seat policy ~global] sets the scrolling layout policy
-    on [seat]'s output. Applied to all tags when [global] is [true]. Applies to
-    all tags on all outputs if [global] is [true]. Applied to the first selected
-    tag when [false].
+(** [set_scroll_policy wm seat policy scope] sets the scrolling layout policy on
+    the output according to [scope].
 
     {b Effects:} mutates WM state *)
 val set_scroll_policy
   :  Ocdwm_state.Wm.t
   -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Scroll_policy.t
-  -> global:bool
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_default_width wm seat delta ~global] sets the default column width
-    according to [delta] on [seat]'s focused output. Applies to all tags on all
-    outputs if [global] is [true]. Applied to the first selected tag when
-    [false].
+(** [set_default_width wm seat delta scope] sets the default column width on the
+    output according to [scope].
 
     {b Effects:} mutates WM state *)
 val set_default_width
   :  Ocdwm_state.Wm.t
   -> Ocdwm_state.Seat.t
   -> float Ocdwm_core.Delta.t
-  -> global:bool
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_orientation seat dir ~global] sets the stack direction on [seat]'s
-    output. Applied to all tags if [global] is [true]. Applied to the first
-    selected tag when [false].
+(** [set_orientation wm seat dir scope] sets the stack direction on the output
+    according to [scope].
 
     {b Effects:} mutates WM state *)
 val set_orientation
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Spatial.t
-  -> global:bool
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
 (** [enter_overview wm output] handles the transition to the [Overview] layout.
@@ -120,47 +143,48 @@ val cycle_overview
   -> until_release:string option
   -> (Yojson.Safe.t option, string) result
 
-(** [set_layout seat layout ~global] sets the layout on [seat]'s focused output.
-    Applied to all tags when [global] is [true]. Applied to the first selected
-    tag when [false]. Saves float geometry for tiled windows when the switch
-    enters or leaves the [Floating] layout.
+(** [set_layout wm seat layout scope] sets the layout on the output according to
+    [scope].
 
     {b Effects:} mutates WM state *)
 val set_layout
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Layout.t
-  -> global:bool
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [select_scheme seat scheme ~global] sets [seat]'s focused output to
-    [scheme]. Applied to all tags when [global] is [true]. Applied to the first
-    selected tag when [false]. Is [Error msg] when [seat] has no output.
+(** [select_scheme wm seat scheme scope] sets the scheme on the output according
+    to [scope].
 
     {b Effects:} mutates WM state *)
 val select_scheme
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Scheme.t
-  -> global:bool
+  -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [cycle_scheme seat dir] sets the current scheme's registered neighbor in
+(** [cycle_scheme wm seat dir] sets the current scheme's registered neighbor in
     [dir] on the first selected tag of [seat]'s output; tiled windows leaving
     the [floating] layout remember their geometry. Is [Error msg] when [seat]
     has no output.
 
     {b Effects:} mutates WM state *)
 val cycle_scheme
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [cycle_layout seat dir] sets the current layout's registered neighbor in
+(** [cycle_layout wm seat dir] sets the current layout's registered neighbor in
     [dir] on the first selected tag of [seat]'s output. Is [Error msg] when
     [seat] has no output.
 
     {b Effects:} mutates WM state *)
 val cycle_layout
-  :  Ocdwm_state.Seat.t
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
   -> Ocdwm_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 

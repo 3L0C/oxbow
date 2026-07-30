@@ -3,8 +3,8 @@ open! Ocdwm_ipc
 let command_term =
   let open Cmdliner.Term.Syntax in
   let+ delta = Ctl_cli.float_delta
-  and+ global = Ctl_cli.global_flag in
-  Command.Layout (Scrolling (Default_width { delta; global }))
+  and+ scope = Ctl_cli.setting_scope_term in
+  Command.Layout (Scrolling (Default_width { delta; scope }))
 ;;
 
 let name = "default-width"

@@ -3,8 +3,8 @@ open! Ocdwm_ipc
 let command_term =
   let open Cmdliner.Term.Syntax in
   let+ delta = Ctl_cli.int_delta
-  and+ global = Ctl_cli.global_flag in
-  Command.Gaps (Outer { delta; global })
+  and+ scope = Ctl_cli.setting_scope_term in
+  Command.Gaps (Outer { delta; scope })
 ;;
 
 let name = "outer"

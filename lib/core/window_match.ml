@@ -1,13 +1,5 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
 
-module Scope = struct
-  type t =
-    | All [@name "all"]
-    | Focused [@name "focused"]
-    | Output of string [@name "output"]
-  [@@deriving yojson]
-end
-
 type t =
   { pattern : Pattern.t
   ; invert : bool

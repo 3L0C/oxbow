@@ -322,10 +322,6 @@ let warp_flag =
         ])
 ;;
 
-let global_flag =
-  Arg.(value & flag & info [ "all" ] ~doc:"Applies the change to all tags")
-;;
-
 let pattern_flags =
   let open Ocdwm_core in
   let open Cmdliner.Term.Syntax in
@@ -347,7 +343,6 @@ let pattern_term =
 ;;
 
 let scope_term =
-  let open Ocdwm_core.Window_match in
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ focused =
@@ -358,6 +353,26 @@ let scope_term =
      | true, None -> Ok Scope.Focused
      | false, Some name -> Ok (Scope.Output name)
      | false, None -> Ok Scope.All
+;;
+
+let setting_scope_term =
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ all =
+       Arg.(
+         value
+         & flag
+         & info
+             [ "all" ]
+             ~doc:
+               "Apply the change to every tag on every output. The value becomes the \
+                default for new outputs and tags.")
+     and+ output = output_flag in
+     match all, output with
+     | true, Some _ -> Error "--all takes no --output"
+     | true, None -> Ok Scope.All
+     | false, Some name -> Ok (Scope.Output name)
+     | false, None -> Ok Scope.Focused
 ;;
 
 let window_match_of source =

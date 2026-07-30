@@ -3,8 +3,8 @@ open! Ocdwm_ipc
 
 let command_term scheme =
   let open Cmdliner.Term.Syntax in
-  let+ global = Ctl_cli.global_flag in
-  Command.Layout (Tiling (Scheme { scheme; global }))
+  let+ scope = Ctl_cli.setting_scope_term in
+  Command.Layout (Tiling (Scheme { scheme; scope }))
 ;;
 
 let leaf mk_term (s : Scheme.t) =

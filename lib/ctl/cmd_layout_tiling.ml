@@ -2,8 +2,8 @@ open! Ocdwm_ipc
 
 let command_term =
   let open Cmdliner.Term.Syntax in
-  let+ global = Ctl_cli.global_flag in
-  Command.Layout (Select { layout = Tiling; global })
+  let+ scope = Ctl_cli.setting_scope_term in
+  Command.Layout (Select { layout = Tiling; scope })
 ;;
 
 let name = "tiling"

@@ -2,8 +2,8 @@ open! Ocdwm_ipc
 
 let command_term =
   let open Cmdliner.Term.Syntax in
-  let+ global = Ctl_cli.global_flag in
-  Command.Layout (Select { layout = Scrolling; global })
+  let+ scope = Ctl_cli.setting_scope_term in
+  Command.Layout (Select { layout = Scrolling; scope })
 ;;
 
 let name = "scrolling"
@@ -16,17 +16,11 @@ let build mk_term children =
 let cmd =
   build
     Ctl_cli.command_term
-    [ Cmd_layout_scrolling_column_width.cmd
-    ; Cmd_layout_scrolling_default_width.cmd
-    ; Cmd_layout_scrolling_policy.cmd
-    ]
+    [ Cmd_layout_scrolling_default_width.cmd; Cmd_layout_scrolling_policy.cmd ]
 ;;
 
 let bind_cmd =
   build
     Ctl_cli.bind_term
-    [ Cmd_layout_scrolling_column_width.bind_cmd
-    ; Cmd_layout_scrolling_default_width.bind_cmd
-    ; Cmd_layout_scrolling_policy.bind_cmd
-    ]
+    [ Cmd_layout_scrolling_default_width.bind_cmd; Cmd_layout_scrolling_policy.bind_cmd ]
 ;;

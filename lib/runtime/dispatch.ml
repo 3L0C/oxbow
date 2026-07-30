@@ -13,14 +13,9 @@ let handle_border wm _seat (cmd : Command.Border.t) =
 let handle_gaps ctx seat (cmd : Command.Gaps.t) =
   let wm = Ctx.wm ctx in
   match cmd with
-  | Inner { delta; global } -> Arrange.set_gaps_inner seat delta ~global
-  | Outer { delta; global } -> Arrange.set_gaps_outer seat delta ~global
-  | Overview { delta; global } ->
-    if global
-    then (
-      List.iter (Output.set_gaps_overview ~delta) wm.outputs;
-      Ok None)
-    else Arrange.set_gaps_overview seat delta
+  | Inner { delta; scope } -> Arrange.set_gaps_inner wm seat delta scope
+  | Outer { delta; scope } -> Arrange.set_gaps_outer wm seat delta scope
+  | Overview { delta; scope } -> Arrange.set_gaps_overview wm seat delta scope
 ;;
 
 let handle_input ctx seat (cmd : Command.Input.t) =
