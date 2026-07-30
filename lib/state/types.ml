@@ -68,6 +68,26 @@ and Output : sig
       | Removed
   end
 
+  module Tags : sig
+    type t =
+      { mutable selected : Ocdwm_core.Tag.Set.t
+      ; mutable previous : Ocdwm_core.Tag.Set.t
+      }
+  end
+
+  module Overview : sig
+    type t =
+      { mutable offset : int
+      ; mutable enabled : bool
+      ; mutable gaps : int
+      ; mutable head : Window.t option
+      }
+  end
+
+  module Scroll : sig
+    type t = { mutable offset : int }
+  end
+
   type t =
     { obj : Wire.Obj.Window_management.Output.t
     ; layer_shell : Wire.Obj.Layer_shell.Output.t
@@ -75,10 +95,9 @@ and Output : sig
     ; mutable name : string option
     ; mutable geom : int32 Ocdwm_core.Rect.t
     ; mutable usable : int Ocdwm_core.Rect.t
-    ; mutable selected_tags : Ocdwm_core.Tag.Set.t
-    ; mutable previous_tags : Ocdwm_core.Tag.Set.t
-    ; mutable overview : bool
-    ; mutable scroll_offset : int
+    ; tags : Tags.t
+    ; overview : Overview.t
+    ; scroll : Scroll.t
     ; tag_data : Config.Data.t array
     ; (* Focus stack; most recently focused first *)
       mutable focus_stack : Window.t list
@@ -202,7 +221,8 @@ and Window : sig
     ; mutable presentation_hint : Wire.Presentation_mode.t option
     ; mutable geom : int32 Ocdwm_core.Rect.t
     ; mutable float_geom : int32 Ocdwm_core.Rect.t option
-    ; mutable clip : int Ocdwm_core.Rect.t option
+    ; mutable clip : ([ `Scrolling | `Overview ] * int Ocdwm_core.Rect.t) option
+    ; mutable offscreen : bool
     ; mutable size_hints : int32 Size_hints.t
     ; mutable tags : Ocdwm_core.Tag.Set.t
     ; mutable output : Output.t option
@@ -306,6 +326,9 @@ and Seat : sig
   type t =
     { obj : Wire.Obj.Window_management.Seat.t
     ; layer_shell : Wire.Obj.Layer_shell.Seat.t
+    ; xkb_seat : Wire.Obj.Xkb.Bindings.Seat.t
+    ; mutable overview_watch : int32
+    ; mutable watch_sent : int32
     ; mutable lifecycle : Lifecycle.t
     ; mutable name : string option
     ; mutable output : Output.t option

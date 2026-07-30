@@ -21,6 +21,17 @@ val set_position : t -> x:int32 -> y:int32 -> unit
     {b Effects:} mutates WM state *)
 val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
 
+(** [set_clip window clip] updates [window]'s clip mask to [clip].
+
+    {b Effects:} mutates WM state *)
+val set_clip : t -> ([ `Scrolling | `Overview ] * int Ocdwm_core.Rect.t) option -> unit
+
+(** [set_offscreen window v] marks [window] outside the viewport in scrolling
+    layouts.
+
+    {b Effects:} mutates WM state *)
+val set_offscreen : t -> bool -> unit
+
 (** [on_tags window ~tags] is true when [window]'s tags intersect with [tags]. *)
 val on_tags : t -> tags:Ocdwm_core.Tag.Set.t -> bool
 

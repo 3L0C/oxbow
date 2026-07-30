@@ -86,7 +86,7 @@ module Obj = struct
 
   module Xkb = struct
     module Bindings = struct
-      type v = [ `V2 ]
+      type v = [ `V3 ]
 
       module Binding = struct
         type t = v River_xkb_bindings_v1_client.River_xkb_binding_v1.t

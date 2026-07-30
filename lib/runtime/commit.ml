@@ -93,7 +93,8 @@ let bindings ctx (s : Seat.t) =
        | false, true ->
          Send.disable_pointer_binding ctx p.obj;
          p.enabled <- desired)
-    s.pointer_bindings
+    s.pointer_bindings;
+  Send.modifiers_watch ctx s
 ;;
 
 let warp ctx (s : Seat.t) =
@@ -222,17 +223,24 @@ let node ctx (w : Window.t) =
   let want_clip =
     match w.output with
     | None -> None
-    | Some o when o.overview -> None
+    | Some _ when not rendered -> None
+    | Some o when o.overview.enabled -> w.clip
     | Some o when Output.current_layout o <> Scrolling -> None
     | Some _ when not @@ Window.is_tiled w -> None
-    | Some _ when not rendered -> None
     | Some _ -> w.clip
   in
   match want_clip with
-  | Some r ->
+  | Some (`Overview, r) ->
     let g = Rect.to_int32 r in
-    Send.set_clip_box ctx w ~x:g.x ~y:g.y ~width:g.w ~height:g.h
-  | None -> Send.set_clip_box ctx w ~x:0l ~y:0l ~width:0l ~height:0l
+    Send.set_clip_box ctx w ~x:0l ~y:0l ~width:0l ~height:0l;
+    Send.set_content_clip_box ctx w ~x:g.x ~y:g.y ~width:g.w ~height:g.h
+  | Some (`Scrolling, r) ->
+    let g = Rect.to_int32 r in
+    Send.set_clip_box ctx w ~x:g.x ~y:g.y ~width:g.w ~height:g.h;
+    Send.set_content_clip_box ctx w ~x:0l ~y:0l ~width:0l ~height:0l
+  | None ->
+    Send.set_clip_box ctx w ~x:0l ~y:0l ~width:0l ~height:0l;
+    Send.set_content_clip_box ctx w ~x:0l ~y:0l ~width:0l ~height:0l
 ;;
 
 let window_z_order ctx (output : Output.t) =

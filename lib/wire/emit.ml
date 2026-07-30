@@ -27,7 +27,7 @@ let create_xkb_binding river_xkb_v1 ~seat ~keysym ~mods ~on_pressed =
   River.Xkb.Bindings.River_xkb_bindings_v1.get_xkb_binding
     river_xkb_v1
     object
-      inherit [_] River.Xkb.Bindings.River_xkb_binding_v1.v2
+      inherit [_] River.Xkb.Bindings.River_xkb_binding_v1.v3
       method on_stop_repeat _ = ()
       method on_released _ = ()
       method on_pressed _ = on_pressed ()
@@ -49,6 +49,17 @@ let create_pointer_binding seat ~button ~mods ~on_pressed =
     ~modifiers:mods
 ;;
 
+let create_xkb_bindings_seat xkb ~seat ~on_modifiers_update =
+  River.Xkb.Bindings.River_xkb_bindings_v1.get_seat
+    xkb
+    object
+      inherit [_] River.Xkb.Bindings.River_xkb_bindings_seat_v1.v3
+      method on_modifiers_update _ ~old ~new_ = on_modifiers_update ~old ~new_
+      method on_ate_unbound_key _ = ()
+    end
+    ~seat
+;;
+
 let destroy_window ~window ~node =
   River.Window_management.River_window_v1.destroy window;
   Wayland.Proxy.delete window;
@@ -67,8 +78,9 @@ let destroy_pointer_binding pointer =
   River.Window_management.River_pointer_binding_v1.destroy pointer
 ;;
 
-let destroy_seat ~seat ~layer_shell =
+let destroy_seat ~seat ~layer_shell ~xkb_seat =
   River.Layer_shell.River_layer_shell_seat_v1.destroy layer_shell;
+  River.Xkb.Bindings.River_xkb_bindings_seat_v1.destroy xkb_seat;
   River.Window_management.River_seat_v1.destroy seat;
   Wayland.Proxy.delete seat
 ;;

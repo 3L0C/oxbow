@@ -114,6 +114,17 @@ val set_interacted : t -> Types.Window.t option -> unit
     {b Effects:} mutates WM state *)
 val set_warp_request : t -> Warp_request.t -> unit
 
+(** [set_overview_watch seat watch] sets [watch] as [seat]'s watched modifiers
+    for overview mode.
+
+    {b Effects:} mutates WM state *)
+val set_overview_watch : t -> int32 -> unit
+
+(** [set_watch_sent seat sent] sets [sent] as [seat]'s watched modifiers.
+
+    {b Effects:} mutates WM state *)
+val set_watch_sent : t -> int32 -> unit
+
 (** [bind wm seat ?mode mods key command] binds the [mods] and [key] to
     [command] in [mode] (default [Mode.normal]). Replaces any existing binding
     for [mods] and [key]. Is [Ok true] when a binding was replaced. Is

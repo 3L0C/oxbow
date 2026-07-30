@@ -36,7 +36,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let river_xkb_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Xkb.Bindings.River_xkb_bindings_v1.v2
+         inherit [_] River.Xkb.Bindings.River_xkb_bindings_v1.v3
        end
   in
   let river_lsh_v1 =

@@ -5,7 +5,7 @@ let view (seat : Seat.t) arg =
   match seat.output with
   | None -> Error Messages.seat_missing_output
   | Some o ->
-    let s = Output.resolve_tag_arg arg o in
+    let s = Output.resolve_tag_arg ~arg o in
     if Tag.Set.is_empty s
     then Error Messages.tag_set_is_empty
     else (
@@ -20,7 +20,7 @@ let toggle_view (seat : Seat.t) s =
     match seat.output with
     | None -> Error Messages.seat_missing_output
     | Some o ->
-      let new_tags = Tag.Set.symmetric_diff o.selected_tags s in
+      let new_tags = Tag.Set.symmetric_diff o.tags.selected s in
       if Tag.Set.is_empty new_tags
       then Error "toggle would leave no tags visible"
       else (
@@ -31,9 +31,9 @@ let toggle_view (seat : Seat.t) s =
 let view_previous (seat : Seat.t) =
   match seat.output with
   | None -> Error Messages.seat_missing_output
-  | Some o when Tag.Set.is_empty o.previous_tags -> Error "no previous tags defined"
+  | Some o when Tag.Set.is_empty o.tags.previous -> Error "no previous tags defined"
   | Some o ->
-    Output.switch_tags ~tags:o.previous_tags o;
+    Output.switch_tags ~tags:o.tags.previous o;
     Ok None
 ;;
 
@@ -43,8 +43,8 @@ let view_cycle (seat : Seat.t) (dir : Direction.Logical.t) =
   | Some o ->
     let target =
       match dir with
-      | Next -> Tag.Set.next o.selected_tags
-      | Prev -> Tag.Set.prev o.selected_tags
+      | Next -> Tag.Set.next o.tags.selected
+      | Prev -> Tag.Set.prev o.tags.selected
     in
     Output.switch_tags ~tags:target o;
     Ok None
@@ -60,8 +60,8 @@ let view_cycle_occupied (seat : Seat.t) (dir : Direction.Logical.t) =
     else (
       let tags =
         match dir with
-        | Next -> Tag.Set.next_occupied ~selected:o.selected_tags ~occupied
-        | Prev -> Tag.Set.prev_occupied ~selected:o.selected_tags ~occupied
+        | Next -> Tag.Set.next_occupied ~selected:o.tags.selected ~occupied
+        | Prev -> Tag.Set.prev_occupied ~selected:o.tags.selected ~occupied
       in
       Output.switch_tags ~tags o;
       Ok None)
@@ -80,7 +80,7 @@ let tag_window wm seat (tags : Tag.Arg.t) ~follow =
         Ok None)
     in
     (match w.output, tags with
-     | Some o, _ -> Output.resolve_tag_arg tags o |> resolve
+     | Some o, _ -> Output.resolve_tag_arg ~arg:tags o |> resolve
      | None, Concrete s -> resolve s
      | None, Occupied -> Error "cannot use 'occupied' for window with no output")
 ;;
@@ -123,7 +123,7 @@ let tag_window_match wm seat m (arg : Tag.Arg.t) =
              List.iter
                (fun (w : Window.t) ->
                   match w.output, arg with
-                  | Some o, _ -> Window.set_tags w (Output.resolve_tag_arg arg o)
+                  | Some o, _ -> Window.set_tags w (Output.resolve_tag_arg ~arg o)
                   | None, Concrete s -> Window.set_tags w s
                   | None, Occupied -> ())
                ws;

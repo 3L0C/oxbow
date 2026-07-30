@@ -80,7 +80,7 @@ let install_defaults (wm : Wm.t) seat =
     pointer_bindings
 ;;
 
-let parse_modifiers = function
+let parse_modifier = function
   | "Shift" -> Ok Wire.Modifiers.shift
   | "Control" -> Ok Wire.Modifiers.ctrl
   | "Mod1" | "Alt" -> Ok Wire.Modifiers.mod1
@@ -110,7 +110,7 @@ let parse s =
           | Ok keysym -> Ok { mods; key = Keysym keysym })
        | Ok button -> Ok { mods; key = Pointer button })
     | x :: xs ->
-      (match parse_modifiers x with
+      (match parse_modifier x with
        | Error _ as e -> e
        | Ok m -> aux (Int32.logor mods m) xs)
     | [] -> Error (Printf.sprintf "internal error, got no parts: %S" s)

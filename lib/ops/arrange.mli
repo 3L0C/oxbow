@@ -42,6 +42,15 @@ val set_gaps_outer
   -> global:bool
   -> (Yojson.Safe.t option, string) result
 
+(** [set_gaps_overview seat delta] adjusts the overview gaps on [seat]'s focused
+    output.
+
+    {b Effects:} mutates WM state *)
+val set_gaps_overview
+  :  Ocdwm_state.Seat.t
+  -> int Ocdwm_core.Delta.t
+  -> (Yojson.Safe.t option, string) result
+
 (** [set_scroll_policy wm seat policy ~global] sets the scrolling layout policy
     on [seat]'s output. Applied to all tags when [global] is [true]. Applies to
     all tags on all outputs if [global] is [true]. Applied to the first selected
@@ -97,6 +106,19 @@ val exit_overview : Ocdwm_state.Output.t -> unit
 
     {b Effects:} mutates WM states *)
 val toggle_overview : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> ('a option, string) result
+
+(** [overview_cycle wm seat dir ~until_release] enters overview on [seat]'s
+    output when it is closed, then moves the overview head one step through the
+    focus stack in [dir]. When [until_release] holds a modifier string, arms the
+    seat's modifier watch with the parsed set.
+
+    {b Effects:} mutates WM state, may schedule *)
+val cycle_overview
+  :  Ocdwm_state.Wm.t
+  -> Ocdwm_state.Seat.t
+  -> Ocdwm_core.Direction.Logical.t
+  -> until_release:string option
+  -> (Yojson.Safe.t option, string) result
 
 (** [set_layout seat layout ~global] sets the layout on [seat]'s focused output.
     Applied to all tags when [global] is [true]. Applied to the first selected

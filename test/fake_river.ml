@@ -24,7 +24,7 @@ type t =
   { mutable phase : phase
   ; mutable trace : string list
   ; mutable manage_dirty_count : int
-  ; mutable bindings : [ `V2 ] Xkb_server.River_xkb_binding_v1.t list
+  ; mutable bindings : [ `V3 ] Xkb_server.River_xkb_binding_v1.t list
   ; mutable wm : [ `V4 ] Wm_server.River_window_manager_v1.t option
   ; mutable registry : [ `V1 ] Wl.Wl_registry.t option
   ; mutable next_global : int32
@@ -35,7 +35,7 @@ type t =
   }
 
 let name_wm = 1l
-let name_xkb_bindings = 2l
+let name_xkb_bindings = 3l
 let name_layer_shell = 3l
 let name_input_manager = 4l
 let name_xkb_config = 5l
@@ -236,7 +236,7 @@ let wm_handlers t =
 
 let binding_handlers t =
   object
-    inherit [_] Xkb_server.River_xkb_binding_v1.v2
+    inherit [_] Xkb_server.River_xkb_binding_v1.v3
     method on_enable _ = record t "enable"
     method on_disable _ = record t "disable"
     method on_set_layout_override _ ~layout:_ = record t "set_layout_override"
@@ -246,7 +246,7 @@ let binding_handlers t =
 
 let bindings_seat_handlers t =
   object
-    inherit [_] Xkb_server.River_xkb_bindings_seat_v1.v2
+    inherit [_] Xkb_server.River_xkb_bindings_seat_v1.v3
     method on_modifiers_watch _ ~modifiers:_ = record t "modifiers_watch"
     method on_ensure_next_key_eaten _ = record t "ensure_next_key_eaten"
     method on_cancel_ensure_next_key_eaten _ = record t "cancel_ensure_next_key_eaten"
@@ -256,7 +256,7 @@ let bindings_seat_handlers t =
 
 let xkb_bindings_handlers t =
   (object
-     inherit [_] Xkb_server.River_xkb_bindings_v1.v2
+     inherit [_] Xkb_server.River_xkb_bindings_v1.v3
      method on_destroy _ = record t "destroy"
 
      method on_get_seat _ s ~seat:_ =
@@ -268,7 +268,7 @@ let xkb_bindings_handlers t =
        t.bindings <- t.bindings @ [ Proxy.cast_version binding ];
        record t "get_xkb_binding"
    end
-    :> ([ `River_xkb_bindings_v1 ], [ `V2 ], [ `Server ]) Proxy.Service_handler.t)
+    :> ([ `River_xkb_bindings_v1 ], [ `V3 ], [ `Server ]) Proxy.Service_handler.t)
 ;;
 
 let layer_shell_output_handlers _t =
@@ -427,7 +427,7 @@ let display_handlers t =
         t
         ~name:name_xkb_bindings
         ~interface:Xkb_proto.River_xkb_bindings_v1.interface
-        ~version:2l;
+        ~version:3l;
       announce
         t
         ~name:name_layer_shell

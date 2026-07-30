@@ -8,7 +8,7 @@ type t =
     {b Effects:} mutates WM state *)
 val install_defaults : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
 
-(** [parse_modifiers s] maps recognized modifier strings to Wayland [int32]
+(** [parse_modifier s] maps recognized modifier strings to Wayland [int32]
     representations. Recognized strings include:
     - {b Shift}
     - {b Control}
@@ -19,7 +19,7 @@ val install_defaults : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
     - {b None}
 
     Any other string returns [Error "unrecognized"]. *)
-val parse_modifiers : string -> (int32, string) result
+val parse_modifier : string -> (int32, string) result
 
 (** [parse_keysym name] is the keysym represented by [name]. See:
     - https://github.com/xkbcommon/libxkbcommon/blob/master/include/xkbcommon/xkbcommon-keysyms.h

@@ -6,6 +6,7 @@ let zoom ?warp wm (seat : Seat.t) =
   With.focused_output seat
   @@ fun o ->
   match Output.current_layout o with
+  | _ when o.overview.enabled -> Error "cannot zoom from overview"
   | Floating -> Error "cannot zoom in the floating layout"
   | Scrolling -> Column.zoom ?warp wm seat
   | Tiling -> Tiling.zoom ?warp wm seat
@@ -16,7 +17,7 @@ let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
     (match policy with
      | Keep -> ()
      | Take ->
-       Tag.Set.first target.selected_tags
+       Tag.Set.first target.tags.selected
        |> Option.fold ~none:window.tags ~some:Tag.Set.singleton
        |> Window.set_tags window);
     Window.set_output window @@ Some target;
@@ -131,7 +132,7 @@ let toggle_floating seat =
   @@ fun o w ->
   if Output.current_layout o = Floating
   then Error "cannot toggle floating from the floating layout"
-  else if o.overview
+  else if o.overview.enabled
   then Error "cannot toggle floating from overview"
   else (
     match w.presentation with
@@ -299,7 +300,7 @@ let swap_outputs
         fun (o : Output.t) ->
           if o == a
           then Output.visible_windows a
-          else Output.windows_on_tags b ~tags:a.selected_tags
+          else Output.windows_on_tags b ~tags:a.tags.selected
       | `All -> fun (o : Output.t) -> o.wm_stack
       | `Visible -> Output.visible_windows
     in

@@ -59,6 +59,16 @@ val create_pointer_binding
   -> on_pressed:(unit -> unit)
   -> Wire.Obj.Window_management.Pointer_binding.t
 
+(** [create_xkb_bindings_seat xkb ~seat ~on_modifiers_update] creates the xkb
+    bindings seat object for [seat].
+
+    {b Effects:} sends River request *)
+val create_xkb_bindings_seat
+  :  Wire.Obj.Xkb.Bindings.t
+  -> seat:Wire.Obj.Window_management.Seat.t
+  -> on_modifiers_update:(old:int32 -> new_:int32 -> unit)
+  -> Wire.Obj.Xkb.Bindings.Seat.t
+
 (** [destroy_window ~window ~node] destroys the [window] and [node] objects.
 
     {b Effects:} sends River request *)
@@ -86,13 +96,14 @@ val destroy_xkb_binding : Wire.Obj.Xkb.Bindings.Binding.t -> unit
     {b Effects:} sends River request *)
 val destroy_pointer_binding : Wire.Obj.Window_management.Pointer_binding.t -> unit
 
-(** [destroy_seat ~seat ~layer_shell] destroys the [seat] and [layer_shell]
-    objects.
+(** [destroy_seat ~seat ~layer_shell ~xkb_seat] destroys the [seat],
+    [layer_shell], and [xkb_seat] objects.
 
     {b Effects:} sends River request *)
 val destroy_seat
   :  seat:Wire.Obj.Window_management.Seat.t
   -> layer_shell:Wire.Obj.Layer_shell.Seat.t
+  -> xkb_seat:Wire.Obj.Xkb.Bindings.Seat.t
   -> unit
 
 (** [set_keymap keyboard ~keymap] sets the [keymap] for [keyboard].

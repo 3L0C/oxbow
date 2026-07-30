@@ -49,7 +49,7 @@ let handle_set_dimensions (wm : Wm.t) window w h =
 let handle_set_tags _wm window (arg : Tag.Arg.t) =
   let set_tags s = Window.set_tags window s in
   match window.output, arg with
-  | Some o, _ -> Output.resolve_tag_arg arg o |> set_tags
+  | Some o, _ -> Output.resolve_tag_arg ~arg o |> set_tags
   | None, Concrete s -> set_tags s
   | None, Occupied -> ()
 ;;

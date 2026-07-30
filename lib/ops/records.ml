@@ -10,7 +10,7 @@ let to_tags (output : Output.t) =
     Some
       Record.Tags.
         { output = name
-        ; viewed = Tag.Set.to_list output.selected_tags
+        ; viewed = Tag.Set.to_list output.tags.selected
         ; occupied = Output.occupied_tags output |> Tag.Set.to_list
         ; urgent = Output.urgent_tags output |> Tag.Set.to_list
         ; focused =

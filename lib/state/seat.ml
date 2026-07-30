@@ -168,6 +168,8 @@ let set_name s name = s.name <- name
 let set_hovered s window = s.hovered <- window
 let set_interacted s window = s.interacted <- window
 let set_warp_request s v = s.warp_request <- v
+let set_overview_watch s v = s.overview_watch <- v
+let set_watch_sent s sent = s.watch_sent <- sent
 
 let bind (wm : Types.Wm.t) s ?(mode = Mode.normal) mods (key : Types.Key.t) command =
   if not @@ List.mem mode wm.config.modes

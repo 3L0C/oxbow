@@ -21,6 +21,10 @@ module Gaps = struct
         { delta : int Delta.t
         ; global : bool
         } [@name "outer"]
+    | Overview of
+        { delta : int Delta.t
+        ; global : bool
+        } [@name "overview"]
   [@@deriving yojson]
 end
 
@@ -171,6 +175,10 @@ module Output = struct
         ; warp : bool option [@yojson.option]
         } [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
+    | Cycle_overview of
+        { dir : Direction.Logical.t
+        ; until_release : string option
+        } [@name "overview_cycle"]
     | Swap of Swap.t [@name "swap"]
   [@@deriving yojson]
 end

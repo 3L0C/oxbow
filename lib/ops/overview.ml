@@ -2,39 +2,66 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_layout
 
-let row ~start ~y ~h widths =
-  List.fold_left_map (fun x cw -> x + cw, Rect.{ x; y; w = cw; h }) start widths |> snd
-;;
-
 let arrange (wm : Wm.t) (output : Output.t) =
-  let windows = output.wm_stack in
+  let windows = output.focus_stack in
   let n = List.length windows in
   if n = 0
   then ()
   else (
-    let usable = output.usable in
     let bw = wm.config.borders.width |> Int32.to_int in
-    let td = Output.to_tag_data output in
-    let cols = float n |> sqrt |> ceil |> int_of_float in
-    let rows = (n + cols - 1) / cols in
-    let row_heights = Schemes.split ~total:usable.h ~count:rows in
-    let dimensions =
-      List.fold_left_map
-        (fun (y, rem) rh ->
-           let cells = min cols rem in
-           let widths = Schemes.split ~total:usable.w ~count:cells in
-           (y + rh, rem - cells), row ~start:usable.x ~y ~h:rh widths)
-        (usable.y, n)
-        row_heights
-      |> snd
-      |> List.concat
+    let gaps =
+      Params.Gaps.{ inner = output.overview.gaps; outer = output.overview.gaps }
     in
-    List.iter2
-      (fun window rect ->
-         Gaps.post td.gaps rect
-         |> Rect.inset ~by:bw
-         |> Window.clamp window
-         |> Window.set_geom window)
-      windows
-      dimensions)
+    let usable = Gaps.pre gaps output.usable in
+    let cols = min 3 n in
+    let row_h = usable.h / 2 in
+    let widths = Schemes.split ~total:usable.w ~count:cols |> Array.of_list in
+    let xs =
+      Array.fold_left (fun (acc, x) w -> x :: acc, x + w) ([], usable.x) widths
+      |> fst
+      |> List.rev
+      |> Array.of_list
+    in
+    let max_offset = (n - 1) / cols * row_h in
+    let offset =
+      match Output.focused_window output with
+      | Some f ->
+        (match List.find_index (( == ) f) windows with
+         | Some i ->
+           let row = i / cols in
+           Strip.scroll
+             ~policy:Scroll_policy.Visible
+             ~viewport_w:usable.h
+             ~max_offset
+             ~offset:output.overview.offset
+             ~col:(row * row_h, row_h)
+         | None -> min output.overview.offset max_offset |> max 0)
+      | None -> min output.overview.offset max_offset |> max 0
+    in
+    output.overview.offset <- offset;
+    List.iteri
+      (fun i window ->
+         let col = i mod cols in
+         let row = i / cols in
+         let rect =
+           Rect.
+             { x = xs.(col)
+             ; y = usable.y + (row * row_h) - offset
+             ; w = widths.(col)
+             ; h = row_h
+             }
+         in
+         let cell = Gaps.post gaps rect in
+         Rect.inset ~by:bw cell |> Window.clamp window |> Window.set_geom window;
+         let dims = Rect.to_int window.geom in
+         let visual = Rect.inset ~by:(-bw) dims in
+         let bound = Rect.intersect cell output.usable in
+         Option.is_none bound |> Window.set_offscreen window;
+         match Option.bind bound (Rect.intersect visual) with
+         | None -> Window.set_clip window None
+         | Some inter when inter = visual -> Window.set_clip window None
+         | Some inter ->
+           Window.set_clip window
+           @@ Some (`Overview, { inter with x = inter.x - dims.x; y = inter.y - dims.y }))
+      windows)
 ;;

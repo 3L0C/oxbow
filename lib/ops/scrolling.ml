@@ -23,7 +23,7 @@ let arrange (wm : Wm.t) (output : Output.t) =
       let _, last = List.rev placed |> List.hd in
       let max_offset = last.x - area.x in
       let nearest_col () =
-        let view_center = output.scroll_offset + (area.w / 2) in
+        let view_center = output.scroll.offset + (area.w / 2) in
         List.fold_left
           (fun best (_, (g : int Rect.t)) ->
              let x = g.x - area.x in
@@ -50,9 +50,9 @@ let arrange (wm : Wm.t) (output : Output.t) =
             ~policy:tag_data.scrolling.policy
             ~viewport_w:area.w
             ~max_offset
-            ~offset:output.scroll_offset
+            ~offset:output.scroll.offset
             ~col
-        | None -> min output.scroll_offset max_offset |> max 0
+        | None -> min output.scroll.offset max_offset |> max 0
       in
       Output.set_scroll_offset output offset;
       placed
@@ -65,7 +65,9 @@ let arrange (wm : Wm.t) (output : Output.t) =
         let dims = Rect.to_int w.geom in
         let visual = Rect.inset ~by:(-bw) dims in
         match Rect.intersect visual output.usable with
-        | None -> w.clip <- None
-        | Some i when i = visual -> w.clip <- None
-        | Some i -> w.clip <- Some { i with x = i.x - dims.x; y = i.y - dims.y }))
+        | None -> Window.set_clip w None
+        | Some i when i = visual -> Window.set_clip w None
+        | Some i ->
+          Window.set_clip w
+          @@ Some (`Scrolling, { i with x = i.x - dims.x; y = i.y - dims.y })))
 ;;

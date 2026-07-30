@@ -103,6 +103,10 @@ let set_clip_box (_ : Ctx.render Ctx.t) (w : Window.t) ~x ~y ~width ~height =
   River.Window_management.River_window_v1.set_clip_box w.obj ~x ~y ~width ~height
 ;;
 
+let set_content_clip_box (_ : Ctx.render Ctx.t) (w : Window.t) ~x ~y ~width ~height =
+  River.Window_management.River_window_v1.set_content_clip_box w.obj ~x ~y ~width ~height
+;;
+
 let set_borders (_ : Ctx.render Ctx.t) (w : Window.t) ~edges ~width ~r ~g ~b ~a =
   River.Window_management.River_window_v1.set_borders w.obj ~edges ~width ~r ~g ~b ~a
 ;;
@@ -129,4 +133,13 @@ let enable_pointer_binding (_ : Ctx.manage Ctx.t) pointer =
 
 let disable_pointer_binding (_ : Ctx.manage Ctx.t) pointer =
   River.Window_management.River_pointer_binding_v1.disable pointer
+;;
+
+let modifiers_watch (_ : Ctx.manage Ctx.t) (s : Seat.t) =
+  if s.watch_sent <> s.overview_watch
+  then (
+    River.Xkb.Bindings.River_xkb_bindings_seat_v1.modifiers_watch
+      s.xkb_seat
+      ~modifiers:s.overview_watch;
+    Seat.set_watch_sent s s.overview_watch)
 ;;

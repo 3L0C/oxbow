@@ -68,8 +68,34 @@ let make_wm root =
     }
 ;;
 
+let make_seat root =
+  Seat.
+    { obj = spawn root (module River.Proto.Window_management.River_seat_v1)
+    ; layer_shell = spawn root (module River.Proto.Layer_shell.River_layer_shell_seat_v1)
+    ; xkb_seat = spawn root (module River.Proto.Xkb.Bindings.River_xkb_bindings_seat_v1)
+    ; overview_watch = 0l
+    ; watch_sent = 0l
+    ; lifecycle = New
+    ; name = None
+    ; output = None
+    ; focus_cleared = false
+    ; position = { x = 0l; y = 0l }
+    ; layer_focus = None
+    ; mode = Mode.normal
+    ; xkb_bindings = []
+    ; pointer_bindings = []
+    ; pending_requests = Queue.create ()
+    ; hovered = None
+    ; interacted = None
+    ; warp_request = No_request
+    ; focus_state = Idle
+    ; cursor_target = None
+    ; op = None
+    }
+;;
+
 let make_output root =
-  Ocdwm_state.Output.
+  Output.
     { obj = spawn root (module River.Proto.Window_management.River_output_v1)
     ; layer_shell =
         spawn root (module River.Proto.Layer_shell.River_layer_shell_output_v1)
@@ -77,10 +103,9 @@ let make_output root =
     ; name = None
     ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
     ; usable = { x = 0; y = 0; w = 1920; h = 1080 }
-    ; selected_tags = Tag.Set.singleton 1
-    ; previous_tags = Tag.Set.singleton 1
-    ; overview = false
-    ; scroll_offset = 0
+    ; tags = { selected = Tag.Set.singleton 1; previous = Tag.Set.singleton 1 }
+    ; overview = { offset = 0; enabled = false; gaps = 10; head = None }
+    ; scroll = { offset = 0 }
     ; tag_data = Array.init 32 (fun _ -> Config.create_tag_data ())
     ; focus_stack = []
     ; wm_stack = []
@@ -104,13 +129,34 @@ let () =
   let conn = Wayland.Client.connect ~sw recording_transport in
   let root = Wayland.Client.wl_display conn in
   let wm = make_wm root in
+  let seat = make_seat root in
   let output = make_output root in
   let windows = List.init 3 (fun _ -> make_window output root) in
   Wm.set_windows wm windows;
   Output.set_wm_stack output windows;
+  Output.set_focus_stack output windows;
   Arrange.retile wm output;
   List.iteri
-    (fun i (w : Window.t) -> Printf.printf "%d: %s\n" i (pp_rect w.geom))
+    (fun i (w : Window.t) ->
+       Printf.printf "window(index=%d, id=%lu): %s\n" i (Wire.id w.obj) (pp_rect w.geom))
+    output.wm_stack;
+  let windows = windows @ List.init 4 (fun _ -> make_window output root) in
+  Wm.set_windows wm windows;
+  Output.set_wm_stack output windows;
+  List.rev windows |> Output.set_focus_stack output;
+  Output.enter_overview output;
+  Arrange.retile wm output;
+  List.iteri
+    (fun i (w : Window.t) ->
+       Printf.printf "window(index=%d, id=%lu): %s\n" i (Wire.id w.obj) (pp_rect w.geom))
+    output.wm_stack;
+  Focus.focus_output wm seat output;
+  Focus.window_logical wm seat Prev
+  |> Result.iter_error (fun e -> Printf.printf "focus prev request failed: %s" e);
+  Arrange.retile wm output;
+  List.iteri
+    (fun i (w : Window.t) ->
+       Printf.printf "window(index=%d, id=%lu): %s\n" i (Wire.id w.obj) (pp_rect w.geom))
     output.wm_stack;
   sent := [];
   Ctx.with_manage wm Commit.manage;

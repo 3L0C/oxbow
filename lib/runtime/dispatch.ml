@@ -10,10 +10,17 @@ let handle_border wm _seat (cmd : Command.Border.t) =
     Ok None
 ;;
 
-let handle_gaps _ctx seat (cmd : Command.Gaps.t) =
+let handle_gaps ctx seat (cmd : Command.Gaps.t) =
+  let wm = Ctx.wm ctx in
   match cmd with
   | Inner { delta; global } -> Arrange.set_gaps_inner seat delta ~global
   | Outer { delta; global } -> Arrange.set_gaps_outer seat delta ~global
+  | Overview { delta; global } ->
+    if global
+    then (
+      List.iter (Output.set_gaps_overview ~delta) wm.outputs;
+      Ok None)
+    else Arrange.set_gaps_overview seat delta
 ;;
 
 let handle_input ctx seat (cmd : Command.Input.t) =
@@ -31,19 +38,21 @@ let handle_keymap ctx seat (cmd : Command.Keymap.t) =
 
 let handle_layout = Layouts.handle
 
-let handle_output ctx seat (cmd : Command.Output.t) =
+let handle_output wm seat (cmd : Command.Output.t) =
   match cmd with
-  | Focus_logical { dir; warp } -> Focus.output_logical ?warp ctx seat dir
-  | Focus_spatial { dir; warp } -> Focus.output_spatial ?warp ctx seat dir
-  | Focus_name { name; warp } -> Focus.output_name ?warp ctx seat name
-  | Toggle_overview -> Arrange.toggle_overview ctx seat
+  | Focus_logical { dir; warp } -> Focus.output_logical ?warp wm seat dir
+  | Focus_spatial { dir; warp } -> Focus.output_spatial ?warp wm seat dir
+  | Focus_name { name; warp } -> Focus.output_name ?warp wm seat name
+  | Toggle_overview -> Arrange.toggle_overview wm seat
+  | Cycle_overview { dir; until_release } ->
+    Arrange.cycle_overview wm seat dir ~until_release
   | Column_width delta -> Column.set_width seat delta ~global:true
   | Swap (Tags { target; policy; follow }) ->
-    Placement.swap_outputs ctx seat ~target ~policy ~follow `Tags
+    Placement.swap_outputs wm seat ~target ~policy ~follow `Tags
   | Swap (All { target; policy; follow }) ->
-    Placement.swap_outputs ctx seat ~target ~policy ~follow `All
+    Placement.swap_outputs wm seat ~target ~policy ~follow `All
   | Swap (Visible { target; policy; follow }) ->
-    Placement.swap_outputs ctx seat ~target ~policy ~follow `Visible
+    Placement.swap_outputs wm seat ~target ~policy ~follow `Visible
 ;;
 
 let handle_rule = Rules.handle

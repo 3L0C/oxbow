@@ -36,11 +36,12 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
   ; float_geom = None
   ; clip = None
+  ; offscreen = false
   ; size_hints = { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l }
   ; tags =
       (match output with
        | None -> Tag.Set.singleton 1
-       | Some o -> o.selected_tags)
+       | Some o -> o.tags.selected)
   ; output
   ; output_before_evac = None
   ; is_fixed = false
@@ -65,9 +66,11 @@ let destroy w =
 let set_position w ~x ~y = w.geom <- { w.geom with x; y }
 let floor_geom (g : int32 Rect.t) = { g with w = max g.w 0l; h = max g.h 0l }
 let set_geom w g = w.geom <- floor_geom g
+let set_clip w clip = w.clip <- clip
+let set_offscreen w v = w.offscreen <- v
 
 let tag_layout (o : Types.Output.t) =
-  match Tag.Set.first o.selected_tags with
+  match Tag.Set.first o.tags.selected with
   | Some i -> o.tag_data.(i - 1)
   | None -> invalid_arg "Got an output with no selected tags."
 ;;
@@ -77,7 +80,7 @@ let on_tags w ~tags = Tag.Set.intersects tags w.tags
 let tag_visible w =
   match w.output with
   | None -> false
-  | Some o -> o.overview || on_tags ~tags:o.selected_tags w
+  | Some o -> o.overview.enabled || on_tags ~tags:o.tags.selected w
 ;;
 
 let is_tiled w = w.presentation = Tiled
@@ -230,10 +233,11 @@ let is_rendered w =
   && (match w.output with
       | None -> false
       | Some o ->
-        not
-        @@ List.exists
-             (fun w' -> w' != w && is_fullscreen w' && tag_visible w')
-             o.focus_stack)
+        (not (o.overview.enabled && w.offscreen))
+        && (not
+            @@ List.exists
+                 (fun w' -> w' != w && is_fullscreen w' && tag_visible w')
+                 o.focus_stack))
   &&
   match w.output with
   | Some o when (tag_layout o).layout = Scrolling && is_tiled w ->

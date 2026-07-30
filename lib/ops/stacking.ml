@@ -22,21 +22,35 @@ let apply (intent : Focus_intent.t) (output : Output.t) =
   in
   match intent with
   | Promote window ->
-    let changed =
-      match output.focus_stack with
-      | hd :: _ -> hd != window
-      | [] -> true
-    in
-    splice_focus_stack [ window ];
-    if not @@ Tag.Set.intersects window.tags output.selected_tags
-    then Output.switch_tags ~tags:window.tags output;
-    if Output.current_layout output = Scrolling && changed then Schedule.manage ()
+    if output.overview.enabled
+    then (
+      let changed =
+        match output.overview.head with
+        | Some w -> w != window
+        | None -> true
+      in
+      Output.set_overview_head output (Some window);
+      if changed then Schedule.manage ())
+    else (
+      let changed =
+        match output.focus_stack with
+        | hd :: _ -> hd != window
+        | [] -> true
+      in
+      splice_focus_stack [ window ];
+      if not @@ Tag.Set.intersects window.tags output.tags.selected
+      then Output.switch_tags ~tags:window.tags output;
+      if Output.current_layout output = Scrolling && changed then Schedule.manage ())
   | Push windows ->
     Output.set_wm_stack output @@ windows @ List.filter (not_in windows) output.wm_stack;
     splice_focus_stack windows
   | Remove w ->
     Output.set_wm_stack output @@ List.filter (fun w' -> w' != w) output.wm_stack;
-    Output.set_focus_stack output @@ List.filter (fun w' -> w' != w) output.focus_stack
+    Output.set_focus_stack output @@ List.filter (fun w' -> w' != w) output.focus_stack;
+    if Phys.opt_holds w output.overview.head
+    then
+      List.find_opt Window.tag_visible output.focus_stack
+      |> Output.set_overview_head output
 ;;
 
 let push windows output = apply (Push windows) output
@@ -53,6 +67,7 @@ let focus_window window = Option.iter (apply (Promote window)) window.output
 let shift (seat : Seat.t) (dir : Direction.Logical.t) =
   match seat.output with
   | None -> Error Messages.seat_missing_output
+  | Some o when o.overview.enabled -> Error "cannot shift the window stack from overview"
   | Some o ->
     let has_other = Output.visible_window_count o > 1 in
     (match Output.focused_window o, dir with

@@ -29,6 +29,13 @@ let set_gaps_outer seat delta ~global =
   Ok None
 ;;
 
+let set_gaps_overview seat delta =
+  With.focused_output seat
+  @@ fun o ->
+  Output.set_gaps_overview o ~delta;
+  Ok None
+;;
+
 let set_scroll_policy (wm : Wm.t) seat policy ~global =
   With.focused_output seat
   @@ fun o ->
@@ -57,18 +64,19 @@ let set_orientation seat dir ~global =
 ;;
 
 let enter_overview wm (output : Output.t) =
-  if not output.overview
+  if not output.overview.enabled
   then (
     List.iter (fun w -> Window_request.handle wm w Exit_fullscreen) output.wm_stack;
-    Output.set_overview output true)
+    Output.enter_overview output)
 ;;
 
 let exit_overview (output : Output.t) =
-  if output.overview
+  if output.overview.enabled
   then (
-    Output.set_overview output false;
-    (match Output.focused_window output with
-     | Some w -> Output.switch_tags ~tags:w.tags output
+    let head = output.overview.head in
+    Output.exit_overview output;
+    (match head with
+     | Some w -> Stacking.focus_window w
      | None -> ());
     List.iter
       (fun (w : Window.t) ->
@@ -83,8 +91,36 @@ let exit_overview (output : Output.t) =
 let toggle_overview wm seat =
   With.focused_output seat
   @@ fun o ->
-  if o.overview then exit_overview o else enter_overview wm o;
+  if o.overview.enabled then exit_overview o else enter_overview wm o;
   Ok None
+;;
+
+let cycle_overview wm (seat : Seat.t) (dir : Direction.Logical.t) ~until_release =
+  let mods =
+    match until_release with
+    | None -> Ok None
+    | Some s ->
+      String.split_on_char '+' s
+      |> List.map Bind.parse_modifier
+      |> List.fold_left
+           (fun acc b -> Result.bind acc (fun a -> Result.map (Int32.logor a) b))
+           (Ok 0l)
+      |> Result.map Option.some
+  in
+  match mods with
+  | Error _ as e -> e
+  | Ok b ->
+    With.focused_window seat
+    @@ fun o head ->
+    let target =
+      match dir with
+      | Next -> Ring.next_or_first head o.focus_stack
+      | Prev -> Ring.prev_or_last head o.focus_stack
+    in
+    if not o.overview.enabled then enter_overview wm o;
+    Option.iter Stacking.focus_window target;
+    Option.iter (fun m -> Seat.set_overview_watch seat m) b;
+    Ok None
 ;;
 
 let set_layout seat (l : Layout.t) ~global =
@@ -132,7 +168,7 @@ let cycle_layout seat dir =
 ;;
 
 let retile wm (output : Output.t) =
-  if output.overview
+  if output.overview.enabled
   then Overview.arrange wm output
   else (
     match Output.current_layout output with

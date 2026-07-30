@@ -135,6 +135,19 @@ val set_clip_box
   -> height:int32
   -> unit
 
+(** [set_content_clip_box ctx window ~x ~y ~width ~height] clips [window] to the
+    given box. All zeros clears the clip.
+
+    {b Effects:} sends River request *)
+val set_content_clip_box
+  :  Ctx.render Ctx.t
+  -> Ocdwm_state.Window.t
+  -> x:int32
+  -> y:int32
+  -> width:int32
+  -> height:int32
+  -> unit
+
 (** [set_borders ctx window ~edges ~width ~r ~g ~b ~a] draws borders on
     [window].
 
@@ -192,3 +205,9 @@ val disable_pointer_binding
   :  Ctx.manage Ctx.t
   -> River.Obj.Window_management.Pointer_binding.t
   -> unit
+
+(** [modifiers_watch ctx seat] sends the watch request for [seat] when the
+    desired set differs from the sent set.
+
+    {b Effects:} sends River request *)
+val modifiers_watch : Ctx.manage Ctx.t -> Ocdwm_state.Seat.t -> unit

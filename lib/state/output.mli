@@ -87,10 +87,16 @@ val set_scheme : t -> Ocdwm_core.Scheme.t -> global:bool -> unit
     {b Effects:} mutates WM state *)
 val cycle_scheme : t -> Ocdwm_core.Direction.Logical.t -> global:bool -> unit
 
-(** [set_overview output v] sets the overview flag on [output].
+(** [enter_overview output] activates overview mode for [output] if not already
+    active.
 
     {b Effects:} mutates WM state *)
-val set_overview : t -> bool -> unit
+val enter_overview : t -> unit
+
+(** [exit_overview output] deactivates overview mode for [output] if active.
+
+    {b Effects:} mutates WM state *)
+val exit_overview : t -> unit
 
 (** [set_mfact output delta ~global] sets the mfact according to [delta] for the
     first selected tag on [output]. When [global] is [true], the change applies
@@ -120,6 +126,18 @@ val set_gaps_inner : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
     {b Effects:} mutates WM state *)
 val set_gaps_outer : t -> int Ocdwm_core.Delta.t -> global:bool -> unit
 
+(** [set_gaps_overview output ~delta] sets the overview gaps for [output]
+    according to [delta].
+
+    {b Effects:} mutates WM state *)
+val set_gaps_overview : t -> delta:int Ocdwm_core.Delta.t -> unit
+
+(** [set_overview_head output head] sets [head] as the first window of overview
+    mode for [output].
+
+    {b Effects:} mutates WM state *)
+val set_overview_head : t -> Types.Window.t option -> unit
+
 (** [set_scroll_policy output policy ~global] sets [output]'s scrolling policy to
     [policy]. Applied to all tags when [global] is true. Applied to the first
     selected tags when [false].
@@ -144,8 +162,8 @@ val set_wm_stack : t -> Types.Window.t list -> unit
     {b Effects:} mutates WM state *)
 val set_focus_stack : t -> Types.Window.t list -> unit
 
-(** [resolve_tag_arg arg output] returns the set of tags according to [arg]. *)
-val resolve_tag_arg : Ocdwm_core.Tag.Arg.t -> t -> Ocdwm_core.Tag.Set.t
+(** [resolve_tag_arg ~arg output] returns the set of tags according to [arg]. *)
+val resolve_tag_arg : arg:Ocdwm_core.Tag.Arg.t -> t -> Ocdwm_core.Tag.Set.t
 
 (** [to_vector output] is the vector of output. *)
 val to_vector : t -> Ocdwm_core.Vector.t

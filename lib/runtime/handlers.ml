@@ -47,10 +47,9 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     ; name = None
     ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
     ; usable = { x = 0; y = 0; w = 0; h = 0 }
-    ; selected_tags = Tag.Set.singleton 1
-    ; previous_tags = Tag.Set.singleton 1
-    ; overview = false
-    ; scroll_offset = 0
+    ; tags = { selected = Tag.Set.singleton 1; previous = Tag.Set.singleton 1 }
+    ; overview = { offset = 0; enabled = false; gaps = 10; head = None }
+    ; scroll = { offset = 0 }
     ; tag_data =
         Array.init 32 (fun _ -> Config.copy_tag_data wm.config.default_tag_config)
     ; focus_stack = []
@@ -159,6 +158,20 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
   let seat : Seat.t =
     { obj = river_seat
     ; layer_shell
+    ; xkb_seat =
+        Emit.create_xkb_bindings_seat
+          wm.river_xkb_v1
+          ~seat:river_seat
+          ~on_modifiers_update:(fun ~old:_ ~new_ ->
+            Option.iter
+              (fun (s : Seat.t) ->
+                 if s.overview_watch <> 0l && Int32.logand new_ s.overview_watch = 0l
+                 then (
+                   s.overview_watch <- 0l;
+                   Option.iter Arrange.exit_overview s.output))
+              seat_box.body)
+    ; overview_watch = 0l
+    ; watch_sent = 0l
     ; lifecycle = New
     ; name = None
     ; output = None

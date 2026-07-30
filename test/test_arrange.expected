@@ -1,6 +1,20 @@
-0: (24, 24) 1021x1032
-1: (1063, 24) 833x507
-2: (1063, 549) 833x507
+window(index=0, id=11): (24, 24) 1021x1032
+window(index=1, id=13): (1063, 24) 833x507
+window(index=2, id=15): (1063, 549) 833x507
+window(index=0, id=11): (14, 1084) 619x517
+window(index=1, id=13): (1288, 549) 618x517
+window(index=2, id=15): (651, 549) 619x517
+window(index=3, id=17): (14, 549) 619x517
+window(index=4, id=19): (1288, 14) 618x517
+window(index=5, id=21): (651, 14) 619x517
+window(index=6, id=23): (14, 14) 619x517
+window(index=0, id=11): (14, 549) 619x517
+window(index=1, id=13): (1288, 14) 618x517
+window(index=2, id=15): (651, 14) 619x517
+window(index=3, id=17): (14, 14) 619x517
+window(index=4, id=19): (1288, -521) 618x517
+window(index=5, id=21): (651, -521) 619x517
+window(index=6, id=23): (14, -521) 619x517
 0: set_capabilities
 0: propose_dimensions
 0: set_tiled
@@ -22,3 +36,31 @@
 2: inform_unmaximized
 2: inform_not_fullscreen
 2: inform_resize_end
+3: set_capabilities
+3: propose_dimensions
+3: set_tiled
+3: use_ssd
+3: inform_unmaximized
+3: inform_not_fullscreen
+3: inform_resize_end
+4: set_capabilities
+4: propose_dimensions
+4: set_tiled
+4: use_ssd
+4: inform_unmaximized
+4: inform_not_fullscreen
+4: inform_resize_end
+5: set_capabilities
+5: propose_dimensions
+5: set_tiled
+5: use_ssd
+5: inform_unmaximized
+5: inform_not_fullscreen
+5: inform_resize_end
+6: set_capabilities
+6: propose_dimensions
+6: set_tiled
+6: use_ssd
+6: inform_unmaximized
+6: inform_not_fullscreen
+6: inform_resize_end

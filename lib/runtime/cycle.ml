@@ -79,7 +79,7 @@ let close_seats ctx =
        (fun (s : Seat.t) ->
           match s.lifecycle with
           | Closing ->
-            Emit.destroy_seat ~seat:s.obj ~layer_shell:s.layer_shell;
+            Emit.destroy_seat ~seat:s.obj ~layer_shell:s.layer_shell ~xkb_seat:s.xkb_seat;
             false
           | _ -> true)
        wm.seats
