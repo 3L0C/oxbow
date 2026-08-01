@@ -7,13 +7,10 @@ let command_term scheme =
   Command.Layout (Tiling (Scheme { scheme; scope }))
 ;;
 
-let leaf mk_term (s : Scheme.t) =
+let mk_leaf (s : Scheme.t) =
   let name = Scheme.to_string s in
-  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Switch to the %s tiling scheme" name)
-  @@ mk_term
+  Ctl_cli.cmd_pair ~name ~doc:(Printf.sprintf "Switch to the %s tiling scheme" name)
   @@ command_term s
 ;;
 
-let build mk_term = List.map (leaf mk_term) Scheme.all
-let cmds = build Ctl_cli.command_term
-let bind_cmds = build Ctl_cli.bind_term
+let cmds, bind_cmds = List.map mk_leaf Scheme.all |> List.split

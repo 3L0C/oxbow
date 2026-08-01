@@ -56,6 +56,10 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     ; wm_stack = []
     }
   in
+  let sync_usable () =
+    if output.usable.w = 0 || output.usable.h = 0
+    then Rect.to_int output.geom |> Output.set_usable output
+  in
   Box.fill output_box output;
   Wayland.Proxy.Handler.attach
     river_output
@@ -99,29 +103,13 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
 
       method on_position _ ~x ~y =
         Output.set_geom output { x; y; w = output.geom.w; h = output.geom.h };
-        if output.usable.w = 0 || output.usable.h = 0
-        then
-          Output.set_usable output
-          @@ Int32.
-               { x = to_int output.geom.x
-               ; y = to_int output.geom.y
-               ; w = to_int output.geom.w
-               ; h = to_int output.geom.h
-               }
+        sync_usable ()
 
       method on_dimensions _ ~width ~height =
         Output.set_geom
           output
           { x = output.geom.x; y = output.geom.y; w = width; h = height };
-        if output.usable.w = 0 || output.usable.h = 0
-        then
-          Output.set_usable output
-          @@ Int32.
-               { x = to_int output.geom.x
-               ; y = to_int output.geom.y
-               ; w = to_int output.geom.w
-               ; h = to_int output.geom.h
-               }
+        sync_usable ()
     end;
   Wm.set_outputs wm (output :: wm.outputs);
   List.iter (Wm.ensure_seat_output wm) wm.seats
@@ -346,6 +334,14 @@ let on_input_device proxy (wm_box : Wm.t Box.t) =
     Box.fill device_box device;
     Wm.add_input_device wm device
   in
+  let make role =
+    let device =
+      Input_device.
+        { obj = proxy; name = !device_name; role; lifecycle = Active; libinput = None }
+    in
+    resolve_device device;
+    device
+  in
   Wayland.Proxy.Handler.attach proxy
   @@ object
        inherit [_] River.Input.Management.River_input_device_v1.v1
@@ -358,44 +354,15 @@ let on_input_device proxy (wm_box : Wm.t Box.t) =
            match !device_kind with
            | Some Keyboard ->
              let keyboard = Wm.find_xkb_stash_opt wm @@ Wayland.Proxy.id proxy in
-             let device : Input_device.t =
-               { obj = proxy
-               ; name = !device_name
-               ; role = Keyboard { keyboard }
-               ; lifecycle = Active
-               ; libinput = None
-               }
-             in
-             resolve_device device;
-             Keyboard.set_device_repeat_info
+             let device = make (Keyboard { keyboard }) in
+             Emit.set_repeat_info
                proxy
                ~rate:(Int32.of_int wm.config.repeat_rate)
                ~delay:(Int32.of_int wm.config.repeat_delay);
              Option.iter (Input_device.set_keyboard wm device) keyboard
-           | Some Pointer ->
-             resolve_device
-               { obj = proxy
-               ; name = !device_name
-               ; role = Pointer { class_ = Mouse }
-               ; lifecycle = Active
-               ; libinput = None
-               }
-           | Some Touch ->
-             resolve_device
-               { obj = proxy
-               ; name = !device_name
-               ; role = Touch
-               ; lifecycle = Active
-               ; libinput = None
-               }
-           | Some Tablet ->
-             resolve_device
-               { obj = proxy
-               ; name = !device_name
-               ; role = Tablet
-               ; lifecycle = Active
-               ; libinput = None
-               }
+           | Some Pointer -> ignore @@ make (Pointer { class_ = Mouse })
+           | Some Touch -> ignore @@ make Touch
+           | Some Tablet -> ignore @@ make Tablet
            | None -> Logs.err @@ fun m -> m "input device sent 'done' without a type")
 
        method on_removed _ =

@@ -122,51 +122,8 @@ module Touchpad = struct
     }
   [@@deriving yojson]
 
-  let empty =
-    { tap = None
-    ; tap_button_map = None
-    ; drag = None
-    ; drag_lock = None
-    ; three_finger_drag = None
-    ; dwt = None
-    ; dwtp = None
-    ; click_method = None
-    ; clickfinger_button_map = None
-    ; accel_profile = None
-    ; accel_speed = None
-    ; natural_scroll = None
-    ; left_handed = None
-    ; middle_emulation = None
-    ; scroll_method = None
-    ; send_events = None
-    ; scroll_factor = None
-    }
-  ;;
-
-  let merge ~old ~new_ =
-    let slot old_slot = function
-      | None -> old_slot
-      | Some _ as new_slot -> new_slot
-    in
-    { tap = slot old.tap new_.tap
-    ; tap_button_map = slot old.tap_button_map new_.tap_button_map
-    ; drag = slot old.drag new_.drag
-    ; drag_lock = slot old.drag_lock new_.drag_lock
-    ; three_finger_drag = slot old.three_finger_drag new_.three_finger_drag
-    ; dwt = slot old.dwt new_.dwt
-    ; dwtp = slot old.dwtp new_.dwtp
-    ; click_method = slot old.click_method new_.click_method
-    ; clickfinger_button_map = slot old.clickfinger_button_map new_.clickfinger_button_map
-    ; accel_profile = slot old.accel_profile new_.accel_profile
-    ; accel_speed = slot old.accel_speed new_.accel_speed
-    ; natural_scroll = slot old.natural_scroll new_.natural_scroll
-    ; left_handed = slot old.left_handed new_.left_handed
-    ; middle_emulation = slot old.middle_emulation new_.middle_emulation
-    ; scroll_method = slot old.scroll_method new_.scroll_method
-    ; send_events = slot old.send_events new_.send_events
-    ; scroll_factor = slot old.scroll_factor new_.scroll_factor
-    }
-  ;;
+  let empty = Json_slots.empty t_of_yojson
+  let merge = Json_slots.merge yojson_of_t t_of_yojson
 end
 
 module Mouse = struct
@@ -184,41 +141,12 @@ module Mouse = struct
     }
   [@@deriving yojson]
 
-  let empty =
-    { accel_profile = None
-    ; accel_speed = None
-    ; natural_scroll = None
-    ; left_handed = None
-    ; middle_emulation = None
-    ; scroll_method = None
-    ; scroll_button = None
-    ; scroll_button_lock = None
-    ; send_events = None
-    ; scroll_factor = None
-    }
-  ;;
-
-  let merge ~old ~new_ =
-    let slot old_slot = function
-      | None -> old_slot
-      | Some _ as new_slot -> new_slot
-    in
-    { accel_profile = slot old.accel_profile new_.accel_profile
-    ; accel_speed = slot old.accel_speed new_.accel_speed
-    ; natural_scroll = slot old.natural_scroll new_.natural_scroll
-    ; left_handed = slot old.left_handed new_.left_handed
-    ; middle_emulation = slot old.middle_emulation new_.middle_emulation
-    ; scroll_method = slot old.scroll_method new_.scroll_method
-    ; scroll_button = slot old.scroll_button new_.scroll_button
-    ; scroll_button_lock = slot old.scroll_button_lock new_.scroll_button_lock
-    ; send_events = slot old.send_events new_.send_events
-    ; scroll_factor = slot old.scroll_factor new_.scroll_factor
-    }
-  ;;
+  let empty = Json_slots.empty t_of_yojson
+  let merge = Json_slots.merge yojson_of_t t_of_yojson
 end
 
 type 'a rule =
-  { name : string option [@yojson.option]
+  { pattern : string option [@yojson.option]
   ; case : Pattern.Case.t
   ; settings : 'a
   }
@@ -229,30 +157,11 @@ type t =
   | Mouse of Mouse.t rule [@name "mouse"]
 [@@deriving yojson]
 
-let name_matches rule ~name =
-  let flags =
-    match rule.case with
-    | Sensitive -> []
-    | Insensitive -> [ `CASELESS ]
-  in
-  let re_compile = function
-    | None -> Ok None
-    | Some s ->
-      (try Ok (Some (Re.compile (Re.Pcre.re ~flags s))) with
-       | Re.Pcre.(Parse_error | Not_supported) ->
-         Error (Printf.sprintf "invalid regex: %s" s))
-  in
-  match re_compile rule.name with
-  | Error msg ->
-    Logs.err (fun m -> m "%s" msg);
-    false
-  | Ok None -> true
-  | Ok (Some re) -> Re.execp re name
-;;
+let name_matches rule ~name = Pattern.matches ~case:rule.case ~pattern:rule.pattern name
 
 let equal (a : t) (b : t) =
   match a, b with
-  | Touchpad a', Touchpad b' -> a'.name = b'.name && a'.case = b'.case
-  | Mouse a', Mouse b' -> a'.name = b'.name && a'.case = b'.case
+  | Touchpad a', Touchpad b' -> a'.pattern = b'.pattern && a'.case = b'.case
+  | Mouse a', Mouse b' -> a'.pattern = b'.pattern && a'.case = b'.case
   | _ -> false
 ;;

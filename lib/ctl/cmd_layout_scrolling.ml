@@ -9,18 +9,12 @@ let command_term =
 let name = "scrolling"
 let doc = "Switch to the scrolling layout"
 
-let build mk_term children =
-  Ctl_cli.group ~name ~doc ~default:(Ctl_cli.run_term @@ mk_term command_term) children
-;;
-
-let cmd =
-  build
-    Ctl_cli.command_term
-    [ Cmd_layout_scrolling_default_width.cmd; Cmd_layout_scrolling_policy.cmd ]
-;;
-
-let bind_cmd =
-  build
-    Ctl_cli.bind_term
-    [ Cmd_layout_scrolling_default_width.bind_cmd; Cmd_layout_scrolling_policy.bind_cmd ]
+let cmd, bind_cmd =
+  Ctl_cli.group_pair
+    ~name
+    ~doc
+    ~default:command_term
+    [ Cmd_layout_scrolling_default_width.(cmd, bind_cmd)
+    ; Cmd_layout_scrolling_policy.(cmd, bind_cmd)
+    ]
 ;;

@@ -1,28 +1,3 @@
-(** [outputs_of_scope wm seat scope] is the outputs that [scope] selects: the
-    focused output of [seat], the named output, or every output. Errors when
-    [seat] has no output or when no output has the name.
-
-    {b Effects:} mutates WM state *)
-val outputs_of_scope
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Scope.t
-  -> (Ocdwm_state.Types.Output.t list, string) result
-
-(** [apply_scoped wm seat scope ~f] applies [f] to each tag config that [scope]
-    selects. [Focused] selects the config of the selected tags on the focused
-    output. [Output name] selects the config of every tag on the named output.
-    [All] selects the config of every tag on every output, and the default tag
-    config.
-
-    {b Effects:} mutates WM state *)
-val apply_scoped
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Scope.t
-  -> f:(Ocdwm_state.Types.Config.Data.t -> unit)
-  -> (Yojson.Safe.t option, string) result
-
 (** [set_mfact wm seat delta scope] adjusts the master-area fraction on output
     according to [scope].
 
@@ -110,12 +85,6 @@ val set_orientation
   -> Ocdwm_core.Direction.Spatial.t
   -> Ocdwm_core.Scope.t
   -> (Yojson.Safe.t option, string) result
-
-(** [enter_overview wm output] handles the transition to the [Overview] layout.
-    No-op when [output] is already in [Overview].
-
-    {b Effects:} mutates WM state *)
-val enter_overview : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit
 
 (** [exit_overview output] handles the transition from [Overview] to any other
     layout. No-op when [output] is not in [Overview].

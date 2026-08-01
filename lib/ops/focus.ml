@@ -86,31 +86,19 @@ let window_spatial ?warp wm seat (dir : Direction.Spatial.t) =
 ;;
 
 let window_match ?warp ~cycle (wm : Wm.t) seat m =
-  match Window_match.compile m with
-  | Error e -> Error e
-  | Ok matches ->
-    (match Window_scope.filter wm seat m.scope with
-     | Error e -> Error e
-     | Ok windows ->
-       let matching =
-         List.find_all
-           (fun (w : Window.t) ->
-              matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
-           windows
-       in
-       let target =
-         match Seat.focused_window seat with
-         | Some w
-           when cycle && matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier
-           -> Ring.next_or_first w matching
-         | _ -> List.nth_opt matching 0
-       in
-       (match target with
-        | None ->
-          Error (Printf.sprintf "no window matches: %S" (Window_match.to_string m))
-        | Some w ->
-          focus_window ~force:true ~warp:(Seat.Warp_request.of_override warp) wm seat w;
-          Ok None))
+  match Window_scope.matching wm seat m with
+  | Error _ as e -> e
+  | Ok (matches, matching) ->
+    let target =
+      match Seat.focused_window seat with
+      | Some w when cycle && matches w -> Ring.next_or_first w matching
+      | _ -> List.nth_opt matching 0
+    in
+    (match target with
+     | None -> Error (Printf.sprintf "no window matches: %S" (Window_match.to_string m))
+     | Some w ->
+       focus_window ~force:true ~warp:(Seat.Warp_request.of_override warp) wm seat w;
+       Ok None)
 ;;
 
 let focus_output ?warp wm seat output =

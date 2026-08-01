@@ -38,7 +38,7 @@ let remove_device device =
 
 let id proxy = Wire.id proxy
 
-let matches device ~name ~(case : Pattern.Case.t) ~(role : Input.Role.t option) =
+let matches device ~pattern ~(case : Pattern.Case.t) ~(role : Input.Role.t option) =
   let matches_role =
     match device.role, role with
     | Keyboard _, Some Keyboard -> true
@@ -49,25 +49,5 @@ let matches device ~name ~(case : Pattern.Case.t) ~(role : Input.Role.t option) 
     | _, None -> true
     | _ -> false
   in
-  if not matches_role
-  then false
-  else (
-    let flags =
-      match case with
-      | Sensitive -> []
-      | Insensitive -> [ `CASELESS ]
-    in
-    let re_compile = function
-      | None -> Ok None
-      | Some s ->
-        (try Ok (Some Re.(compile (Pcre.re ~flags s))) with
-         | Re.Pcre.(Parse_error | Not_supported) ->
-           Error (Printf.sprintf "invalid regex: %s" s))
-    in
-    match re_compile name with
-    | Error msg ->
-      Logs.err (fun m -> m "%s" msg);
-      false
-    | Ok None -> true
-    | Ok (Some re) -> Re.execp re device.name)
+  if not matches_role then false else Pattern.matches ~case ~pattern device.name
 ;;

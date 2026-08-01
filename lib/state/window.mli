@@ -26,6 +26,17 @@ val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
     {b Effects:} mutates WM state *)
 val set_clip : t -> ([ `Scrolling | `Overview ] * int Ocdwm_core.Rect.t) option -> unit
 
+(** [set_clip_within window ~tag ~bw ~bound] sets [window]'s clip to according
+    to [tag] when [window] intersets with [bound].
+
+    {b Effects:} mutates WM state *)
+val set_clip_within
+  :  t
+  -> tag:[ `Scrolling | `Overview ]
+  -> bw:int
+  -> bound:int Ocdwm_core.Rect.t option
+  -> unit
+
 (** [set_offscreen window v] marks [window] outside the viewport in scrolling
     layouts.
 

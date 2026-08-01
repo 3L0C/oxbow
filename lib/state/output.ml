@@ -12,50 +12,32 @@ let focused_window o =
 ;;
 
 let nav_stack o = if o.overview.enabled then o.focus_stack else o.wm_stack
+let stack ~rev o = if rev then nav_stack o |> List.rev else nav_stack o
 
-let next_tiled =
+let tiled ~rev =
   Ring.wrapped_search Window.tag_visible (fun w ->
     match w.output with
-    | Some o -> nav_stack o
+    | Some o -> stack ~rev o
     | None -> [])
 ;;
 
-let prev_tiled =
-  Ring.wrapped_search Window.tag_visible (fun w ->
-    match w.output with
-    | Some o -> nav_stack o |> List.rev
-    | None -> [])
-;;
-
-let next_window o =
+let neighbor ~rev o =
   match focused_window o with
   | None -> None
   | Some f ->
     let rec after = function
-      | [ w ] when w == f -> nav_stack o |> next_tiled
-      | w :: xs when w == f -> next_tiled xs
+      | [ w ] when w == f -> stack ~rev o |> tiled ~rev
+      | w :: xs when w == f -> tiled ~rev xs
       | _ :: xs -> after xs
       | [] ->
-        (Logs.err @@ fun m -> m "Focused window isn't in output window list");
+        (Logs.err @@ fun m -> m "focused window isn't in output window list");
         None
     in
-    nav_stack o |> after
+    stack ~rev o |> after
 ;;
 
-let prev_window o =
-  match focused_window o with
-  | None -> None
-  | Some f ->
-    let rec after = function
-      | [ w ] when w == f -> nav_stack o |> List.rev |> prev_tiled
-      | w :: xs when w == f -> prev_tiled xs
-      | _ :: xs -> after xs
-      | [] ->
-        (Logs.err @@ fun m -> m "Focused window isn't in output window list");
-        None
-    in
-    nav_stack o |> List.rev |> after
-;;
+let next_window o = neighbor ~rev:false o
+let prev_window o = neighbor ~rev:true o
 
 let tag_data o tag =
   match Tag.Set.first_index tag with
@@ -63,12 +45,7 @@ let tag_data o tag =
   | None -> invalid_arg "no tag data for the empty set"
 ;;
 
-let to_tag_data o =
-  match Tag.Set.first_index o.tags.selected with
-  | Some i -> o.tag_data.(i - 1)
-  | None -> invalid_arg "Got an output with no selected tags."
-;;
-
+let to_tag_data o = tag_data o o.tags.selected
 let windows_on_tags o ~tags = List.filter (Window.on_tags ~tags) o.wm_stack
 let visible_windows o = List.filter Window.tag_visible o.wm_stack
 let visible_window_count o = visible_windows o |> List.length
@@ -132,41 +109,25 @@ let exit_overview o =
 
 let apply_mfact (td : Types.Config.Data.t) ~(delta : float Delta.t) =
   let params = td.tiling in
-  let mfact =
-    match delta with
-    | Delta.Abs a -> a
-    | Delta.Rel r -> params.mfact +. r
-  in
+  let mfact = Delta.resolve ~add:( +. ) ~current:params.mfact delta in
   params.mfact <- Float.(max 0.05 mfact |> min 0.95)
 ;;
 
 let apply_nmaster (td : Types.Config.Data.t) ~(delta : int Delta.t) =
   let params = td.tiling in
-  let nmaster =
-    match delta with
-    | Delta.Abs a -> a
-    | Delta.Rel r -> params.nmaster + r
-  in
+  let nmaster = Delta.resolve ~add:( + ) ~current:params.nmaster delta in
   params.nmaster <- max 0 nmaster
 ;;
 
 let apply_gaps_inner (td : Types.Config.Data.t) ~(delta : int Delta.t) =
   let params = td.gaps in
-  let gaps_inner =
-    match delta with
-    | Delta.Abs a -> a
-    | Delta.Rel r -> params.inner + r
-  in
+  let gaps_inner = Delta.resolve ~add:( + ) ~current:params.inner delta in
   params.inner <- max 0 gaps_inner
 ;;
 
 let apply_gaps_outer (td : Types.Config.Data.t) ~(delta : int Delta.t) =
   let params = td.gaps in
-  let outer =
-    match delta with
-    | Delta.Abs a -> a
-    | Delta.Rel r -> params.outer + r
-  in
+  let outer = Delta.resolve ~add:( + ) ~current:params.outer delta in
   params.outer <- max 0 outer
 ;;
 
@@ -174,11 +135,7 @@ let apply_scroll_policy (td : Types.Config.Data.t) ~policy = td.scrolling.policy
 let apply_orientation (td : Types.Config.Data.t) ~dir = td.tiling.dir <- dir
 
 let set_gaps_overview o ~(delta : int Delta.t) =
-  let gaps =
-    match delta with
-    | Delta.Abs a -> a
-    | Delta.Rel r -> o.overview.gaps + r
-  in
+  let gaps = Delta.resolve ~add:( + ) ~current:o.overview.gaps delta in
   o.overview.gaps <- max 0 gaps
 ;;
 

@@ -1,12 +1,5 @@
 module Reply : sig
-  module Layouts : sig
-    type t = { available : string list }
-
-    val t_of_yojson : Yojson.Safe.t -> t
-    val yojson_of_t : t -> Yojson.Safe.t
-  end
-
-  module Schemes : sig
+  module Available : sig
     type t = { available : string list }
 
     val t_of_yojson : Yojson.Safe.t -> t
@@ -38,7 +31,7 @@ end
 type t =
   | Focused
   | Input_devices of
-      { name : string option
+      { pattern : string option
       ; case : Ocdwm_core.Pattern.Case.t
       ; role : Ocdwm_core.Input.Role.t option
       }

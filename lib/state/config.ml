@@ -80,9 +80,10 @@ let set_border_color (wm : Types.Wm.t) (border : Border_target.t) color =
 
 let set_default_width (td : Data.t) ~(delta : float Delta.t) =
   let f =
-    match delta with
-    | Abs a -> a
-    | Rel r -> Width_fac.to_float td.scrolling.default_width +. r
+    Delta.resolve
+      ~add:( +. )
+      ~current:(Width_fac.to_float td.scrolling.default_width)
+      delta
   in
   td.scrolling.default_width <- Width_fac.of_float f
 ;;

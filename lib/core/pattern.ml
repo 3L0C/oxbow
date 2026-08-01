@@ -22,20 +22,33 @@ type t =
 let equal (a : t) (b : t) = a = b
 let is_empty (p : t) = p.title = None && p.app_id = None && p.identifier = None
 
-let compile (p : t) =
+let re_compile ~(case : Case.t) s =
   let flags =
-    match p.case with
-    | Case.Sensitive -> []
+    match case with
+    | Sensitive -> []
     | Insensitive -> [ `CASELESS ]
   in
-  let re_compile = function
+  try Ok Re.(compile (Pcre.re ~flags s)) with
+  | Re.Pcre.(Parse_error | Not_supported) -> Error (Printf.sprintf "invalid regex: %s" s)
+;;
+
+let matches ~case ~pattern str =
+  match pattern with
+  | None -> true
+  | Some s ->
+    (match re_compile ~case s with
+     | Error msg ->
+       Logs.err (fun m -> m "%s" msg);
+       false
+     | Ok re -> Re.execp re str)
+;;
+
+let compile (p : t) =
+  let comp = function
     | None -> Ok None
-    | Some s ->
-      (try Ok (Some (Re.compile (Re.Pcre.re ~flags s))) with
-       | Re.Pcre.Parse_error | Re.Pcre.Not_supported ->
-         Error (Printf.sprintf "invalid regex: %s" s))
+    | Some s -> Result.map Option.some (re_compile ~case:p.case s)
   in
-  match re_compile p.title, re_compile p.app_id, re_compile p.identifier with
+  match comp p.title, comp p.app_id, comp p.identifier with
   | Error e, _, _ | _, Error e, _ | _, _, Error e -> Error e
   | Ok title, Ok app_id, Ok identifier ->
     let hit re value =

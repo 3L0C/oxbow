@@ -13,3 +13,16 @@ let filter (wm : Wm.t) (seat : Seat.t) (scope : Scope.t) =
      | None -> Error (Printf.sprintf "unknown output: %s" name)
      | Some o -> Ok (on_output o))
 ;;
+
+let holds matches (w : Window.t) =
+  matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier
+;;
+
+let matching wm seat (m : Window_match.t) =
+  match Window_match.compile m with
+  | Error _ as e -> e
+  | Ok matches ->
+    (match filter wm seat m.scope with
+     | Error _ as e -> e
+     | Ok windows -> Ok (holds matches, List.find_all (holds matches) windows))
+;;

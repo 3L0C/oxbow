@@ -8,11 +8,11 @@ let command_term dir =
     (if occupied then Tag_shift_occupied { dir; follow } else Tag_shift { dir; follow })
 ;;
 
-let build mk_term (name, dir) =
-  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Shift the focused window to the %s tag" name)
-  @@ mk_term
+let mk_leaf (name, dir) =
+  Ctl_cli.cmd_pair
+    ~name
+    ~doc:(Printf.sprintf "Shift the focused window to the %s tag" name)
   @@ command_term dir
 ;;
 
-let cmds = List.map (build Ctl_cli.command_term) Ctl_cli.logical_targets
-let bind_cmds = List.map (build Ctl_cli.bind_term) Ctl_cli.logical_targets
+let cmds, bind_cmds = List.map mk_leaf Ctl_cli.logical_targets |> List.split

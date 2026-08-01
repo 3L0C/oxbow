@@ -29,5 +29,4 @@ let doc =
    \"(scratch-buffer)\" )"
 ;;
 
-let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.command_term command_term
-let bind_cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.bind_term bind_term
+let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc ~bind:bind_term command_term

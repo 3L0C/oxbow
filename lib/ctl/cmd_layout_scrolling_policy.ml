@@ -7,18 +7,15 @@ let command_term policy =
   Command.Layout (Scrolling (Policy { policy; scope }))
 ;;
 
-let scroll_targets =
-  List.map (fun p -> Scroll_policy.to_string p, p) [ Visible; Left; Centered ]
-;;
+let scroll_targets = Ctl_cli.enum_of Scroll_policy.to_string [ Visible; Left; Centered ]
 
-let leaf mk_term (name, policy) =
-  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Set the scrolling layout policy to %s" name)
-  @@ mk_term
+let mk_leaf (name, policy) =
+  Ctl_cli.cmd_pair
+    ~name
+    ~doc:(Printf.sprintf "Set the scrolling layout policy to %s" name)
   @@ command_term policy
 ;;
 
 let name = "policy"
 let doc = "Set the scrolling layout policy"
-let build mk_term = Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) scroll_targets
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term
+let cmd, bind_cmd = Ctl_cli.group_pair ~name ~doc @@ List.map mk_leaf scroll_targets

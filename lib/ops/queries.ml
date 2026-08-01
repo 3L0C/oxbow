@@ -22,21 +22,13 @@ let handle_focused seat =
   | Some record -> Ok (Some ([%yojson_of: Record.Focus.t] record))
 ;;
 
-let handle_windows (wm : Wm.t) seat m =
-  match Window_match.compile m with
-  | Error e -> Error e
-  | Ok matches ->
-    (match Window_scope.filter wm seat m.scope with
-     | Error e -> Error e
-     | Ok windows ->
-       Ok
-         (Some
-            ([%yojson_of: Record.Window.t list]
-               (List.filter
-                  (fun (w : Window.t) ->
-                     matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
-                  windows
-                |> List.map (Records.to_window wm)))))
+let handle_windows wm seat m =
+  match Window_scope.matching wm seat m with
+  | Error _ as e -> e
+  | Ok (_, matching) ->
+    Ok
+      (Some
+         ([%yojson_of: Record.Window.t list] (List.map (Records.to_window wm) matching)))
 ;;
 
 let handle_tags (wm : Wm.t) output =
@@ -55,12 +47,12 @@ let handle_tags (wm : Wm.t) output =
 
 let handle_layouts =
   let available = List.map Layout.to_string Layout.all in
-  Ok (Some (Query.Reply.Layouts.yojson_of_t { available }))
+  Ok (Some (Query.Reply.Available.yojson_of_t { available }))
 ;;
 
 let handle_schemes =
   let available = List.map Scheme.to_string Scheme.all in
-  Ok (Some (Query.Reply.Schemes.yojson_of_t { available }))
+  Ok (Some (Query.Reply.Available.yojson_of_t { available }))
 ;;
 
 let handle_seats (wm : Wm.t) =
@@ -77,11 +69,11 @@ let handle_seats (wm : Wm.t) =
   Ok (Some ([%yojson_of: Query.Reply.Seats.t list] records))
 ;;
 
-let handle_devices (wm : Wm.t) ~name ~case ~role =
+let handle_devices (wm : Wm.t) ~pattern ~case ~role =
   let records =
     List.filter_map
       (fun (device : Input_device.t) ->
-         if Input_device.matches device ~name ~case ~role
+         if Input_device.matches device ~pattern ~case ~role
          then
            Some
              Query.Reply.Input_device.
@@ -99,7 +91,7 @@ let handle_input_rules (wm : Wm.t) =
 let handle wm seat (query : Query.t) =
   match query with
   | Focused -> handle_focused seat
-  | Input_devices { name; case; role } -> handle_devices wm ~name ~case ~role
+  | Input_devices { pattern; case; role } -> handle_devices wm ~pattern ~case ~role
   | Input_rules -> handle_input_rules wm
   | Keymaps { all } -> handle_keymaps wm seat all
   | Layouts _ -> handle_layouts

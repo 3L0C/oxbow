@@ -10,6 +10,4 @@ let command_term =
 
 let name = "theme"
 let doc = "Set the XCursor theme to NAME and SIZE"
-let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term command_term
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term
+let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc command_term

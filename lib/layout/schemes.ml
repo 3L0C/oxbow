@@ -1,14 +1,5 @@
 open! Ocdwm_core
 
-let split ~total ~count =
-  if count <= 0
-  then []
-  else (
-    let size = total / count in
-    let rem = total mod count in
-    List.init count (fun i -> if i < rem then size + 1 else size))
-;;
-
 let rec subdivide ~pick (area : int Rect.t) k n =
   if n <= 1
   then [ area ]
@@ -81,7 +72,7 @@ let compute ~(params : Params.Tiling.t) ~(usable_area : int Rect.t) ~(count : in
         | 0, _ -> w
         | _, _ -> w - mw
       in
-      let m_heights = split ~total:mh ~count:m_count in
+      let m_heights = Strip.split ~total:mh ~count:m_count in
       let masters = column ~x:usable_area.x ~w:mw ~y:usable_area.y m_heights in
       let c_area =
         Rect.{ x = usable_area.x + mw; y = usable_area.y; w = cw; h = usable_area.h }
@@ -94,7 +85,7 @@ let compute ~(params : Params.Tiling.t) ~(usable_area : int Rect.t) ~(count : in
      | Even ->
        tiled
        @@ fun ~c_area ~cw ~c_count ->
-       split ~total:c_area.h ~count:c_count |> column ~x:c_area.x ~w:cw ~y:c_area.y
+       Strip.split ~total:c_area.h ~count:c_count |> column ~x:c_area.x ~w:cw ~y:c_area.y
      | Diminish ->
        tiled
        @@ fun ~c_area ~cw ~c_count ->

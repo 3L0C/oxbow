@@ -1,18 +1,13 @@
 open! Ocdwm_state
 open! Ocdwm_ipc
 
-let set_device_repeat_info = Emit.set_repeat_info
-
 let set_repeat_info wm ~rate ~delay =
   Config.set_key_repeat wm ~rate ~delay;
   List.iter
     (fun (d : Input_device.t) ->
        match d.role with
        | Keyboard _ ->
-         set_device_repeat_info
-           d.obj
-           ~rate:(Int32.of_int rate)
-           ~delay:(Int32.of_int delay)
+         Emit.set_repeat_info d.obj ~rate:(Int32.of_int rate) ~delay:(Int32.of_int delay)
        | _ -> ())
     wm.input_devices
 ;;

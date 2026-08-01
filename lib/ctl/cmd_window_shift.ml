@@ -1,29 +1,19 @@
-open! Ocdwm_core
 open! Ocdwm_ipc
 
-let leaf mk_term (name, doc, dir) =
-  Ctl_cli.cmd ~name ~doc @@ mk_term @@ Cmdliner.Term.const (Command.Window (Shift dir))
+let mk_leaf (name, doc, dir) =
+  Ctl_cli.cmd_pair ~name ~doc @@ Cmdliner.Term.const (Command.Window (Shift dir))
 ;;
 
 let targets =
-  List.map
-    (fun (s, (d : Direction.Logical.t)) ->
-       match d with
-       | Next ->
-         ( s
-         , "Shift focused window toward the tail of the stack. Wraps to the head if \
-            focused window is the tail"
-         , d )
-       | Prev ->
-         ( s
-         , "Shift focused window toward the head of the stack. Wraps to the tail if \
-            focused window is the head"
-         , d ))
-    Ctl_cli.logical_targets
+  Ctl_cli.logical_leaves
+    ~next:
+      "Shift focused window toward the tail of the stack. Wraps to the head if focused \
+       window is the tail"
+    ~prev:
+      "Shift focused window toward the head of the stack. Wraps to the tail if focused \
+       window is the head"
 ;;
 
 let name = "shift"
 let doc = "Shift the focused window through the tile stack"
-let build mk_term = Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) targets
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term
+let cmd, bind_cmd = Ctl_cli.group_pair ~name ~doc @@ List.map mk_leaf targets

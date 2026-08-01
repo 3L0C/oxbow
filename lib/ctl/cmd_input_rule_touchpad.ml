@@ -5,7 +5,7 @@ let command_term =
   let open Cmdliner in
   let open Cmdliner.Term.Syntax in
   Term.term_result' ~usage:true
-  @@ let+ name = Ctl_cli.device_name_arg
+  @@ let+ pattern = Ctl_cli.device_pattern_arg
      and+ case = Ctl_cli.case_flag
      and+ tap =
        Ctl_cli.bool_state_arg "tap" ~doc:"Enable or disable tap-to-click." ~docv:"OPTION"
@@ -63,11 +63,9 @@ let command_term =
      in
      if settings = Input_rule.Touchpad.empty
      then Error "give at least one setting flag"
-     else Ok (Command.Input (Rule_add (Touchpad { name; case; settings })))
+     else Ok (Command.Input (Rule_add (Touchpad { pattern; case; settings })))
 ;;
 
 let name = "touchpad"
 let doc = "Add or update a touchpad rule"
-let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term command_term
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term
+let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc command_term

@@ -42,16 +42,10 @@ let add_xkb_stash (wm : t) device xkb =
 ;;
 
 let remove_xkb_stash (wm : t) device =
-  let _matches, rest = List.partition (fun (d, _) -> Int32.equal device d) wm.xkb_stash in
-  wm.xkb_stash <- rest
+  wm.xkb_stash <- List.filter (fun (d, _) -> not @@ Int32.equal d device) wm.xkb_stash
 ;;
 
-let find_xkb_stash_opt (wm : t) device =
-  let result = List.find_opt (fun (d, _xkb) -> Int32.equal device d) wm.xkb_stash in
-  match result with
-  | Some (_, xkb) -> Some xkb
-  | None -> None
-;;
+let find_xkb_stash_opt (wm : t) device = List.assoc_opt device wm.xkb_stash
 
 let add_input_device (wm : t) device =
   set_input_devices wm @@ (device :: wm.input_devices);

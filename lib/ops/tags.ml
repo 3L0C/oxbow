@@ -104,30 +104,20 @@ let tag_window_match wm seat m (arg : Tag.Arg.t) =
   match arg with
   | Concrete s when Tag.Set.is_empty s -> Error Messages.tag_set_is_empty
   | _ ->
-    (match Window_match.compile m with
-     | Error e -> Error e
-     | Ok matches ->
-       (match Window_scope.filter wm seat m.scope with
-        | Error e -> Error e
-        | Ok windows ->
-          let targets =
-            List.find_all
-              (fun (w : Window.t) ->
-                 matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier)
-              windows
-          in
-          (match targets with
-           | [] ->
-             Error (Printf.sprintf "no window matches: %S" (Window_match.to_string m))
-           | ws ->
-             List.iter
-               (fun (w : Window.t) ->
-                  match w.output, arg with
-                  | Some o, _ -> Window.set_tags w (Output.resolve_tag_arg ~arg o)
-                  | None, Concrete s -> Window.set_tags w s
-                  | None, Occupied -> ())
-               ws;
-             Ok None)))
+    (match Window_scope.matching wm seat m with
+     | Error _ as e -> e
+     | Ok (_, matching) ->
+       if List.is_empty matching
+       then Error (Printf.sprintf "no window matches: %S" (Window_match.to_string m))
+       else (
+         List.iter
+           (fun (w : Window.t) ->
+              match w.output, arg with
+              | Some o, _ -> Window.set_tags w @@ Output.resolve_tag_arg ~arg o
+              | None, Concrete s -> Window.set_tags w s
+              | None, Occupied -> ())
+           matching;
+         Ok None))
 ;;
 
 let tag_shift_window wm seat (dir : Direction.Logical.t) ~follow =

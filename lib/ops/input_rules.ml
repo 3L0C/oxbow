@@ -146,16 +146,17 @@ let apply_all wm = List.iter (apply wm) wm.input_devices
 let add (wm : Wm.t) (rule : Input_rule.t) =
   let rule' = List.find_opt (Input_rule.equal rule) wm.config.rules.input in
   match rule', rule with
-  | Some (Touchpad { settings = old; name; case }), Touchpad { settings = new_; _ } ->
+  | Some (Touchpad { settings = old; pattern; case }), Touchpad { settings = new_; _ } ->
     let merged_rule =
-      Input_rule.Touchpad { name; case; settings = Input_rule.Touchpad.merge ~old ~new_ }
+      Input_rule.Touchpad
+        { pattern; case; settings = Input_rule.Touchpad.merge ~old ~new_ }
     in
     Config.replace_input_rule wm merged_rule;
     apply_all wm;
     Ok None
-  | Some (Mouse { settings = old; name; case }), Mouse { settings = new_; _ } ->
+  | Some (Mouse { settings = old; pattern; case }), Mouse { settings = new_; _ } ->
     let merged_rule =
-      Input_rule.Mouse { name; case; settings = Input_rule.Mouse.merge ~old ~new_ }
+      Input_rule.Mouse { pattern; case; settings = Input_rule.Mouse.merge ~old ~new_ }
     in
     Config.replace_input_rule wm merged_rule;
     apply_all wm;

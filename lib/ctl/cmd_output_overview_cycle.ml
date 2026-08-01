@@ -15,7 +15,7 @@ let command_term dir =
   Command.Output (Cycle_overview { dir; until_release })
 ;;
 
-let leaf mk_term (name, dir) =
+let mk_leaf mk_term (name, dir) =
   Ctl_cli.cmd
     ~name
     ~doc:(Printf.sprintf "Move the overview selection to the %s window" name)
@@ -25,6 +25,10 @@ let leaf mk_term (name, dir) =
 
 let name = "cycle"
 let doc = "Cycle the overview selection through the focus stack"
-let build mk_term = List.map (leaf mk_term) Ctl_cli.logical_targets
-let cmd = Ctl_cli.group ~name ~doc @@ build Ctl_cli.command_term
-let bind_cmd = Ctl_cli.group ~name ~doc @@ build Ctl_cli.bind_term
+
+let cmd, bind_cmd =
+  Ctl_cli.group_pair ~name ~doc
+  @@ List.map
+       (fun leaf -> Ctl_cli.(mk_leaf command_term leaf, mk_leaf bind_term leaf))
+       Ctl_cli.logical_targets
+;;

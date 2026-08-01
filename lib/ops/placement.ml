@@ -49,82 +49,66 @@ let send_to ~(src : Output.t) ~(dst : Output.t) window policy =
   Schedule.manage ()
 ;;
 
-let send_window_to_logical
-      (wm : Wm.t)
-      (window : Window.t)
-      (dir : Direction.Logical.t)
-      policy
-  =
+let send_result ~src window policy ~err = function
+  | Some o when o != src ->
+    send_to ~src ~dst:o window policy;
+    Ok None
+  | _ -> Error err
+;;
+
+let send_window_to_logical (wm : Wm.t) window dir policy =
   With.output window
   @@ fun current ->
-  let target = Output.resolve_output_logical ~dir current wm.outputs in
-  match target with
-  | Some o when o != current ->
-    send_to ~src:current ~dst:o window policy;
-    Ok None
-  | _ -> Error Messages.no_other_output
+  Output.resolve_output_logical ~dir current wm.outputs
+  |> send_result ~src:current window policy ~err:Messages.no_other_output
 ;;
 
-let send_window_to_spatial
-      (wm : Wm.t)
-      (window : Window.t)
-      (dir : Direction.Spatial.t)
-      policy
-  =
-  match window.output with
-  | None -> Error Messages.window_missing_output
-  | Some current ->
-    let from = Output.to_vector current in
-    let target = Output.resolve_output_spatial ~from ~dir current wm.outputs in
-    (match target with
-     | Some o when o != current ->
-       send_to ~src:current ~dst:o window policy;
-       Ok None
-     | _ -> Error (Printf.sprintf "no output %s" (Direction.Spatial.to_string dir)))
+let send_window_to_spatial (wm : Wm.t) window dir policy =
+  With.output window
+  @@ fun current ->
+  let from = Output.to_vector current in
+  Output.resolve_output_spatial ~from ~dir current wm.outputs
+  |> send_result
+       ~src:current
+       window
+       policy
+       ~err:(Printf.sprintf "no output %s" (Direction.Spatial.to_string dir))
 ;;
 
-let send_window_to_name (wm : Wm.t) (window : Window.t) name policy =
+let send_window_to_name (wm : Wm.t) window name policy =
   With.output window
   @@ fun current ->
   if Output.matches_name name current
   then Ok None
-  else (
-    let target = Output.resolve_output_name name wm.outputs in
-    match target with
-    | Some o when o != current ->
-      send_to ~src:current ~dst:o window policy;
-      Ok None
-    | _ -> Error (Printf.sprintf "no output named %S" name))
+  else
+    Output.resolve_output_name name wm.outputs
+    |> send_result
+         ~src:current
+         window
+         policy
+         ~err:(Printf.sprintf "no output named %S" name)
+;;
+
+let follow_focus wm seat ~follow send =
+  With.focused_window seat
+  @@ fun _o w ->
+  match send w with
+  | Ok _ as result when follow ->
+    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
+    result
+  | result -> result
 ;;
 
 let send_to_logical wm seat dir policy ~follow =
-  With.focused_window seat
-  @@ fun _o w ->
-  match send_window_to_logical wm w dir policy with
-  | Ok _ as result when follow ->
-    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
-    result
-  | result -> result
+  follow_focus wm seat ~follow (fun w -> send_window_to_logical wm w dir policy)
 ;;
 
 let send_to_spatial wm seat dir policy ~follow =
-  With.focused_window seat
-  @@ fun _o w ->
-  match send_window_to_spatial wm w dir policy with
-  | Ok _ as result when follow ->
-    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
-    result
-  | result -> result
+  follow_focus wm seat ~follow (fun w -> send_window_to_spatial wm w dir policy)
 ;;
 
 let send_to_name wm seat name policy ~follow =
-  With.focused_window seat
-  @@ fun _o w ->
-  match send_window_to_name wm w name policy with
-  | Ok _ as result when follow ->
-    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
-    result
-  | result -> result
+  follow_focus wm seat ~follow (fun w -> send_window_to_name wm w name policy)
 ;;
 
 let toggle_floating seat =
@@ -201,13 +185,17 @@ let close_focused seat =
   Ok None
 ;;
 
-let move_window_to ~x ~y w =
+let unless_fullscreen ~verb w act =
   if Window.is_fullscreen w
-  then Error "cannot move a fullscreen window"
+  then Error (Printf.sprintf "cannot %s a fullscreen window" verb)
   else (
-    Window.move_to w ~x ~y;
+    act ();
     Schedule.manage ();
     Ok None)
+;;
+
+let move_window_to ~x ~y w =
+  unless_fullscreen ~verb:"move" w @@ fun () -> Window.move_to w ~x ~y
 ;;
 
 let move_to ~x ~y seat = With.focused_window seat @@ fun _o w -> move_window_to ~x ~y w
@@ -215,21 +203,12 @@ let move_to ~x ~y seat = With.focused_window seat @@ fun _o w -> move_window_to 
 let move_spatial seat dir by =
   With.focused_window seat
   @@ fun _o w ->
-  if Window.is_fullscreen w
-  then Error "cannot move a fullscreen window"
-  else (
-    Window.move_spatial w dir by;
-    Schedule.manage ();
-    Ok None)
+  unless_fullscreen ~verb:"move" w @@ fun () -> Window.move_spatial w dir by
 ;;
 
 let resize_window_to ~width ~height window =
-  if Window.is_fullscreen window
-  then Error "cannot resize a fullscreen window"
-  else (
-    Window.resize_to window ~width ~height;
-    Schedule.manage ();
-    Ok None)
+  unless_fullscreen ~verb:"resize" window
+  @@ fun () -> Window.resize_to window ~width ~height
 ;;
 
 let resize_to ~width ~height seat =
@@ -239,12 +218,7 @@ let resize_to ~width ~height seat =
 let resize_spatial seat dir by =
   With.focused_window seat
   @@ fun _o w ->
-  if Window.is_fullscreen w
-  then Error "cannot resize a fullscreen window"
-  else (
-    Window.resize_spatial w dir by;
-    Schedule.manage ();
-    Ok None)
+  unless_fullscreen ~verb:"resize" w @@ fun () -> Window.resize_spatial w dir by
 ;;
 
 let swap_outputs

@@ -26,6 +26,15 @@ val equal : t -> t -> bool
     every window. *)
 val is_empty : t -> bool
 
+(** [re_compile ~case s] compiles [s] as a PCRE regex with the case flag of
+    [case]. *)
+val re_compile : case:Case.t -> string -> (Re.re, string) result
+
+(** [matches ~case ~pattern str] is [true] when [pattern] is absent, or when its
+    regex matches [str]. Is [false] when the regex is malformed, logging an
+    error. *)
+val matches : case:Case.t -> pattern:string option -> string -> bool
+
 (** [compile p] compiles [p] into a matcher. A window matches when every field
     of [p] matches; an absent field matches any value. Is [Error msg] when
     a regex is malformed. *)

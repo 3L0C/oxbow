@@ -8,6 +8,8 @@ let log_of_out = function
   | None -> Logs.debug
 ;;
 
+let logged ?out r = r |> Result.iter_error @@ fun e -> log_of_out out @@ fun m -> m "%s" e
+
 let focused_output (seat : Types.Seat.t) f =
   match seat.output with
   | None -> Error Messages.seat_missing_output
@@ -21,17 +23,19 @@ let named_output ~name (wm : Types.Wm.t) f =
 ;;
 
 let named_output_log ?out ~name (wm : Types.Wm.t) f =
-  named_output ~name wm (fun o ->
-    f o;
-    Ok None)
-  |> Result.iter_error @@ fun e -> log_of_out out @@ fun m -> m "%s" e
+  logged ?out
+  @@ named_output ~name wm
+  @@ fun o ->
+  f o;
+  Ok None
 ;;
 
 let focused_output_log ?out seat f =
-  focused_output seat (fun o ->
-    f o;
-    Ok None)
-  |> Result.iter_error @@ fun e -> log_of_out out @@ fun m -> m "%s" e
+  logged ?out
+  @@ focused_output seat
+  @@ fun o ->
+  f o;
+  Ok None
 ;;
 
 let focused_window seat f =
@@ -43,10 +47,11 @@ let focused_window seat f =
 ;;
 
 let focused_window_log ?out seat f =
-  focused_window seat (fun o w ->
-    f o w;
-    Ok None)
-  |> Result.iter_error @@ fun e -> log_of_out out @@ fun m -> m "%s" e
+  logged ?out
+  @@ focused_window seat
+  @@ fun o w ->
+  f o w;
+  Ok None
 ;;
 
 let output (window : Types.Window.t) f =
@@ -56,8 +61,9 @@ let output (window : Types.Window.t) f =
 ;;
 
 let output_log ?out window f =
-  output window (fun o ->
-    f o;
-    Ok None)
-  |> Result.iter_error @@ fun e -> log_of_out out @@ fun m -> m "%s" e
+  logged ?out
+  @@ output window
+  @@ fun o ->
+  f o;
+  Ok None
 ;;

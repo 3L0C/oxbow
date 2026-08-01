@@ -62,12 +62,5 @@ let arrange (wm : Wm.t) (output : Output.t) =
         |> Rect.inset ~by:bw
         |> Window.clamp w
         |> Window.set_geom w;
-        let dims = Rect.to_int w.geom in
-        let visual = Rect.inset ~by:(-bw) dims in
-        match Rect.intersect visual output.usable with
-        | None -> Window.set_clip w None
-        | Some i when i = visual -> Window.set_clip w None
-        | Some i ->
-          Window.set_clip w
-          @@ Some (`Scrolling, { i with x = i.x - dims.x; y = i.y - dims.y })))
+        Window.set_clip_within w ~tag:`Scrolling ~bw ~bound:(Some output.usable)))
 ;;

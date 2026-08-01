@@ -9,11 +9,9 @@ let command_term (dir : Direction.t) =
   | Spatial dir -> Command.Window (Focus_spatial { dir; warp })
 ;;
 
-let build mk_term (name, dir) =
-  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Focus the %s window" name)
-  @@ mk_term
+let mk_leaf (name, dir) =
+  Ctl_cli.cmd_pair ~name ~doc:(Printf.sprintf "Focus the %s window" name)
   @@ command_term dir
 ;;
 
-let cmds = List.map (build Ctl_cli.command_term) Ctl_cli.direction_targets
-let bind_cmds = List.map (build Ctl_cli.bind_term) Ctl_cli.direction_targets
+let cmds, bind_cmds = List.map mk_leaf Ctl_cli.direction_targets |> List.split

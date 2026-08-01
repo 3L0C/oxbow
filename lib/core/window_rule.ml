@@ -45,26 +45,8 @@ module Effects = struct
     }
   [@@deriving yojson]
 
-  let merge ~old ~new_ =
-    let slot old_slot = function
-      | None -> old_slot
-      | Some slot -> Some slot
-    in
-    { output = slot old.output new_.output
-    ; tags = slot old.tags new_.tags
-    ; presentation = slot old.presentation new_.presentation
-    ; resize_to = slot old.resize_to new_.resize_to
-    ; move_to = slot old.move_to new_.move_to
-    }
-  ;;
-
-  let is_empty e =
-    e.output = None
-    && e.tags = None
-    && e.presentation = None
-    && e.resize_to = None
-    && e.move_to = None
-  ;;
+  let merge = Json_slots.merge yojson_of_t t_of_yojson
+  let is_empty = Json_slots.is_empty yojson_of_t
 end
 
 type t =

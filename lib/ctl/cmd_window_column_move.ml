@@ -1,27 +1,20 @@
-open! Ocdwm_core
 open! Ocdwm_ipc
 
-let leaf mk_term (name, doc, command) =
-  Ctl_cli.cmd ~name ~doc @@ mk_term @@ Cmdliner.Term.const (Command.Window command)
+let mk_leaf (name, doc, dir) =
+  Ctl_cli.cmd_pair ~name ~doc
+  @@ Cmdliner.Term.const (Command.Window (Command.Window.Column_move dir))
 ;;
 
 let move_targets =
-  List.map
-    (fun (name, dir) ->
-       ( name
-       , (match (dir : Direction.Logical.t) with
-          | Next ->
-            "Shift focused column tail of the stack. Wraps to the head if focused column \
-             is the tail"
-          | Prev ->
-            "Shift focused column toward the head of the stack. Wraps to the tail if \
-             focused column is the head")
-       , Command.Window.Column_move dir ))
-    Ctl_cli.logical_targets
+  Ctl_cli.logical_leaves
+    ~next:
+      "Shift focused column tail of the stack. Wraps to the head if focused column is \
+       the tail"
+    ~prev:
+      "Shift focused column toward the head of the stack. Wraps to the tail if focused \
+       column is the head"
 ;;
 
 let name = "move"
 let doc = "Move the focused column through the strip"
-let build mk_term = Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) move_targets
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term
+let cmd, bind_cmd = Ctl_cli.group_pair ~name ~doc @@ List.map mk_leaf move_targets

@@ -1,32 +1,25 @@
 open! Ocdwm_core
 open! Ocdwm_state
 
-let handle_move wm seat window =
-  let aux () = Drag.begin_move wm seat window in
+let float_then (window : Window.t) f =
   match window.presentation with
   | Fullscreen _ -> ()
   | Tiled ->
     if not @@ Output.is_floating window.output
     then Window.set_presentation window Floating;
-    aux ()
+    f ()
   | Maximized _ ->
     Window.set_presentation window Floating;
-    aux ()
-  | Floating -> aux ()
+    f ()
+  | Floating -> f ()
+;;
+
+let handle_move wm seat window =
+  float_then window @@ fun () -> Drag.begin_move wm seat window
 ;;
 
 let handle_resize wm seat window edges =
-  let resize () = Drag.begin_resize wm seat window edges in
-  match window.presentation with
-  | Fullscreen _ -> ()
-  | Tiled ->
-    if not @@ Output.is_floating window.output
-    then Window.set_presentation window Floating;
-    resize ()
-  | Maximized _ ->
-    Window.set_presentation window Floating;
-    resize ()
-  | Floating -> resize ()
+  float_then window @@ fun () -> Drag.begin_resize wm seat window edges
 ;;
 
 let handle_set_dimensions (wm : Wm.t) window w h =

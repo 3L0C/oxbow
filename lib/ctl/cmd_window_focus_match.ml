@@ -19,6 +19,4 @@ let command_term =
 
 let name = "match"
 let doc = "Focus a window matching the search pattern"
-let build mk_term = Ctl_cli.cmd ~name ~doc @@ mk_term command_term
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term
+let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc command_term

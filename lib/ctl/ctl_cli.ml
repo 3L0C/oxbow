@@ -14,15 +14,19 @@ let seat =
 ;;
 
 let socket = Cli.socket_arg
+let enum_of to_string l = List.map (fun x -> to_string x, x) l
+let spatial_targets = enum_of Direction.Spatial.to_string [ Up; Down; Left; Right ]
+let logical_targets = enum_of Direction.Logical.to_string [ Next; Prev ]
 
-let spatial_targets =
-  let open Direction.Spatial in
-  List.map (fun d -> to_string d, d) [ Up; Down; Left; Right ]
-;;
-
-let logical_targets =
-  let open Direction.Logical in
-  List.map (fun d -> to_string d, d) [ Next; Prev ]
+let logical_leaves ~next ~prev =
+  List.map
+    (fun (name, (d : Ocdwm_core.Direction.Logical.t)) ->
+       ( name
+       , (match d with
+          | Next -> next
+          | Prev -> prev)
+       , d ))
+    logical_targets
 ;;
 
 let direction_targets =
@@ -31,23 +35,27 @@ let direction_targets =
   @ List.map (fun (s, d) -> s, Spatial d) spatial_targets
 ;;
 
-let int_delta_conv =
+let delta_conv of_string pp =
   let parser = function
     | "" -> Error "empty delta"
     | s when s.[0] = '+' || s.[0] = '-' ->
-      (match int_of_string_opt s with
+      (match of_string s with
        | Some n -> Ok (Delta.Rel n)
-       | None -> Error (Printf.sprintf "bad int delta: %s" s))
+       | None -> Error (Printf.sprintf "bad delta: %s" s))
     | s ->
-      (match int_of_string_opt s with
+      (match of_string s with
        | Some n -> Ok (Delta.Abs n)
-       | None -> Error (Printf.sprintf "bad int: %s" s))
+       | None -> Error (Printf.sprintf "bad value: %s" s))
   in
+  Arg.Conv.make ~docv:"DELTA" ~parser ~pp ()
+;;
+
+let int_delta_conv =
   let pp ppf = function
     | Delta.Abs n -> Format.fprintf ppf "%d" n
     | Rel n -> Format.fprintf ppf "%+d" n
   in
-  Arg.Conv.make ~docv:"DELTA" ~parser ~pp ()
+  delta_conv int_of_string_opt pp
 ;;
 
 let int_delta =
@@ -61,22 +69,11 @@ let int_delta =
 ;;
 
 let float_delta_conv =
-  let parser = function
-    | "" -> Error "empty delta"
-    | s when s.[0] = '+' || s.[0] = '-' ->
-      (match float_of_string_opt s with
-       | Some n -> Ok (Delta.Rel n)
-       | None -> Error (Printf.sprintf "bad float delta: %s" s))
-    | s ->
-      (match float_of_string_opt s with
-       | Some n -> Ok (Delta.Abs n)
-       | None -> Error (Printf.sprintf "bad float: %s" s))
-  in
   let pp ppf = function
     | Delta.Abs n -> Format.fprintf ppf "%f" n
     | Rel n -> Format.fprintf ppf "%+f" n
   in
-  Arg.Conv.make ~docv:"DELTA" ~parser ~pp ()
+  delta_conv float_of_string_opt pp
 ;;
 
 let float_delta =
@@ -111,16 +108,14 @@ let tag_shared_doc =
    $(b,0b111) means tags 1, 2, and 3."
 ;;
 
-let tag_arg_at i =
+let tag_arg =
   let doc =
     tag_shared_doc
     ^ " The string literal $(i,occupied) is allowed and represents all currently \
        occupied tags."
   in
-  Arg.(required & pos i (some tag_arg_conv) None & info [] ~docv:"TAGS" ~doc)
+  Arg.(required & pos 0 (some tag_arg_conv) None & info [] ~docv:"TAGS" ~doc)
 ;;
-
-let tag_arg = tag_arg_at 0
 
 let tag_set_conv =
   let parser = Tag.Set.of_string in
@@ -196,6 +191,17 @@ let bind_swap_target =
      | None, a :: b :: _, false -> Ok (pair (Some a) (Some b))
 ;;
 
+let swap_terms mk =
+  let term target_t =
+    let open Cmdliner.Term.Syntax in
+    let+ target = target_t
+    and+ policy = policy_flag
+    and+ follow = follow_flag in
+    mk ~target ~policy ~follow
+  in
+  term swap_target, term bind_swap_target
+;;
+
 let app_id_flag =
   Arg.(
     value
@@ -230,7 +236,7 @@ let case_flag =
         ])
 ;;
 
-let device_name_arg =
+let device_pattern_arg =
   Arg.(
     value
     & opt (some string) None
@@ -259,6 +265,12 @@ let output_flag =
     value
     & opt (some string) None
     & info [ "output" ] ~docv:"NAME" ~doc:"Filter to outputs matching $(i,NAME).")
+;;
+
+let output_query mk =
+  let open Cmdliner.Term.Syntax in
+  let+ output = output_flag in
+  mk output
 ;;
 
 let extent_conv =
@@ -292,6 +304,10 @@ let mode_flag =
         [ "mode" ]
         ~docv:"MODE"
         ~doc:"The keymap mode the binding belongs to (default $(b,normal)).")
+;;
+
+let mode_name_arg =
+  Arg.(required & pos 0 (some string) None & info [] ~docv:"MODE" ~doc:"The mode name")
 ;;
 
 let color_arg_conv =
@@ -430,6 +446,10 @@ let extent_pair name ~docv ~doc =
   Arg.(value & opt (some (list extent_conv)) None & info [ name ] ~docv ~doc)
 ;;
 
+let extent_pos i ~docv ~doc =
+  Arg.(required & pos i (some extent_conv) None & info [] ~docv ~doc)
+;;
+
 let resize_to_flag =
   let open Ocdwm_core.Window_rule.Effects in
   let open Cmdliner.Term.Syntax in
@@ -480,9 +500,7 @@ let bool_state_arg name ~doc ~docv =
 
 let accel_profile_arg =
   mk_enum "accel-profile" ~doc:"Set the pointer acceleration profile." ~docv:"PROFILE"
-  @@ List.map
-       (fun p -> Input_rule.Accel_profile.to_string p, p)
-       Input_rule.Accel_profile.[ None; Flat; Adaptive; Custom ]
+  @@ enum_of Input_rule.Accel_profile.to_string [ None; Flat; Adaptive; Custom ]
 ;;
 
 let accel_speed_arg =
@@ -496,17 +514,12 @@ let accel_speed_arg =
 ;;
 
 let button_map_arg name ~doc =
-  mk_enum name ~doc ~docv:"BUTTON"
-  @@ List.map
-       (fun bm -> Input_rule.Button_map.to_string bm, bm)
-       Input_rule.Button_map.[ Lrm; Lmr ]
+  mk_enum name ~doc ~docv:"BUTTON" @@ enum_of Input_rule.Button_map.to_string [ Lrm; Lmr ]
 ;;
 
 let drag_lock_arg =
   mk_enum "drag-lock" ~doc:"Set the drag lock mode for tap-and-drag." ~docv:"OPTION"
-  @@ List.map
-       (fun dl -> Input_rule.Drag_lock.to_string dl, dl)
-       Input_rule.Drag_lock.[ Disabled; Enabled_timeout; Enabled_sticky ]
+  @@ enum_of Input_rule.Drag_lock.to_string [ Disabled; Enabled_timeout; Enabled_sticky ]
 ;;
 
 let three_finger_drag_arg =
@@ -514,16 +527,12 @@ let three_finger_drag_arg =
     "three-finger-drag"
     ~doc:"Set the drag gesture with three or four fingers."
     ~docv:"OPTION"
-  @@ List.map
-       (fun tfd -> Input_rule.Three_finger_drag.to_string tfd, tfd)
-       Input_rule.Three_finger_drag.[ Disabled; Enabled_3fg; Enabled_4fg ]
+  @@ enum_of Input_rule.Three_finger_drag.to_string [ Disabled; Enabled_3fg; Enabled_4fg ]
 ;;
 
 let click_method_arg =
   mk_enum "click-method" ~doc:"Set the click method of the touchpad." ~docv:"METHOD"
-  @@ List.map
-       (fun cm -> Input_rule.Click_method.to_string cm, cm)
-       Input_rule.Click_method.[ None; Button_areas; Clickfinger ]
+  @@ enum_of Input_rule.Click_method.to_string [ None; Button_areas; Clickfinger ]
 ;;
 
 let natural_scroll_arg =
@@ -559,9 +568,9 @@ let scroll_factor_arg =
 
 let scroll_method_arg =
   mk_enum "scroll-method" ~doc:"Set the scroll method of the device." ~docv:"METHOD"
-  @@ List.map
-       (fun sm -> Input_rule.Scroll_method.to_string sm, sm)
-       Input_rule.Scroll_method.[ No_scroll; Two_finger; Edge; On_button_down ]
+  @@ enum_of
+       Input_rule.Scroll_method.to_string
+       [ No_scroll; Two_finger; Edge; On_button_down ]
 ;;
 
 let scroll_button_arg =
@@ -569,14 +578,14 @@ let scroll_button_arg =
     "scroll-button"
     ~doc:"Set the button that starts on-button-down scroll."
     ~docv:"BUTTON"
-  @@ List.map (fun pb -> Pointer_button.to_string pb, pb) Pointer_button.all
+  @@ enum_of Pointer_button.to_string Pointer_button.all
 ;;
 
 let send_events_arg =
   mk_enum "send-events" ~doc:"Set the send-events mode of the device." ~docv:"OPTION"
-  @@ List.map
-       (fun e -> Input_rule.Send_events.to_string e, e)
-       Input_rule.Send_events.[ Enabled; Disabled; Disabled_on_external_mouse ]
+  @@ enum_of
+       Input_rule.Send_events.to_string
+       [ Enabled; Disabled; Disabled_on_external_mouse ]
 ;;
 
 let code_protocol_err = 1
@@ -701,9 +710,30 @@ let bind_term term =
   Request.Body.Keymap (Bind { keybind; command; mode }), None
 ;;
 
+let cmd_pair ?bind ~name ~doc term =
+  let bind = Option.value bind ~default:term in
+  cmd ~name ~doc (command_term term), cmd ~name ~doc (bind_term bind)
+;;
+
+let group_pair ?(extra = []) ?default ~name ~doc pairs =
+  let cmds, binds = List.split pairs in
+  let mk mk_term children =
+    group
+      ~name
+      ~doc
+      ?default:(Option.map (fun t -> run_term (mk_term t)) default)
+      children
+  in
+  mk command_term (cmds @ extra), mk bind_term binds
+;;
+
 let query_term ?render term =
   let open Cmdliner.Term.Syntax in
   let+ json = json_flag
   and+ query = term in
   Request.Body.Query query, if json then None else render
+;;
+
+let const_leaves l =
+  List.map (fun (name, doc, c) -> cmd_pair ~name ~doc (Cmdliner.Term.const c)) l
 ;;

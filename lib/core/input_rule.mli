@@ -124,7 +124,7 @@ module Mouse : sig
 end
 
 type 'a rule =
-  { name : string option
+  { pattern : string option
   ; case : Pattern.Case.t
   ; settings : 'a
   }

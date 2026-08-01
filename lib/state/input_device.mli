@@ -25,11 +25,11 @@ val remove_device : t -> unit
     key. *)
 val id : Wire.Obj.Input.Management.Device.t -> int32
 
-(** [matches device ~name ~case ~role] is [true] when [device] matches [role]
-    and [name] according to [case]. *)
+(** [matches device ~pattern ~case ~role] is [true] when [device] matches [role]
+    and [pattern] according to [case]. *)
 val matches
   :  t
-  -> name:string option
+  -> pattern:string option
   -> case:Ocdwm_core.Pattern.Case.t
   -> role:Ocdwm_core.Input.Role.t option
   -> bool

@@ -5,6 +5,11 @@ module Item : sig
     }
 end
 
+(** [split ~total ~count] is an int list of length [count], where each element
+    is equal to [total / count]. If [total mod count <> 0] then
+    [total mod count] elements are eqaul to [(total / count) + 1]. *)
+val split : total:int -> count:int -> int list
+
 (** [columns ~consumes items] groups [items] into columns. A new column starts
     at each item whose predecessor does not consume. The concatenation of the
     result is [items]. *)

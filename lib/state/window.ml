@@ -67,6 +67,16 @@ let set_position w ~x ~y = w.geom <- { w.geom with x; y }
 let floor_geom (g : int32 Rect.t) = { g with w = max g.w 0l; h = max g.h 0l }
 let set_geom w g = w.geom <- floor_geom g
 let set_clip w clip = w.clip <- clip
+
+let set_clip_within w ~tag ~bw ~bound =
+  let dims = Rect.to_int w.geom in
+  let visual = Rect.inset ~by:(-bw) dims in
+  match Option.bind bound (Rect.intersect visual) with
+  | None -> set_clip w None
+  | Some i when i = visual -> set_clip w None
+  | Some i -> set_clip w @@ Some (tag, { i with x = i.x - dims.x; y = i.y - dims.y })
+;;
+
 let set_offscreen w v = w.offscreen <- v
 
 let tag_layout (o : Types.Output.t) =
@@ -291,7 +301,7 @@ let apply_float_geom w g =
   remember_float w
 ;;
 
-let move_to w ~x ~y =
+let with_float_edit w f =
   if is_fullscreen w
   then Logs.err @@ fun m -> m "unable to move fullscreen window"
   else (
@@ -299,74 +309,53 @@ let move_to w ~x ~y =
     | None -> ()
     | Some o ->
       float_in_place w;
-      let cur = Rect.to_int w.geom in
-      let g =
-        { cur with
-          x = o.usable.x + Extent.resolve x ~ref:o.usable.w
-        ; y = o.usable.y + Extent.resolve y ~ref:o.usable.h
-        }
-      in
-      apply_float_geom w g)
+      f o |> apply_float_geom w)
+;;
+
+let move_to w ~x ~y =
+  with_float_edit w
+  @@ fun o ->
+  let cur = Rect.to_int w.geom in
+  { cur with
+    x = o.usable.x + Extent.resolve x ~ref:o.usable.w
+  ; y = o.usable.y + Extent.resolve y ~ref:o.usable.h
+  }
 ;;
 
 let move_spatial w (dir : Direction.Spatial.t) by =
-  if is_fullscreen w
-  then Logs.err @@ fun m -> m "unable to move fullscreen window"
-  else (
-    match w.output with
-    | None -> ()
-    | Some o ->
-      float_in_place w;
-      let cur = Rect.to_int w.geom in
-      let dx = Extent.resolve by ~ref:o.usable.w in
-      let dy = Extent.resolve by ~ref:o.usable.h in
-      let g =
-        match dir with
-        | Up -> { cur with y = cur.y - dy }
-        | Down -> { cur with y = cur.y + dy }
-        | Left -> { cur with x = cur.x - dx }
-        | Right -> { cur with x = cur.x + dx }
-      in
-      apply_float_geom w g)
+  with_float_edit w
+  @@ fun o ->
+  let cur = Rect.to_int w.geom in
+  let dx = Extent.resolve by ~ref:o.usable.w in
+  let dy = Extent.resolve by ~ref:o.usable.h in
+  match dir with
+  | Up -> { cur with y = cur.y - dy }
+  | Down -> { cur with y = cur.y + dy }
+  | Left -> { cur with x = cur.x - dx }
+  | Right -> { cur with x = cur.x + dx }
 ;;
 
 let resize_to w ~width ~height =
-  if is_fullscreen w
-  then Logs.err @@ fun m -> m "unable to resize fullscreen window"
-  else (
-    match w.output with
-    | None -> ()
-    | Some o ->
-      float_in_place w;
-      let cur = Rect.to_int w.geom in
-      let g =
-        { cur with
-          w = Extent.resolve width ~ref:o.usable.w
-        ; h = Extent.resolve height ~ref:o.usable.h
-        }
-      in
-      apply_float_geom w g)
+  with_float_edit w
+  @@ fun o ->
+  let cur = Rect.to_int w.geom in
+  { cur with
+    w = Extent.resolve width ~ref:o.usable.w
+  ; h = Extent.resolve height ~ref:o.usable.h
+  }
 ;;
 
 let resize_spatial w (dir : Direction.Spatial.t) by =
-  if is_fullscreen w
-  then Logs.err @@ fun m -> m "unable to resize fullscreen window"
-  else (
-    match w.output with
-    | None -> ()
-    | Some o ->
-      float_in_place w;
-      let cur = Rect.to_int w.geom in
-      let dx = Extent.resolve by ~ref:o.usable.w in
-      let dy = Extent.resolve by ~ref:o.usable.h in
-      let g =
-        match dir with
-        | Up -> { cur with y = cur.y - dy; h = cur.h + dy }
-        | Down -> { cur with h = cur.h + dy }
-        | Left -> { cur with x = cur.x - dx; w = cur.w + dx }
-        | Right -> { cur with w = cur.w + dx }
-      in
-      apply_float_geom w g)
+  with_float_edit w
+  @@ fun o ->
+  let cur = Rect.to_int w.geom in
+  let dx = Extent.resolve by ~ref:o.usable.w in
+  let dy = Extent.resolve by ~ref:o.usable.h in
+  match dir with
+  | Up -> { cur with y = cur.y - dy; h = cur.h + dy }
+  | Down -> { cur with h = cur.h + dy }
+  | Left -> { cur with x = cur.x - dx; w = cur.w + dx }
+  | Right -> { cur with w = cur.w + dx }
 ;;
 
 let set_tags w tags =

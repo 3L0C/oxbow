@@ -13,18 +13,22 @@ let request_exit ?(origin = `Local) (wm : Wm.t) =
       (Wm.Lifecycle.to_string wm.lifecycle)
 ;;
 
-let request_close (wm : Wm.t) =
+let stop ~on_ignored (wm : Wm.t) =
   match wm.lifecycle with
   | Running ->
     List.iter Seat.clear_pending wm.seats;
     Wm.set_lifecycle wm Close_requested;
     Eio.Condition.broadcast wm.shutdown
-  | Pending_exit _ | Exited | Close_requested ->
+  | Pending_exit _ | Exited | Close_requested -> on_ignored ()
+;;
+
+let request_close (wm : Wm.t) =
+  stop wm ~on_ignored:(fun () ->
     Logs.warn
     @@ fun m ->
     m
       "ignoring close request for non-running state: %s"
-      (Wm.Lifecycle.to_string wm.lifecycle)
+      (Wm.Lifecycle.to_string wm.lifecycle))
 ;;
 
 let dispatch_pending (wm : Wm.t) =
@@ -43,15 +47,10 @@ let dispatch_pending (wm : Wm.t) =
 ;;
 
 let notify_finished (wm : Wm.t) =
-  match wm.lifecycle with
-  | Running ->
-    List.iter Seat.clear_pending wm.seats;
-    Wm.set_lifecycle wm Close_requested;
-    Eio.Condition.broadcast wm.shutdown
-  | Pending_exit _ | Exited | Close_requested ->
+  stop wm ~on_ignored:(fun () ->
     Logs.err
     @@ fun m ->
-    m "got notify_finished for unhandled state: %s" (Wm.Lifecycle.to_string wm.lifecycle)
+    m "got notify_finished for unhandled state: %s" (Wm.Lifecycle.to_string wm.lifecycle))
 ;;
 
 let await_shutdown (wm : Wm.t) =

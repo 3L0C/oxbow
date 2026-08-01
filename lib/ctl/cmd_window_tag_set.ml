@@ -9,5 +9,4 @@ let command_term =
 
 let name = "set"
 let doc = "Set the active TAGS for the focused window"
-let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.command_term command_term
-let bind_cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.bind_term command_term
+let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc command_term

@@ -10,9 +10,8 @@ let dir_command dir =
   | Spatial dir -> Command.Output (Focus_spatial { dir; warp })
 ;;
 
-let dir_leaf mk_term (name, dir) =
-  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Focus the %s output" name)
-  @@ mk_term
+let dir_leaf (name, dir) =
+  Ctl_cli.cmd_pair ~name ~doc:(Printf.sprintf "Focus the %s output" name)
   @@ dir_command dir
 ;;
 
@@ -23,17 +22,15 @@ let name_command_term =
   Command.Output (Focus_name { name; warp })
 ;;
 
-let name_leaf mk_term =
-  Ctl_cli.cmd ~name:"name" ~doc:"Focus the named output" @@ mk_term name_command_term
+let name_leafs =
+  Ctl_cli.cmd_pair ~name:"name" ~doc:"Focus the named output" name_command_term
 ;;
 
 let name = "focus"
 let doc = "Focus an output by direction or name"
 
-let build mk_term =
-  Ctl_cli.group ~name ~doc
-  @@ (name_leaf mk_term :: List.map (dir_leaf mk_term) Ctl_cli.direction_targets)
+let cmd, bind_cmd =
+  Ctl_cli.group_pair ~name ~doc
+  @@ [ name_leafs ]
+  @ List.map dir_leaf Ctl_cli.direction_targets
 ;;
-
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term

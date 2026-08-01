@@ -149,7 +149,6 @@ let handle ctx seat ({ body; reply } : Pending_request.t) =
       | Query query -> handle_query (Ctx.wm ctx) seat query
       | Subscribe _ -> Error "subscribe handled at the connection layer"
     with
-    | Exceptions.Finished -> raise Exceptions.Finished
     | exn -> Error (Printexc.to_string exn)
   in
   match result, reply with

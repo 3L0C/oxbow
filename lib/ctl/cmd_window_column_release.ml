@@ -1,7 +1,6 @@
 open! Ocdwm_ipc
 
-let term = Cmdliner.Term.const (Command.Window Column_release)
+let command_term = Cmdliner.Term.const (Command.Window Column_release)
 let name = "release"
 let doc = "Expel the focused window into its own column"
-let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.command_term term
-let bind_cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.bind_term term
+let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc command_term

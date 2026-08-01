@@ -6,18 +6,14 @@ let command_term dir =
   Command.Layout (Tiling (Orientation { dir; scope }))
 ;;
 
-let leaf mk_term (name, dir) =
-  Ctl_cli.cmd ~name ~doc:(Printf.sprintf "Position the master stack %s" name)
-  @@ mk_term
+let mk_leaf (name, dir) =
+  Ctl_cli.cmd_pair ~name ~doc:(Printf.sprintf "Position the master stack %s" name)
   @@ command_term dir
 ;;
 
 let name = "orientation"
 let doc = "Set the master orientation for the current layout"
 
-let build mk_term =
-  Ctl_cli.group ~name ~doc @@ List.map (leaf mk_term) Ctl_cli.spatial_targets
+let cmd, bind_cmd =
+  Ctl_cli.group_pair ~name ~doc @@ List.map mk_leaf Ctl_cli.spatial_targets
 ;;
-
-let cmd = build Ctl_cli.command_term
-let bind_cmd = build Ctl_cli.bind_term

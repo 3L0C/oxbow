@@ -2,11 +2,7 @@ open! Ppx_yojson_conv_lib.Yojson_conv
 open! Ocdwm_core
 
 module Reply = struct
-  module Layouts = struct
-    type t = { available : string list } [@@deriving yojson]
-  end
-
-  module Schemes = struct
+  module Available = struct
     type t = { available : string list } [@@deriving yojson]
   end
 
@@ -31,7 +27,7 @@ end
 type t =
   | Focused [@name "focused"]
   | Input_devices of
-      { name : string option [@yojson.option]
+      { pattern : string option [@yojson.option]
       ; case : Pattern.Case.t
       ; role : Input.Role.t option [@yojson.option]
       } [@name "input_devices"]
