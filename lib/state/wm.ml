@@ -53,14 +53,14 @@ let find_xkb_stash_opt (wm : t) device =
   | None -> None
 ;;
 
-let add_input_device (wm : t) entry =
-  set_input_devices wm @@ (entry :: wm.input_devices);
-  remove_xkb_stash wm @@ Input_device.id entry.device
+let add_input_device (wm : t) device =
+  set_input_devices wm @@ (device :: wm.input_devices);
+  remove_xkb_stash wm @@ Input_device.id device.obj
 ;;
 
-let remove_input_device (wm : t) entry =
-  set_input_devices wm @@ List.filter (fun e -> e != entry) wm.input_devices;
-  Input_device.remove_entry entry
+let remove_input_device (wm : t) device =
+  set_input_devices wm @@ List.filter (fun e -> e != device) wm.input_devices;
+  Input_device.remove_device device
 ;;
 
 let find_window_opt (wm : t) id =
@@ -77,7 +77,7 @@ let find_output_opt (wm : t) id =
 
 let find_input_device_opt (wm : t) id =
   List.find_opt
-    (fun (e : Types.Input_device.t) -> Input_device.id e.device = id)
+    (fun (d : Types.Input_device.t) -> Input_device.id d.obj = id)
     wm.input_devices
 ;;
 

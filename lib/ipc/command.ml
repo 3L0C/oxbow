@@ -61,6 +61,8 @@ module Input = struct
     | Cursor of Cursor.t [@name "cursor"]
     | Keyboard of Keyboard.t [@name "keyboard"]
     | Pointer of Pointer.t [@name "pointer"]
+    | Rule_add of Input_rule.t [@name "rule_add"]
+    | Rule_remove of int [@name "rule_remove"]
   [@@deriving yojson]
 end
 
@@ -179,13 +181,6 @@ module Output = struct
   [@@deriving yojson]
 end
 
-module Rule = struct
-  type t =
-    | Add of Rule.t [@name "add"]
-    | Remove of Pattern.t [@name "remove"]
-  [@@deriving yojson]
-end
-
 module Session = struct
   type t = Exit [@name "exit"] [@@deriving yojson]
 end
@@ -278,6 +273,8 @@ module Window = struct
     | Column_width of float Delta.t [@name "column_width"]
     | Column_width_default [@name "column_width_default"]
     | Column_width_cycle [@name "column_width_cycle"]
+    | Rule_add of Window_rule.t [@name "rule_add"]
+    | Rule_remove of int [@name "rule_remove"]
   [@@deriving yojson]
 end
 
@@ -293,7 +290,6 @@ type t =
   | Keymap of Keymap.t [@name "keymap"]
   | Layout of Layout.t [@name "layout"]
   | Output of Output.t [@name "output"]
-  | Rule of Rule.t [@name "rule"]
   | Session of Session.t [@name "session"]
   | Spawn of string [@name "spawn"]
   | Tag of Tag.t [@name "tag"]

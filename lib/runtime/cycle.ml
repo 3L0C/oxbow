@@ -90,7 +90,7 @@ let manage_new_window ctx (window : Window.t) =
   Option.iter (Stacking.push [ window ]) window.output;
   if window.is_fixed || Option.is_some window.parent
   then Window.set_presentation window Floating;
-  Rules.apply_for wm window;
+  Window_rules.apply_for wm window;
   Window.set_lifecycle window Active;
   match window.output with
   | Some o ->

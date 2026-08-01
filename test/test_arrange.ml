@@ -49,6 +49,8 @@ let make_wm root =
     ; river_lsh_v1 = spawn root (module River.Proto.Layer_shell.River_layer_shell_v1)
     ; river_input_v1 =
         spawn root (module River.Proto.Input.Management.River_input_manager_v1)
+    ; river_libinput_v1 =
+        spawn root (module River.Proto.Input.Config.River_libinput_config_v1)
     ; river_xkb_config_v1 = spawn root (module River.Proto.Xkb.Config.River_xkb_config_v1)
     ; shutdown = Eio.Condition.create ()
     ; lifecycle = Running

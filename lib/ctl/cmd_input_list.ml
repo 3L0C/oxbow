@@ -1,0 +1,21 @@
+open! Ocdwm_core
+open! Ocdwm_ipc
+
+let role_arg =
+  Ctl_cli.mk_enum "role" ~doc:"Filter to devices with this role." ~docv:"ROLE"
+  @@ List.map
+       (fun r -> Input.Role.to_string r, r)
+       Input.Role.[ Keyboard; Mouse; Touchpad; Touch; Tablet ]
+;;
+
+let command_term =
+  let open Cmdliner.Term.Syntax in
+  let+ name = Ctl_cli.device_name_arg
+  and+ case = Ctl_cli.case_flag
+  and+ role = role_arg in
+  Query.Input_devices { name; case; role }
+;;
+
+let name = "list"
+let doc = "List input devices matching the search pattern."
+let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.query_term command_term

@@ -1,20 +1,20 @@
-window(index=0, id=11): (24, 24) 1021x1032
-window(index=1, id=13): (1063, 24) 833x507
-window(index=2, id=15): (1063, 549) 833x507
-window(index=0, id=11): (14, 1084) 619x517
-window(index=1, id=13): (1288, 549) 618x517
-window(index=2, id=15): (651, 549) 619x517
-window(index=3, id=17): (14, 549) 619x517
-window(index=4, id=19): (1288, 14) 618x517
-window(index=5, id=21): (651, 14) 619x517
-window(index=6, id=23): (14, 14) 619x517
-window(index=0, id=11): (14, 549) 619x517
-window(index=1, id=13): (1288, 14) 618x517
-window(index=2, id=15): (651, 14) 619x517
-window(index=3, id=17): (14, 14) 619x517
-window(index=4, id=19): (1288, -521) 618x517
-window(index=5, id=21): (651, -521) 619x517
-window(index=6, id=23): (14, -521) 619x517
+window(index=0, id=13): (24, 24) 1021x1032
+window(index=1, id=15): (1063, 24) 833x507
+window(index=2, id=17): (1063, 549) 833x507
+window(index=0, id=13): (14, 1084) 619x517
+window(index=1, id=15): (1288, 549) 618x517
+window(index=2, id=17): (651, 549) 619x517
+window(index=3, id=19): (14, 549) 619x517
+window(index=4, id=21): (1288, 14) 618x517
+window(index=5, id=23): (651, 14) 619x517
+window(index=6, id=25): (14, 14) 619x517
+window(index=0, id=13): (14, 549) 619x517
+window(index=1, id=15): (1288, 14) 618x517
+window(index=2, id=17): (651, 14) 619x517
+window(index=3, id=19): (14, 14) 619x517
+window(index=4, id=21): (1288, -521) 618x517
+window(index=5, id=23): (651, -521) 619x517
+window(index=6, id=25): (14, -521) 619x517
 0: set_capabilities
 0: propose_dimensions
 0: set_tiled

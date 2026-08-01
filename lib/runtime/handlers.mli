@@ -80,6 +80,15 @@ val on_input_device
   -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
   -> unit
 
+(** [on_libinput_device device wm_box] handles newly added libinput
+    devices.
+
+    {b Effects:} mutates WM state *)
+val on_libinput_device
+  :  River.Obj.Input.Config.Device.t
+  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> unit
+
 (** [on_xkb_keyboard xkb wm_box] handles newly added xkb keybords.
 
     {b Effects:} mutates WM state *)

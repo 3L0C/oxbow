@@ -3,7 +3,7 @@ include module type of Types.Config
 (** [create_tag_data ()] is the default [Data.t] configuration. *)
 val create_tag_data : unit -> Data.t
 
-(** [default ()] is the default config given [entry]. *)
+(** [default ()] is the default config. *)
 val default : unit -> t
 
 (** [set_focus_follows_pointer wm focus_follows_pointer] sets [wm]'s "focus
@@ -54,22 +54,41 @@ val set_default_width : Data.t -> delta:float Ocdwm_core.Delta.t -> unit
     [td]. *)
 val copy_tag_data : Data.t -> Data.t
 
-(** [add_rule wm rule] adds [rule] to [wm]'s configuration.
-
-    {b Effects:} mutates WM state *)
-val add_rule : Types.Wm.t -> Ocdwm_core.Rule.t -> unit
-
-(** [remove_rule wm pattern] removes any rule matching [pattern] from [wm]'s
+(** [add_window_rule wm rule] adds window rule defined by [rule] to [wm]'s
     configuration.
 
     {b Effects:} mutates WM state *)
-val remove_rule : Types.Wm.t -> Ocdwm_core.Pattern.t -> unit
+val add_window_rule : Types.Wm.t -> Ocdwm_core.Window_rule.t -> unit
 
-(** [replace_rule wm rule] replaces any rules in [wm] with the same pattern as
+(** [remove_window_rule wm index] removes the window rule at [index] from [wm]'s
+    configuration.
+
+    {b Effects:} mutates WM state *)
+val remove_window_rule : Types.Wm.t -> int -> unit
+
+(** [replace_window_rule wm rule] replaces any window rule in [wm] with the same
+    pattern as [rule].
+
+    {b Effects:} mutates WM state *)
+val replace_window_rule : Types.Wm.t -> Ocdwm_core.Window_rule.t -> unit
+
+(** [add_input_rule wm rule] adds input rule defined by [rule] to [wm]'s
+    configuration.
+
+    {b Effects:} mutates WM state *)
+val add_input_rule : Types.Wm.t -> Ocdwm_core.Input_rule.t -> unit
+
+(** [remove_input_rule wm index] removes the input rule at [index] from [wm]'s
+    configuration.
+
+    {b Effects:} mutates WM state *)
+val remove_input_rule : Types.Wm.t -> int -> unit
+
+(** [replace_input_rule wm rule] replaces any input rule in [wm] that matches
     [rule].
 
     {b Effects:} mutates WM state *)
-val replace_rule : Types.Wm.t -> Ocdwm_core.Rule.t -> unit
+val replace_input_rule : Types.Wm.t -> Ocdwm_core.Input_rule.t -> unit
 
 (** [declare_mode wm name] appends [name] to the declared modes.
 

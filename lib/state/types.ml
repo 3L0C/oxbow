@@ -23,13 +23,20 @@ module Config = struct
       }
   end
 
+  module Rules = struct
+    type t =
+      { mutable window : Ocdwm_core.Window_rule.t list
+      ; mutable input : Ocdwm_core.Input_rule.t list
+      }
+  end
+
   type t =
     { default_tag_config : Data.t
     ; borders : Border.t
     ; mutable cursor_theme : (string * int32) option
     ; mutable modes : string list
     ; mutable modkey : Wire.Modifiers.t
-    ; mutable rules : Ocdwm_core.Rule.t list
+    ; rules : Rules.t
     ; mutable focus_follows_pointer : bool
     ; mutable warp_on_focus : bool
     ; mutable repeat_rate : int
@@ -47,16 +54,17 @@ module rec Input_device : sig
   module Role : sig
     type t =
       | Keyboard of { mutable keyboard : Wire.Obj.Xkb.Config.Keyboard.t option }
-      | Pointer
+      | Pointer of { mutable class_ : Ocdwm_core.Input.Class.t }
       | Touch
       | Tablet
   end
 
   type t =
-    { device : Wire.Obj.Input.Management.Device.t
+    { obj : Wire.Obj.Input.Management.Device.t
     ; name : string
     ; role : Role.t
     ; mutable lifecycle : Lifecycle.t
+    ; mutable libinput : Wire.Obj.Input.Config.Device.t option
     }
 end =
   Input_device
@@ -381,13 +389,12 @@ and Wm : sig
     ; river_xkb_v1 : Wire.Obj.Xkb.Bindings.t
     ; river_lsh_v1 : Wire.Obj.Layer_shell.t
     ; river_input_v1 : Wire.Obj.Input.Management.t
+    ; river_libinput_v1 : Wire.Obj.Input.Config.t
     ; river_xkb_config_v1 : Wire.Obj.Xkb.Config.t
     ; shutdown : Eio.Condition.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable session_locked : bool
     ; mutable primary_seat : Seat.t option
-      (* TODO verify if this still holds... *)
-      (* Sorted by focus order *)
     ; mutable outputs : Output.t list
     ; mutable windows : Window.t list
     ; mutable seats : Seat.t list

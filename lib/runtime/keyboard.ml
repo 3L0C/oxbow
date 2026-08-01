@@ -6,11 +6,11 @@ let set_device_repeat_info = Emit.set_repeat_info
 let set_repeat_info wm ~rate ~delay =
   Config.set_key_repeat wm ~rate ~delay;
   List.iter
-    (fun (e : Input_device.t) ->
-       match e.role with
+    (fun (d : Input_device.t) ->
+       match d.role with
        | Keyboard _ ->
          set_device_repeat_info
-           e.device
+           d.obj
            ~rate:(Int32.of_int rate)
            ~delay:(Int32.of_int delay)
        | _ -> ())
@@ -37,8 +37,8 @@ let set_layout_file wm ~path =
               let old = wm.keymap in
               Wm.set_keymap wm @@ Some self;
               List.iter
-                (fun (e : Input_device.t) ->
-                   match e.role with
+                (fun (d : Input_device.t) ->
+                   match d.role with
                    | Keyboard k ->
                      Option.iter
                        (fun xkb ->

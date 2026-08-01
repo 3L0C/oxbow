@@ -12,15 +12,17 @@ let command_term =
      and+ presentation = Ctl_cli.presentation_flag
      and+ resize_to = Ctl_cli.resize_to_flag
      and+ move_to = Ctl_cli.move_to_flag in
-     let output : Rule.Effects.Output.t option =
+     let output : Window_rule.Effects.Output.t option =
        match name with
        | None -> None
        | Some name -> Some { name; policy }
      in
-     let effects : Rule.Effects.t = { output; tags; presentation; resize_to; move_to } in
-     if Rule.Effects.is_empty effects
+     let effects : Window_rule.Effects.t =
+       { output; tags; presentation; resize_to; move_to }
+     in
+     if Window_rule.Effects.is_empty effects
      then Error "give at least one effect"
-     else Ok (Command.Rule (Add { pattern; effects }))
+     else Ok (Command.Window (Rule_add { pattern; effects }))
 ;;
 
 let name = "add"

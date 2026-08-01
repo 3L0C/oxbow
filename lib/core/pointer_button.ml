@@ -1,23 +1,46 @@
 type t =
-  | Key_unknown
-  | Btn_0
-  | Btn_1
-  | Btn_2
-  | Btn_3
-  | Btn_4
-  | Btn_5
-  | Btn_6
-  | Btn_7
-  | Btn_8
-  | Btn_9
-  | Btn_left
-  | Btn_right
-  | Btn_middle
-  | Btn_side
-  | Btn_extra
-  | Btn_forward
-  | Btn_back
-  | Btn_task
+  | Key_unknown [@name "key_unknown"]
+  | Btn_0 [@name "btn_0"]
+  | Btn_1 [@name "btn_1"]
+  | Btn_2 [@name "btn_2"]
+  | Btn_3 [@name "btn_3"]
+  | Btn_4 [@name "btn_4"]
+  | Btn_5 [@name "btn_5"]
+  | Btn_6 [@name "btn_6"]
+  | Btn_7 [@name "btn_7"]
+  | Btn_8 [@name "btn_8"]
+  | Btn_9 [@name "btn_9"]
+  | Btn_left [@name "btn_left"]
+  | Btn_right [@name "btn_right"]
+  | Btn_middle [@name "btn_middle"]
+  | Btn_side [@name "btn_side"]
+  | Btn_extra [@name "btn_extra"]
+  | Btn_forward [@name "btn_forward"]
+  | Btn_back [@name "btn_back"]
+  | Btn_task [@name "btn_task"]
+[@@deriving yojson]
+
+let all =
+  [ Btn_0
+  ; Btn_1
+  ; Btn_2
+  ; Btn_3
+  ; Btn_4
+  ; Btn_5
+  ; Btn_6
+  ; Btn_7
+  ; Btn_8
+  ; Btn_9
+  ; Btn_left
+  ; Btn_right
+  ; Btn_middle
+  ; Btn_side
+  ; Btn_extra
+  ; Btn_forward
+  ; Btn_back
+  ; Btn_task
+  ]
+;;
 
 let of_string = function
   | "Btn_0" -> Ok Btn_0

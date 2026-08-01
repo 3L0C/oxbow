@@ -230,6 +230,16 @@ let case_flag =
         ])
 ;;
 
+let device_name_arg =
+  Arg.(
+    value
+    & opt (some string) None
+    & info
+        [ "name" ]
+        ~docv:"REGEX"
+        ~doc:"Match $(docv), a PCRE regex, against the device name.")
+;;
+
 let invert_flag =
   Arg.(value & flag & info [ "invert" ] ~doc:"Select the windows that do not match.")
 ;;
@@ -300,6 +310,13 @@ let color_arg =
         ~doc:
           "An RGBA or RGB color string. The following are equivalent: $(i,7FB4CAFF) \
            $(i,7FB4CA). May be prefixed with $(i,#) or $(i,0x).")
+;;
+
+let index_arg =
+  Arg.(
+    required
+    & pos 0 (some int) None
+    & info [] ~docv:"INDEX" ~doc:"The rule index from the $(b,list) output.")
 ;;
 
 let warp_flag =
@@ -395,7 +412,7 @@ let tags_flag =
 ;;
 
 let presentation_flag =
-  let open Ocdwm_core.Rule.Effects.Presentation in
+  let open Ocdwm_core.Window_rule.Effects.Presentation in
   Arg.(
     value
     & vflag
@@ -414,7 +431,7 @@ let extent_pair name ~docv ~doc =
 ;;
 
 let resize_to_flag =
-  let open Ocdwm_core.Rule.Effects in
+  let open Ocdwm_core.Window_rule.Effects in
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ pair =
@@ -432,7 +449,7 @@ let resize_to_flag =
 ;;
 
 let move_to_flag =
-  let open Ocdwm_core.Rule.Effects in
+  let open Ocdwm_core.Window_rule.Effects in
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ pair =
@@ -449,6 +466,119 @@ let move_to_flag =
      | Some _ -> Error "--move-to takes two values: X,Y"
 ;;
 
+let mk_enum name ~doc ~docv l =
+  let open Cmdliner in
+  let doc = Printf.sprintf "%s The value is %s" doc (Arg.doc_alts_enum l) in
+  Arg.(value & opt (some (enum l)) None & info [ name ] ~docv ~doc)
+;;
+
+let bool_state = Cmdliner.Arg.enum [ "enabled", true; "disabled", false ]
+
+let bool_state_arg name ~doc ~docv =
+  Arg.(value & opt (some bool_state) None & info [ name ] ~docv ~doc)
+;;
+
+let accel_profile_arg =
+  mk_enum "accel-profile" ~doc:"Set the pointer acceleration profile." ~docv:"PROFILE"
+  @@ List.map
+       (fun p -> Input_rule.Accel_profile.to_string p, p)
+       Input_rule.Accel_profile.[ None; Flat; Adaptive; Custom ]
+;;
+
+let accel_speed_arg =
+  Arg.(
+    value
+    & opt (some float) None
+    & info
+        [ "accel-speed" ]
+        ~docv:"SPEED"
+        ~doc:"Set the pointer acceleration speed. The range is -1.0 to 1.0.")
+;;
+
+let button_map_arg name ~doc =
+  mk_enum name ~doc ~docv:"BUTTON"
+  @@ List.map
+       (fun bm -> Input_rule.Button_map.to_string bm, bm)
+       Input_rule.Button_map.[ Lrm; Lmr ]
+;;
+
+let drag_lock_arg =
+  mk_enum "drag-lock" ~doc:"Set the drag lock mode for tap-and-drag." ~docv:"OPTION"
+  @@ List.map
+       (fun dl -> Input_rule.Drag_lock.to_string dl, dl)
+       Input_rule.Drag_lock.[ Disabled; Enabled_timeout; Enabled_sticky ]
+;;
+
+let three_finger_drag_arg =
+  mk_enum
+    "three-finger-drag"
+    ~doc:"Set the drag gesture with three or four fingers."
+    ~docv:"OPTION"
+  @@ List.map
+       (fun tfd -> Input_rule.Three_finger_drag.to_string tfd, tfd)
+       Input_rule.Three_finger_drag.[ Disabled; Enabled_3fg; Enabled_4fg ]
+;;
+
+let click_method_arg =
+  mk_enum "click-method" ~doc:"Set the click method of the touchpad." ~docv:"METHOD"
+  @@ List.map
+       (fun cm -> Input_rule.Click_method.to_string cm, cm)
+       Input_rule.Click_method.[ None; Button_areas; Clickfinger ]
+;;
+
+let natural_scroll_arg =
+  bool_state_arg
+    "natural-scroll"
+    ~doc:"Enable or disable the natural scroll direction."
+    ~docv:"OPTION"
+;;
+
+let left_handed_arg =
+  bool_state_arg
+    "left-handed"
+    ~doc:"Enable or disable the left-handed button layout."
+    ~docv:"OPTION"
+;;
+
+let middle_emulation_arg =
+  bool_state_arg
+    "middle-emulation"
+    ~doc:"Enable or disable middle-button emulation."
+    ~docv:"OPTION"
+;;
+
+let scroll_factor_arg =
+  Arg.(
+    value
+    & opt (some float) None
+    & info
+        [ "scroll-factor" ]
+        ~docv:"FACTOR"
+        ~doc:"Multiply the scroll distance by $(docv).")
+;;
+
+let scroll_method_arg =
+  mk_enum "scroll-method" ~doc:"Set the scroll method of the device." ~docv:"METHOD"
+  @@ List.map
+       (fun sm -> Input_rule.Scroll_method.to_string sm, sm)
+       Input_rule.Scroll_method.[ No_scroll; Two_finger; Edge; On_button_down ]
+;;
+
+let scroll_button_arg =
+  mk_enum
+    "scroll-button"
+    ~doc:"Set the button that starts on-button-down scroll."
+    ~docv:"BUTTON"
+  @@ List.map (fun pb -> Pointer_button.to_string pb, pb) Pointer_button.all
+;;
+
+let send_events_arg =
+  mk_enum "send-events" ~doc:"Set the send-events mode of the device." ~docv:"OPTION"
+  @@ List.map
+       (fun e -> Input_rule.Send_events.to_string e, e)
+       Input_rule.Send_events.[ Enabled; Disabled; Disabled_on_external_mouse ]
+;;
+
 let code_protocol_err = 1
 let code_conn_failed = 2
 let exit_success = Cmd.Exit.info 0 ~doc:"on success"
@@ -462,8 +592,27 @@ let exit_conn_failed =
 ;;
 
 let exits = [ exit_success; exit_protocol_err; exit_conn_failed ]
+let json_flag = Arg.(value & flag & info [ "json" ] ~doc:"Print the raw JSON reply.")
 
-let dispatch ?seat ?socket body =
+let render_lines (json : Yojson.Safe.t) =
+  let rec flat (j : Yojson.Safe.t) =
+    match j with
+    | `Assoc fields ->
+      List.map (fun (key, value) -> Printf.sprintf "%s=%s" key (flat value)) fields
+      |> String.concat " "
+    | `List [ `String tag; payload ] -> tag ^ " " ^ flat payload
+    | `List [ `String tag ] | `String tag -> tag
+    | `List items -> List.map flat items |> String.concat ","
+    | `Bool _ | `Int _ | `Intlit _ | `Float _ | `Null -> Yojson.Safe.to_string j
+  in
+  match json with
+  | `List items ->
+    List.mapi (fun i item -> Printf.sprintf "%d: %s" i (flat item)) items
+    |> String.concat "\n"
+  | _ -> Yojson.Safe.to_string json
+;;
+
+let dispatch ?render ?seat ?socket body =
   Eio_posix.run
   @@ fun env ->
   match Client.send ~env ?seat ?socket body with
@@ -471,7 +620,12 @@ let dispatch ?seat ?socket body =
     (Logs.app @@ fun m -> m "%s" s);
     Cmd.Exit.ok
   | Ok (Some data) ->
-    (Logs.app @@ fun m -> m "%s" (Yojson.Safe.to_string data));
+    let text =
+      match render with
+      | None -> Yojson.Safe.to_string data
+      | Some render -> render data
+    in
+    (Logs.app @@ fun m -> m "%s" text);
     Cmd.Exit.ok
   | Ok None -> Cmd.Exit.ok
   | Error (Connection_failed msg) ->
@@ -506,8 +660,8 @@ let run_term term =
   let open Cmdliner.Term.Syntax in
   let+ seat = seat
   and+ socket = socket
-  and+ body = term in
-  dispatch ?seat ?socket body
+  and+ body, render = term in
+  dispatch ?render ?seat ?socket body
 ;;
 
 let cmd ~name ~doc term = Cli.cmd ~exits ~name ~doc (run_term term)
@@ -524,7 +678,7 @@ let stream_cmd ~name ~doc term =
 let command_term term =
   let open Cmdliner.Term.Syntax in
   let+ command = term in
-  Request.Body.Command command
+  Request.Body.Command command, None
 ;;
 
 let bind_suffix =
@@ -544,11 +698,12 @@ let bind_term term =
   let+ command = term
   and+ mode = mode_flag
   and+ keybind = bind_suffix in
-  Request.Body.Keymap (Bind { keybind; command; mode })
+  Request.Body.Keymap (Bind { keybind; command; mode }), None
 ;;
 
-let query_term term =
+let query_term ?render term =
   let open Cmdliner.Term.Syntax in
-  let+ query = term in
-  Request.Body.Query query
+  let+ json = json_flag
+  and+ query = term in
+  Request.Body.Query query, if json then None else render
 ;;

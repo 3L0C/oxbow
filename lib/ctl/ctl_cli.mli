@@ -67,6 +67,10 @@ val identifier_flag : string option Cmdliner.Term.t
     patterns match case-insensitively when set. *)
 val case_flag : Ocdwm_core.Pattern.Case.t Cmdliner.Term.t
 
+(** [device_name_arg] is the [--name REGEX] flag for a PCRE regex on the input
+    device name. *)
+val device_name_arg : string option Cmdliner.Term.t
+
 (** [invert_flag] is the [--invert] flag for a window match. The match selects
     the windows that do not match when the flag is set. *)
 val invert_flag : bool Cmdliner.Term.t
@@ -90,6 +94,9 @@ val mode_flag : string option Cmdliner.Term.t
 
 (** [color_arg] is the required trailing [COLOR] positional. *)
 val color_arg : Ocdwm_core.Color.t Cmdliner.Term.t
+
+(** [index_arg] is the required trailing [INDEX] positional. *)
+val index_arg : int Cmdliner.Term.t
 
 (** [warp_flag] is the exclusive flag pair [--warp] and [--no-warp]. The flag
     overrides the warp on focus configuration for one command. *)
@@ -130,17 +137,94 @@ val tags_flag : Ocdwm_core.Tag.Arg.t option Cmdliner.Term.t
 (** [presentation_flag] is the exclusive flag group [--float], [--tile],
     [--fullscreen], [--windowed], [--maximize], and [--fake-fullscreen]; it is
     [None] when the command line holds none of them. *)
-val presentation_flag : Ocdwm_core.Rule.Effects.Presentation.t option Cmdliner.Term.t
+val presentation_flag
+  : Ocdwm_core.Window_rule.Effects.Presentation.t option Cmdliner.Term.t
 
 (** [resize_to_flag] is the [--resize-to W,H] option. Each half is a pixel size
     or a percentage of the usable area. The term rejects a list that does not
     hold two values. *)
-val resize_to_flag : Ocdwm_core.Rule.Effects.Resize_to.t option Cmdliner.Term.t
+val resize_to_flag : Ocdwm_core.Window_rule.Effects.Resize_to.t option Cmdliner.Term.t
 
 (** [move_to_flag] is the [--move-to X,Y] option. Each half is a pixel offset
     from the top-left of the usable area, or a percentage of it. The term
     rejects a list that does not hold two values. *)
-val move_to_flag : Ocdwm_core.Rule.Effects.Move_to.t option Cmdliner.Term.t
+val move_to_flag : Ocdwm_core.Window_rule.Effects.Move_to.t option Cmdliner.Term.t
+
+(** [mk_enum name ~doc ~docv l] is the optional flag --[name] accepting an enum of
+    choices defined by [l]. The term appends the choice list to [doc]. *)
+val mk_enum
+  :  string
+  -> doc:string
+  -> docv:string
+  -> (string * 'a) list
+  -> 'a option Cmdliner.Term.t
+
+(** [bool_state] is the enum mapping "enabled" to [true] and "disabled" to
+    [false]. *)
+val bool_state : bool Cmdliner.Arg.conv
+
+(** [bool_state_arg name ~doc ~docv] is the optional flag --[name]. The flag
+    takes enabled or disabled. *)
+val bool_state_arg : string -> doc:string -> docv:string -> bool option Cmdliner.Term.t
+
+(** [accel_profile_arg] is the [--accel-profile] flag accepting only valid
+    profile names. *)
+val accel_profile_arg : Ocdwm_core.Input_rule.Accel_profile.t option Cmdliner.Term.t
+
+(** [accel_speed_arg] is the [--accel-speed] flag taking a speed in the range of
+    -1.0 to 1.0. *)
+val accel_speed_arg : float option Cmdliner.Term.t
+
+(** [button_map_arg name ~doc] is the --[name] flag accepting a valid button
+    map. *)
+val button_map_arg
+  :  string
+  -> doc:string
+  -> Ocdwm_core.Input_rule.Button_map.t option Cmdliner.Term.t
+
+(** [drag_lock_arg] is the [--drag-lock] flag accepting a drag lock setting. *)
+val drag_lock_arg : Ocdwm_core.Input_rule.Drag_lock.t option Cmdliner.Term.t
+
+(** [three_finger_drag_arg] is the [--three-finger-drag] flag accepting a valid
+    three finger drag setting. *)
+val three_finger_drag_arg
+  : Ocdwm_core.Input_rule.Three_finger_drag.t option Cmdliner.Term.t
+
+(** [click_method_arg] is the [--click-method] flag accepting a valid click
+    method. *)
+val click_method_arg : Ocdwm_core.Input_rule.Click_method.t option Cmdliner.Term.t
+
+(** [natural_scroll_arg] is the [--natural-scroll] flag to enable or disable
+    natural scrolling. *)
+val natural_scroll_arg : bool option Cmdliner.Term.t
+
+(** [left_handed_arg] is the [--left-handed] flag to enable or disable left
+    handed button layout. *)
+val left_handed_arg : bool option Cmdliner.Term.t
+
+(** [middle_emulation_arg] is the [--middle-emulation] flag to enable or disable
+    middle-button emulation. *)
+val middle_emulation_arg : bool option Cmdliner.Term.t
+
+(** [scroll_factor_arg] is the [--scroll-factor] flag to set the scroll factor. *)
+val scroll_factor_arg : float option Cmdliner.Term.t
+
+(** [scroll_method_arg] is the [--scroll-method] flag accepting a valid scroll
+    method. *)
+val scroll_method_arg : Ocdwm_core.Input_rule.Scroll_method.t option Cmdliner.Term.t
+
+(** [scroll_button_arg] is the [--scroll-button] flag accepting a valid scroll
+    button. *)
+val scroll_button_arg : Ocdwm_core.Pointer_button.t option Cmdliner.Term.t
+
+(** [send_events_arg] is the [--send-events] flag accepting a valid send event. *)
+val send_events_arg : Ocdwm_core.Input_rule.Send_events.t option Cmdliner.Term.t
+
+(** [render_lines json] formats a JSON list reply for display: one line per
+    item, with the leading list index. The index is the remove index of the
+    item. Nested objects flatten into key=value pairs with the wire names. A
+    reply that is not a list prints as raw JSON. *)
+val render_lines : Yojson.Safe.t -> string
 
 (** [group ?exits ?man ?man_xrefs ?version ?default ~name ~doc cmds] is a
     command that groups the subcommands [cmds]. Cmdliner evaluates [default]
@@ -160,14 +244,16 @@ val group
 (** [run_term term] is the evaluation term of [cmd] without the command wrapper.
     It sends [term]'s request body to ocdwm, prints any reply, and exits by the
     outcome. Use it as the [?default] of a command group. *)
-val run_term : Ocdwm_ipc.Request.Body.t Cmdliner.Term.t -> int Cmdliner.Term.t
+val run_term
+  :  (Ocdwm_ipc.Request.Body.t * (Yojson.Safe.t -> string) option) Cmdliner.Term.t
+  -> int Cmdliner.Term.t
 
 (** [cmd ~name ~doc term] is a command that, when evaluated, sends [term]'s
     request body to ocdwm, prints any reply, and exits by the outcome. *)
 val cmd
   :  name:string
   -> doc:string
-  -> Ocdwm_ipc.Request.Body.t Cmdliner.Term.t
+  -> (Ocdwm_ipc.Request.Body.t * (Yojson.Safe.t -> string) option) Cmdliner.Term.t
   -> int Cmdliner.Cmd.t
 
 (** [stream_cmd ~name ~doc term] is a command that streams subscribe events for
@@ -182,15 +268,18 @@ val stream_cmd
 (** [command_term term] maps the [term]'s command into a [Command] body. *)
 val command_term
   :  Ocdwm_ipc.Command.t Cmdliner.Term.t
-  -> Ocdwm_ipc.Request.Body.t Cmdliner.Term.t
+  -> (Ocdwm_ipc.Request.Body.t * (Yojson.Safe.t -> string) option) Cmdliner.Term.t
 
 (** [bind_term term] composes [term]'s command with the [to KEYBIND] suffix and
     wraps the result in [Keymap (Bind { keybind; command })]. *)
 val bind_term
   :  Ocdwm_ipc.Command.t Cmdliner.Term.t
-  -> Ocdwm_ipc.Request.Body.t Cmdliner.Term.t
+  -> (Ocdwm_ipc.Request.Body.t * (Yojson.Safe.t -> string) option) Cmdliner.Term.t
 
-(** [query_term query] maps the query into a [Query] body. *)
+(** [query_term ?render query] maps the query into a [Query] body. [render]
+    formats the JSON reply for display. The term adds a [--json] flag. With
+    [--json], or without [render], octl prints the raw JSON reply. *)
 val query_term
-  :  Ocdwm_ipc.Query.t Cmdliner.Term.t
-  -> Ocdwm_ipc.Request.Body.t Cmdliner.Term.t
+  :  ?render:(Yojson.Safe.t -> string)
+  -> Ocdwm_ipc.Query.t Cmdliner.Term.t
+  -> (Ocdwm_ipc.Request.Body.t * (Yojson.Safe.t -> string) option) Cmdliner.Term.t

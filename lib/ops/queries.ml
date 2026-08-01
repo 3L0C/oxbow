@@ -3,7 +3,10 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ipc
 
-let handle_rules (wm : Wm.t) = Ok (Some ([%yojson_of: Rule.t list] wm.config.rules))
+let handle_window_rules (wm : Wm.t) =
+  Ok (Some ([%yojson_of: Window_rule.t list] wm.config.rules.window))
+;;
+
 let handle_keymaps wm seat all = Ok (Some (Bind.list wm seat ~all))
 
 let handle_outputs (wm : Wm.t) =
@@ -74,15 +77,36 @@ let handle_seats (wm : Wm.t) =
   Ok (Some ([%yojson_of: Query.Reply.Seats.t list] records))
 ;;
 
+let handle_devices (wm : Wm.t) ~name ~case ~role =
+  let records =
+    List.filter_map
+      (fun (device : Input_device.t) ->
+         if Input_device.matches device ~name ~case ~role
+         then
+           Some
+             Query.Reply.Input_device.
+               { name = device.name; role = Input_device.role_to_string device.role }
+         else None)
+      wm.input_devices
+  in
+  Ok (Some ([%yojson_of: Query.Reply.Input_device.t list] records))
+;;
+
+let handle_input_rules (wm : Wm.t) =
+  Ok (Some ([%yojson_of: Input_rule.t list] wm.config.rules.input))
+;;
+
 let handle wm seat (query : Query.t) =
   match query with
-  | Rules -> handle_rules wm
-  | Keymaps { all } -> handle_keymaps wm seat all
-  | Outputs -> handle_outputs wm
   | Focused -> handle_focused seat
-  | Windows { filter } -> handle_windows wm seat filter
-  | Tags { output } -> handle_tags wm output
+  | Input_devices { name; case; role } -> handle_devices wm ~name ~case ~role
+  | Input_rules -> handle_input_rules wm
+  | Keymaps { all } -> handle_keymaps wm seat all
   | Layouts _ -> handle_layouts
+  | Outputs -> handle_outputs wm
   | Schemes _ -> handle_schemes
   | Seats -> handle_seats wm
+  | Tags { output } -> handle_tags wm output
+  | Window_rules -> handle_window_rules wm
+  | Windows { filter } -> handle_windows wm seat filter
 ;;

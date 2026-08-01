@@ -117,6 +117,15 @@ module Obj = struct
   module Input = struct
     module Config = struct
       type v = [ `V2 ]
+
+      module Device = struct
+        type t = v River_libinput_config_v1_client.River_libinput_device_v1.t
+      end
+
+      module Result = struct
+        type t = v River_libinput_config_v1_client.River_libinput_result_v1.t
+      end
+
       type t = v River_libinput_config_v1_client.River_libinput_config_v1.t
     end
 

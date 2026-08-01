@@ -8,22 +8,13 @@ val apply_for : Ocdwm_state.Wm.t -> Ocdwm_state.Window.t -> unit
     when an existing rule matches [rule]'s pattern.
 
     {b Effects:} mutates WM state *)
-val add : Ocdwm_state.Wm.t -> Ocdwm_core.Rule.t -> (Yojson.Safe.t option, string) result
-
-(** [remove wm pattern] removes the rule matching [pattern] from [wm]'s
-    configured rules. Is [Error msg] when no rule matches.
-
-    {b Effects:} mutates WM state *)
-val remove
+val add
   :  Ocdwm_state.Wm.t
-  -> Ocdwm_core.Pattern.t
+  -> Ocdwm_core.Window_rule.t
   -> (Yojson.Safe.t option, string) result
 
-(** [handle wm seat cmd] handles the rule command, [cmd].
+(** [remove wm index] removes the rule at [index] from [wm]'s configured rules.
+    Is [Error msg] when no rule matches.
 
     {b Effects:} mutates WM state *)
-val handle
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_ipc.Command.Rule.t
-  -> (Yojson.Safe.t option, string) result
+val remove : Ocdwm_state.Wm.t -> int -> (Yojson.Safe.t option, string) result

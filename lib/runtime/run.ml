@@ -53,6 +53,14 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
          method on_finished = ignore
        end
   in
+  let river_libinput_v1 =
+    Wayland.Registry.bind registry
+    @@ object
+         inherit [_] River.Input.Config.River_libinput_config_v1.v2
+         method on_libinput_device _ device = Handlers.on_libinput_device device wm_box
+         method on_finished = ignore
+       end
+  in
   let river_xkb_config_v1 =
     Wayland.Registry.bind registry
     @@ object
@@ -67,6 +75,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
     ; river_xkb_v1
     ; river_lsh_v1
     ; river_input_v1
+    ; river_libinput_v1
     ; river_xkb_config_v1
     ; shutdown = Eio.Condition.create ()
     ; lifecycle = Running

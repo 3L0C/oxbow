@@ -79,12 +79,12 @@ val remove_xkb_stash : t -> int32 -> unit
     or [None]. *)
 val find_xkb_stash_opt : t -> int32 -> Wire.Obj.Xkb.Config.Keyboard.t option
 
-(** [add_input_device wm entry] adds [entry] to [wm]'s input device list.
+(** [add_input_device wm device] adds [device] to [wm]'s input device list.
 
     {b Effects:} mutates WM state *)
 val add_input_device : t -> Types.Input_device.t -> unit
 
-(** [remove_input_device wm entry] removes [entry] from [wm]'s input device
+(** [remove_input_device wm device] removes [device] from [wm]'s input device
     list.
 
     {b Effects:} mutates WM state *)

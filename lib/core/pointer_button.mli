@@ -19,6 +19,9 @@ type t =
   | Btn_back
   | Btn_task
 
+(** [all] is the list of all pointer buttons, excluding [Key_unknown]. *)
+val all : t list
+
 (** [of_string s] is the button whose constructor name is [s] (["Btn_left"]);
     [Error msg] when unrecognized. *)
 val of_string : string -> (t, string) result
@@ -33,3 +36,6 @@ val of_int32 : int32 -> t
 (** [to_int32 b] is [b]'s Linux input-event code; [Key_unknown] is [KEY_UNKNOWN]
     ([240l]). *)
 val to_int32 : t -> int32
+
+val t_of_yojson : Yojson.Safe.t -> t
+val yojson_of_t : t -> Yojson.Safe.t

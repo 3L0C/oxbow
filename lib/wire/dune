@@ -3,4 +3,4 @@
  (public_name ocdwm.wire)
  (wrapped false)
  (modules wire emit)
- (libraries ocdwm.river wayland))
+ (libraries ocdwm.river wayland logs))

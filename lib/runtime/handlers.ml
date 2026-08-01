@@ -335,57 +335,166 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
   Wm.set_windows wm (window :: wm.windows)
 ;;
 
-let on_input_device device (wm_box : Wm.t Box.t) =
+let on_input_device proxy (wm_box : Wm.t Box.t) =
   let wm = Option.get wm_box.body in
-  let entry_kind : River.Proto.Input.Management.River_input_device_v1.Type.t option ref =
+  let device_kind : River.Proto.Input.Management.River_input_device_v1.Type.t option ref =
     ref None
   in
-  let entry_name = ref "" in
-  let entry_box : Input_device.t Box.t = { body = None } in
-  let resolve_entry entry =
-    Box.fill entry_box entry;
-    Wm.add_input_device wm entry
+  let device_name = ref "" in
+  let device_box : Input_device.t Box.t = { body = None } in
+  let resolve_device device =
+    Box.fill device_box device;
+    Wm.add_input_device wm device
   in
-  Wayland.Proxy.Handler.attach device
+  Wayland.Proxy.Handler.attach proxy
   @@ object
        inherit [_] River.Input.Management.River_input_device_v1.v1
-       method on_type _ ~type_ = entry_kind := Some type_
-       method on_name _ ~name = entry_name := name
+       method on_type _ ~type_ = device_kind := Some type_
+       method on_name _ ~name = device_name := name
 
        method on_done _ =
-         if Option.is_none entry_box.body
+         if Option.is_none device_box.body
          then (
-           match !entry_kind with
+           match !device_kind with
            | Some Keyboard ->
-             let keyboard = Wm.find_xkb_stash_opt wm @@ Wayland.Proxy.id device in
-             let entry : Input_device.t =
-               { device
-               ; name = !entry_name
+             let keyboard = Wm.find_xkb_stash_opt wm @@ Wayland.Proxy.id proxy in
+             let device : Input_device.t =
+               { obj = proxy
+               ; name = !device_name
                ; role = Keyboard { keyboard }
                ; lifecycle = Active
+               ; libinput = None
                }
              in
-             resolve_entry entry;
+             resolve_device device;
              Keyboard.set_device_repeat_info
-               device
+               proxy
                ~rate:(Int32.of_int wm.config.repeat_rate)
                ~delay:(Int32.of_int wm.config.repeat_delay);
-             Option.iter (Input_device.set_keyboard wm entry) keyboard
+             Option.iter (Input_device.set_keyboard wm device) keyboard
            | Some Pointer ->
-             resolve_entry
-               { device; name = !entry_name; role = Pointer; lifecycle = Active }
+             resolve_device
+               { obj = proxy
+               ; name = !device_name
+               ; role = Pointer { class_ = Mouse }
+               ; lifecycle = Active
+               ; libinput = None
+               }
            | Some Touch ->
-             resolve_entry
-               { device; name = !entry_name; role = Touch; lifecycle = Active }
+             resolve_device
+               { obj = proxy
+               ; name = !device_name
+               ; role = Touch
+               ; lifecycle = Active
+               ; libinput = None
+               }
            | Some Tablet ->
-             resolve_entry
-               { device; name = !entry_name; role = Tablet; lifecycle = Active }
+             resolve_device
+               { obj = proxy
+               ; name = !device_name
+               ; role = Tablet
+               ; lifecycle = Active
+               ; libinput = None
+               }
            | None -> Logs.err @@ fun m -> m "input device sent 'done' without a type")
 
        method on_removed _ =
-         match entry_box.body with
-         | Some entry -> Wm.remove_input_device wm entry
-         | None -> Emit.destroy_input_device device
+         match device_box.body with
+         | Some device -> Wm.remove_input_device wm device
+         | None -> Emit.destroy_input_device proxy
+     end
+;;
+
+let on_libinput_device device (wm_box : Wm.t Box.t) =
+  let wm = Option.get wm_box.body in
+  let device_box : Input_device.t Box.t = { body = None } in
+  Wayland.Proxy.Handler.attach device
+  @@ object
+       inherit [_] River.Input.Config.River_libinput_device_v1.v2
+
+       method on_input_device _ ~device:paired =
+         match Wm.find_input_device_opt wm (Wayland.Proxy.id paired) with
+         | None -> Logs.warn @@ fun m -> m "input device unknown"
+         | Some d ->
+           Box.fill device_box d;
+           d.libinput <- Some device
+
+       method on_tap_support _ ~finger_count =
+         Option.iter
+           (fun (d : Input_device.t) ->
+              if finger_count > 0l
+              then (
+                match d.role with
+                | Pointer p -> p.class_ <- Touchpad
+                | r ->
+                  Logs.err
+                  @@ fun m ->
+                  m
+                    "got tap support on a non-pointer device: %s"
+                    (Input_device.role_to_string r)))
+           device_box.body
+
+       method on_done _ = Option.iter (Input_rules.apply wm) device_box.body
+
+       method on_removed _ =
+         Option.iter
+           (fun (d : Input_device.t) ->
+              d.libinput <- None;
+              Emit.destroy_libinput_device device)
+           device_box.body
+
+       method on_three_finger_drag_support _ ~finger_count:_ = ()
+       method on_three_finger_drag_default _ ~state:_ = ()
+       method on_three_finger_drag_current _ ~state:_ = ()
+       method on_tap_default _ ~state:_ = ()
+       method on_tap_current _ ~state:_ = ()
+       method on_tap_button_map_default _ ~button_map:_ = ()
+       method on_tap_button_map_current _ ~button_map:_ = ()
+       method on_send_events_support _ ~modes:_ = ()
+       method on_send_events_default _ ~mode:_ = ()
+       method on_send_events_current _ ~mode:_ = ()
+       method on_scroll_method_support _ ~methods:_ = ()
+       method on_scroll_method_default _ ~method_:_ = ()
+       method on_scroll_method_current _ ~method_:_ = ()
+       method on_scroll_button_lock_default _ ~state:_ = ()
+       method on_scroll_button_lock_current _ ~state:_ = ()
+       method on_scroll_button_default _ ~button:_ = ()
+       method on_scroll_button_current _ ~button:_ = ()
+       method on_rotation_support _ ~supported:_ = ()
+       method on_rotation_default _ ~angle:_ = ()
+       method on_rotation_current _ ~angle:_ = ()
+       method on_natural_scroll_support _ ~supported:_ = ()
+       method on_natural_scroll_default _ ~state:_ = ()
+       method on_natural_scroll_current _ ~state:_ = ()
+       method on_middle_emulation_support _ ~supported:_ = ()
+       method on_middle_emulation_default _ ~state:_ = ()
+       method on_middle_emulation_current _ ~state:_ = ()
+       method on_left_handed_support _ ~supported:_ = ()
+       method on_left_handed_default _ ~state:_ = ()
+       method on_left_handed_current _ ~state:_ = ()
+       method on_dwtp_support _ ~supported:_ = ()
+       method on_dwtp_default _ ~state:_ = ()
+       method on_dwtp_current _ ~state:_ = ()
+       method on_dwt_support _ ~supported:_ = ()
+       method on_dwt_default _ ~state:_ = ()
+       method on_dwt_current _ ~state:_ = ()
+       method on_drag_lock_default _ ~state:_ = ()
+       method on_drag_lock_current _ ~state:_ = ()
+       method on_drag_default _ ~state:_ = ()
+       method on_drag_current _ ~state:_ = ()
+       method on_clickfinger_button_map_default _ ~button_map:_ = ()
+       method on_clickfinger_button_map_current _ ~button_map:_ = ()
+       method on_click_method_support _ ~methods:_ = ()
+       method on_click_method_default _ ~method_:_ = ()
+       method on_click_method_current _ ~method_:_ = ()
+       method on_calibration_matrix_support _ ~supported:_ = ()
+       method on_calibration_matrix_default _ ~matrix:_ = ()
+       method on_calibration_matrix_current _ ~matrix:_ = ()
+       method on_accel_speed_default _ ~speed:_ = ()
+       method on_accel_speed_current _ ~speed:_ = ()
+       method on_accel_profiles_support _ ~profiles:_ = ()
+       method on_accel_profile_default _ ~profile:_ = ()
+       method on_accel_profile_current _ ~profile:_ = ()
      end
 ;;
 
@@ -410,7 +519,7 @@ let on_xkb_keyboard keyboard (wm_box : Wm.t Box.t) =
          match !device_ref with
          | Some device ->
            (match Wm.find_input_device_opt wm device with
-            | Some entry -> Input_device.clear_entry entry keyboard
+            | Some d -> Input_device.clear_device d keyboard
             | None -> Wm.remove_xkb_stash wm device)
          | None -> ()
 

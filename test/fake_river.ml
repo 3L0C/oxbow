@@ -35,10 +35,11 @@ type t =
   }
 
 let name_wm = 1l
-let name_xkb_bindings = 3l
+let name_xkb_bindings = 2l
 let name_layer_shell = 3l
 let name_input_manager = 4l
-let name_xkb_config = 5l
+let name_libinput_manager = 5l
+let name_xkb_config = 6l
 
 let manage_only =
   [ "close"
@@ -316,6 +317,16 @@ let input_manager_handlers _t =
     :> ([ `River_input_manager_v1 ], [ `V1 ], [ `Server ]) Proxy.Service_handler.t)
 ;;
 
+let libinput_manager_handlers _t =
+  (object
+     inherit [_] Input_server.Config.River_libinput_config_v1.v2
+     method on_create_accel_config _ _ ~profile:_ = ()
+     method on_stop _ = ()
+     method on_destroy _ = ()
+   end
+    :> ([ `River_libinput_config_v1 ], [ `V2 ], [ `Server ]) Proxy.Service_handler.t)
+;;
+
 let keymap_handlers _t =
   object
     inherit [_] Cfg_server.River_xkb_keymap_v1.v1
@@ -379,6 +390,9 @@ let registry_handlers t =
         | Input_proto.Management.River_input_manager_v1.T ->
           Proxy.Service_handler.attach proxy
           @@ Proxy.Service_handler.cast_version (input_manager_handlers t)
+        | Input_proto.Config.River_libinput_config_v1.T ->
+          Proxy.Service_handler.attach proxy
+          @@ Proxy.Service_handler.cast_version (libinput_manager_handlers t)
         | Cfg_proto.River_xkb_config_v1.T ->
           Proxy.Service_handler.attach proxy
           @@ Proxy.Service_handler.cast_version (xkb_config_handlers t)
@@ -438,6 +452,11 @@ let display_handlers t =
         ~name:name_input_manager
         ~interface:Input_proto.Management.River_input_manager_v1.interface
         ~version:1l;
+      announce
+        t
+        ~name:name_libinput_manager
+        ~interface:Input_proto.Config.River_libinput_config_v1.interface
+        ~version:2l;
       announce
         t
         ~name:name_xkb_config

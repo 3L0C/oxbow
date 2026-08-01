@@ -35,7 +35,7 @@ let default () =
   ; borders = default_borders
   ; cursor_theme = None
   ; modkey = Wire.Modifiers.mod4
-  ; rules = []
+  ; rules = { window = []; input = [] }
   ; modes = [ Mode.normal; Mode.locked ]
   ; focus_follows_pointer = true
   ; warp_on_focus = false
@@ -102,20 +102,35 @@ let copy_tag_data (td : Data.t) =
     }
 ;;
 
-let add_rule (wm : Types.Wm.t) rule = wm.config.rules <- wm.config.rules @ [ rule ]
-
-let remove_rule (wm : Types.Wm.t) pattern =
-  wm.config.rules
-  <- List.filter
-       (fun (rule : Rule.t) -> not @@ Pattern.equal pattern rule.pattern)
-       wm.config.rules
+let add_window_rule (wm : Types.Wm.t) rule =
+  wm.config.rules.window <- wm.config.rules.window @ [ rule ]
 ;;
 
-let replace_rule (wm : Types.Wm.t) (rule : Rule.t) =
-  wm.config.rules
+let remove_window_rule (wm : Types.Wm.t) index =
+  wm.config.rules.window <- List.filteri (fun i _ -> i <> index) wm.config.rules.window
+;;
+
+let replace_window_rule (wm : Types.Wm.t) (rule : Window_rule.t) =
+  wm.config.rules.window
   <- List.map
-       (fun (r : Rule.t) -> if Pattern.equal rule.pattern r.pattern then rule else r)
-       wm.config.rules
+       (fun (r : Window_rule.t) ->
+          if Pattern.equal rule.pattern r.pattern then rule else r)
+       wm.config.rules.window
+;;
+
+let add_input_rule (wm : Types.Wm.t) rule =
+  wm.config.rules.input <- wm.config.rules.input @ [ rule ]
+;;
+
+let remove_input_rule (wm : Types.Wm.t) index =
+  wm.config.rules.input <- List.filteri (fun i _ -> i <> index) wm.config.rules.input
+;;
+
+let replace_input_rule (wm : Types.Wm.t) (rule : Input_rule.t) =
+  wm.config.rules.input
+  <- List.map
+       (fun (r : Input_rule.t) -> if Input_rule.equal r rule then rule else r)
+       wm.config.rules.input
 ;;
 
 let declare_mode (wm : Types.Wm.t) name = wm.config.modes <- wm.config.modes @ [ name ]
