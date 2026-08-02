@@ -1,0 +1,310 @@
+== arrive ==
+render:set_presentation_mode
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_seat
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_pointer_binding(seat0)
+manage:get_pointer_binding(seat0)
+manage:clear_focus(seat0)
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_node(kitty)
+manage:set_capabilities(kitty)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:set_capabilities(kitty)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode
+manage:get_node(emacs)
+manage:set_capabilities(emacs)
+manage:propose_dimensions(emacs, 1021x1032)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:set_capabilities(kitty)
+manage:propose_dimensions(kitty, 833x1032)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+manage:set_capabilities(emacs)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:set_capabilities(kitty)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+== bind focus next ==
+overwrote existing binding for "Super+J"
+manage:destroy
+manage:get_xkb_binding
+manage:set_capabilities(emacs)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:set_capabilities(kitty)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, emacs)
+manage:enable
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+== press the bind ==
+manage:set_capabilities(emacs)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:set_capabilities(kitty)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== unbind ==
+manage:destroy
+manage:set_capabilities(emacs)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:set_capabilities(kitty)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== focused ==
+{"seat":"seat0","output":"FAKE-1","title":"kitty","app_id":"kitty","tags":[1]}
+manage:set_capabilities(emacs)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:set_capabilities(kitty)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode

@@ -22,16 +22,14 @@ let to_tags (output : Output.t) =
 
 let to_window (wm : Wm.t) (window : Window.t) =
   Record.Window.
-    { id = 1
+    { id = window.id
     ; identifier = window.identifier
     ; title = window.title
     ; app_id = window.app_id
     ; output = Option.bind window.output (fun o -> o.name)
     ; tags = Tag.Set.to_index_list window.tags
     ; focused =
-        (match window.output with
-         | None -> false
-         | Some o -> List.exists (fun (s : Seat.t) -> Phys.opt_holds o s.output) wm.seats)
+        List.exists (Fun.compose (Phys.opt_holds window) Seat.focused_window) wm.seats
     ; urgent = window.is_urgent
     ; hidden = not @@ Window.is_rendered window
     ; presentation = Window.presentation_string window

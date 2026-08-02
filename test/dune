@@ -13,6 +13,51 @@
  (modules test_events)
  (libraries ocdwm.ipc yojson))
 
+(test
+ (name test_scenario_manage)
+ (modules test_scenario_manage)
+ (libraries harness fake_river ocdwm.ipc yojson))
+
+(test
+ (name test_scenario_window)
+ (modules test_scenario_window)
+ (libraries harness fake_river ocdwm.ipc yojson))
+
+(test
+ (name test_scenario_tags)
+ (modules test_scenario_tags)
+ (libraries harness fake_river ocdwm.core ocdwm.ipc yojson))
+
+(test
+ (name test_scenario_layout)
+ (modules test_scenario_layout)
+ (libraries harness fake_river ocdwm.ipc yojson))
+
+(test
+ (name test_scenario_ctl)
+ (modules test_scenario_ctl)
+ (libraries harness fake_river ocdwm.ipc yojson))
+
+(test
+ (name test_scenario_subscribe)
+ (modules test_scenario_subscribe)
+ (libraries harness fake_river ocdwm.ipc ocdwm.core eio eio.unix yojson))
+
+(test
+ (name test_scenario_bind)
+ (modules test_scenario_bind)
+ (libraries harness fake_river ocdwm.ipc yojson))
+
+(test
+ (name test_scenario_input)
+ (modules test_scenario_input)
+ (libraries harness fake_river ocdwm.ipc yojson))
+
+(test
+ (name test_scenario_warp)
+ (modules test_scenario_warp)
+ (libraries harness fake_river ocdwm.ipc yojson))
+
 (library
  (name fake_river)
  (modules fake_river)
@@ -23,6 +68,7 @@
  (modules test_fake_river)
  (libraries
   fake_river
+  harness
   ocdwm.runtime
   wayland
   eio
@@ -47,3 +93,20 @@
   eio
   eio_main
   eio.unix))
+
+(library
+ (name harness)
+ (modules harness)
+ (libraries
+  fake_river
+  ocdwm.runtime
+  ocdwm.ipc
+  ocdwm.ctl
+  cmdliner
+  wayland
+  eio
+  eio_main
+  eio.unix
+  unix
+  logs
+  yojson))

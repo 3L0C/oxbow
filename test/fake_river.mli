@@ -26,6 +26,12 @@ val add_seat : t -> name:string -> unit
     {b Effects:} sends Wayland events *)
 val add_window : t -> app_id:string option -> unit
 
+(** [close_window t ~app_id] sends closed on the first window with [app_id],
+    then ticks.
+
+    {b Effects:} sends Wayland events *)
+val close_window : t -> app_id:string option -> unit
+
 (** [press_binding t ~index] sends pressed on binding [index], outside a
     sequence. Bindings count in creation order.
 
@@ -37,3 +43,9 @@ val trace : t -> string list
 
 (** [manage_dirty_count t] counts the manage_dirty requests. *)
 val manage_dirty_count : t -> int
+
+(** [binding_count t] counts the xkb bindings, in creation order. *)
+val binding_count : t -> int
+
+(** [idle t] is true when no sequence runs and no update is due. *)
+val idle : t -> bool

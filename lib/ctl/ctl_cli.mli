@@ -209,6 +209,19 @@ val send_events_arg : Ocdwm_core.Input_rule.Send_events.t option Cmdliner.Term.t
     reply that is not a list prints as raw JSON. *)
 val render_lines : Yojson.Safe.t -> string
 
+(** [dispatch_command_ref] is the function behind every command leaf. *)
+val dispatch_command_ref
+  : (?render:(Yojson.Safe.t -> string)
+     -> ?seat:string
+     -> ?socket:string
+     -> Ocdwm_ipc.Request.Body.t
+     -> int)
+      ref
+
+(** [dispatch_stream_ref] is the function behind every subscribe leaf. *)
+val dispatch_stream_ref
+  : (?socket:string -> ?output:string -> kinds:Ocdwm_ipc.Record.t list -> unit -> int) ref
+
 (** [group ?exits ?man ?man_xrefs ?version ?default ~name ~doc cmds] is a
     command that groups the subcommands [cmds]. Cmdliner evaluates [default]
     when the command line names no subcommand. The fallback term renders the

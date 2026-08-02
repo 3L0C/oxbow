@@ -621,7 +621,7 @@ let render_lines (json : Yojson.Safe.t) =
   | _ -> Yojson.Safe.to_string json
 ;;
 
-let dispatch ?render ?seat ?socket body =
+let dispatch_command ?render ?seat ?socket body =
   Eio_posix.run
   @@ fun env ->
   match Client.send ~env ?seat ?socket body with
@@ -645,6 +645,8 @@ let dispatch ?render ?seat ?socket body =
     code_protocol_err
 ;;
 
+let dispatch_command_ref = ref dispatch_command
+
 let dispatch_stream ?socket ?output ~kinds () =
   Eio_posix.run
   @@ fun env ->
@@ -663,6 +665,7 @@ let dispatch_stream ?socket ?output ~kinds () =
     code_protocol_err
 ;;
 
+let dispatch_stream_ref = ref dispatch_stream
 let group ?(exits = exits) = Cli.group ~exits
 
 let run_term term =
@@ -670,7 +673,7 @@ let run_term term =
   let+ seat = seat
   and+ socket = socket
   and+ body, render = term in
-  dispatch ?render ?seat ?socket body
+  !dispatch_command_ref ?render ?seat ?socket body
 ;;
 
 let cmd ~name ~doc term = Cli.cmd ~exits ~name ~doc (run_term term)
@@ -681,7 +684,7 @@ let stream_cmd ~name ~doc term =
   @@
   let+ socket = socket
   and+ kinds, output = term in
-  dispatch_stream ?socket ?output ~kinds ()
+  !dispatch_stream_ref ?socket ?output ~kinds ()
 ;;
 
 let command_term term =

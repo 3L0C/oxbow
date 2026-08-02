@@ -8,4 +8,7 @@ let command_term =
 
 let name = "list"
 let doc = "List windows matching the search pattern"
-let cmd = Ctl_cli.cmd ~name ~doc @@ Ctl_cli.query_term command_term
+
+let cmd =
+  Ctl_cli.cmd ~name ~doc @@ Ctl_cli.query_term ~render:Ctl_cli.render_lines command_term
+;;

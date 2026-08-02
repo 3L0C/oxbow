@@ -1,0 +1,167 @@
+== trace ==
+render:set_presentation_mode
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_seat
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_pointer_binding(seat0)
+manage:get_pointer_binding(seat0)
+manage:clear_focus(seat0)
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_node(foot)
+manage:set_capabilities(foot)
+manage:propose_dimensions(foot, 1872x1032)
+manage:set_tiled(foot)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:set_capabilities(foot)
+manage:set_tiled(foot)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:place_top(foot)
+render:set_presentation_mode
+render:set_borders(foot, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:place_top(foot)
+render:set_presentation_mode
+manage:set_capabilities(foot)
+manage:set_tiled(foot)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:place_top(foot)
+render:set_presentation_mode
+== outputs ==
+["FAKE-1"]
+manage:set_capabilities(foot)
+manage:set_tiled(foot)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:place_top(foot)
+render:set_presentation_mode

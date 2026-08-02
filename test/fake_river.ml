@@ -30,6 +30,9 @@ type t =
   ; mutable next_global : int32
   ; mutable wl_outputs : (int32 * string) list
   ; mutable wl_seats : (int32 * string) list
+  ; mutable dirty : bool
+  ; mutable windows : (string option * [ `V4 ] Wm_server.River_window_v1.t) list
+  ; mutable owners : (int32 * string) list
   ; phase_done : Eio.Condition.t
   ; wm_ready : Eio.Condition.t
   }
@@ -106,24 +109,41 @@ let finish_phase t =
   Eio.Condition.broadcast t.phase_done
 ;;
 
+let label t p =
+  let id = Proxy.id p in
+  match List.find_opt (fun (_, w) -> Proxy.id w = id) t.windows with
+  | Some (Some app_id, _) -> app_id
+  | Some (None, _) -> "?"
+  | None -> Option.value ~default:"?" (List.assoc_opt id t.owners)
+;;
+
+let adopt t p ~owner = t.owners <- (Proxy.id p, owner) :: t.owners
+let recordl t p name = record t (Printf.sprintf "%s(%s)" name (label t p))
+
+let recordf t p name fmt =
+  Printf.ksprintf
+    (fun args -> record t (Printf.sprintf "%s(%s, %s)" name (label t p) args))
+    fmt
+;;
+
 let node_handlers t =
   object
     inherit [_] Wm_server.River_node_v1.v4
-    method on_set_position _ ~x:_ ~y:_ = record t "set_position"
-    method on_place_top _ = record t "place_top"
-    method on_place_bottom _ = record t "place_bottom"
-    method on_place_below _ ~other:_ = record t "place_below"
-    method on_place_above _ ~other:_ = record t "place_above"
-    method on_destroy _ = record t "destroy"
+    method on_set_position n ~x ~y = recordf t n "set_position" "%ld, %ld" x y
+    method on_place_top n = recordl t n "place_top"
+    method on_place_bottom n = recordl t n "place_bottom"
+    method on_place_below n ~other = recordf t n "place_below" "%s" (label t other)
+    method on_place_above n ~other = recordf t n "place_above" "%s" (label t other)
+    method on_destroy n = recordl t n "destroy"
   end
 ;;
 
 let decoration_handlers t =
   object
     inherit [_] Wm_server.River_decoration_v1.v4
-    method on_sync_next_commit _ = record t "sync_next_commit"
-    method on_set_offset _ ~x:_ ~y:_ = record t "set_offset"
-    method on_destroy _ = record t "destroy"
+    method on_sync_next_commit d = recordl t d "sync_next_commit"
+    method on_set_offset d ~x ~y = recordf t d "set_offset" "%ld, %ld" x y
+    method on_destroy d = recordl t d "destroy"
   end
 ;;
 
@@ -147,62 +167,76 @@ let pointer_binding_handlers t =
 let seat_handlers t =
   object
     inherit [_] Wm_server.River_seat_v1.v4
-    method on_set_xcursor_theme _ ~name:_ ~size:_ = record t "set_xcursor_theme"
-    method on_pointer_warp _ ~x:_ ~y:_ = record t "pointer_warp"
-    method on_op_start_pointer _ = record t "op_start_pointer"
-    method on_op_end _ = record t "op_end"
-    method on_focus_window _ ~window:_ = record t "focus_window"
-    method on_focus_shell_surface _ ~shell_surface:_ = record t "focus_shell_surface"
-    method on_destroy _ = record t "destroy"
-    method on_clear_focus _ = record t "clear_focus"
 
-    method on_get_pointer_binding _ binding ~button:_ ~modifiers:_ =
+    method on_set_xcursor_theme s ~name ~size =
+      recordf t s "set_xcursor_theme" "%s, %ldpx" name size
+
+    method on_pointer_warp s ~x ~y = recordf t s "pointer_warp" "(%ld, %ld)" x y
+    method on_op_start_pointer s = recordl t s "op_start_pointer"
+    method on_op_end s = recordl t s "op_end"
+    method on_focus_window s ~window = recordf t s "focus_window" "%s" (label t window)
+    method on_focus_shell_surface s ~shell_surface:_ = recordl t s "focus_shell_surface"
+    method on_destroy s = recordl t s "destroy"
+    method on_clear_focus s = recordl t s "clear_focus"
+
+    method on_get_pointer_binding s binding ~button:_ ~modifiers:_ =
       Proxy.Handler.attach binding (pointer_binding_handlers t);
-      record t "get_pointer_binding"
+      recordl t s "get_pointer_binding"
   end
 ;;
 
 let window_handlers t =
   object
     inherit [_] Wm_server.River_window_v1.v4
-    method on_propose_dimensions _ ~width:_ ~height:_ = record t "propose_dimensions"
-    method on_use_ssd _ = record t "use_ssd"
-    method on_use_csd _ = record t "use_csd"
-    method on_show _ = record t "show"
-    method on_set_tiled _ ~edges:_ = record t "set_tiled"
 
-    method on_set_dimension_bounds _ ~max_width:_ ~max_height:_ =
-      record t "set_dimension_bounds"
+    method on_propose_dimensions w ~width ~height =
+      recordf t w "propose_dimensions" "%ldx%ld" width height
 
-    method on_set_content_clip_box _ ~x:_ ~y:_ ~width:_ ~height:_ =
-      record t "set_content_clip_box"
+    method on_use_ssd w = recordl t w "use_ssd"
+    method on_use_csd w = recordl t w "use_csd"
+    method on_show w = recordl t w "show"
+    method on_set_tiled w ~edges:_ = recordl t w "set_tiled"
 
-    method on_set_clip_box _ ~x:_ ~y:_ ~width:_ ~height:_ = record t "set_clip_box"
-    method on_set_capabilities _ ~caps:_ = record t "set_capabilities"
-    method on_set_borders _ ~edges:_ ~width:_ ~r:_ ~g:_ ~b:_ ~a:_ = record t "set_borders"
-    method on_inform_unmaximized _ = record t "inform_unmaximized"
-    method on_inform_resize_start _ = record t "inform_resize_start"
-    method on_inform_resize_end _ = record t "inform_resize_end"
-    method on_inform_not_fullscreen _ = record t "inform_not_fullscreen"
-    method on_inform_maximized _ = record t "inform_maximized"
-    method on_inform_fullscreen _ = record t "inform_fullscreen"
-    method on_hide _ = record t "hide"
-    method on_fullscreen _ ~output:_ = record t "fullscreen"
-    method on_exit_fullscreen _ = record t "exit_fullscreen"
-    method on_destroy _ = record t "destroy"
-    method on_close _ = record t "close"
+    method on_set_dimension_bounds w ~max_width:_ ~max_height:_ =
+      recordl t w "set_dimension_bounds"
 
-    method on_get_node _ node =
+    method on_set_content_clip_box w ~x ~y ~width ~height =
+      recordf t w "set_content_clip_box" "%ld, %ld, %ldx%ld" x y width height
+
+    method on_set_clip_box w ~x ~y ~width ~height =
+      recordf t w "set_clip_box" "%ld, %ld, %ldx%ld" x y width height
+
+    method on_set_capabilities w ~caps:_ = recordl t w "set_capabilities"
+
+    method on_set_borders w ~edges:_ ~width ~r ~g ~b ~a =
+      recordf t w "set_borders" "w=%ld, rgba=%lx %lx %lx %lx" width r g b a
+
+    method on_inform_unmaximized w = recordl t w "inform_unmaximized"
+    method on_inform_resize_start w = recordl t w "inform_resize_start"
+    method on_inform_resize_end w = recordl t w "inform_resize_end"
+    method on_inform_not_fullscreen w = recordl t w "inform_not_fullscreen"
+    method on_inform_maximized w = recordl t w "inform_maximized"
+    method on_inform_fullscreen w = recordl t w "inform_fullscreen"
+    method on_hide w = recordl t w "hide"
+    method on_fullscreen w ~output:_ = recordl t w "fullscreen"
+    method on_exit_fullscreen w = recordl t w "exit_fullscreen"
+    method on_destroy w = recordl t w "destroy"
+    method on_close w = recordl t w "close"
+
+    method on_get_node w node =
       Proxy.Handler.attach node (node_handlers t);
-      record t "get_node"
+      adopt t node ~owner:(label t w);
+      recordl t w "get_node"
 
-    method on_get_decoration_below _ decoration ~surface:_ =
+    method on_get_decoration_below w decoration ~surface:_ =
       Proxy.Handler.attach decoration (decoration_handlers t);
-      record t "get_decoration_below"
+      adopt t decoration ~owner:(label t w);
+      recordl t w "get_decoration_below"
 
-    method on_get_decoration_above _ decoration ~surface:_ =
+    method on_get_decoration_above w decoration ~surface:_ =
       Proxy.Handler.attach decoration (decoration_handlers t);
-      record t "get_decoration_above"
+      adopt t decoration ~owner:(label t w);
+      recordl t w "get_decoration_above"
   end
 ;;
 
@@ -210,9 +244,10 @@ let shell_surface_handlers t =
   object
     inherit [_] Wm_server.River_shell_surface_v1.v4
 
-    method on_get_node _ node =
+    method on_get_node w node =
       Proxy.Handler.attach node (node_handlers t);
-      record t "get_node"
+      adopt t node ~owner:"shell";
+      recordl t w "get_node"
 
     method on_sync_next_commit _ = record t "sync_next_commit"
     method on_destroy _ = record t "destroy"
@@ -224,7 +259,11 @@ let wm_handlers t =
      inherit [_] Wm_server.River_window_manager_v1.v4
      method on_manage_finish _ = finish_phase t
      method on_render_finish _ = finish_phase t
-     method on_manage_dirty _ = t.manage_dirty_count <- t.manage_dirty_count + 1
+
+     method on_manage_dirty _ =
+       t.manage_dirty_count <- t.manage_dirty_count + 1;
+       t.dirty <- true
+
      method on_stop _ = ()
      method on_destroy _ = ()
      method on_exit_session _ = ()
@@ -465,29 +504,6 @@ let display_handlers t =
   end
 ;;
 
-let start ~sw socket =
-  let t =
-    { phase = Idle
-    ; trace = []
-    ; manage_dirty_count = 0
-    ; bindings = []
-    ; wm = None
-    ; registry = None
-    ; next_global = 100l
-    ; wl_outputs = []
-    ; wl_seats = []
-    ; phase_done = Eio.Condition.create ()
-    ; wm_ready = Eio.Condition.create ()
-    }
-  in
-  ignore
-  @@ Wayland.Server.connect
-       ~sw
-       (Wayland.Unix_transport.of_socket socket)
-       (display_handlers t);
-  t
-;;
-
 let fresh_global t =
   let n = t.next_global in
   t.next_global <- Int32.add n 1l;
@@ -508,7 +524,9 @@ let await_wm t =
 ;;
 
 let tick t =
-  assert (t.phase = Idle);
+  while t.phase <> Idle do
+    Eio.Fiber.yield ()
+  done;
   let wm = await_wm t in
   t.phase <- In_manage;
   Wm_server.River_window_manager_v1.manage_start wm;
@@ -516,6 +534,40 @@ let tick t =
   t.phase <- In_render;
   Wm_server.River_window_manager_v1.render_start wm;
   await_idle t
+;;
+
+let start ~sw socket =
+  let t =
+    { phase = Idle
+    ; trace = []
+    ; manage_dirty_count = 0
+    ; bindings = []
+    ; wm = None
+    ; registry = None
+    ; next_global = 100l
+    ; wl_outputs = []
+    ; wl_seats = []
+    ; dirty = false
+    ; windows = []
+    ; owners = []
+    ; phase_done = Eio.Condition.create ()
+    ; wm_ready = Eio.Condition.create ()
+    }
+  in
+  ignore
+  @@ Wayland.Server.connect
+       ~sw
+       (Wayland.Unix_transport.of_socket socket)
+       (display_handlers t);
+  Eio.Fiber.fork ~sw (fun () ->
+    while true do
+      if t.dirty && t.phase = Idle
+      then (
+        t.dirty <- false;
+        tick t)
+      else Eio.Fiber.yield ()
+    done);
+  t
 ;;
 
 let add_output t ~name =
@@ -536,6 +588,7 @@ let add_seat t ~name =
   t.wl_seats <- (global, name) :: t.wl_seats;
   announce t ~name:global ~interface:Wl_proto.Wl_seat.interface ~version:9l;
   let s = Wm_server.River_window_manager_v1.seat wm (seat_handlers t) in
+  adopt t s ~owner:name;
   Wm_server.River_seat_v1.wl_seat s ~name:global;
   tick t
 ;;
@@ -543,10 +596,21 @@ let add_seat t ~name =
 let add_window t ~app_id =
   let wm = await_wm t in
   let w = Wm_server.River_window_manager_v1.window wm (window_handlers t) in
+  adopt t w ~owner:(Option.value ~default:"?" app_id);
+  t.windows <- (app_id, w) :: t.windows;
   Wm_server.River_window_v1.app_id w ~app_id;
   Wm_server.River_window_v1.title w ~title:app_id;
   Wm_server.River_window_v1.dimensions w ~width:640l ~height:480l;
   tick t
+;;
+
+let close_window t ~app_id =
+  match List.assoc_opt app_id t.windows with
+  | None -> failwith "close_window: no window with this app_id"
+  | Some w ->
+    t.windows <- List.remove_assoc app_id t.windows;
+    Wm_server.River_window_v1.closed w;
+    tick t
 ;;
 
 let press_binding t ~index =
@@ -555,3 +619,5 @@ let press_binding t ~index =
 
 let trace t = List.rev t.trace
 let manage_dirty_count t = t.manage_dirty_count
+let binding_count t = List.length t.bindings
+let idle t = t.phase = Idle && not t.dirty
