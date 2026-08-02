@@ -9,7 +9,14 @@ let capabilities ctx w =
 let dimensions ctx (w : Window.t) =
   if w.float_seed_pending
   then Send.propose_dimensions ctx w ~width:0l ~height:0l
-  else Send.propose_dimensions ctx w ~width:w.geom.w ~height:w.geom.h
+  else (
+    match w.defense with
+    | Bounce (bw, bh) when Output.arranges w ->
+      Send.propose_dimensions ctx w ~width:bw ~height:bh;
+      Window.set_defense w (Hold (bw, bh));
+      Schedule.manage ()
+    | Idle | Bounce _ | Hold _ ->
+      Send.propose_dimensions ctx w ~width:w.geom.w ~height:w.geom.h)
 ;;
 
 let decoration ctx w =

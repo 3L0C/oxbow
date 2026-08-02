@@ -21,6 +21,21 @@ val set_position : t -> x:int32 -> y:int32 -> unit
     {b Effects:} mutates WM state *)
 val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
 
+(** [set_defense window d] updates [window]'s defense state to [d].
+
+    {b Effects:} mutates WM state *)
+val set_defense : t -> Defense.t -> unit
+
+(** [set_proposed window dims] updates [window]'s proposed dimensions to [dims].
+
+    {b Effects:} mutates WM state *)
+val set_proposed : t -> (int32 * int32) option -> unit
+
+(** [set_fullscreen_on window output] updates [window]'s fullscreen output.
+
+    {b Effects:} mutates WM state *)
+val set_fullscreen_on : t -> int32 option -> unit
+
 (** [set_clip window clip] updates [window]'s clip mask to [clip].
 
     {b Effects:} mutates WM state *)
@@ -42,6 +57,12 @@ val set_clip_within
 
     {b Effects:} mutates WM state *)
 val set_offscreen : t -> bool -> unit
+
+(** [reject_dimensions window ~width ~height] records a client size report that
+    does not match the layout. At most one bounce starts per distinct size.
+
+    {b Effects:} mutates WM state *)
+val reject_dimensions : t -> width:int32 -> height:int32 -> unit
 
 (** [on_tags window ~tags] is true when [window]'s tags intersect with [tags]. *)
 val on_tags : t -> tags:Ocdwm_core.Tag.Set.t -> bool
@@ -70,6 +91,12 @@ val tile : t -> unit
 (** [clamp window geom] is [geom] clamped to [window]'s size hints, if any.
     Converts to [int32 rect] *)
 val clamp : t -> int Ocdwm_core.Rect.t -> int32 Ocdwm_core.Rect.t
+
+(** [set_float_seed_pending window pending] sets [window]'s pending float seed
+    flag to [pending].
+
+    {b Effects:} mutates WM state *)
+val set_float_seed_pending : t -> bool -> unit
 
 (** [restore_or_seed_float window] positions and resizes [window] according
     to its last remembered float value. If no such value is stored, [window] is
@@ -243,12 +270,6 @@ val set_unreliable_pid : t -> int32 option -> unit
 
     {b Effects:} mutates WM state *)
 val set_parent : t -> parent:t option -> unit
-
-(** [set_float_seed_pending window pending] sets [window]'s pending float seed
-    flag to [pending].
-
-    {b Effects:} mutates WM state *)
-val set_float_seed_pending : t -> bool -> unit
 
 (** [set_close_pending window pending] sets [window]'s pending close flag to
     [pending].

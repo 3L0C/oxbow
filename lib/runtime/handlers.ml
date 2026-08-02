@@ -256,9 +256,16 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
 
       method on_dimensions _ ~width ~height =
         if window.geom.w <> width || window.geom.h <> height
-        then (
-          Schedule.manage ();
-          Window.queue_request window @@ Dimensions { width; height })
+        then
+          if Output.arranges window
+          then (
+            Logs.warn (fun m ->
+              m
+                "%s client changed size while tiled"
+                (Option.value ~default:"?" window.app_id));
+            Window.reject_dimensions window ~width ~height)
+          else Window.queue_request window @@ Dimensions { width; height }
+        else Window.set_defense window Idle
 
       method on_unreliable_pid _ ~unreliable_pid =
         Window.set_unreliable_pid window @@ Some unreliable_pid

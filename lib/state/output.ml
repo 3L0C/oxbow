@@ -180,3 +180,13 @@ let set_name o name = o.name <- name
 let set_geom o geom = o.geom <- geom
 let set_scroll_offset o offset = o.scroll.offset <- offset
 let apply_default_width td ~delta = Config.set_default_width ~delta td
+
+let arranges (window : Types.Window.t) =
+  match window.output with
+  | None -> false
+  | Some o ->
+    Window.is_tiled window
+    && (not window.float_seed_pending)
+    && Option.is_some window.committed.proposed
+    && (o.overview.enabled || current_layout o <> Floating)
+;;

@@ -33,6 +33,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; close_pending = false
   ; decoration_hint = None
   ; presentation_hint = None
+  ; defense = Idle
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
   ; float_geom = None
   ; clip = None
@@ -66,6 +67,9 @@ let destroy w =
 let set_position w ~x ~y = w.geom <- { w.geom with x; y }
 let floor_geom (g : int32 Rect.t) = { g with w = max g.w 0l; h = max g.h 0l }
 let set_geom w g = w.geom <- floor_geom g
+let set_defense w d = w.defense <- d
+let set_proposed w dims = w.committed.proposed <- dims
+let set_fullscreen_on w output = w.committed.fullscreen_on <- output
 let set_clip w clip = w.clip <- clip
 
 let set_clip_within w ~tag ~bw ~bound =
@@ -78,6 +82,15 @@ let set_clip_within w ~tag ~bw ~bound =
 ;;
 
 let set_offscreen w v = w.offscreen <- v
+
+let reject_dimensions w ~width ~height =
+  match w.defense with
+  | Bounce (bw, bh) when bw = width && bh = height -> ()
+  | Hold (hw, hh) when hw = width && hh = height -> ()
+  | Idle | Bounce _ | Hold _ ->
+    w.defense <- Bounce (width, height);
+    Schedule.manage ()
+;;
 
 let tag_layout (o : Types.Output.t) =
   match Tag.Set.first_index o.tags.selected with
@@ -129,7 +142,10 @@ let clamp32 w (g : int32 Rect.t) =
     }
 ;;
 
+let set_float_seed_pending w v = w.float_seed_pending <- v
+
 let restore_or_seed_float w =
+  set_float_seed_pending w false;
   match w.output with
   | None -> ()
   | Some o ->
@@ -163,6 +179,7 @@ let restore_or_seed_float w =
 
 let float w =
   w.presentation <- Floating;
+  w.defense <- Idle;
   restore_or_seed_float w
 ;;
 
@@ -228,7 +245,7 @@ let unmaximize w =
 let exit_fullscreen w =
   match w.output, w.presentation with
   | Some _, Fullscreen { restore } ->
-    w.committed.proposed <- None;
+    set_proposed w None;
     w
     |>
       (match restore with
@@ -384,8 +401,8 @@ let set_output w output =
   let aux () =
     Schedule.manage ();
     w.output <- output;
-    w.committed.fullscreen_on <- None;
-    w.committed.proposed <- None
+    set_fullscreen_on w None;
+    set_proposed w None
   in
   match w.output, output with
   | Some o, None when Option.is_none w.output_before_evac ->
@@ -415,7 +432,6 @@ let set_parent w ~parent =
   Schedule.manage ()
 ;;
 
-let set_float_seed_pending w v = w.float_seed_pending <- v
 let set_close_pending w v = w.close_pending <- v
 let set_decoration_hint w hint = w.decoration_hint <- hint
 let set_presentation_hint w hint = w.presentation_hint <- hint

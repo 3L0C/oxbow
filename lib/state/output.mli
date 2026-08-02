@@ -200,3 +200,7 @@ val set_scroll_offset : t -> int -> unit
 
     {b Effects:} mutates WM state *)
 val apply_default_width : Types.Config.Data.t -> delta:float Ocdwm_core.Delta.t -> unit
+
+(** [arranges window] is true when [window]'s output owns its dimensions and a
+    proposal exists to defend. *)
+val arranges : Types.Window.t -> bool

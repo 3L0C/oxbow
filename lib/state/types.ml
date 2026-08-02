@@ -206,6 +206,13 @@ and Window : sig
       }
   end
 
+  module Defense : sig
+    type t =
+      | Idle
+      | Bounce of int32 * int32
+      | Hold of int32 * int32
+  end
+
   module Committed : sig
     type t =
       { mutable proposed : (int32 * int32) option
@@ -227,6 +234,7 @@ and Window : sig
     ; mutable close_pending : bool
     ; mutable decoration_hint : Decoration_hint.t option
     ; mutable presentation_hint : Wire.Presentation_mode.t option
+    ; mutable defense : Defense.t
     ; mutable geom : int32 Ocdwm_core.Rect.t
     ; mutable float_geom : int32 Ocdwm_core.Rect.t option
     ; mutable clip : ([ `Scrolling | `Overview ] * int Ocdwm_core.Rect.t) option

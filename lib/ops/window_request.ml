@@ -23,20 +23,25 @@ let handle_resize wm seat window edges =
 ;;
 
 let handle_set_dimensions (wm : Wm.t) window w h =
-  Window.set_geom window { window.geom with w; h };
-  if window.float_seed_pending
+  if Output.arranges window
   then (
-    Window.set_float_seed_pending window false;
-    Window.restore_or_seed_float window);
-  let in_resize =
-    List.exists
-      (fun (s : Seat.t) ->
-         match s.op with
-         | Some (Resize { window = w; _ }) when w == window -> true
-         | _ -> false)
-      wm.seats
-  in
-  if window.presentation = Floating && not in_resize then Window.fit_to_output window
+    Logs.warn (fun m ->
+      m
+        "%s requested dimensions changed while tiling"
+        (Option.value ~default:"?" window.app_id));
+    Window.reject_dimensions window ~width:w ~height:h)
+  else (
+    Window.set_geom window { window.geom with w; h };
+    if window.float_seed_pending then Window.restore_or_seed_float window;
+    let in_resize =
+      List.exists
+        (fun (s : Seat.t) ->
+           match s.op with
+           | Some (Resize { window = w; _ }) when w == window -> true
+           | _ -> false)
+        wm.seats
+    in
+    if window.presentation = Floating && not in_resize then Window.fit_to_output window)
 ;;
 
 let handle_set_tags _wm window (arg : Tag.Arg.t) =

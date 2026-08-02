@@ -16,7 +16,7 @@ let propose_dimensions (_ : Ctx.manage Ctx.t) (w : Window.t) ~width ~height =
   if w.committed.proposed <> Some (width, height)
   then (
     River.Window_management.River_window_v1.propose_dimensions w.obj ~width ~height;
-    w.committed.proposed <- Some (width, height))
+    Window.set_proposed w (Some (width, height)))
 ;;
 
 let fullscreen (_ : Ctx.manage Ctx.t) (w : Window.t) ~(output : Output.t) =
@@ -24,15 +24,15 @@ let fullscreen (_ : Ctx.manage Ctx.t) (w : Window.t) ~(output : Output.t) =
   if w.committed.fullscreen_on <> id
   then (
     River.Window_management.River_window_v1.fullscreen w.obj ~output:output.obj;
-    w.committed.fullscreen_on <- id)
+    Window.set_fullscreen_on w id)
 ;;
 
 let exit_fullscreen (_ : Ctx.manage Ctx.t) (w : Window.t) =
   if w.committed.fullscreen_on <> None
   then (
     River.Window_management.River_window_v1.exit_fullscreen w.obj;
-    w.committed.fullscreen_on <- None;
-    w.committed.proposed <- None)
+    Window.set_fullscreen_on w None;
+    Window.set_proposed w None)
 ;;
 
 let inform_fullscreen (_ : Ctx.manage Ctx.t) (w : Window.t) =
