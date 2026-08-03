@@ -25,29 +25,33 @@
   (ocaml
    (>= 5.4))
   (dune
-   (>= 3.21))
+   (>= 3.23))
   (dune-build-info
-   (>= 3.21))
-  (wayland
-   (>= 2.2))
+   (>= 3.23))
+  (cmdliner
+   (>= 2.1))
+  (eio
+   (>= 1.2))
   (eio_main
    (>= 1.2))
-  (yojson
-   (>= 2.0))
+  (fmt
+   (>= 0.11))
+  (landmarks-ppx
+   (>= 1.7))
+  (logs
+   (>= 0.10))
   (ppx_yojson_conv
-   (>= 0.16))
+   (>= 0.17))
+  (ppx_yojson_conv_lib
+   (>= 0.17))
   (re
    (>= 1.12))
-  (cmdliner
-   (>= 1.3))
+  (wayland
+   (>= 2.3))
   (xkbcommon
    (>= 0.1))
-  (logs
-   (>= 0.7))
-  (fmt
-   (>= 0.9))
-  (landmarks-ppx
-   (>= 1.4))))
+  (yojson
+   (>= 3.0))))
 
 (package
  (name octl)
@@ -57,25 +61,23 @@
    (>= 5.4))
   (dune
    (>= 3.21))
+  (cmdliner
+   (>= 2.1))
   (dune-build-info
    (>= 3.21))
-  (wayland
-   (>= 2.2))
-  (eio_main
-   (>= 1.2))
-  (yojson
-   (>= 2.0))
+  (eio
+   (>= 1.3))
+  (eio_posix
+   (>= 1.3))
+  (fmt
+   (>= 0.11))
+  (logs
+   (>= 0.10))
   (ppx_yojson_conv
-   (>= 0.16))
+   (>= 0.17))
+  (ppx_yojson_conv_lib
+   (>= 0.17))
   (re
    (>= 1.12))
-  (cmdliner
-   (>= 1.3))
-  (xkbcommon
-   (>= 0.1))
-  (logs
-   (>= 0.7))
-  (fmt
-   (>= 0.9))
-  (landmarks-ppx
-   (>= 1.4))))
+  (yojson
+   (>= 3.0))))
