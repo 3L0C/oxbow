@@ -107,7 +107,6 @@ let make_output root =
     ; usable = { x = 0; y = 0; w = 1920; h = 1080 }
     ; tags = { selected = Tag.Set.singleton 1; previous = Tag.Set.singleton 1 }
     ; overview = { offset = 0; enabled = false; gaps = 10; head = None }
-    ; scroll = { offset = 0 }
     ; tag_data = Array.init 32 (fun _ -> Config.create_tag_data ())
     ; focus_stack = []
     ; wm_stack = []

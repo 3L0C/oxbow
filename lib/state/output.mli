@@ -191,7 +191,8 @@ val set_name : t -> string option -> unit
     {b Effects:} mutates WM state *)
 val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
 
-(** [set_scroll_offset output offset] sets [output]'s scroll offset to [offset].
+(** [set_scroll_offset output offset] sets the scroll offset of the first active
+    tag on [output].
 
     {b Effects:} mutates WM state *)
 val set_scroll_offset : t -> int -> unit

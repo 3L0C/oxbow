@@ -11,6 +11,7 @@ module Scrolling : sig
   type t =
     { mutable policy : Ocdwm_core.Scroll_policy.t
     ; mutable default_width : Ocdwm_core.Width_fac.t
+    ; mutable offset : int
     }
 end
 

@@ -23,7 +23,7 @@ let arrange (wm : Wm.t) (output : Output.t) =
       let _, last = List.rev placed |> List.hd in
       let max_offset = last.x - area.x in
       let nearest_col () =
-        let view_center = output.scroll.offset + (area.w / 2) in
+        let view_center = tag_data.scrolling.offset + (area.w / 2) in
         List.fold_left
           (fun best (_, (g : int Rect.t)) ->
              let x = g.x - area.x in
@@ -50,9 +50,9 @@ let arrange (wm : Wm.t) (output : Output.t) =
             ~policy:tag_data.scrolling.policy
             ~viewport_w:area.w
             ~max_offset
-            ~offset:output.scroll.offset
+            ~offset:tag_data.scrolling.offset
             ~col
-        | None -> min output.scroll.offset max_offset |> max 0
+        | None -> min tag_data.scrolling.offset max_offset |> max 0
       in
       Output.set_scroll_offset output offset;
       placed

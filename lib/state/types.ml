@@ -92,10 +92,6 @@ and Output : sig
       }
   end
 
-  module Scroll : sig
-    type t = { mutable offset : int }
-  end
-
   type t =
     { obj : Wire.Obj.Window_management.Output.t
     ; layer_shell : Wire.Obj.Layer_shell.Output.t
@@ -105,7 +101,6 @@ and Output : sig
     ; mutable usable : int Ocdwm_core.Rect.t
     ; tags : Tags.t
     ; overview : Overview.t
-    ; scroll : Scroll.t
     ; tag_data : Config.Data.t array
     ; (* Focus stack; most recently focused first *)
       mutable focus_stack : Window.t list

@@ -178,7 +178,7 @@ let set_usable o usable =
 
 let set_name o name = o.name <- name
 let set_geom o geom = o.geom <- geom
-let set_scroll_offset o offset = o.scroll.offset <- offset
+let set_scroll_offset o offset = (to_tag_data o).scrolling.offset <- offset
 let apply_default_width td ~delta = Config.set_default_width ~delta td
 
 let arranges (window : Types.Window.t) =
