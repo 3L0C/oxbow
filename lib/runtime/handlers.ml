@@ -215,7 +215,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
         ()
 
       method on_shell_surface_interaction _ ~shell_surface:_ = ()
-      method on_pointer_position _ ~x ~y = Pointer.handle_position wm seat ~x ~y
+      method on_pointer_position _ ~x ~y = Pointer.handle_position wm seat (x, y)
     end;
   Wm.set_seats wm (seat :: wm.seats);
   if Option.is_none wm.primary_seat then Wm.set_primary_seat wm @@ Some seat;

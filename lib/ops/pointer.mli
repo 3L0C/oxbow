@@ -1,8 +1,9 @@
-(** [handle_position ~x ~y wm seat] updates [seat]'s position to [x], [y],
-    [seat]'s focused output, and [seat]'s cursor target.
+(** [handle_position wm seat (x, y)] updates [seat]'s position to [(x, y)],
+    [seat]'s focused output, and [seat]'s cursor target. Will focus the window
+    under [(x, y)] when [seat]'s position changed.
 
     {b Effects:} mutates WM state *)
-val handle_position : x:int32 -> y:int32 -> Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
+val handle_position : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> int32 * int32 -> unit
 
 (** [warp_target seat] is [Some (x, y)], the center of [seat]'s focused window,
     or [None] if [seat] has no focused window. *)

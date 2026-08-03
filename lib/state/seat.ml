@@ -91,9 +91,7 @@ let replace_pointer_binding s mode mods button command =
 ;;
 
 let refresh_cursor_target s =
-  match s.hovered with
-  | Some _ -> s.cursor_target <- s.hovered
-  | _ -> ()
+  if Option.is_some s.hovered then s.cursor_target <- s.hovered
 ;;
 
 let drain_pending s = Queue.take_opt s.pending_requests
@@ -134,7 +132,7 @@ let set_mode (wm : Types.Wm.t) s mode =
   else Ok (s.mode <- mode)
 ;;
 
-let set_position s position = s.position <- position
+let set_position s (x, y) = s.position <- { x; y }
 
 let set_cursor_target s window =
   s.cursor_target <- window;

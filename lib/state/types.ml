@@ -334,7 +334,7 @@ and Seat : sig
       | No_request
       | Follow_config
       | Forced of bool
-      | Point of Position.t
+      | Point of (int32 * int32)
 
     val of_override : bool option -> t
   end

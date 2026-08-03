@@ -92,7 +92,8 @@ let op_end (_ : Ctx.manage Ctx.t) (s : Seat.t) =
 ;;
 
 let pointer_warp (_ : Ctx.manage Ctx.t) (s : Seat.t) ~x ~y =
-  River.Window_management.River_seat_v1.pointer_warp s.obj ~x ~y
+  River.Window_management.River_seat_v1.pointer_warp s.obj ~x ~y;
+  Seat.set_position s (x, y)
 ;;
 
 let set_position (_ : Ctx.render Ctx.t) (w : Window.t) ~x ~y =

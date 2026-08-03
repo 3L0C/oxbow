@@ -50,10 +50,10 @@ val set_layer_focus : t -> Layer_focus.t option -> unit
     {b Effects:} mutates WM state *)
 val set_mode : Types.Wm.t -> t -> string -> (unit, string) result
 
-(** [set_position seat position] positions [seat] at [position].
+(** [set_position seat (x, y)] positions [seat] at [(x, y)].
 
     {b Effects:} mutates WM state *)
-val set_position : t -> Position.t -> unit
+val set_position : t -> int32 * int32 -> unit
 
 (** [set_cursor_target seat cursor_target] sets [seat]'s cursor target to
     [cursor_target].

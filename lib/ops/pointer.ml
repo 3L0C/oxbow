@@ -2,8 +2,9 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ipc
 
-let handle_position ~x ~y (wm : Wm.t) seat =
-  Seat.set_position seat { x; y };
+let handle_position (wm : Wm.t) (seat : Seat.t) (x, y) =
+  let pos_changed = seat.position <> { x; y } in
+  Seat.set_position seat (x, y);
   if wm.config.focus_follows_pointer && Option.is_none seat.op
   then (
     match Output.at_point ~x ~y wm.outputs with
@@ -12,7 +13,7 @@ let handle_position ~x ~y (wm : Wm.t) seat =
       if not @@ Phys.opt_holds o seat.output then Seat.focus_output seat @@ Some o;
       (match seat.hovered with
        | Some w when not @@ Phys.opt_holds w seat.cursor_target ->
-         Seat.set_focus_state seat @@ Refresh w;
+         if pos_changed then Seat.set_focus_state seat @@ Refresh w;
          Seat.set_cursor_target seat seat.hovered
        | _ -> ()))
 ;;

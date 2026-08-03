@@ -20,10 +20,9 @@ let begin_resize wm seat window edges =
   let open Wire in
   Seat.set_warp_request seat
   @@ Point
-       Int32.
-         { x = (if logand edges Edges.left <> 0l then g.x else add g.x g.w)
-         ; y = (if logand edges Edges.top <> 0l then g.y else add g.y g.h)
-         };
+       Int32.(
+         ( (if logand edges Edges.left <> 0l then g.x else add g.x g.w)
+         , if logand edges Edges.top <> 0l then g.y else add g.y g.h ));
   Seat.set_op seat
   @@ Resize
        { window

@@ -119,7 +119,7 @@ let warp ctx (s : Seat.t) =
   | No_request -> ()
   | Forced b -> if b then warp_to `Focus
   | Follow_config -> if (Ctx.wm ctx).config.warp_on_focus then warp_to `Focus
-  | Point { x; y } -> warp_to (`Point (x, y))
+  | Point p -> warp_to (`Point p)
 ;;
 
 let op ctx (s : Seat.t) =
