@@ -693,14 +693,17 @@ let command_term term =
   Request.Body.Command command, None
 ;;
 
+let bind_to_kw =
+  let to_kw = Arg.enum [ "to", () ] in
+  Arg.(
+    required
+    & pos ~rev:true 1 (some to_kw) None
+    & info [] ~docv:"to" ~doc:"Literal $(b,to) separating command from keybind")
+;;
+
 let bind_suffix =
   let open Cmdliner.Term.Syntax in
-  let to_kw = Arg.enum [ "to", () ] in
-  let+ () =
-    Arg.(
-      required
-      & pos ~rev:true 1 (some to_kw) None
-      & info [] ~docv:"to" ~doc:"Literal $(b,to) separating command from keybind")
+  let+ () = bind_to_kw
   and+ keybind = keybind_arg in
   keybind
 ;;
@@ -711,6 +714,17 @@ let bind_term term =
   and+ mode = mode_flag
   and+ keybind = bind_suffix in
   Request.Body.Keymap (Bind { keybind; command; mode }), None
+;;
+
+let bind_to_term term =
+  let open Cmdliner.Term.Syntax in
+  let t =
+    let+ command = term
+    and+ mode = mode_flag
+    and+ keybind = keybind_arg in
+    Request.Body.Keymap (Bind { keybind; command; mode }), None
+  in
+  cmd ~name:"to" ~doc:"Bind this command to $(i,KEYBIND)" t
 ;;
 
 let cmd_pair ?bind ~name ~doc term =
@@ -727,7 +741,12 @@ let group_pair ?(extra = []) ?default ~name ~doc pairs =
       ?default:(Option.map (fun t -> run_term (mk_term t)) default)
       children
   in
-  mk command_term (cmds @ extra), mk bind_term binds
+  let to_child =
+    match default with
+    | None -> []
+    | Some t -> [ bind_to_term t ]
+  in
+  mk command_term (cmds @ extra), mk bind_term (binds @ to_child)
 ;;
 
 let query_term ?render term =

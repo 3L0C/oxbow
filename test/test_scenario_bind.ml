@@ -7,6 +7,7 @@ let () =
     Fake_river.add_seat fake ~name:"seat0";
     Fake_river.add_window fake ~app_id:(Some "kitty");
     Fake_river.add_window fake ~app_id:(Some "emacs"));
+  o "bind layout scrolling" [ "bind"; "layout"; "scrolling"; "to"; "Super+s" ];
   o "bind focus next" [ "bind"; "window"; "focus"; "next"; "to"; "Super+J" ];
   section "press the bind" (fun () ->
     Fake_river.press_binding fake ~index:(Fake_river.binding_count fake - 1));
