@@ -41,6 +41,7 @@
           # devShell automatically.
           ocaml-lsp-server = "*";
           ocamlformat = "*";
+          odoc = "*";
         };
         query =
           devPackagesQuery
