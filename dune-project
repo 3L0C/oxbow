@@ -1,4 +1,4 @@
-(lang dune 3.21)
+(lang dune 3.22)
 
 (name ocdwm)
 
@@ -24,18 +24,22 @@
  (depends
   (ocaml
    (>= 5.4))
-  (dune
-   (>= 3.23))
   (dune-build-info
-   (>= 3.23))
+   (>= 3.22))
   (cmdliner
    (>= 2.1))
+  (cstruct
+   (and
+    (>= 6.2)
+    :with-test))
   (eio
    (>= 1.2))
   (eio_main
    (>= 1.2))
   (fmt
    (>= 0.11))
+  (landmarks
+   (>= 1.7))
   (landmarks-ppx
    (>= 1.7))
   (logs
@@ -59,12 +63,10 @@
  (depends
   (ocaml
    (>= 5.4))
-  (dune
-   (>= 3.21))
   (cmdliner
    (>= 2.1))
   (dune-build-info
-   (>= 3.21))
+   (>= 3.22))
   (eio
    (>= 1.3))
   (eio_posix
@@ -73,6 +75,8 @@
    (>= 0.11))
   (logs
    (>= 0.10))
+  (ocdwm
+   (= :version))
   (ppx_yojson_conv
    (>= 0.17))
   (ppx_yojson_conv_lib

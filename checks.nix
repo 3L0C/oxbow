@@ -1,9 +1,10 @@
 {
   inputs,
   pkgs,
+  ocamlformat,
   ...
 }: {
-  pre-commit-check = inputs.pre-commit-hooks.lib.${pkgs.stdenv.hostPlatform.system}.run {
+  pre-commit-check = inputs.git-hooks.lib.${pkgs.stdenv.hostPlatform.system}.run {
     src = ./.;
 
     hooks = {
@@ -13,21 +14,21 @@
         enable = true;
         name = "ocamlformat";
         description = "Format OCaml files with ocamlformat";
-        entry = "${pkgs.ocamlPackages.ocamlformat}/bin/ocamlformat --inplace";
+        entry = "${ocamlformat}/bin/ocamlformat --inplace";
         types = ["ocaml"];
       };
 
       check-merge-conflicts = {
         enable = true;
-        excludes = ["^protocol/.*\\.ml$"];
+        excludes = ["^protocols/.*\\.ml$"];
       };
       end-of-file-fixer = {
         enable = true;
-        excludes = ["^protocol/.*\\.ml$"];
+        excludes = ["^protocols/.*\\.ml$"];
       };
       trim-trailing-whitespace = {
         enable = true;
-        excludes = ["^protocol/.*\\.ml$"];
+        excludes = ["^protocols/.*\\.ml$"];
       };
     };
   };
