@@ -1,6 +1,7 @@
 (executable
  (name main)
  (public_name ocdwm)
+ (package ocdwm)
  (libraries
   ocdwm.core
   ocdwm.runtime
@@ -12,3 +13,13 @@
   logs.fmt
   fmt
   fmt.tty))
+
+(rule
+ (with-stdout-to
+  ocdwm.1
+  (run %{exe:main.exe} --help=groff)))
+
+(install
+ (section man)
+ (package ocdwm)
+ (files ocdwm.1))

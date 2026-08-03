@@ -20,7 +20,38 @@
 (package
  (name ocdwm)
  (synopsis
-  "ocdwm - dwm-like window manager for river 0.4.x, written in OCaml")
+  "ocdwm - dwm-like window manager for river 0.4.6+, written in OCaml")
+ (depends
+  (ocaml
+   (>= 5.4))
+  (dune
+   (>= 3.21))
+  (dune-build-info
+   (>= 3.21))
+  (wayland
+   (>= 2.2))
+  (eio_main
+   (>= 1.2))
+  (yojson
+   (>= 2.0))
+  (ppx_yojson_conv
+   (>= 0.16))
+  (re
+   (>= 1.12))
+  (cmdliner
+   (>= 1.3))
+  (xkbcommon
+   (>= 0.1))
+  (logs
+   (>= 0.7))
+  (fmt
+   (>= 0.9))
+  (landmarks-ppx
+   (>= 1.4))))
+
+(package
+ (name octl)
+ (synopsis "octl - command-line interface for controlling ocdwm")
  (depends
   (ocaml
    (>= 5.4))

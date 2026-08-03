@@ -34,6 +34,7 @@ in
         ocamlformat
         utop
         odoc
+        dune-release
         ;
     };
 

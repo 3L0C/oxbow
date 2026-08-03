@@ -50,16 +50,15 @@ let man =
   ; `P "If none are found or executable, $(mname) starts with only built-in keybindings."
   ; `P
       "The script runs in its own session via $(b,setsid)(2), after the river protocols \
-       are bound, so $(b,octl) commands work without racing the WM."
+       are bound, so $(b,octl) commands work without racing $(mname)."
   ; `P
       "On shutdown $(mname) sends $(b,SIGTERM) to the script process. Children that were \
        backgrounded by the script reparent to PID 1 and survive WM restarts. To kill all \
-       script descendants on exit (river-classic behavior), add $(b,trap 'kill 0' EXIT) \
-       to the top of the script."
+       script descendants on exit, add $(b,trap 'kill 0' EXIT) to the top of the script."
   ; `P "Example $(b,~/.config/ocdwm/init):"
   ; `Pre
       "  #!/usr/bin/env bash\n\
-      \  octl bind spawn \"foot\" to Super+Return\n\
+      \  octl bind spawn \"kitty\" to Super+Return\n\
       \  octl bind window close to Super+q\n\
       \  octl layout floating\n\
       \  pgrep -x waybar >/dev/null || waybar &"
@@ -76,7 +75,7 @@ let cmd =
     ~man_xrefs:[ `Tool "octl"; `Tool "river" ]
     ~version
     ~name:"ocdwm"
-    ~doc:"ocdwm - dwm-like window manager for river 0.4.x, written in OCaml"
+    ~doc:"dwm-like window manager for river 0.4.6+, written in OCaml"
   @@
   let+ override_path =
     Arg.(
@@ -87,7 +86,7 @@ let cmd =
           ~docv:"SHELL_COMMAND"
           ~doc:
             "Override the default search paths for an init executable: instead \
-             $(i,SHELL_COMMAND) will be run with /bin/sh -c. See the CONFIGURATION \
+             $(i,SHELL_COMMAND) will be run with /bin/sh -c. See the $(b,CONFIGURATION) \
              section for more details.")
   and+ log_level = Cli.log_level_arg
   and+ socket_path = Cli.socket_arg in

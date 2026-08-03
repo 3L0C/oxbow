@@ -1,13 +1,15 @@
 (executable
  (name main)
  (public_name octl)
- (libraries
-  ocdwm.core
-  ocdwm.ctl
-  dune-build-info
-  yojson
-  cmdliner
-  logs
-  logs.fmt
-  fmt
-  fmt.tty))
+ (package octl)
+ (libraries ocdwm.core ocdwm.ctl dune-build-info cmdliner logs.fmt))
+
+(rule
+ (with-stdout-to
+  octl.1
+  (run %{exe:main.exe} --help=groff)))
+
+(install
+ (section man)
+ (package octl)
+ (files octl.1))

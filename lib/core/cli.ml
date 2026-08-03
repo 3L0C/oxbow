@@ -27,7 +27,7 @@ let socket_arg =
         [ "socket" ]
         ~docv:"PATH"
         ~docs:Manpage.s_common_options
-        ~doc:"Override $(b,XDG_RUNTIME_DIR) socket path")
+        ~doc:"Override $(b,XDG_RUNTIME_DIR) socket path.")
 ;;
 
 let info ?(exits = Exit.exits) ?man ?man_xrefs ?version name ~doc =
