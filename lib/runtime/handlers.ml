@@ -109,6 +109,9 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
           output
           { x = output.geom.x; y = output.geom.y; w = width; h = height };
         sync_usable ()
+
+      (* TODO capture this data for reporting *)
+      method on_capture_sessions _ ~count:_ = ()
     end;
   Wm.set_outputs wm (output :: wm.outputs);
   List.iter (Wm.ensure_seat_output wm) wm.seats
@@ -325,6 +328,9 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
 
       method on_show_window_menu_requested _ ~x:_ ~y:_ = ()
       method on_minimize_requested _ = ()
+
+      (* TODO capture this data and maybe add border color variant for recorded windows? *)
+      method on_capture_sessions _ ~count:_ = ()
     end;
   Wm.set_windows wm (window :: wm.windows)
 ;;

@@ -9,9 +9,9 @@ end
 module River_window_manager_v1 = struct
   type t = [`River_window_manager_v1]
   type _ Metadata.ty += T : [`River_window_manager_v1] Metadata.ty
-  type versions = [`V1 | `V2 | `V3 | `V4]
+  type versions = [`V1 | `V2 | `V3 | `V4 | `V5]
   let interface = "river_window_manager_v1"
-  let version = 4l
+  let version = 5l
   
   module Error = struct
     type t =
@@ -59,9 +59,9 @@ let () = Iface_reg.register (module River_window_manager_v1)
 module River_window_v1 = struct
   type t = [`River_window_v1]
   type _ Metadata.ty += T : [`River_window_v1] Metadata.ty
-  type versions = [`V1 | `V2 | `V3 | `V4]
+  type versions = [`V1 | `V2 | `V3 | `V4 | `V5]
   let interface = "river_window_v1"
-  let version = 4l
+  let version = 5l
   
   module Error = struct
     type t =
@@ -186,6 +186,7 @@ module River_window_v1 = struct
     | 15 -> "unreliable_pid", ["unreliable_pid", `Int]
     | 16 -> "presentation_hint", ["hint", `Uint]
     | 17 -> "identifier", ["identifier", `String]
+    | 18 -> "capture_sessions", ["count", `Uint]
     | i -> Proxy.unknown_event i, []
   
 end
@@ -194,9 +195,9 @@ let () = Iface_reg.register (module River_window_v1)
 module River_decoration_v1 = struct
   type t = [`River_decoration_v1]
   type _ Metadata.ty += T : [`River_decoration_v1] Metadata.ty
-  type versions = [`V1 | `V2 | `V3 | `V4]
+  type versions = [`V1 | `V2 | `V3 | `V4 | `V5]
   let interface = "river_decoration_v1"
-  let version = 4l
+  let version = 5l
   
   module Error = struct
     type t =
@@ -225,9 +226,9 @@ let () = Iface_reg.register (module River_decoration_v1)
 module River_shell_surface_v1 = struct
   type t = [`River_shell_surface_v1]
   type _ Metadata.ty += T : [`River_shell_surface_v1] Metadata.ty
-  type versions = [`V1 | `V2 | `V3 | `V4]
+  type versions = [`V1 | `V2 | `V3 | `V4 | `V5]
   let interface = "river_shell_surface_v1"
-  let version = 4l
+  let version = 5l
   
   module Error = struct
     type t =
@@ -259,9 +260,9 @@ let () = Iface_reg.register (module River_shell_surface_v1)
 module River_node_v1 = struct
   type t = [`River_node_v1]
   type _ Metadata.ty += T : [`River_node_v1] Metadata.ty
-  type versions = [`V1 | `V2 | `V3 | `V4]
+  type versions = [`V1 | `V2 | `V3 | `V4 | `V5]
   let interface = "river_node_v1"
-  let version = 4l
+  let version = 5l
   
   let requests = function
     | 0 -> "destroy", []
@@ -281,9 +282,9 @@ let () = Iface_reg.register (module River_node_v1)
 module River_output_v1 = struct
   type t = [`River_output_v1]
   type _ Metadata.ty += T : [`River_output_v1] Metadata.ty
-  type versions = [`V1 | `V2 | `V3 | `V4]
+  type versions = [`V1 | `V2 | `V3 | `V4 | `V5]
   let interface = "river_output_v1"
-  let version = 4l
+  let version = 5l
   
   module Error = struct
     type t =
@@ -331,6 +332,7 @@ module River_output_v1 = struct
     | 1 -> "wl_output", ["name", `Uint]
     | 2 -> "position", ["x", `Int; "y", `Int]
     | 3 -> "dimensions", ["width", `Int; "height", `Int]
+    | 4 -> "capture_sessions", ["count", `Uint]
     | i -> Proxy.unknown_event i, []
   
 end
@@ -339,9 +341,9 @@ let () = Iface_reg.register (module River_output_v1)
 module River_seat_v1 = struct
   type t = [`River_seat_v1]
   type _ Metadata.ty += T : [`River_seat_v1] Metadata.ty
-  type versions = [`V1 | `V2 | `V3 | `V4]
+  type versions = [`V1 | `V2 | `V3 | `V4 | `V5]
   let interface = "river_seat_v1"
-  let version = 4l
+  let version = 5l
   
   (** A set of keyboard modifiers.
       
@@ -402,9 +404,9 @@ let () = Iface_reg.register (module River_seat_v1)
 module River_pointer_binding_v1 = struct
   type t = [`River_pointer_binding_v1]
   type _ Metadata.ty += T : [`River_pointer_binding_v1] Metadata.ty
-  type versions = [`V1 | `V2 | `V3 | `V4]
+  type versions = [`V1 | `V2 | `V3 | `V4 | `V5]
   let interface = "river_pointer_binding_v1"
-  let version = 4l
+  let version = 5l
   
   let requests = function
     | 0 -> "destroy", []

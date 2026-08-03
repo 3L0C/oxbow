@@ -25,13 +25,13 @@ type t =
   ; mutable trace : string list
   ; mutable manage_dirty_count : int
   ; mutable bindings : [ `V3 ] Xkb_server.River_xkb_binding_v1.t list
-  ; mutable wm : [ `V4 ] Wm_server.River_window_manager_v1.t option
+  ; mutable wm : [ `V5 ] Wm_server.River_window_manager_v1.t option
   ; mutable registry : [ `V1 ] Wl.Wl_registry.t option
   ; mutable next_global : int32
   ; mutable wl_outputs : (int32 * string) list
   ; mutable wl_seats : (int32 * string) list
   ; mutable dirty : bool
-  ; mutable windows : (string option * [ `V4 ] Wm_server.River_window_v1.t) list
+  ; mutable windows : (string option * [ `V5 ] Wm_server.River_window_v1.t) list
   ; mutable owners : (int32 * string) list
   ; phase_done : Eio.Condition.t
   ; wm_ready : Eio.Condition.t
@@ -128,7 +128,7 @@ let recordf t p name fmt =
 
 let node_handlers t =
   object
-    inherit [_] Wm_server.River_node_v1.v4
+    inherit [_] Wm_server.River_node_v1.v5
     method on_set_position n ~x ~y = recordf t n "set_position" "%ld, %ld" x y
     method on_place_top n = recordl t n "place_top"
     method on_place_bottom n = recordl t n "place_bottom"
@@ -140,7 +140,7 @@ let node_handlers t =
 
 let decoration_handlers t =
   object
-    inherit [_] Wm_server.River_decoration_v1.v4
+    inherit [_] Wm_server.River_decoration_v1.v5
     method on_sync_next_commit d = recordl t d "sync_next_commit"
     method on_set_offset d ~x ~y = recordf t d "set_offset" "%ld, %ld" x y
     method on_destroy d = recordl t d "destroy"
@@ -149,7 +149,7 @@ let decoration_handlers t =
 
 let output_handlers t =
   object
-    inherit [_] Wm_server.River_output_v1.v4
+    inherit [_] Wm_server.River_output_v1.v5
     method on_set_presentation_mode _ ~mode:_ = record t "set_presentation_mode"
     method on_destroy _ = record t "destroy"
   end
@@ -157,7 +157,7 @@ let output_handlers t =
 
 let pointer_binding_handlers t =
   object
-    inherit [_] Wm_server.River_pointer_binding_v1.v4
+    inherit [_] Wm_server.River_pointer_binding_v1.v5
     method on_enable _ = record t "enable"
     method on_disable _ = record t "disable"
     method on_destroy _ = record t "destroy"
@@ -166,7 +166,7 @@ let pointer_binding_handlers t =
 
 let seat_handlers t =
   object
-    inherit [_] Wm_server.River_seat_v1.v4
+    inherit [_] Wm_server.River_seat_v1.v5
 
     method on_set_xcursor_theme s ~name ~size =
       recordf t s "set_xcursor_theme" "%s, %ldpx" name size
@@ -187,7 +187,7 @@ let seat_handlers t =
 
 let window_handlers t =
   object
-    inherit [_] Wm_server.River_window_v1.v4
+    inherit [_] Wm_server.River_window_v1.v5
 
     method on_propose_dimensions w ~width ~height =
       recordf t w "propose_dimensions" "%ldx%ld" width height
@@ -242,7 +242,7 @@ let window_handlers t =
 
 let shell_surface_handlers t =
   object
-    inherit [_] Wm_server.River_shell_surface_v1.v4
+    inherit [_] Wm_server.River_shell_surface_v1.v5
 
     method on_get_node w node =
       Proxy.Handler.attach node (node_handlers t);
@@ -256,7 +256,7 @@ let shell_surface_handlers t =
 
 let wm_handlers t =
   (object
-     inherit [_] Wm_server.River_window_manager_v1.v4
+     inherit [_] Wm_server.River_window_manager_v1.v5
      method on_manage_finish _ = finish_phase t
      method on_render_finish _ = finish_phase t
 
@@ -271,7 +271,7 @@ let wm_handlers t =
      method on_get_shell_surface _ ss ~surface:_ =
        Proxy.Handler.attach ss (shell_surface_handlers t)
    end
-    :> ([ `River_window_manager_v1 ], [ `V4 ], [ `Server ]) Proxy.Service_handler.t)
+    :> ([ `River_window_manager_v1 ], [ `V5 ], [ `Server ]) Proxy.Service_handler.t)
 ;;
 
 let binding_handlers t =
@@ -475,7 +475,7 @@ let display_handlers t =
         t
         ~name:name_wm
         ~interface:Wm_proto.River_window_manager_v1.interface
-        ~version:4l;
+        ~version:5l;
       announce
         t
         ~name:name_xkb_bindings

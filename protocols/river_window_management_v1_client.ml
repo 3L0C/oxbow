@@ -102,7 +102,8 @@ module River_window_manager_v1 = struct
       
       Providing a wl_surface which already has a role or already has a buffer
       attached or committed is a protocol error. *)
-  let get_shell_surface (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) (id:([`River_shell_surface_v1], 'v, [`Client]) #Proxy.Handler.t) ~(surface:([`Wl_surface], _, [`Client]) Proxy.t) =
+  let get_shell_surface (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+    (id:([`River_shell_surface_v1], 'v, [`Client]) #Proxy.Handler.t) ~(surface:([`Wl_surface], _, [`Client]) Proxy.t) =
     let __id = Proxy.spawn _t id in
     let _msg = Proxy.alloc _t ~op:5 ~ints:2 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id __id);
@@ -123,7 +124,7 @@ module River_window_manager_v1 = struct
       
       See the description of the river_window_manager_v1 interface for a
       complete overview of the manage/render sequence loop. *)
-  let render_finish (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let render_finish (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:4 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -137,7 +138,7 @@ module River_window_manager_v1 = struct
       The client may want to use this request due to an internal state change
       that the compositor is not aware of (e.g. a dbus event) which should
       affect window management or rendering state. *)
-  let manage_dirty (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let manage_dirty (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:3 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -154,7 +155,7 @@ module River_window_manager_v1 = struct
       
       See the description of the river_window_manager_v1 interface for a
       complete overview of the manage/render sequence loop. *)
-  let manage_finish (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let manage_finish (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:2 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -168,7 +169,7 @@ module River_window_manager_v1 = struct
       river_window_manager_v1.finished event. Once the finished event is
       received it is safe to destroy this object and any other objects created
       through this interface. *)
-  let destroy (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let destroy (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:1 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg;
     Proxy.shutdown_send _t
@@ -182,12 +183,12 @@ module River_window_manager_v1 = struct
       further events until the stop request is processed. The client must wait
       for a river_window_manager_v1.finished event before destroying this
       object. *)
-  let stop (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let stop (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:0 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
   
-  (** {2 Version 4} *)
+  (** {2 Version 4, 5} *)
   
   (** Exit the Wayland session.
       
@@ -198,7 +199,7 @@ module River_window_manager_v1 = struct
       Window managers should only make this request if the user explicitly
       asks to exit the Wayland session, not for example on normal window
       manager termination. *)
-  let exit_session (_t:([< `V4] as 'v) t)  =
+  let exit_session (_t:([< `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:6 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -206,7 +207,7 @@ module River_window_manager_v1 = struct
   class virtual ['v] _handlers_unsafe = object (_self : (_, 'v, _) #Proxy.Handler.t)
     method user_data = S.No_data
     method metadata = (module River_window_management_v1_proto.River_window_manager_v1)
-    method max_version = 4l
+    method max_version = 5l
     
     method private virtual on_unavailable : [> ] t -> unit
     
@@ -266,9 +267,9 @@ module River_window_manager_v1 = struct
   (** Handler for a proxy with version >= 1. *)
   class virtual ['v] v1 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V1 | `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V1 | `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_unavailable : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_unavailable : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Window management unavailable.
         
@@ -282,7 +283,7 @@ module River_window_manager_v1 = struct
         The server will send no further events on this object. The client should
         destroy this object and all objects created through this interface. *)
     
-    method private virtual on_finished : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_finished : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The server has finished with the window manager.
         
@@ -290,7 +291,7 @@ module River_window_manager_v1 = struct
         object. The client should destroy the object. See
         river_window_manager_v1.destroy for more information. *)
     
-    method private virtual on_manage_start : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_manage_start : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Start a manage sequence.
         
@@ -304,7 +305,7 @@ module River_window_manager_v1 = struct
         See the description of the river_window_manager_v1 interface for a
         complete overview of the manage/render sequence loop. *)
     
-    method private virtual on_render_start : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_render_start : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Start a render sequence.
         
@@ -318,7 +319,7 @@ module River_window_manager_v1 = struct
         See the description of the river_window_manager_v1 interface for a
         complete overview of the manage/render sequence loop. *)
     
-    method private virtual on_session_locked : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_session_locked : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The session has been locked.
         
@@ -327,10 +328,14 @@ module River_window_manager_v1 = struct
         The window manager may wish to restrict which key bindings are available
         while locked or otherwise use this information.
         
+        If the session is currently locked when the river_window_manager_v1
+        object is created, the session_locked event will be sent in the first
+        manage sequence.
+        
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_session_unlocked : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_session_unlocked : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The session has been unlocked.
         
@@ -339,7 +344,7 @@ module River_window_manager_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_window : [> `V1 | `V2 | `V3 | `V4] t -> ([`River_window_v1], 'v, [`Client]) Proxy.t ->
+    method private virtual on_window : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> ([`River_window_v1], 'v, [`Client]) Proxy.t ->
                                        unit
     
     (** New window.
@@ -349,7 +354,7 @@ module River_window_manager_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_output : [> `V1 | `V2 | `V3 | `V4] t -> ([`River_output_v1], 'v, [`Client]) Proxy.t ->
+    method private virtual on_output : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> ([`River_output_v1], 'v, [`Client]) Proxy.t ->
                                        unit
     
     (** New output.
@@ -361,7 +366,8 @@ module River_window_manager_v1 = struct
         events as well as a manage_start event after all other new state has
         been sent by the server. *)
     
-    method private virtual on_seat : [> `V1 | `V2 | `V3 | `V4] t -> ([`River_seat_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_seat : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> ([`River_seat_v1], 'v, [`Client]) Proxy.t ->
+                                     unit
     
     (** New seat.
         
@@ -377,9 +383,9 @@ module River_window_manager_v1 = struct
   (** Handler for a proxy with version >= 2. *)
   class virtual ['v] v2 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_unavailable : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_unavailable : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Window management unavailable.
         
@@ -393,7 +399,7 @@ module River_window_manager_v1 = struct
         The server will send no further events on this object. The client should
         destroy this object and all objects created through this interface. *)
     
-    method private virtual on_finished : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_finished : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The server has finished with the window manager.
         
@@ -401,7 +407,7 @@ module River_window_manager_v1 = struct
         object. The client should destroy the object. See
         river_window_manager_v1.destroy for more information. *)
     
-    method private virtual on_manage_start : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_manage_start : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Start a manage sequence.
         
@@ -415,7 +421,7 @@ module River_window_manager_v1 = struct
         See the description of the river_window_manager_v1 interface for a
         complete overview of the manage/render sequence loop. *)
     
-    method private virtual on_render_start : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_render_start : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Start a render sequence.
         
@@ -429,7 +435,7 @@ module River_window_manager_v1 = struct
         See the description of the river_window_manager_v1 interface for a
         complete overview of the manage/render sequence loop. *)
     
-    method private virtual on_session_locked : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_session_locked : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The session has been locked.
         
@@ -438,10 +444,14 @@ module River_window_manager_v1 = struct
         The window manager may wish to restrict which key bindings are available
         while locked or otherwise use this information.
         
+        If the session is currently locked when the river_window_manager_v1
+        object is created, the session_locked event will be sent in the first
+        manage sequence.
+        
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_session_unlocked : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_session_unlocked : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The session has been unlocked.
         
@@ -450,7 +460,8 @@ module River_window_manager_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_window : [> `V2 | `V3 | `V4] t -> ([`River_window_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_window : [> `V2 | `V3 | `V4 | `V5] t -> ([`River_window_v1], 'v, [`Client]) Proxy.t ->
+                                       unit
     
     (** New window.
         
@@ -459,7 +470,8 @@ module River_window_manager_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_output : [> `V2 | `V3 | `V4] t -> ([`River_output_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_output : [> `V2 | `V3 | `V4 | `V5] t -> ([`River_output_v1], 'v, [`Client]) Proxy.t ->
+                                       unit
     
     (** New output.
         
@@ -470,7 +482,7 @@ module River_window_manager_v1 = struct
         events as well as a manage_start event after all other new state has
         been sent by the server. *)
     
-    method private virtual on_seat : [> `V2 | `V3 | `V4] t -> ([`River_seat_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_seat : [> `V2 | `V3 | `V4 | `V5] t -> ([`River_seat_v1], 'v, [`Client]) Proxy.t -> unit
     
     (** New seat.
         
@@ -486,9 +498,9 @@ module River_window_manager_v1 = struct
   (** Handler for a proxy with version >= 3. *)
   class virtual ['v] v3 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_unavailable : [> `V3 | `V4] t -> unit
+    method private virtual on_unavailable : [> `V3 | `V4 | `V5] t -> unit
     
     (** Window management unavailable.
         
@@ -502,7 +514,7 @@ module River_window_manager_v1 = struct
         The server will send no further events on this object. The client should
         destroy this object and all objects created through this interface. *)
     
-    method private virtual on_finished : [> `V3 | `V4] t -> unit
+    method private virtual on_finished : [> `V3 | `V4 | `V5] t -> unit
     
     (** The server has finished with the window manager.
         
@@ -510,7 +522,7 @@ module River_window_manager_v1 = struct
         object. The client should destroy the object. See
         river_window_manager_v1.destroy for more information. *)
     
-    method private virtual on_manage_start : [> `V3 | `V4] t -> unit
+    method private virtual on_manage_start : [> `V3 | `V4 | `V5] t -> unit
     
     (** Start a manage sequence.
         
@@ -524,7 +536,7 @@ module River_window_manager_v1 = struct
         See the description of the river_window_manager_v1 interface for a
         complete overview of the manage/render sequence loop. *)
     
-    method private virtual on_render_start : [> `V3 | `V4] t -> unit
+    method private virtual on_render_start : [> `V3 | `V4 | `V5] t -> unit
     
     (** Start a render sequence.
         
@@ -538,7 +550,7 @@ module River_window_manager_v1 = struct
         See the description of the river_window_manager_v1 interface for a
         complete overview of the manage/render sequence loop. *)
     
-    method private virtual on_session_locked : [> `V3 | `V4] t -> unit
+    method private virtual on_session_locked : [> `V3 | `V4 | `V5] t -> unit
     
     (** The session has been locked.
         
@@ -547,10 +559,14 @@ module River_window_manager_v1 = struct
         The window manager may wish to restrict which key bindings are available
         while locked or otherwise use this information.
         
+        If the session is currently locked when the river_window_manager_v1
+        object is created, the session_locked event will be sent in the first
+        manage sequence.
+        
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_session_unlocked : [> `V3 | `V4] t -> unit
+    method private virtual on_session_unlocked : [> `V3 | `V4 | `V5] t -> unit
     
     (** The session has been unlocked.
         
@@ -559,7 +575,7 @@ module River_window_manager_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_window : [> `V3 | `V4] t -> ([`River_window_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_window : [> `V3 | `V4 | `V5] t -> ([`River_window_v1], 'v, [`Client]) Proxy.t -> unit
     
     (** New window.
         
@@ -568,7 +584,7 @@ module River_window_manager_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_output : [> `V3 | `V4] t -> ([`River_output_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_output : [> `V3 | `V4 | `V5] t -> ([`River_output_v1], 'v, [`Client]) Proxy.t -> unit
     
     (** New output.
         
@@ -579,7 +595,7 @@ module River_window_manager_v1 = struct
         events as well as a manage_start event after all other new state has
         been sent by the server. *)
     
-    method private virtual on_seat : [> `V3 | `V4] t -> ([`River_seat_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_seat : [> `V3 | `V4 | `V5] t -> ([`River_seat_v1], 'v, [`Client]) Proxy.t -> unit
     
     (** New seat.
         
@@ -595,9 +611,9 @@ module River_window_manager_v1 = struct
   (** Handler for a proxy with version >= 4. *)
   class virtual ['v] v4 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V4] as 'v] _handlers_unsafe
+    inherit [[< `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_unavailable : [> `V4] t -> unit
+    method private virtual on_unavailable : [> `V4 | `V5] t -> unit
     
     (** Window management unavailable.
         
@@ -611,7 +627,7 @@ module River_window_manager_v1 = struct
         The server will send no further events on this object. The client should
         destroy this object and all objects created through this interface. *)
     
-    method private virtual on_finished : [> `V4] t -> unit
+    method private virtual on_finished : [> `V4 | `V5] t -> unit
     
     (** The server has finished with the window manager.
         
@@ -619,7 +635,7 @@ module River_window_manager_v1 = struct
         object. The client should destroy the object. See
         river_window_manager_v1.destroy for more information. *)
     
-    method private virtual on_manage_start : [> `V4] t -> unit
+    method private virtual on_manage_start : [> `V4 | `V5] t -> unit
     
     (** Start a manage sequence.
         
@@ -633,7 +649,7 @@ module River_window_manager_v1 = struct
         See the description of the river_window_manager_v1 interface for a
         complete overview of the manage/render sequence loop. *)
     
-    method private virtual on_render_start : [> `V4] t -> unit
+    method private virtual on_render_start : [> `V4 | `V5] t -> unit
     
     (** Start a render sequence.
         
@@ -647,7 +663,7 @@ module River_window_manager_v1 = struct
         See the description of the river_window_manager_v1 interface for a
         complete overview of the manage/render sequence loop. *)
     
-    method private virtual on_session_locked : [> `V4] t -> unit
+    method private virtual on_session_locked : [> `V4 | `V5] t -> unit
     
     (** The session has been locked.
         
@@ -656,10 +672,14 @@ module River_window_manager_v1 = struct
         The window manager may wish to restrict which key bindings are available
         while locked or otherwise use this information.
         
+        If the session is currently locked when the river_window_manager_v1
+        object is created, the session_locked event will be sent in the first
+        manage sequence.
+        
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_session_unlocked : [> `V4] t -> unit
+    method private virtual on_session_unlocked : [> `V4 | `V5] t -> unit
     
     (** The session has been unlocked.
         
@@ -668,7 +688,7 @@ module River_window_manager_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_window : [> `V4] t -> ([`River_window_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_window : [> `V4 | `V5] t -> ([`River_window_v1], 'v, [`Client]) Proxy.t -> unit
     
     (** New window.
         
@@ -677,7 +697,7 @@ module River_window_manager_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_output : [> `V4] t -> ([`River_output_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_output : [> `V4 | `V5] t -> ([`River_output_v1], 'v, [`Client]) Proxy.t -> unit
     
     (** New output.
         
@@ -688,7 +708,7 @@ module River_window_manager_v1 = struct
         events as well as a manage_start event after all other new state has
         been sent by the server. *)
     
-    method private virtual on_seat : [> `V4] t -> ([`River_seat_v1], 'v, [`Client]) Proxy.t -> unit
+    method private virtual on_seat : [> `V4 | `V5] t -> ([`River_seat_v1], 'v, [`Client]) Proxy.t -> unit
     
     (** New seat.
         
@@ -699,6 +719,119 @@ module River_window_manager_v1 = struct
     
     method min_version = 4l
     method bind_version : [`V4] = `V4
+  end
+  
+  (** Handler for a proxy with version >= 5. *)
+  class virtual ['v] v5 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
+    (**/**)
+    inherit [[< `V5] as 'v] _handlers_unsafe
+    (**/**)
+    method private virtual on_unavailable : [> `V5] t -> unit
+    
+    (** Window management unavailable.
+        
+        This event indicates that window management is not available to the
+        client, perhaps due to another window management client already running.
+        The circumstances causing this event to be sent are compositor policy.
+        
+        If sent, this event is guaranteed to be the first and only event sent by
+        the server.
+        
+        The server will send no further events on this object. The client should
+        destroy this object and all objects created through this interface. *)
+    
+    method private virtual on_finished : [> `V5] t -> unit
+    
+    (** The server has finished with the window manager.
+        
+        This event indicates that the server will send no further events on this
+        object. The client should destroy the object. See
+        river_window_manager_v1.destroy for more information. *)
+    
+    method private virtual on_manage_start : [> `V5] t -> unit
+    
+    (** Start a manage sequence.
+        
+        This event indicates that the server has sent events indicating all
+        state changes since the last manage sequence.
+        
+        In response to this event, the client should make requests modifying
+        window management state as it chooses. Then, the client must make the
+        manage_finish request.
+        
+        See the description of the river_window_manager_v1 interface for a
+        complete overview of the manage/render sequence loop. *)
+    
+    method private virtual on_render_start : [> `V5] t -> unit
+    
+    (** Start a render sequence.
+        
+        This event indicates that the server has sent all
+        river_window_v1.dimensions events necessary.
+        
+        In response to this event, the client should make requests modifying
+        rendering state as it chooses. Then, the client must make the
+        render_finish request.
+        
+        See the description of the river_window_manager_v1 interface for a
+        complete overview of the manage/render sequence loop. *)
+    
+    method private virtual on_session_locked : [> `V5] t -> unit
+    
+    (** The session has been locked.
+        
+        This event indicates that the session has been locked.
+        
+        The window manager may wish to restrict which key bindings are available
+        while locked or otherwise use this information.
+        
+        If the session is currently locked when the river_window_manager_v1
+        object is created, the session_locked event will be sent in the first
+        manage sequence.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_session_unlocked : [> `V5] t -> unit
+    
+    (** The session has been unlocked.
+        
+        This event indicates that the session has been unlocked.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_window : [> `V5] t -> ([`River_window_v1], 'v, [`Client]) Proxy.t -> unit
+    
+    (** New window.
+        
+        A new window has been created.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_output : [> `V5] t -> ([`River_output_v1], 'v, [`Client]) Proxy.t -> unit
+    
+    (** New output.
+        
+        A new logical output has been created, perhaps due to a new physical
+        monitor being plugged in or perhaps due to a change in configuration.
+        
+        This event will be followed by river_output_v1.position and dimensions
+        events as well as a manage_start event after all other new state has
+        been sent by the server. *)
+    
+    method private virtual on_seat : [> `V5] t -> ([`River_seat_v1], 'v, [`Client]) Proxy.t -> unit
+    
+    (** New seat.
+        
+        A new seat has been created.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method min_version = 5l
+    method bind_version : [`V5] = `V5
   end
 end
 
@@ -740,7 +873,8 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let exit_fullscreen (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let exit_fullscreen (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+     =
     let _msg = Proxy.alloc _t ~op:20 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -778,7 +912,7 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let fullscreen (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~(output:([`River_output_v1], _, [`Client]) Proxy.t) =
+  let fullscreen (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) ~(output:([`River_output_v1], _, [`Client]) Proxy.t) =
     let _msg = Proxy.alloc _t ~op:19 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id output);
     Proxy.send _t _msg
@@ -795,7 +929,7 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let inform_not_fullscreen (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) 
+  let inform_not_fullscreen (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
      =
     let _msg = Proxy.alloc _t ~op:18 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
@@ -812,7 +946,8 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let inform_fullscreen (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let inform_fullscreen (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+     =
     let _msg = Proxy.alloc _t ~op:17 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -824,7 +959,8 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let inform_unmaximized (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let inform_unmaximized (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+     =
     let _msg = Proxy.alloc _t ~op:16 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -839,7 +975,8 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let inform_maximized (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let inform_maximized (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+     =
     let _msg = Proxy.alloc _t ~op:15 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -859,7 +996,8 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let set_capabilities (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~caps =
+  let set_capabilities (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+    ~caps =
     let _msg = Proxy.alloc _t ~op:14 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Imports.River_window_v1.Capabilities.to_int32 caps);
     Proxy.send _t _msg
@@ -872,7 +1010,8 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let inform_resize_end (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let inform_resize_end (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+     =
     let _msg = Proxy.alloc _t ~op:13 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -887,7 +1026,8 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let inform_resize_start (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let inform_resize_start (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+     =
     let _msg = Proxy.alloc _t ~op:12 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -899,7 +1039,8 @@ module River_window_v1 = struct
       
       Providing a wl_surface which already has a role or already has a buffer
       attached or committed is a protocol error. *)
-  let get_decoration_below (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) (id:([`River_decoration_v1], 'v, [`Client]) #Proxy.Handler.t) ~(surface:([`Wl_surface], _, [`Client]) Proxy.t) =
+  let get_decoration_below (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+    (id:([`River_decoration_v1], 'v, [`Client]) #Proxy.Handler.t) ~(surface:([`Wl_surface], _, [`Client]) Proxy.t) =
     let __id = Proxy.spawn _t id in
     let _msg = Proxy.alloc _t ~op:11 ~ints:2 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id __id);
@@ -915,7 +1056,8 @@ module River_window_v1 = struct
       
       Providing a wl_surface which already has a role or already has a buffer
       attached or committed is a protocol error. *)
-  let get_decoration_above (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) (id:([`River_decoration_v1], 'v, [`Client]) #Proxy.Handler.t) ~(surface:([`Wl_surface], _, [`Client]) Proxy.t) =
+  let get_decoration_above (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+    (id:([`River_decoration_v1], 'v, [`Client]) #Proxy.Handler.t) ~(surface:([`Wl_surface], _, [`Client]) Proxy.t) =
     let __id = Proxy.spawn _t id in
     let _msg = Proxy.alloc _t ~op:10 ~ints:2 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id __id);
@@ -938,7 +1080,7 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let set_tiled (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~edges =
+  let set_tiled (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) ~edges =
     let _msg = Proxy.alloc _t ~op:9 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Imports.River_window_v1.Edges.to_int32 edges);
     Proxy.send _t _msg
@@ -976,7 +1118,7 @@ module River_window_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let set_borders (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~edges ~width ~r ~g ~b ~a =
+  let set_borders (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) ~edges ~width ~r ~g ~b ~a =
     let _msg = Proxy.alloc _t ~op:8 ~ints:6 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Imports.River_window_v1.Edges.to_int32 edges);
     Msg.add_int _msg width;
@@ -996,7 +1138,7 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let use_ssd (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let use_ssd (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:7 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -1010,7 +1152,7 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let use_csd (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let use_csd (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:6 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -1025,7 +1167,7 @@ module River_window_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let show (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let show (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:5 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -1039,7 +1181,7 @@ module River_window_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let hide (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let hide (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:4 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -1070,7 +1212,8 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let propose_dimensions (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~width ~height =
+  let propose_dimensions (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+    ~width ~height =
     let _msg = Proxy.alloc _t ~op:3 ~ints:2 ~strings:[] ~arrays:[] in
     Msg.add_int _msg width;
     Msg.add_int _msg height;
@@ -1082,7 +1225,7 @@ module River_window_v1 = struct
       
       It is a protocol error to make this request more than once for a single
       window. *)
-  let get_node (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) (id:([`River_node_v1], 'v, [`Client]) #Proxy.Handler.t) =
+  let get_node (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) (id:([`River_node_v1], 'v, [`Client]) #Proxy.Handler.t) =
     let __id = Proxy.spawn _t id in
     let _msg = Proxy.alloc _t ~op:2 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id __id);
@@ -1100,7 +1243,7 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let close (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let close (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:1 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -1112,7 +1255,7 @@ module River_window_v1 = struct
       This request should be made after the river_window_v1.closed event or
       river_window_manager_v1.finished is received to complete destruction of
       the window. *)
-  let destroy (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let destroy (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:0 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg;
     Proxy.shutdown_send _t
@@ -1136,7 +1279,7 @@ module River_window_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let set_clip_box (_t:([< `V2 | `V3 | `V4] as 'v) t) ~x ~y ~width ~height =
+  let set_clip_box (_t:([< `V2 | `V3 | `V4 | `V5] as 'v) t) ~x ~y ~width ~height =
     let _msg = Proxy.alloc _t ~op:21 ~ints:4 ~strings:[] ~arrays:[] in
     Msg.add_int _msg x;
     Msg.add_int _msg y;
@@ -1168,7 +1311,7 @@ module River_window_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let set_content_clip_box (_t:([< `V3 | `V4] as 'v) t) ~x ~y ~width ~height =
+  let set_content_clip_box (_t:([< `V3 | `V4 | `V5] as 'v) t) ~x ~y ~width ~height =
     let _msg = Proxy.alloc _t ~op:22 ~ints:4 ~strings:[] ~arrays:[] in
     Msg.add_int _msg x;
     Msg.add_int _msg y;
@@ -1195,17 +1338,20 @@ module River_window_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let set_dimension_bounds (_t:([< `V4] as 'v) t) ~max_width ~max_height =
+  let set_dimension_bounds (_t:([< `V4 | `V5] as 'v) t) ~max_width ~max_height =
     let _msg = Proxy.alloc _t ~op:23 ~ints:2 ~strings:[] ~arrays:[] in
     Msg.add_int _msg max_width;
     Msg.add_int _msg max_height;
     Proxy.send _t _msg
   
+  
+  (** {2 Version 5} *)
+  
   (**/**)
   class virtual ['v] _handlers_unsafe = object (_self : (_, 'v, _) #Proxy.Handler.t)
     method user_data = S.No_data
     method metadata = (module River_window_management_v1_proto.River_window_v1)
-    method max_version = 4l
+    method max_version = 5l
     
     method private virtual on_closed : [> ] t -> unit
     
@@ -1247,6 +1393,8 @@ module River_window_v1 = struct
     method private virtual on_presentation_hint : [> ] t -> hint:Imports.River_output_v1.Presentation_mode.t -> unit
     
     method private virtual on_identifier : [> ] t -> identifier:string -> unit
+    
+    method private virtual on_capture_sessions : [> ] t -> count:int32 -> unit
     
     
     method dispatch (_proxy : 'v t) _msg =
@@ -1333,6 +1481,9 @@ module River_window_v1 = struct
       | 17 ->
         let identifier = Msg.get_string _msg in
         _self#on_identifier _proxy ~identifier
+      | 18 ->
+        let count = Msg.get_int _msg in
+        _self#on_capture_sessions _proxy ~count
       | _ -> assert false
   end
   (**/**)
@@ -1345,9 +1496,9 @@ module River_window_v1 = struct
   (** Handler for a proxy with version >= 1. *)
   class virtual ['v] v1 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V1 | `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V1 | `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_closed : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_closed : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window has been closed.
         
@@ -1362,8 +1513,8 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_dimensions_hint : [> `V1 | `V2 | `V3 | `V4] t -> min_width:int32 -> min_height:int32 ->
-                                                max_width:int32 -> max_height:int32 -> unit
+    method private virtual on_dimensions_hint : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> min_width:int32 ->
+                                                min_height:int32 -> max_width:int32 -> max_height:int32 -> unit
     
     (** The window's preferred min/max dimensions.
         
@@ -1375,13 +1526,13 @@ module River_window_v1 = struct
         to 0. A value of 0 indicates that the window has no preference for that
         value.
         
-        The min_width/min_height must be strictly less than or equal to the
-        max_width/max_height.
+        If the max_width/max_height is greater than 0, the min_width/min_height
+        must be strictly less than or equal to the max_width/max_height.
         
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_dimensions : [> `V1 | `V2 | `V3 | `V4] t -> width:int32 -> height:int32 -> unit
+    method private virtual on_dimensions : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> width:int32 -> height:int32 -> unit
     
     (** Window dimensions.
         
@@ -1403,7 +1554,7 @@ module River_window_v1 = struct
         The window will not be displayed until the first dimensions event is
         received and the render sequence is finished. *)
     
-    method private virtual on_app_id : [> `V1 | `V2 | `V3 | `V4] t -> app_id:string option -> unit
+    method private virtual on_app_id : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> app_id:string option -> unit
     
     (** The window set an application ID.
         
@@ -1416,7 +1567,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_title : [> `V1 | `V2 | `V3 | `V4] t -> title:string option -> unit
+    method private virtual on_title : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> title:string option -> unit
     
     (** The window set a title.
         
@@ -1429,7 +1580,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_parent : [> `V1 | `V2 | `V3 | `V4] t -> parent:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t option ->
+    method private virtual on_parent : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> parent:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t option ->
                                        unit
     
     (** The window set a parent.
@@ -1448,7 +1599,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_decoration_hint : [> `V1 | `V2 | `V3 | `V4] t -> hint:Imports.River_window_v1.Decoration_hint.t ->
+    method private virtual on_decoration_hint : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> hint:Imports.River_window_v1.Decoration_hint.t ->
                                                 unit
     
     (** Supported/preferred decoration style.
@@ -1462,7 +1613,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_move_requested : [> `V1 | `V2 | `V3 | `V4] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_move_requested : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
                                                        unit
     
     (** Window requested interactive pointer move.
@@ -1481,7 +1632,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_resize_requested : [> `V1 | `V2 | `V3 | `V4] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_resize_requested : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
                                                          edges:Imports.River_window_v1.Edges.t -> unit
     
     (** Window requested interactive pointer resize.
@@ -1504,7 +1655,8 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_show_window_menu_requested : [> `V1 | `V2 | `V3 | `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_show_window_menu_requested : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> x:int32 -> y:int32 ->
+                                                           unit
     
     (** Window requested that the window menu be shown.
         
@@ -1523,7 +1675,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_maximize_requested : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_maximize_requested : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to be maximized.
         
@@ -1536,7 +1688,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_unmaximize_requested : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_unmaximize_requested : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to be unmaximized.
         
@@ -1549,7 +1701,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_fullscreen_requested : [> `V1 | `V2 | `V3 | `V4] t -> output:([`River_output_v1], [> Imports.River_output_v1.versions], [`Client]) Proxy.t option ->
+    method private virtual on_fullscreen_requested : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> output:([`River_output_v1], [> Imports.River_output_v1.versions], [`Client]) Proxy.t option ->
                                                      unit
     
     (** The window requested to be fullscreen.
@@ -1566,7 +1718,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_exit_fullscreen_requested : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_exit_fullscreen_requested : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to exit fullscreen.
         
@@ -1579,7 +1731,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_minimize_requested : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_minimize_requested : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to be minimized.
         
@@ -1592,7 +1744,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_unreliable_pid : [> `V2 | `V3 | `V4] t -> unreliable_pid:int32 -> unit
+    method private virtual on_unreliable_pid : [> `V2 | `V3 | `V4 | `V5] t -> unreliable_pid:int32 -> unit
     
     (** Unreliable PID of the window's creator.
         
@@ -1607,7 +1759,8 @@ module River_window_v1 = struct
         This event is sent once when the river_window_v1 is created and never
         sent again. *)
     
-    method private virtual on_presentation_hint : [> `V4] t -> hint:Imports.River_output_v1.Presentation_mode.t -> unit
+    method private virtual on_presentation_hint : [> `V4 | `V5] t -> hint:Imports.River_output_v1.Presentation_mode.t ->
+                                                  unit
     
     (** Presentation hint set by the window.
         
@@ -1616,7 +1769,7 @@ module River_window_v1 = struct
         This event will be followed by a render_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_identifier : [> `V4] t -> identifier:string -> unit
+    method private virtual on_identifier : [> `V4 | `V5] t -> identifier:string -> unit
     
     (** Unique window identifier.
         
@@ -1638,6 +1791,19 @@ module River_window_v1 = struct
         
         This event is sent once when the river_window_v1 is created and never
         sent again. *)
+    
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Window screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the window.
+        
+        This event is sent once when the river_window_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
     
     method min_version = 1l
   end
@@ -1645,9 +1811,9 @@ module River_window_v1 = struct
   (** Handler for a proxy with version >= 2. *)
   class virtual ['v] v2 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_closed : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_closed : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window has been closed.
         
@@ -1662,7 +1828,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_dimensions_hint : [> `V2 | `V3 | `V4] t -> min_width:int32 -> min_height:int32 ->
+    method private virtual on_dimensions_hint : [> `V2 | `V3 | `V4 | `V5] t -> min_width:int32 -> min_height:int32 ->
                                                 max_width:int32 -> max_height:int32 -> unit
     
     (** The window's preferred min/max dimensions.
@@ -1675,13 +1841,13 @@ module River_window_v1 = struct
         to 0. A value of 0 indicates that the window has no preference for that
         value.
         
-        The min_width/min_height must be strictly less than or equal to the
-        max_width/max_height.
+        If the max_width/max_height is greater than 0, the min_width/min_height
+        must be strictly less than or equal to the max_width/max_height.
         
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_dimensions : [> `V2 | `V3 | `V4] t -> width:int32 -> height:int32 -> unit
+    method private virtual on_dimensions : [> `V2 | `V3 | `V4 | `V5] t -> width:int32 -> height:int32 -> unit
     
     (** Window dimensions.
         
@@ -1703,7 +1869,7 @@ module River_window_v1 = struct
         The window will not be displayed until the first dimensions event is
         received and the render sequence is finished. *)
     
-    method private virtual on_app_id : [> `V2 | `V3 | `V4] t -> app_id:string option -> unit
+    method private virtual on_app_id : [> `V2 | `V3 | `V4 | `V5] t -> app_id:string option -> unit
     
     (** The window set an application ID.
         
@@ -1716,7 +1882,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_title : [> `V2 | `V3 | `V4] t -> title:string option -> unit
+    method private virtual on_title : [> `V2 | `V3 | `V4 | `V5] t -> title:string option -> unit
     
     (** The window set a title.
         
@@ -1729,7 +1895,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_parent : [> `V2 | `V3 | `V4] t -> parent:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t option ->
+    method private virtual on_parent : [> `V2 | `V3 | `V4 | `V5] t -> parent:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t option ->
                                        unit
     
     (** The window set a parent.
@@ -1748,7 +1914,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_decoration_hint : [> `V2 | `V3 | `V4] t -> hint:Imports.River_window_v1.Decoration_hint.t ->
+    method private virtual on_decoration_hint : [> `V2 | `V3 | `V4 | `V5] t -> hint:Imports.River_window_v1.Decoration_hint.t ->
                                                 unit
     
     (** Supported/preferred decoration style.
@@ -1762,7 +1928,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_move_requested : [> `V2 | `V3 | `V4] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_move_requested : [> `V2 | `V3 | `V4 | `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
                                                        unit
     
     (** Window requested interactive pointer move.
@@ -1781,7 +1947,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_resize_requested : [> `V2 | `V3 | `V4] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_resize_requested : [> `V2 | `V3 | `V4 | `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
                                                          edges:Imports.River_window_v1.Edges.t -> unit
     
     (** Window requested interactive pointer resize.
@@ -1804,7 +1970,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_show_window_menu_requested : [> `V2 | `V3 | `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_show_window_menu_requested : [> `V2 | `V3 | `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** Window requested that the window menu be shown.
         
@@ -1823,7 +1989,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_maximize_requested : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_maximize_requested : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to be maximized.
         
@@ -1836,7 +2002,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_unmaximize_requested : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_unmaximize_requested : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to be unmaximized.
         
@@ -1849,7 +2015,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_fullscreen_requested : [> `V2 | `V3 | `V4] t -> output:([`River_output_v1], [> Imports.River_output_v1.versions], [`Client]) Proxy.t option ->
+    method private virtual on_fullscreen_requested : [> `V2 | `V3 | `V4 | `V5] t -> output:([`River_output_v1], [> Imports.River_output_v1.versions], [`Client]) Proxy.t option ->
                                                      unit
     
     (** The window requested to be fullscreen.
@@ -1866,7 +2032,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_exit_fullscreen_requested : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_exit_fullscreen_requested : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to exit fullscreen.
         
@@ -1879,7 +2045,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_minimize_requested : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_minimize_requested : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to be minimized.
         
@@ -1892,7 +2058,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_unreliable_pid : [> `V2 | `V3 | `V4] t -> unreliable_pid:int32 -> unit
+    method private virtual on_unreliable_pid : [> `V2 | `V3 | `V4 | `V5] t -> unreliable_pid:int32 -> unit
     
     (** Unreliable PID of the window's creator.
         
@@ -1907,7 +2073,8 @@ module River_window_v1 = struct
         This event is sent once when the river_window_v1 is created and never
         sent again. *)
     
-    method private virtual on_presentation_hint : [> `V4] t -> hint:Imports.River_output_v1.Presentation_mode.t -> unit
+    method private virtual on_presentation_hint : [> `V4 | `V5] t -> hint:Imports.River_output_v1.Presentation_mode.t ->
+                                                  unit
     
     (** Presentation hint set by the window.
         
@@ -1916,7 +2083,7 @@ module River_window_v1 = struct
         This event will be followed by a render_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_identifier : [> `V4] t -> identifier:string -> unit
+    method private virtual on_identifier : [> `V4 | `V5] t -> identifier:string -> unit
     
     (** Unique window identifier.
         
@@ -1938,6 +2105,19 @@ module River_window_v1 = struct
         
         This event is sent once when the river_window_v1 is created and never
         sent again. *)
+    
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Window screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the window.
+        
+        This event is sent once when the river_window_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
     
     method min_version = 2l
   end
@@ -1945,9 +2125,9 @@ module River_window_v1 = struct
   (** Handler for a proxy with version >= 3. *)
   class virtual ['v] v3 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_closed : [> `V3 | `V4] t -> unit
+    method private virtual on_closed : [> `V3 | `V4 | `V5] t -> unit
     
     (** The window has been closed.
         
@@ -1962,7 +2142,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_dimensions_hint : [> `V3 | `V4] t -> min_width:int32 -> min_height:int32 ->
+    method private virtual on_dimensions_hint : [> `V3 | `V4 | `V5] t -> min_width:int32 -> min_height:int32 ->
                                                 max_width:int32 -> max_height:int32 -> unit
     
     (** The window's preferred min/max dimensions.
@@ -1975,13 +2155,13 @@ module River_window_v1 = struct
         to 0. A value of 0 indicates that the window has no preference for that
         value.
         
-        The min_width/min_height must be strictly less than or equal to the
-        max_width/max_height.
+        If the max_width/max_height is greater than 0, the min_width/min_height
+        must be strictly less than or equal to the max_width/max_height.
         
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_dimensions : [> `V3 | `V4] t -> width:int32 -> height:int32 -> unit
+    method private virtual on_dimensions : [> `V3 | `V4 | `V5] t -> width:int32 -> height:int32 -> unit
     
     (** Window dimensions.
         
@@ -2003,7 +2183,7 @@ module River_window_v1 = struct
         The window will not be displayed until the first dimensions event is
         received and the render sequence is finished. *)
     
-    method private virtual on_app_id : [> `V3 | `V4] t -> app_id:string option -> unit
+    method private virtual on_app_id : [> `V3 | `V4 | `V5] t -> app_id:string option -> unit
     
     (** The window set an application ID.
         
@@ -2016,7 +2196,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_title : [> `V3 | `V4] t -> title:string option -> unit
+    method private virtual on_title : [> `V3 | `V4 | `V5] t -> title:string option -> unit
     
     (** The window set a title.
         
@@ -2029,7 +2209,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_parent : [> `V3 | `V4] t -> parent:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t option ->
+    method private virtual on_parent : [> `V3 | `V4 | `V5] t -> parent:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t option ->
                                        unit
     
     (** The window set a parent.
@@ -2048,7 +2228,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_decoration_hint : [> `V3 | `V4] t -> hint:Imports.River_window_v1.Decoration_hint.t ->
+    method private virtual on_decoration_hint : [> `V3 | `V4 | `V5] t -> hint:Imports.River_window_v1.Decoration_hint.t ->
                                                 unit
     
     (** Supported/preferred decoration style.
@@ -2062,7 +2242,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_move_requested : [> `V3 | `V4] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_move_requested : [> `V3 | `V4 | `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
                                                        unit
     
     (** Window requested interactive pointer move.
@@ -2081,7 +2261,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_resize_requested : [> `V3 | `V4] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_resize_requested : [> `V3 | `V4 | `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
                                                          edges:Imports.River_window_v1.Edges.t -> unit
     
     (** Window requested interactive pointer resize.
@@ -2104,7 +2284,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_show_window_menu_requested : [> `V3 | `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_show_window_menu_requested : [> `V3 | `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** Window requested that the window menu be shown.
         
@@ -2123,7 +2303,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_maximize_requested : [> `V3 | `V4] t -> unit
+    method private virtual on_maximize_requested : [> `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to be maximized.
         
@@ -2136,7 +2316,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_unmaximize_requested : [> `V3 | `V4] t -> unit
+    method private virtual on_unmaximize_requested : [> `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to be unmaximized.
         
@@ -2149,7 +2329,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_fullscreen_requested : [> `V3 | `V4] t -> output:([`River_output_v1], [> Imports.River_output_v1.versions], [`Client]) Proxy.t option ->
+    method private virtual on_fullscreen_requested : [> `V3 | `V4 | `V5] t -> output:([`River_output_v1], [> Imports.River_output_v1.versions], [`Client]) Proxy.t option ->
                                                      unit
     
     (** The window requested to be fullscreen.
@@ -2166,7 +2346,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_exit_fullscreen_requested : [> `V3 | `V4] t -> unit
+    method private virtual on_exit_fullscreen_requested : [> `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to exit fullscreen.
         
@@ -2179,7 +2359,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_minimize_requested : [> `V3 | `V4] t -> unit
+    method private virtual on_minimize_requested : [> `V3 | `V4 | `V5] t -> unit
     
     (** The window requested to be minimized.
         
@@ -2192,7 +2372,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_unreliable_pid : [> `V3 | `V4] t -> unreliable_pid:int32 -> unit
+    method private virtual on_unreliable_pid : [> `V3 | `V4 | `V5] t -> unreliable_pid:int32 -> unit
     
     (** Unreliable PID of the window's creator.
         
@@ -2207,7 +2387,8 @@ module River_window_v1 = struct
         This event is sent once when the river_window_v1 is created and never
         sent again. *)
     
-    method private virtual on_presentation_hint : [> `V4] t -> hint:Imports.River_output_v1.Presentation_mode.t -> unit
+    method private virtual on_presentation_hint : [> `V4 | `V5] t -> hint:Imports.River_output_v1.Presentation_mode.t ->
+                                                  unit
     
     (** Presentation hint set by the window.
         
@@ -2216,7 +2397,7 @@ module River_window_v1 = struct
         This event will be followed by a render_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_identifier : [> `V4] t -> identifier:string -> unit
+    method private virtual on_identifier : [> `V4 | `V5] t -> identifier:string -> unit
     
     (** Unique window identifier.
         
@@ -2239,15 +2420,28 @@ module River_window_v1 = struct
         This event is sent once when the river_window_v1 is created and never
         sent again. *)
     
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Window screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the window.
+        
+        This event is sent once when the river_window_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
     method min_version = 3l
   end
   
   (** Handler for a proxy with version >= 4. *)
   class virtual ['v] v4 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V4] as 'v] _handlers_unsafe
+    inherit [[< `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_closed : [> `V4] t -> unit
+    method private virtual on_closed : [> `V4 | `V5] t -> unit
     
     (** The window has been closed.
         
@@ -2262,7 +2456,321 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_dimensions_hint : [> `V4] t -> min_width:int32 -> min_height:int32 -> max_width:int32 ->
+    method private virtual on_dimensions_hint : [> `V4 | `V5] t -> min_width:int32 -> min_height:int32 ->
+                                                max_width:int32 -> max_height:int32 -> unit
+    
+    (** The window's preferred min/max dimensions.
+        
+        This event informs the window manager of the window's preferred min/max
+        dimensions. These preferences are a hint, and the window manager is free
+        to propose dimensions outside of these bounds.
+        
+        All min/max width/height values must be strictly greater than or equal
+        to 0. A value of 0 indicates that the window has no preference for that
+        value.
+        
+        If the max_width/max_height is greater than 0, the min_width/min_height
+        must be strictly less than or equal to the max_width/max_height.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_dimensions : [> `V4 | `V5] t -> width:int32 -> height:int32 -> unit
+    
+    (** Window dimensions.
+        
+        This event indicates the dimensions of the window in the compositor's
+        logical coordinate space. The width and height must be strictly greater
+        than zero.
+        
+        Note that the dimensions of a river_window_v1 refer to the dimensions of
+        the window content and are unaffected by the presence of borders or
+        decoration surfaces.
+        
+        This event is sent as part of a render sequence before the render_start
+        event.
+        
+        It may be sent due to a propose_dimensions or fullscreen request in a
+        previous manage sequence or because a window independently decides to
+        change its dimensions.
+        
+        The window will not be displayed until the first dimensions event is
+        received and the render sequence is finished. *)
+    
+    method private virtual on_app_id : [> `V4 | `V5] t -> app_id:string option -> unit
+    
+    (** The window set an application ID.
+        
+        The window set an application ID.
+        
+        The app_id argument will be null if the window has never set an
+        application ID or if the window cleared its application ID. (Xwayland
+        windows may do this for example, though xdg-toplevels may not.)
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_title : [> `V4 | `V5] t -> title:string option -> unit
+    
+    (** The window set a title.
+        
+        The window set a title.
+        
+        The title argument will be null if the window has never set a title or
+        if the window cleared its title. (Xwayland windows may do this for
+        example, though xdg-toplevels may not.)
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_parent : [> `V4 | `V5] t -> parent:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t option ->
+                                       unit
+    
+    (** The window set a parent.
+        
+        The window set a parent window. If this event is never received or if
+        the parent argument is null then the window has no parent.
+        
+        A surface with a parent set might be a dialog, file picker, or similar
+        for the parent window.
+        
+        Child windows should generally be rendered directly above their parent.
+        
+        The compositor must guarantee that there are no loops in the window
+        tree: a parent must not be the descendant of one of its children.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_decoration_hint : [> `V4 | `V5] t -> hint:Imports.River_window_v1.Decoration_hint.t ->
+                                                unit
+    
+    (** Supported/preferred decoration style.
+        
+        Information from the window about the supported and preferred client
+        side/server side decoration options.
+        
+        This event may be sent multiple times over the lifetime of the window if
+        the window changes its preferences.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_pointer_move_requested : [> `V4 | `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+                                                       unit
+    
+    (** Window requested interactive pointer move.
+        
+        This event informs the window manager that the window has requested to
+        be interactively moved using the pointer. The seat argument indicates the
+        seat for the move.
+        
+        The xdg-shell protocol for example allows windows to request that an
+        interactive move be started, perhaps when a client-side rendered
+        titlebar is dragged.
+        
+        The window manager may use the river_seat_v1.op_start_pointer request to
+        interactively move the window or ignore this event entirely.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_pointer_resize_requested : [> `V4 | `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+                                                         edges:Imports.River_window_v1.Edges.t -> unit
+    
+    (** Window requested interactive pointer resize.
+        
+        This event informs the window manager that the window has requested to
+        be interactively resized using the pointer. The seat argument indicates
+        the seat for the resize.
+        
+        The edges argument indicates which edges the window has requested to be
+        resized from. The edges argument will never be none and will never have
+        both top and bottom or both left and right edges set.
+        
+        The xdg-shell protocol for example allows windows to request that an
+        interactive resize be started, perhaps when the corner of client-side
+        rendered decorations is dragged.
+        
+        The window manager may use the river_seat_v1.op_start_pointer request to
+        interactively resize the window or ignore this event entirely.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_show_window_menu_requested : [> `V4 | `V5] t -> x:int32 -> y:int32 -> unit
+    
+    (** Window requested that the window menu be shown.
+        
+        The xdg-shell protocol for example allows windows to request that a
+        window menu be shown, for example when the user right clicks on client
+        side window decorations.
+        
+        A window menu might include options to maximize or minimize the window.
+        
+        The window manager is free to ignore this request and decide what the
+        window menu contains if it does choose to show one.
+        
+        The x and y arguments indicate where the window requested that the
+        window menu be shown.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_maximize_requested : [> `V4 | `V5] t -> unit
+    
+    (** The window requested to be maximized.
+        
+        The xdg-shell protocol for example allows windows to request to be
+        maximized.
+        
+        The window manager is free to honor this request using
+        river_window_v1.inform_maximized or ignore it.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_unmaximize_requested : [> `V4 | `V5] t -> unit
+    
+    (** The window requested to be unmaximized.
+        
+        The xdg-shell protocol for example allows windows to request to be
+        unmaximized.
+        
+        The window manager is free to honor this request using
+        river_window_v1.inform_unmaximized or ignore it.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_fullscreen_requested : [> `V4 | `V5] t -> output:([`River_output_v1], [> Imports.River_output_v1.versions], [`Client]) Proxy.t option ->
+                                                     unit
+    
+    (** The window requested to be fullscreen.
+        
+        The xdg-shell protocol for example allows windows to request that they
+        be made fullscreen and allows them to provide an optional output hint.
+        
+        If the output argument is null, the window has no preference and the
+        window manager should choose an output.
+        
+        The window manager is free to honor this request using
+        river_window_v1.fullscreen or ignore it.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_exit_fullscreen_requested : [> `V4 | `V5] t -> unit
+    
+    (** The window requested to exit fullscreen.
+        
+        The xdg-shell protocol for example allows windows to request to exit
+        fullscreen.
+        
+        The window manager is free to honor this request using
+        river_window_v1.exit_fullscreen or ignore it.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_minimize_requested : [> `V4 | `V5] t -> unit
+    
+    (** The window requested to be minimized.
+        
+        The xdg-shell protocol for example allows windows to request to be
+        minimized.
+        
+        The window manager is free to ignore this request, hide the window, or
+        do whatever else it chooses.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_unreliable_pid : [> `V4 | `V5] t -> unreliable_pid:int32 -> unit
+    
+    (** Unreliable PID of the window's creator.
+        
+        This event gives an unreliable PID of the process that created the
+        window. Obtaining this information is inherently racy due to PID reuse.
+        Therefore, this PID must not be used for anything security sensitive.
+        
+        Note also that a single process may create multiple windows, so there is
+        not necessarily a 1-to-1 mapping from PID to window. Multiple windows
+        may have the same PID.
+        
+        This event is sent once when the river_window_v1 is created and never
+        sent again. *)
+    
+    method private virtual on_presentation_hint : [> `V4 | `V5] t -> hint:Imports.River_output_v1.Presentation_mode.t ->
+                                                  unit
+    
+    (** Presentation hint set by the window.
+        
+        This event communicates the window's preferred presentation mode.
+        
+        This event will be followed by a render_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_identifier : [> `V4 | `V5] t -> identifier:string -> unit
+    
+    (** Unique window identifier.
+        
+        The identifier is a string that contains up to 32 printable ASCII bytes.
+        The identifier must not be an empty string.
+        
+        It is compositor policy how the identifier is generated, but the following
+        properties must be upheld:
+        
+        1. The identifier must uniquely identify the window. Two windows must not
+        share the same identifier.
+        
+        2. The identifier must not be reused. This avoids races around window
+        creation/destruction when identifiers are used in out-of-band IPC.
+        
+        If the compositor implements the ext-foreign-toplevel-list-v1 protocol,
+        the river_window_v1.identifier event must match the corresponding
+        ext_foreign_toplevel_handle_v1.identifier event.
+        
+        This event is sent once when the river_window_v1 is created and never
+        sent again. *)
+    
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Window screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the window.
+        
+        This event is sent once when the river_window_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method min_version = 4l
+  end
+  
+  (** Handler for a proxy with version >= 5. *)
+  class virtual ['v] v5 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
+    (**/**)
+    inherit [[< `V5] as 'v] _handlers_unsafe
+    (**/**)
+    method private virtual on_closed : [> `V5] t -> unit
+    
+    (** The window has been closed.
+        
+        The window has been closed by the server, perhaps due to an
+        xdg_toplevel.close request or similar.
+        
+        The server will send no further events on this object and ignore any
+        request other than river_window_v1.destroy made after this event is
+        sent. The client should destroy this object with the
+        river_window_v1.destroy request to free up resources.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_dimensions_hint : [> `V5] t -> min_width:int32 -> min_height:int32 -> max_width:int32 ->
                                                 max_height:int32 -> unit
     
     (** The window's preferred min/max dimensions.
@@ -2275,13 +2783,13 @@ module River_window_v1 = struct
         to 0. A value of 0 indicates that the window has no preference for that
         value.
         
-        The min_width/min_height must be strictly less than or equal to the
-        max_width/max_height.
+        If the max_width/max_height is greater than 0, the min_width/min_height
+        must be strictly less than or equal to the max_width/max_height.
         
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_dimensions : [> `V4] t -> width:int32 -> height:int32 -> unit
+    method private virtual on_dimensions : [> `V5] t -> width:int32 -> height:int32 -> unit
     
     (** Window dimensions.
         
@@ -2303,7 +2811,7 @@ module River_window_v1 = struct
         The window will not be displayed until the first dimensions event is
         received and the render sequence is finished. *)
     
-    method private virtual on_app_id : [> `V4] t -> app_id:string option -> unit
+    method private virtual on_app_id : [> `V5] t -> app_id:string option -> unit
     
     (** The window set an application ID.
         
@@ -2316,7 +2824,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_title : [> `V4] t -> title:string option -> unit
+    method private virtual on_title : [> `V5] t -> title:string option -> unit
     
     (** The window set a title.
         
@@ -2329,7 +2837,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_parent : [> `V4] t -> parent:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t option ->
+    method private virtual on_parent : [> `V5] t -> parent:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t option ->
                                        unit
     
     (** The window set a parent.
@@ -2348,7 +2856,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_decoration_hint : [> `V4] t -> hint:Imports.River_window_v1.Decoration_hint.t -> unit
+    method private virtual on_decoration_hint : [> `V5] t -> hint:Imports.River_window_v1.Decoration_hint.t -> unit
     
     (** Supported/preferred decoration style.
         
@@ -2361,7 +2869,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_move_requested : [> `V4] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_move_requested : [> `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
                                                        unit
     
     (** Window requested interactive pointer move.
@@ -2380,7 +2888,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_resize_requested : [> `V4] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_resize_requested : [> `V5] t -> seat:([`River_seat_v1], [> Imports.River_seat_v1.versions], [`Client]) Proxy.t ->
                                                          edges:Imports.River_window_v1.Edges.t -> unit
     
     (** Window requested interactive pointer resize.
@@ -2403,7 +2911,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_show_window_menu_requested : [> `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_show_window_menu_requested : [> `V5] t -> x:int32 -> y:int32 -> unit
     
     (** Window requested that the window menu be shown.
         
@@ -2422,7 +2930,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_maximize_requested : [> `V4] t -> unit
+    method private virtual on_maximize_requested : [> `V5] t -> unit
     
     (** The window requested to be maximized.
         
@@ -2435,7 +2943,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_unmaximize_requested : [> `V4] t -> unit
+    method private virtual on_unmaximize_requested : [> `V5] t -> unit
     
     (** The window requested to be unmaximized.
         
@@ -2448,7 +2956,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_fullscreen_requested : [> `V4] t -> output:([`River_output_v1], [> Imports.River_output_v1.versions], [`Client]) Proxy.t option ->
+    method private virtual on_fullscreen_requested : [> `V5] t -> output:([`River_output_v1], [> Imports.River_output_v1.versions], [`Client]) Proxy.t option ->
                                                      unit
     
     (** The window requested to be fullscreen.
@@ -2465,7 +2973,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_exit_fullscreen_requested : [> `V4] t -> unit
+    method private virtual on_exit_fullscreen_requested : [> `V5] t -> unit
     
     (** The window requested to exit fullscreen.
         
@@ -2478,7 +2986,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_minimize_requested : [> `V4] t -> unit
+    method private virtual on_minimize_requested : [> `V5] t -> unit
     
     (** The window requested to be minimized.
         
@@ -2491,7 +2999,7 @@ module River_window_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_unreliable_pid : [> `V4] t -> unreliable_pid:int32 -> unit
+    method private virtual on_unreliable_pid : [> `V5] t -> unreliable_pid:int32 -> unit
     
     (** Unreliable PID of the window's creator.
         
@@ -2506,7 +3014,7 @@ module River_window_v1 = struct
         This event is sent once when the river_window_v1 is created and never
         sent again. *)
     
-    method private virtual on_presentation_hint : [> `V4] t -> hint:Imports.River_output_v1.Presentation_mode.t -> unit
+    method private virtual on_presentation_hint : [> `V5] t -> hint:Imports.River_output_v1.Presentation_mode.t -> unit
     
     (** Presentation hint set by the window.
         
@@ -2515,7 +3023,7 @@ module River_window_v1 = struct
         This event will be followed by a render_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_identifier : [> `V4] t -> identifier:string -> unit
+    method private virtual on_identifier : [> `V5] t -> identifier:string -> unit
     
     (** Unique window identifier.
         
@@ -2538,7 +3046,20 @@ module River_window_v1 = struct
         This event is sent once when the river_window_v1 is created and never
         sent again. *)
     
-    method min_version = 4l
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Window screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the window.
+        
+        This event is sent once when the river_window_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method min_version = 5l
   end
 end
 
@@ -2557,7 +3078,7 @@ module River_decoration_v1 = struct
   type 'v t = ([`River_decoration_v1], 'v, [`Client]) Proxy.t
   module Error = River_window_management_v1_proto.River_decoration_v1.Error
   
-  (** {2 Version 1, 2, 3, 4} *)
+  (** {2 Version 1, 2, 3, 4, 5} *)
   
   (** Sync next commit with other rendering state.
       
@@ -2571,7 +3092,8 @@ module River_decoration_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let sync_next_commit (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let sync_next_commit (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+     =
     let _msg = Proxy.alloc _t ~op:2 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -2585,7 +3107,7 @@ module River_decoration_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let set_offset (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~x ~y =
+  let set_offset (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) ~x ~y =
     let _msg = Proxy.alloc _t ~op:1 ~ints:2 ~strings:[] ~arrays:[] in
     Msg.add_int _msg x;
     Msg.add_int _msg y;
@@ -2595,7 +3117,7 @@ module River_decoration_v1 = struct
       
       This request indicates that the client will no longer use the decoration
       object and that it may be safely destroyed. *)
-  let destroy (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let destroy (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:0 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg;
     Proxy.shutdown_send _t
@@ -2604,7 +3126,7 @@ module River_decoration_v1 = struct
   class ['v] _handlers_unsafe = object (_self : (_, 'v, _) #Proxy.Handler.t)
     method user_data = S.No_data
     method metadata = (module River_window_management_v1_proto.River_decoration_v1)
-    method max_version = 4l
+    method max_version = 5l
     
     
     method dispatch (_proxy : 'v t) _msg =
@@ -2622,7 +3144,7 @@ module River_decoration_v1 = struct
   (** Handler for a proxy with version >= 1. *)
   class ['v] v1 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V1 | `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V1 | `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 1l
   end
@@ -2630,7 +3152,7 @@ module River_decoration_v1 = struct
   (** Handler for a proxy with version >= 2. *)
   class ['v] v2 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 2l
   end
@@ -2638,7 +3160,7 @@ module River_decoration_v1 = struct
   (** Handler for a proxy with version >= 3. *)
   class ['v] v3 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 3l
   end
@@ -2646,9 +3168,17 @@ module River_decoration_v1 = struct
   (** Handler for a proxy with version >= 4. *)
   class ['v] v4 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V4] as 'v] _handlers_unsafe
+    inherit [[< `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 4l
+  end
+  
+  (** Handler for a proxy with version >= 5. *)
+  class ['v] v5 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
+    (**/**)
+    inherit [[< `V5] as 'v] _handlers_unsafe
+    (**/**)
+    method min_version = 5l
   end
 end
 
@@ -2661,7 +3191,7 @@ module River_shell_surface_v1 = struct
   type 'v t = ([`River_shell_surface_v1], 'v, [`Client]) Proxy.t
   module Error = River_window_management_v1_proto.River_shell_surface_v1.Error
   
-  (** {2 Version 1, 2, 3, 4} *)
+  (** {2 Version 1, 2, 3, 4, 5} *)
   
   (** Sync next surface commit to window manager commit.
       
@@ -2675,7 +3205,8 @@ module River_shell_surface_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let sync_next_commit (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let sync_next_commit (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+     =
     let _msg = Proxy.alloc _t ~op:2 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -2685,7 +3216,7 @@ module River_shell_surface_v1 = struct
       
       It is a protocol error to make this request more than once for a single
       shell surface. *)
-  let get_node (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) (id:([`River_node_v1], 'v, [`Client]) #Proxy.Handler.t) =
+  let get_node (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) (id:([`River_node_v1], 'v, [`Client]) #Proxy.Handler.t) =
     let __id = Proxy.spawn _t id in
     let _msg = Proxy.alloc _t ~op:1 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id __id);
@@ -2696,7 +3227,7 @@ module River_shell_surface_v1 = struct
       
       This request indicates that the client will no longer use the shell
       surface object and that it may be safely destroyed. *)
-  let destroy (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let destroy (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:0 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg;
     Proxy.shutdown_send _t
@@ -2705,7 +3236,7 @@ module River_shell_surface_v1 = struct
   class ['v] _handlers_unsafe = object (_self : (_, 'v, _) #Proxy.Handler.t)
     method user_data = S.No_data
     method metadata = (module River_window_management_v1_proto.River_shell_surface_v1)
-    method max_version = 4l
+    method max_version = 5l
     
     
     method dispatch (_proxy : 'v t) _msg =
@@ -2723,7 +3254,7 @@ module River_shell_surface_v1 = struct
   (** Handler for a proxy with version >= 1. *)
   class ['v] v1 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V1 | `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V1 | `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 1l
   end
@@ -2731,7 +3262,7 @@ module River_shell_surface_v1 = struct
   (** Handler for a proxy with version >= 2. *)
   class ['v] v2 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 2l
   end
@@ -2739,7 +3270,7 @@ module River_shell_surface_v1 = struct
   (** Handler for a proxy with version >= 3. *)
   class ['v] v3 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 3l
   end
@@ -2747,9 +3278,17 @@ module River_shell_surface_v1 = struct
   (** Handler for a proxy with version >= 4. *)
   class ['v] v4 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V4] as 'v] _handlers_unsafe
+    inherit [[< `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 4l
+  end
+  
+  (** Handler for a proxy with version >= 5. *)
+  class ['v] v5 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
+    (**/**)
+    inherit [[< `V5] as 'v] _handlers_unsafe
+    (**/**)
+    method min_version = 5l
   end
 end
 
@@ -2766,7 +3305,7 @@ end
 module River_node_v1 = struct
   type 'v t = ([`River_node_v1], 'v, [`Client]) Proxy.t
   
-  (** {2 Version 1, 2, 3, 4} *)
+  (** {2 Version 1, 2, 3, 4, 5} *)
   
   (** Place node below another node.
       
@@ -2775,9 +3314,17 @@ module River_node_v1 = struct
       
       Attempting to place a node below itself has no effect.
       
+      Given nodes A, B, C currently rendered in that order with C on top
+      and A on the bottom, the following example demonstrates the behavior
+      of this request and the meaning of "directly below":
+      
+      1. C.place_below(A) -> C, A, B
+      2. C.place_below(B) -> A, C, B
+      3. B.place_below(C) -> A, B, C
+      
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let place_below (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~(other:([`River_node_v1], _, [`Client]) Proxy.t) =
+  let place_below (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) ~(other:([`River_node_v1], _, [`Client]) Proxy.t) =
     let _msg = Proxy.alloc _t ~op:5 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id other);
     Proxy.send _t _msg
@@ -2789,9 +3336,17 @@ module River_node_v1 = struct
       
       Attempting to place a node above itself has no effect.
       
+      Given nodes A, B, C currently rendered in that order with C on top
+      and A on the bottom, the following example demonstrates the behavior
+      of this request and the meaning of "directly above":
+      
+      1. A.place_above(C) -> B, C, A
+      2. A.place_above(B) -> B, A, C
+      3. B.place_above(A) -> A, B, C
+      
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let place_above (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~(other:([`River_node_v1], _, [`Client]) Proxy.t) =
+  let place_above (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) ~(other:([`River_node_v1], _, [`Client]) Proxy.t) =
     let _msg = Proxy.alloc _t ~op:4 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id other);
     Proxy.send _t _msg
@@ -2803,7 +3358,7 @@ module River_node_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let place_bottom (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let place_bottom (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:3 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -2814,7 +3369,7 @@ module River_node_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let place_top (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let place_top (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:2 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -2832,7 +3387,7 @@ module River_node_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let set_position (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~x ~y =
+  let set_position (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) ~x ~y =
     let _msg = Proxy.alloc _t ~op:1 ~ints:2 ~strings:[] ~arrays:[] in
     Msg.add_int _msg x;
     Msg.add_int _msg y;
@@ -2842,7 +3397,7 @@ module River_node_v1 = struct
       
       This request indicates that the client will no longer use the node
       object and that it may be safely destroyed. *)
-  let destroy (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let destroy (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:0 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg;
     Proxy.shutdown_send _t
@@ -2851,7 +3406,7 @@ module River_node_v1 = struct
   class ['v] _handlers_unsafe = object (_self : (_, 'v, _) #Proxy.Handler.t)
     method user_data = S.No_data
     method metadata = (module River_window_management_v1_proto.River_node_v1)
-    method max_version = 4l
+    method max_version = 5l
     
     
     method dispatch (_proxy : 'v t) _msg =
@@ -2869,7 +3424,7 @@ module River_node_v1 = struct
   (** Handler for a proxy with version >= 1. *)
   class ['v] v1 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V1 | `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V1 | `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 1l
   end
@@ -2877,7 +3432,7 @@ module River_node_v1 = struct
   (** Handler for a proxy with version >= 2. *)
   class ['v] v2 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 2l
   end
@@ -2885,7 +3440,7 @@ module River_node_v1 = struct
   (** Handler for a proxy with version >= 3. *)
   class ['v] v3 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 3l
   end
@@ -2893,9 +3448,17 @@ module River_node_v1 = struct
   (** Handler for a proxy with version >= 4. *)
   class ['v] v4 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V4] as 'v] _handlers_unsafe
+    inherit [[< `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
     method min_version = 4l
+  end
+  
+  (** Handler for a proxy with version >= 5. *)
+  class ['v] v5 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
+    (**/**)
+    inherit [[< `V5] as 'v] _handlers_unsafe
+    (**/**)
+    method min_version = 5l
   end
 end
 
@@ -2921,7 +3484,7 @@ module River_output_v1 = struct
       
       This request should be made after the river_output_v1.removed event is
       received to complete destruction of the output. *)
-  let destroy (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let destroy (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:0 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg;
     Proxy.shutdown_send _t
@@ -2937,16 +3500,19 @@ module River_output_v1 = struct
       
       This request modifies rendering state and may only be made as part of a
       render sequence, see the river_window_manager_v1 description. *)
-  let set_presentation_mode (_t:([< `V4] as 'v) t) ~mode =
+  let set_presentation_mode (_t:([< `V4 | `V5] as 'v) t) ~mode =
     let _msg = Proxy.alloc _t ~op:1 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Imports.River_output_v1.Presentation_mode.to_int32 mode);
     Proxy.send _t _msg
+  
+  
+  (** {2 Version 5} *)
   
   (**/**)
   class virtual ['v] _handlers_unsafe = object (_self : (_, 'v, _) #Proxy.Handler.t)
     method user_data = S.No_data
     method metadata = (module River_window_management_v1_proto.River_output_v1)
-    method max_version = 4l
+    method max_version = 5l
     
     method private virtual on_removed : [> ] t -> unit
     
@@ -2955,6 +3521,8 @@ module River_output_v1 = struct
     method private virtual on_position : [> ] t -> x:int32 -> y:int32 -> unit
     
     method private virtual on_dimensions : [> ] t -> width:int32 -> height:int32 -> unit
+    
+    method private virtual on_capture_sessions : [> ] t -> count:int32 -> unit
     
     
     method dispatch (_proxy : 'v t) _msg =
@@ -2973,6 +3541,9 @@ module River_output_v1 = struct
         let width = Msg.get_int _msg in
         let height = Msg.get_int _msg in
         _self#on_dimensions _proxy ~width ~height
+      | 4 ->
+        let count = Msg.get_int _msg in
+        _self#on_capture_sessions _proxy ~count
       | _ -> assert false
   end
   (**/**)
@@ -2985,9 +3556,9 @@ module River_output_v1 = struct
   (** Handler for a proxy with version >= 1. *)
   class virtual ['v] v1 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V1 | `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V1 | `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_removed : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_removed : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The output is removed.
         
@@ -3005,7 +3576,7 @@ module River_output_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_wl_output : [> `V1 | `V2 | `V3 | `V4] t -> name:int32 -> unit
+    method private virtual on_wl_output : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> name:int32 -> unit
     
     (** Corresponding wl_output.
         
@@ -3028,7 +3599,7 @@ module River_output_v1 = struct
         wl_output interface such as the name/description. It also may need the
         wl_output object to start screencopy for example. *)
     
-    method private virtual on_position : [> `V1 | `V2 | `V3 | `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_position : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** Output position.
         
@@ -3046,7 +3617,7 @@ module River_output_v1 = struct
         cause the areas of multiple logical outputs to overlap when the
         corresponding manage_start event is received. *)
     
-    method private virtual on_dimensions : [> `V1 | `V2 | `V3 | `V4] t -> width:int32 -> height:int32 -> unit
+    method private virtual on_dimensions : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> width:int32 -> height:int32 -> unit
     
     (** Output dimensions.
         
@@ -3063,6 +3634,19 @@ module River_output_v1 = struct
         The server must guarantee that the position and dimensions events do not
         cause the areas of multiple logical outputs to overlap when the
         corresponding manage_start event is received. *)
+    
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Output screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the output.
+        
+        This event is sent once when the river_output_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
     
     method min_version = 1l
   end
@@ -3070,9 +3654,9 @@ module River_output_v1 = struct
   (** Handler for a proxy with version >= 2. *)
   class virtual ['v] v2 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_removed : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_removed : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The output is removed.
         
@@ -3090,7 +3674,7 @@ module River_output_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_wl_output : [> `V2 | `V3 | `V4] t -> name:int32 -> unit
+    method private virtual on_wl_output : [> `V2 | `V3 | `V4 | `V5] t -> name:int32 -> unit
     
     (** Corresponding wl_output.
         
@@ -3113,7 +3697,7 @@ module River_output_v1 = struct
         wl_output interface such as the name/description. It also may need the
         wl_output object to start screencopy for example. *)
     
-    method private virtual on_position : [> `V2 | `V3 | `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_position : [> `V2 | `V3 | `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** Output position.
         
@@ -3131,7 +3715,7 @@ module River_output_v1 = struct
         cause the areas of multiple logical outputs to overlap when the
         corresponding manage_start event is received. *)
     
-    method private virtual on_dimensions : [> `V2 | `V3 | `V4] t -> width:int32 -> height:int32 -> unit
+    method private virtual on_dimensions : [> `V2 | `V3 | `V4 | `V5] t -> width:int32 -> height:int32 -> unit
     
     (** Output dimensions.
         
@@ -3148,6 +3732,19 @@ module River_output_v1 = struct
         The server must guarantee that the position and dimensions events do not
         cause the areas of multiple logical outputs to overlap when the
         corresponding manage_start event is received. *)
+    
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Output screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the output.
+        
+        This event is sent once when the river_output_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
     
     method min_version = 2l
   end
@@ -3155,9 +3752,9 @@ module River_output_v1 = struct
   (** Handler for a proxy with version >= 3. *)
   class virtual ['v] v3 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_removed : [> `V3 | `V4] t -> unit
+    method private virtual on_removed : [> `V3 | `V4 | `V5] t -> unit
     
     (** The output is removed.
         
@@ -3175,7 +3772,7 @@ module River_output_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_wl_output : [> `V3 | `V4] t -> name:int32 -> unit
+    method private virtual on_wl_output : [> `V3 | `V4 | `V5] t -> name:int32 -> unit
     
     (** Corresponding wl_output.
         
@@ -3198,7 +3795,7 @@ module River_output_v1 = struct
         wl_output interface such as the name/description. It also may need the
         wl_output object to start screencopy for example. *)
     
-    method private virtual on_position : [> `V3 | `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_position : [> `V3 | `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** Output position.
         
@@ -3216,7 +3813,7 @@ module River_output_v1 = struct
         cause the areas of multiple logical outputs to overlap when the
         corresponding manage_start event is received. *)
     
-    method private virtual on_dimensions : [> `V3 | `V4] t -> width:int32 -> height:int32 -> unit
+    method private virtual on_dimensions : [> `V3 | `V4 | `V5] t -> width:int32 -> height:int32 -> unit
     
     (** Output dimensions.
         
@@ -3233,6 +3830,19 @@ module River_output_v1 = struct
         The server must guarantee that the position and dimensions events do not
         cause the areas of multiple logical outputs to overlap when the
         corresponding manage_start event is received. *)
+    
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Output screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the output.
+        
+        This event is sent once when the river_output_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
     
     method min_version = 3l
   end
@@ -3240,9 +3850,9 @@ module River_output_v1 = struct
   (** Handler for a proxy with version >= 4. *)
   class virtual ['v] v4 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V4] as 'v] _handlers_unsafe
+    inherit [[< `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_removed : [> `V4] t -> unit
+    method private virtual on_removed : [> `V4 | `V5] t -> unit
     
     (** The output is removed.
         
@@ -3260,7 +3870,7 @@ module River_output_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_wl_output : [> `V4] t -> name:int32 -> unit
+    method private virtual on_wl_output : [> `V4 | `V5] t -> name:int32 -> unit
     
     (** Corresponding wl_output.
         
@@ -3283,7 +3893,7 @@ module River_output_v1 = struct
         wl_output interface such as the name/description. It also may need the
         wl_output object to start screencopy for example. *)
     
-    method private virtual on_position : [> `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_position : [> `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** Output position.
         
@@ -3301,7 +3911,7 @@ module River_output_v1 = struct
         cause the areas of multiple logical outputs to overlap when the
         corresponding manage_start event is received. *)
     
-    method private virtual on_dimensions : [> `V4] t -> width:int32 -> height:int32 -> unit
+    method private virtual on_dimensions : [> `V4 | `V5] t -> width:int32 -> height:int32 -> unit
     
     (** Output dimensions.
         
@@ -3319,7 +3929,118 @@ module River_output_v1 = struct
         cause the areas of multiple logical outputs to overlap when the
         corresponding manage_start event is received. *)
     
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Output screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the output.
+        
+        This event is sent once when the river_output_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
     method min_version = 4l
+  end
+  
+  (** Handler for a proxy with version >= 5. *)
+  class virtual ['v] v5 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
+    (**/**)
+    inherit [[< `V5] as 'v] _handlers_unsafe
+    (**/**)
+    method private virtual on_removed : [> `V5] t -> unit
+    
+    (** The output is removed.
+        
+        This event indicates that the logical output is no longer conceptually
+        part of window management space.
+        
+        The server will send no further events on this object and ignore any
+        request (other than river_output_v1.destroy) made after this event is
+        sent. The client should destroy this object with the
+        river_output_v1.destroy request to free up resources.
+        
+        This event may be sent because a corresponding physical output has been
+        physically unplugged or because some output configuration has changed.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_wl_output : [> `V5] t -> name:int32 -> unit
+    
+    (** Corresponding wl_output.
+        
+        The wl_output object corresponding to the river_output_v1. The argument
+        is the global name of the wl_output advertised with wl_registry.global.
+        
+        It is guaranteed that the corresponding wl_output is advertised before
+        this event is sent.
+        
+        This event is sent exactly once. The wl_output associated with a
+        river_output_v1 cannot change. It is guaranteed that there is a 1-to-1
+        mapping between wl_output and river_output_v1 objects.
+        
+        The global_remove event for the corresponding wl_output may be sent
+        before the river_output_v1.removed event. This is due to the fact that
+        river_output_v1 state changes are synced to the river window management
+        manage sequence while changes to globals are not.
+        
+        Rationale: The window manager may need information provided by the
+        wl_output interface such as the name/description. It also may need the
+        wl_output object to start screencopy for example. *)
+    
+    method private virtual on_position : [> `V5] t -> x:int32 -> y:int32 -> unit
+    
+    (** Output position.
+        
+        This event indicates the position of the output in the compositor's
+        logical coordinate space. The x and y coordinates may be positive or
+        negative.
+        
+        This event is sent once when the river_output_v1 is created and again
+        whenever the position changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server.
+        
+        The server must guarantee that the position and dimensions events do not
+        cause the areas of multiple logical outputs to overlap when the
+        corresponding manage_start event is received. *)
+    
+    method private virtual on_dimensions : [> `V5] t -> width:int32 -> height:int32 -> unit
+    
+    (** Output dimensions.
+        
+        This event indicates the dimensions of the output in the compositor's
+        logical coordinate space. The width and height will always be strictly
+        greater than zero.
+        
+        This event is sent once when the river_output_v1 is created and again
+        whenever the dimensions change.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server.
+        
+        The server must guarantee that the position and dimensions events do not
+        cause the areas of multiple logical outputs to overlap when the
+        corresponding manage_start event is received. *)
+    
+    method private virtual on_capture_sessions : [> `V5] t -> count:int32 -> unit
+    
+    (** Output screen capture sessions.
+        
+        This event informs the window manager of the number of active screen
+        capture sessions for the output.
+        
+        This event is sent once when the river_output_v1 is created and again
+        whenever the number of capture sessions changes.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method min_version = 5l
   end
 end
 
@@ -3358,7 +4079,8 @@ module River_seat_v1 = struct
       
       The new pointer binding is not enabled until initial configuration is
       completed and the enable request is made during a manage sequence. *)
-  let get_pointer_binding (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) (id:([`River_pointer_binding_v1], 'v, [`Client]) #Proxy.Handler.t) ~button ~modifiers =
+  let get_pointer_binding (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+    (id:([`River_pointer_binding_v1], 'v, [`Client]) #Proxy.Handler.t) ~button ~modifiers =
     let __id = Proxy.spawn _t id in
     let _msg = Proxy.alloc _t ~op:6 ~ints:3 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id __id);
@@ -3375,7 +4097,7 @@ module River_seat_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let op_end (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let op_end (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:5 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -3402,7 +4124,8 @@ module River_seat_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let op_start_pointer (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let op_start_pointer (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+     =
     let _msg = Proxy.alloc _t ~op:4 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -3412,7 +4135,7 @@ module River_seat_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let clear_focus (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let clear_focus (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:3 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -3423,7 +4146,8 @@ module River_seat_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let focus_shell_surface (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~(shell_surface:([`River_shell_surface_v1], _, [`Client]) Proxy.t) =
+  let focus_shell_surface (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) 
+    ~(shell_surface:([`River_shell_surface_v1], _, [`Client]) Proxy.t) =
     let _msg = Proxy.alloc _t ~op:2 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id shell_surface);
     Proxy.send _t _msg
@@ -3434,7 +4158,7 @@ module River_seat_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let focus_window (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t) ~(window:([`River_window_v1], _, [`Client]) Proxy.t) =
+  let focus_window (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t) ~(window:([`River_window_v1], _, [`Client]) Proxy.t) =
     let _msg = Proxy.alloc _t ~op:1 ~ints:1 ~strings:[] ~arrays:[] in
     Msg.add_int _msg (Proxy.id window);
     Proxy.send _t _msg
@@ -3446,7 +4170,7 @@ module River_seat_v1 = struct
       
       This request should be made after the river_seat_v1.removed event is
       received to complete destruction of the seat. *)
-  let destroy (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let destroy (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:0 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg;
     Proxy.shutdown_send _t
@@ -3462,14 +4186,14 @@ module River_seat_v1 = struct
       
       Note: The window manager may also wish to set the XCURSOR_THEME and
       XCURSOR_SIZE environment variable for programs it starts. *)
-  let set_xcursor_theme (_t:([< `V2 | `V3 | `V4] as 'v) t) ~name ~size =
+  let set_xcursor_theme (_t:([< `V2 | `V3 | `V4 | `V5] as 'v) t) ~name ~size =
     let _msg = Proxy.alloc _t ~op:7 ~ints:2 ~strings:[(Some name)] ~arrays:[] in
     Msg.add_string _msg name;
     Msg.add_int _msg size;
     Proxy.send _t _msg
   
   
-  (** {2 Version 3, 4} *)
+  (** {2 Version 3, 4, 5} *)
   
   (** Warp the pointer to a given position.
       
@@ -3479,9 +4203,13 @@ module River_seat_v1 = struct
       If the given position is outside the bounds of all outputs, the pointer
       will be warped to the closest point inside an output instead.
       
+      If an op_start_pointer request is made during the same manage sequence
+      as a pointer_warp request, the warp is applied first by the server
+      regardless of the relative ordering of the two requests.
+      
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let pointer_warp (_t:([< `V3 | `V4] as 'v) t) ~x ~y =
+  let pointer_warp (_t:([< `V3 | `V4 | `V5] as 'v) t) ~x ~y =
     let _msg = Proxy.alloc _t ~op:8 ~ints:2 ~strings:[] ~arrays:[] in
     Msg.add_int _msg x;
     Msg.add_int _msg y;
@@ -3491,7 +4219,7 @@ module River_seat_v1 = struct
   class virtual ['v] _handlers_unsafe = object (_self : (_, 'v, _) #Proxy.Handler.t)
     method user_data = S.No_data
     method metadata = (module River_window_management_v1_proto.River_seat_v1)
-    method max_version = 4l
+    method max_version = 5l
     
     method private virtual on_removed : [> ] t -> unit
     
@@ -3571,9 +4299,9 @@ module River_seat_v1 = struct
   (** Handler for a proxy with version >= 1. *)
   class virtual ['v] v1 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V1 | `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V1 | `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_removed : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_removed : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The seat is removed.
         
@@ -3588,7 +4316,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_wl_seat : [> `V1 | `V2 | `V3 | `V4] t -> name:int32 -> unit
+    method private virtual on_wl_seat : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> name:int32 -> unit
     
     (** Corresponding wl_seat.
         
@@ -3611,7 +4339,7 @@ module River_seat_v1 = struct
         state changes based on normal input events received by its shell
         surfaces for example. *)
     
-    method private virtual on_pointer_enter : [> `V1 | `V2 | `V3 | `V4] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_enter : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
                                               unit
     
     (** Pointer entered a window.
@@ -3631,7 +4359,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_leave : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_pointer_leave : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Pointer left the entered window.
         
@@ -3641,7 +4369,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_window_interaction : [> `V1 | `V2 | `V3 | `V4] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_window_interaction : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
                                                    unit
     
     (** A window has been interacted with.
@@ -3662,7 +4390,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_shell_surface_interaction : [> `V1 | `V2 | `V3 | `V4] t -> shell_surface:([`River_shell_surface_v1], [> Imports.River_shell_surface_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_shell_surface_interaction : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> shell_surface:([`River_shell_surface_v1], [> Imports.River_shell_surface_v1.versions], [`Client]) Proxy.t ->
                                                           unit
     
     (** A shell surface has been interacted with.
@@ -3684,7 +4412,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_op_delta : [> `V1 | `V2 | `V3 | `V4] t -> dx:int32 -> dy:int32 -> unit
+    method private virtual on_op_delta : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> dx:int32 -> dy:int32 -> unit
     
     (** Total cumulative motion since op start.
         
@@ -3694,7 +4422,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_op_release : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_op_release : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Operation input has been released.
         
@@ -3709,7 +4437,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_position : [> `V2 | `V3 | `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_pointer_position : [> `V2 | `V3 | `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** The current position of the pointer.
         
@@ -3729,9 +4457,9 @@ module River_seat_v1 = struct
   (** Handler for a proxy with version >= 2. *)
   class virtual ['v] v2 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_removed : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_removed : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The seat is removed.
         
@@ -3746,7 +4474,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_wl_seat : [> `V2 | `V3 | `V4] t -> name:int32 -> unit
+    method private virtual on_wl_seat : [> `V2 | `V3 | `V4 | `V5] t -> name:int32 -> unit
     
     (** Corresponding wl_seat.
         
@@ -3769,7 +4497,7 @@ module River_seat_v1 = struct
         state changes based on normal input events received by its shell
         surfaces for example. *)
     
-    method private virtual on_pointer_enter : [> `V2 | `V3 | `V4] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_enter : [> `V2 | `V3 | `V4 | `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
                                               unit
     
     (** Pointer entered a window.
@@ -3789,7 +4517,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_leave : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_pointer_leave : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Pointer left the entered window.
         
@@ -3799,7 +4527,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_window_interaction : [> `V2 | `V3 | `V4] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_window_interaction : [> `V2 | `V3 | `V4 | `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
                                                    unit
     
     (** A window has been interacted with.
@@ -3820,7 +4548,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_shell_surface_interaction : [> `V2 | `V3 | `V4] t -> shell_surface:([`River_shell_surface_v1], [> Imports.River_shell_surface_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_shell_surface_interaction : [> `V2 | `V3 | `V4 | `V5] t -> shell_surface:([`River_shell_surface_v1], [> Imports.River_shell_surface_v1.versions], [`Client]) Proxy.t ->
                                                           unit
     
     (** A shell surface has been interacted with.
@@ -3842,7 +4570,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_op_delta : [> `V2 | `V3 | `V4] t -> dx:int32 -> dy:int32 -> unit
+    method private virtual on_op_delta : [> `V2 | `V3 | `V4 | `V5] t -> dx:int32 -> dy:int32 -> unit
     
     (** Total cumulative motion since op start.
         
@@ -3852,7 +4580,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_op_release : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_op_release : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** Operation input has been released.
         
@@ -3867,7 +4595,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_position : [> `V2 | `V3 | `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_pointer_position : [> `V2 | `V3 | `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** The current position of the pointer.
         
@@ -3887,9 +4615,9 @@ module River_seat_v1 = struct
   (** Handler for a proxy with version >= 3. *)
   class virtual ['v] v3 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_removed : [> `V3 | `V4] t -> unit
+    method private virtual on_removed : [> `V3 | `V4 | `V5] t -> unit
     
     (** The seat is removed.
         
@@ -3904,7 +4632,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_wl_seat : [> `V3 | `V4] t -> name:int32 -> unit
+    method private virtual on_wl_seat : [> `V3 | `V4 | `V5] t -> name:int32 -> unit
     
     (** Corresponding wl_seat.
         
@@ -3927,7 +4655,7 @@ module River_seat_v1 = struct
         state changes based on normal input events received by its shell
         surfaces for example. *)
     
-    method private virtual on_pointer_enter : [> `V3 | `V4] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_enter : [> `V3 | `V4 | `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
                                               unit
     
     (** Pointer entered a window.
@@ -3947,7 +4675,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_leave : [> `V3 | `V4] t -> unit
+    method private virtual on_pointer_leave : [> `V3 | `V4 | `V5] t -> unit
     
     (** Pointer left the entered window.
         
@@ -3957,7 +4685,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_window_interaction : [> `V3 | `V4] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_window_interaction : [> `V3 | `V4 | `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
                                                    unit
     
     (** A window has been interacted with.
@@ -3978,7 +4706,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_shell_surface_interaction : [> `V3 | `V4] t -> shell_surface:([`River_shell_surface_v1], [> Imports.River_shell_surface_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_shell_surface_interaction : [> `V3 | `V4 | `V5] t -> shell_surface:([`River_shell_surface_v1], [> Imports.River_shell_surface_v1.versions], [`Client]) Proxy.t ->
                                                           unit
     
     (** A shell surface has been interacted with.
@@ -4000,7 +4728,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_op_delta : [> `V3 | `V4] t -> dx:int32 -> dy:int32 -> unit
+    method private virtual on_op_delta : [> `V3 | `V4 | `V5] t -> dx:int32 -> dy:int32 -> unit
     
     (** Total cumulative motion since op start.
         
@@ -4010,7 +4738,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_op_release : [> `V3 | `V4] t -> unit
+    method private virtual on_op_release : [> `V3 | `V4 | `V5] t -> unit
     
     (** Operation input has been released.
         
@@ -4025,7 +4753,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_position : [> `V3 | `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_pointer_position : [> `V3 | `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** The current position of the pointer.
         
@@ -4045,9 +4773,9 @@ module River_seat_v1 = struct
   (** Handler for a proxy with version >= 4. *)
   class virtual ['v] v4 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V4] as 'v] _handlers_unsafe
+    inherit [[< `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_removed : [> `V4] t -> unit
+    method private virtual on_removed : [> `V4 | `V5] t -> unit
     
     (** The seat is removed.
         
@@ -4062,7 +4790,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_wl_seat : [> `V4] t -> name:int32 -> unit
+    method private virtual on_wl_seat : [> `V4 | `V5] t -> name:int32 -> unit
     
     (** Corresponding wl_seat.
         
@@ -4085,7 +4813,7 @@ module River_seat_v1 = struct
         state changes based on normal input events received by its shell
         surfaces for example. *)
     
-    method private virtual on_pointer_enter : [> `V4] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_pointer_enter : [> `V4 | `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
                                               unit
     
     (** Pointer entered a window.
@@ -4105,7 +4833,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_leave : [> `V4] t -> unit
+    method private virtual on_pointer_leave : [> `V4 | `V5] t -> unit
     
     (** Pointer left the entered window.
         
@@ -4115,7 +4843,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_window_interaction : [> `V4] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_window_interaction : [> `V4 | `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
                                                    unit
     
     (** A window has been interacted with.
@@ -4136,7 +4864,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_shell_surface_interaction : [> `V4] t -> shell_surface:([`River_shell_surface_v1], [> Imports.River_shell_surface_v1.versions], [`Client]) Proxy.t ->
+    method private virtual on_shell_surface_interaction : [> `V4 | `V5] t -> shell_surface:([`River_shell_surface_v1], [> Imports.River_shell_surface_v1.versions], [`Client]) Proxy.t ->
                                                           unit
     
     (** A shell surface has been interacted with.
@@ -4158,7 +4886,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_op_delta : [> `V4] t -> dx:int32 -> dy:int32 -> unit
+    method private virtual on_op_delta : [> `V4 | `V5] t -> dx:int32 -> dy:int32 -> unit
     
     (** Total cumulative motion since op start.
         
@@ -4168,7 +4896,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_op_release : [> `V4] t -> unit
+    method private virtual on_op_release : [> `V4 | `V5] t -> unit
     
     (** Operation input has been released.
         
@@ -4183,7 +4911,7 @@ module River_seat_v1 = struct
         This event will be followed by a manage_start event after all other new
         state has been sent by the server. *)
     
-    method private virtual on_pointer_position : [> `V4] t -> x:int32 -> y:int32 -> unit
+    method private virtual on_pointer_position : [> `V4 | `V5] t -> x:int32 -> y:int32 -> unit
     
     (** The current position of the pointer.
         
@@ -4198,6 +4926,164 @@ module River_seat_v1 = struct
         event was sent. *)
     
     method min_version = 4l
+  end
+  
+  (** Handler for a proxy with version >= 5. *)
+  class virtual ['v] v5 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
+    (**/**)
+    inherit [[< `V5] as 'v] _handlers_unsafe
+    (**/**)
+    method private virtual on_removed : [> `V5] t -> unit
+    
+    (** The seat is removed.
+        
+        This event indicates that seat is no longer in use and should be
+        destroyed.
+        
+        The server will send no further events on this object and ignore any
+        request (other than river_seat_v1.destroy) made after this event is
+        sent.  The client should destroy this object with the
+        river_seat_v1.destroy request to free up resources.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_wl_seat : [> `V5] t -> name:int32 -> unit
+    
+    (** Corresponding wl_seat.
+        
+        The wl_seat object corresponding to the river_seat_v1. The argument is
+        the global name of the wl_seat advertised with wl_registry.global.
+        
+        It is guaranteed that the corresponding wl_seat is advertised before
+        this event is sent.
+        
+        This event is sent exactly once. The wl_seat associated with a
+        river_seat_v1 cannot change. It is guaranteed that there is a 1-to-1
+        mapping between wl_seat and river_seat_v1 objects.
+        
+        The global_remove event for the corresponding wl_seat may be sent before
+        the river_seat_v1.removed event. This is due to the fact that
+        river_seat_v1 state changes are synced to the river window management
+        manage sequence while changes to globals are not.
+        
+        Rationale: The window manager may want to trigger window management
+        state changes based on normal input events received by its shell
+        surfaces for example. *)
+    
+    method private virtual on_pointer_enter : [> `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+                                              unit
+    
+    (** Pointer entered a window.
+        
+        The seat's pointer entered the given window's area.
+        
+        The area of a window is defined to include the area defined by the
+        window dimensions, borders configured using river_window_v1.set_borders,
+        and the input regions of decoration surfaces. In particular, it does not
+        include input regions of surfaces belonging to the window that extend
+        outside the window dimensions.
+        
+        The pointer of a seat may only enter a single window at a time. When the
+        pointer moves between windows, the pointer_leave event for the old
+        window must be sent before the pointer_enter event for the new window.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_pointer_leave : [> `V5] t -> unit
+    
+    (** Pointer left the entered window.
+        
+        The seat's pointer left the window for which pointer_enter was most
+        recently sent. See pointer_enter for details.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_window_interaction : [> `V5] t -> window:([`River_window_v1], [> Imports.River_window_v1.versions], [`Client]) Proxy.t ->
+                                                   unit
+    
+    (** A window has been interacted with.
+        
+        A window has been interacted with beyond the pointer merely passing over
+        it. This event might be sent due to a pointer button press or due to a
+        touch/tablet tool interaction with the window.
+        
+        There are no guarantees regarding how this event is sent in relation to
+        the pointer_enter and pointer_leave events as the interaction may use
+        touch or tablet tool input.
+        
+        Rationale: this event gives window managers necessary information to
+        determine when to send keyboard focus, raise a window that already has
+        keyboard focus, etc. Rather than expose all pointer, touch, and tablet
+        events to window managers, a policy over mechanism approach is taken.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_shell_surface_interaction : [> `V5] t -> shell_surface:([`River_shell_surface_v1], [> Imports.River_shell_surface_v1.versions], [`Client]) Proxy.t ->
+                                                          unit
+    
+    (** A shell surface has been interacted with.
+        
+        A shell surface has been interacted with beyond the pointer merely
+        passing over it. This event might be sent due to a pointer button press
+        or due to a touch/tablet tool interaction with the shell_surface.
+        
+        There are no guarantees regarding how this event is sent in relation to
+        the pointer_enter and pointer_leave events as the interaction may use
+        touch or tablet tool input.
+        
+        Rationale: While the shell surface does receive all wl_pointer,
+        wl_touch, etc. input events for the surface directly, these events do
+        not necessarily trigger a manage sequence and therefore do not allow the
+        window manager to update focus or perform other actions in response to
+        the input in a race-free way.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_op_delta : [> `V5] t -> dx:int32 -> dy:int32 -> unit
+    
+    (** Total cumulative motion since op start.
+        
+        This event indicates the total change in position since the start of the
+        operation of the pointer/touch point/etc.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_op_release : [> `V5] t -> unit
+    
+    (** Operation input has been released.
+        
+        The input driving the current interactive operation has been released.
+        For a pointer op for example, all pointer buttons have been released.
+        
+        Depending on the op type, op_delta events may continue to be sent until
+        the op is ended with the op_end request.
+        
+        This event is sent at most once during an interactive operation.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server. *)
+    
+    method private virtual on_pointer_position : [> `V5] t -> x:int32 -> y:int32 -> unit
+    
+    (** The current position of the pointer.
+        
+        The current position of the pointer in the compositor's logical
+        coordinate space.
+        
+        This state is special in that a change in pointer position alone must
+        not cause the compositor to start a manage sequence.
+        
+        Assuming the seat has a pointer, this event must be sent in every manage
+        sequence unless there is no change in x/y position since the last time this
+        event was sent. *)
+    
+    method min_version = 5l
   end
 end
 
@@ -4220,7 +5106,7 @@ end
 module River_pointer_binding_v1 = struct
   type 'v t = ([`River_pointer_binding_v1], 'v, [`Client]) Proxy.t
   
-  (** {2 Version 1, 2, 3, 4} *)
+  (** {2 Version 1, 2, 3, 4, 5} *)
   
   (** Disable the pointer binding.
       
@@ -4229,7 +5115,7 @@ module River_pointer_binding_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let disable (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let disable (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:2 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -4241,7 +5127,7 @@ module River_pointer_binding_v1 = struct
       
       This request modifies window management state and may only be made as
       part of a manage sequence, see the river_window_manager_v1 description. *)
-  let enable (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let enable (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:1 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg
   
@@ -4249,7 +5135,7 @@ module River_pointer_binding_v1 = struct
       
       This request indicates that the client will no longer use the pointer
       binding object and that it may be safely destroyed. *)
-  let destroy (_t:([< `V1 | `V2 | `V3 | `V4] as 'v) t)  =
+  let destroy (_t:([< `V1 | `V2 | `V3 | `V4 | `V5] as 'v) t)  =
     let _msg = Proxy.alloc _t ~op:0 ~ints:0 ~strings:[] ~arrays:[] in
     Proxy.send _t _msg;
     Proxy.shutdown_send _t
@@ -4258,7 +5144,7 @@ module River_pointer_binding_v1 = struct
   class virtual ['v] _handlers_unsafe = object (_self : (_, 'v, _) #Proxy.Handler.t)
     method user_data = S.No_data
     method metadata = (module River_window_management_v1_proto.River_pointer_binding_v1)
-    method max_version = 4l
+    method max_version = 5l
     
     method private virtual on_pressed : [> ] t -> unit
     
@@ -4284,9 +5170,9 @@ module River_pointer_binding_v1 = struct
   (** Handler for a proxy with version >= 1. *)
   class virtual ['v] v1 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V1 | `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V1 | `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_pressed : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_pressed : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The bound pointer button has been pressed.
         
@@ -4303,7 +5189,7 @@ module River_pointer_binding_v1 = struct
         as soon as possible as the capacity of the compositor to buffer incoming
         input events is finite. *)
     
-    method private virtual on_released : [> `V1 | `V2 | `V3 | `V4] t -> unit
+    method private virtual on_released : [> `V1 | `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The bound pointer button has been released.
         
@@ -4331,9 +5217,9 @@ module River_pointer_binding_v1 = struct
   (** Handler for a proxy with version >= 2. *)
   class virtual ['v] v2 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V2 | `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V2 | `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_pressed : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_pressed : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The bound pointer button has been pressed.
         
@@ -4350,7 +5236,7 @@ module River_pointer_binding_v1 = struct
         as soon as possible as the capacity of the compositor to buffer incoming
         input events is finite. *)
     
-    method private virtual on_released : [> `V2 | `V3 | `V4] t -> unit
+    method private virtual on_released : [> `V2 | `V3 | `V4 | `V5] t -> unit
     
     (** The bound pointer button has been released.
         
@@ -4378,9 +5264,9 @@ module River_pointer_binding_v1 = struct
   (** Handler for a proxy with version >= 3. *)
   class virtual ['v] v3 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V3 | `V4] as 'v] _handlers_unsafe
+    inherit [[< `V3 | `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_pressed : [> `V3 | `V4] t -> unit
+    method private virtual on_pressed : [> `V3 | `V4 | `V5] t -> unit
     
     (** The bound pointer button has been pressed.
         
@@ -4397,7 +5283,7 @@ module River_pointer_binding_v1 = struct
         as soon as possible as the capacity of the compositor to buffer incoming
         input events is finite. *)
     
-    method private virtual on_released : [> `V3 | `V4] t -> unit
+    method private virtual on_released : [> `V3 | `V4 | `V5] t -> unit
     
     (** The bound pointer button has been released.
         
@@ -4425,9 +5311,9 @@ module River_pointer_binding_v1 = struct
   (** Handler for a proxy with version >= 4. *)
   class virtual ['v] v4 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
     (**/**)
-    inherit [[< `V4] as 'v] _handlers_unsafe
+    inherit [[< `V4 | `V5] as 'v] _handlers_unsafe
     (**/**)
-    method private virtual on_pressed : [> `V4] t -> unit
+    method private virtual on_pressed : [> `V4 | `V5] t -> unit
     
     (** The bound pointer button has been pressed.
         
@@ -4444,7 +5330,7 @@ module River_pointer_binding_v1 = struct
         as soon as possible as the capacity of the compositor to buffer incoming
         input events is finite. *)
     
-    method private virtual on_released : [> `V4] t -> unit
+    method private virtual on_released : [> `V4 | `V5] t -> unit
     
     (** The bound pointer button has been released.
         
@@ -4467,5 +5353,52 @@ module River_pointer_binding_v1 = struct
         input events is finite. *)
     
     method min_version = 4l
+  end
+  
+  (** Handler for a proxy with version >= 5. *)
+  class virtual ['v] v5 = object (_ : (_, 'v, _) #Proxy.Service_handler.t)
+    (**/**)
+    inherit [[< `V5] as 'v] _handlers_unsafe
+    (**/**)
+    method private virtual on_pressed : [> `V5] t -> unit
+    
+    (** The bound pointer button has been pressed.
+        
+        This event indicates that the pointer button triggering the binding has
+        been pressed.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server.
+        
+        The compositor should wait for the manage sequence to complete before
+        processing further input events. This allows the window manager client
+        to, for example, modify key bindings and keyboard focus without racing
+        against future input events. The window manager should of course respond
+        as soon as possible as the capacity of the compositor to buffer incoming
+        input events is finite. *)
+    
+    method private virtual on_released : [> `V5] t -> unit
+    
+    (** The bound pointer button has been released.
+        
+        This event indicates that the pointer button triggering the binding has
+        been released.
+        
+        Releasing the modifiers for the binding without releasing the pointer
+        button does not trigger the release event. This event is sent when the
+        pointer button is released, even if the modifiers have changed since the
+        pressed event.
+        
+        This event will be followed by a manage_start event after all other new
+        state has been sent by the server.
+        
+        The compositor should wait for the manage sequence to complete before
+        processing further input events. This allows the window manager client
+        to, for example, modify key bindings and keyboard focus without racing
+        against future input events. The window manager should of course respond
+        as soon as possible as the capacity of the compositor to buffer incoming
+        input events is finite. *)
+    
+    method min_version = 5l
   end
 end

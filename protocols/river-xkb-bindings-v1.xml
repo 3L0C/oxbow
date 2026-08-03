@@ -307,7 +307,7 @@
       </description>
       <arg name="old" type="uint" enum="river_seat_v1.modifiers"
         summary="previously active modifiers"/>
-      <arg name="new_" type="uint" enum="river_seat_v1.modifiers"
+      <arg name="new" type="uint" enum="river_seat_v1.modifiers"
         summary="currently active modifiers"/>
     </event>
   </interface>

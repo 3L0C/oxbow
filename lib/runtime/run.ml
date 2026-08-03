@@ -16,7 +16,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let river_wm_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Window_management.River_window_manager_v1.v4
+         inherit [_] River.Window_management.River_window_manager_v1.v5
          method on_finished _ = Handlers.on_finished wm_box
          method on_manage_start proxy = Handlers.on_manage_start proxy wm_box
 

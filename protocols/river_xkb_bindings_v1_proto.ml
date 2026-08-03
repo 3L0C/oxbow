@@ -77,7 +77,7 @@ module River_xkb_bindings_seat_v1 = struct
   
   let events = function
     | 0 -> "ate_unbound_key", []
-    | 1 -> "modifiers_update", ["old", `Uint; "new_", `Uint]
+    | 1 -> "modifiers_update", ["old", `Uint; "new", `Uint]
     | i -> Proxy.unknown_event i, []
   
 end

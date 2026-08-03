@@ -43,7 +43,7 @@ end
 
 module Obj = struct
   module Window_management = struct
-    type v = [ `V4 ]
+    type v = [ `V5 ]
 
     module Wm = struct
       type t = v River_window_management_v1_client.River_window_manager_v1.t
