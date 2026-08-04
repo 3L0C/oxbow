@@ -309,3 +309,44 @@ val rehome : t -> string -> unit
 (** [presentation_string window] is [window]'s current presentation as one of
     ["tiled"], ["floating"], ["maximized"], or ["fullscreen"]. *)
 val presentation_string : t -> string
+
+(** [set_informed_fullscreen window state] sets [window]'s last sent
+    inform_fullscreen value to [state].
+
+    {b Effects:} mutates WM state *)
+val set_informed_fullscreen : t -> bool option -> unit
+
+(** [set_informed_maximized window state] sets [window]'s last sent
+    inform_maximized value to [state].
+
+    {b Effects:} mutates WM state *)
+val set_informed_maximized : t -> bool option -> unit
+
+(** [set_informed_resizing window state] sets [window]'s last sent
+    inform_resizing value to [state].
+
+    {b Effects:} mutates WM state *)
+val set_informed_resizing : t -> bool option -> unit
+
+(** [set_caps window caps] sets [window]'s last sent capabilities value to
+    [caps].
+
+    {b Effects:} mutates WM state *)
+val set_caps : t -> int32 option -> unit
+
+(** [set_tiled_edges window edges] sets [window]'s last sent tiled edges value
+    to [edges].
+
+    {b Effects:} mutates WM state *)
+val set_tiled_edges : t -> int32 option -> unit
+
+(** [set_ssd window state] sets [window]'s last sent ssd value to [state].
+
+    {b Effects:} mutates WM state *)
+val set_ssd : t -> bool option -> unit
+
+(** [set_borders window borders] sets [window]'s last sent border values to
+    [borders].
+
+    {b Effects:} mutates WM state *)
+val set_borders : t -> (int32 * int32 * int32 * int32 * int32 * int32) option -> unit

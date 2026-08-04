@@ -49,7 +49,17 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; is_urgent = false
   ; is_fake_fullscreen = false
   ; scrolling = { consumes = false; width = scroll_width }
-  ; committed = { proposed = None; fullscreen_on = None }
+  ; committed =
+      { proposed = None
+      ; fullscreen_on = None
+      ; caps = None
+      ; tiled_edges = None
+      ; ssd = None
+      ; informed_maximized = None
+      ; informed_fullscreen = None
+      ; informed_resizing = None
+      ; borders = None
+      }
   ; presentation = Presentation.Tiled
   ; requests = []
   }
@@ -453,3 +463,11 @@ let presentation_string w =
   | Maximized _ -> "maximized"
   | Fullscreen _ -> "fullscreen"
 ;;
+
+let set_informed_fullscreen w o = w.committed.informed_fullscreen <- o
+let set_informed_maximized w o = w.committed.informed_maximized <- o
+let set_informed_resizing w o = w.committed.informed_resizing <- o
+let set_caps w o = w.committed.caps <- o
+let set_tiled_edges w o = w.committed.tiled_edges <- o
+let set_ssd w o = w.committed.ssd <- o
+let set_borders w o = w.committed.borders <- o

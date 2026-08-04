@@ -36,43 +36,73 @@ let exit_fullscreen (_ : Ctx.manage Ctx.t) (w : Window.t) =
 ;;
 
 let inform_fullscreen (_ : Ctx.manage Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.inform_fullscreen w.obj
+  if w.committed.informed_fullscreen <> Some true
+  then (
+    River.Window_management.River_window_v1.inform_fullscreen w.obj;
+    Window.set_informed_fullscreen w (Some true))
 ;;
 
 let inform_not_fullscreen (_ : Ctx.manage Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.inform_not_fullscreen w.obj
+  if w.committed.informed_fullscreen <> Some false
+  then (
+    River.Window_management.River_window_v1.inform_not_fullscreen w.obj;
+    Window.set_informed_fullscreen w (Some false))
 ;;
 
 let inform_maximized (_ : Ctx.manage Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.inform_maximized w.obj
+  if w.committed.informed_maximized <> Some true
+  then (
+    River.Window_management.River_window_v1.inform_maximized w.obj;
+    Window.set_informed_maximized w (Some true))
 ;;
 
 let inform_unmaximized (_ : Ctx.manage Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.inform_unmaximized w.obj
+  if w.committed.informed_maximized <> Some false
+  then (
+    River.Window_management.River_window_v1.inform_unmaximized w.obj;
+    Window.set_informed_maximized w (Some false))
 ;;
 
 let inform_resize_start (_ : Ctx.manage Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.inform_resize_start w.obj
+  if w.committed.informed_resizing <> Some true
+  then (
+    River.Window_management.River_window_v1.inform_resize_start w.obj;
+    Window.set_informed_resizing w (Some true))
 ;;
 
 let inform_resize_end (_ : Ctx.manage Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.inform_resize_end w.obj
+  if w.committed.informed_resizing <> Some false
+  then (
+    River.Window_management.River_window_v1.inform_resize_end w.obj;
+    Window.set_informed_resizing w (Some false))
 ;;
 
 let set_capabilities (_ : Ctx.manage Ctx.t) (w : Window.t) ~caps =
-  River.Window_management.River_window_v1.set_capabilities w.obj ~caps
+  if w.committed.caps <> Some caps
+  then (
+    River.Window_management.River_window_v1.set_capabilities w.obj ~caps;
+    Window.set_caps w (Some caps))
 ;;
 
 let set_tiled (_ : Ctx.manage Ctx.t) (w : Window.t) ~edges =
-  River.Window_management.River_window_v1.set_tiled w.obj ~edges
+  if w.committed.tiled_edges <> Some edges
+  then (
+    River.Window_management.River_window_v1.set_tiled w.obj ~edges;
+    Window.set_tiled_edges w (Some edges))
 ;;
 
 let use_csd (_ : Ctx.manage Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.use_csd w.obj
+  if w.committed.ssd <> Some false
+  then (
+    River.Window_management.River_window_v1.use_csd w.obj;
+    Window.set_ssd w (Some false))
 ;;
 
 let use_ssd (_ : Ctx.manage Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.use_ssd w.obj
+  if w.committed.ssd <> Some true
+  then (
+    River.Window_management.River_window_v1.use_ssd w.obj;
+    Window.set_ssd w (Some true))
 ;;
 
 let focus_window (_ : Ctx.manage Ctx.t) (s : Seat.t) (w : Window.t) =
@@ -109,7 +139,10 @@ let set_content_clip_box (_ : Ctx.render Ctx.t) (w : Window.t) ~x ~y ~width ~hei
 ;;
 
 let set_borders (_ : Ctx.render Ctx.t) (w : Window.t) ~edges ~width ~r ~g ~b ~a =
-  River.Window_management.River_window_v1.set_borders w.obj ~edges ~width ~r ~g ~b ~a
+  if w.committed.borders <> Some (edges, width, r, g, b, a)
+  then (
+    River.Window_management.River_window_v1.set_borders w.obj ~edges ~width ~r ~g ~b ~a;
+    Window.set_borders w (Some (edges, width, r, g, b, a)))
 ;;
 
 let place_top (_ : Ctx.render Ctx.t) (w : Window.t) =

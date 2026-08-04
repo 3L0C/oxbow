@@ -212,6 +212,13 @@ and Window : sig
     type t =
       { mutable proposed : (int32 * int32) option
       ; mutable fullscreen_on : int32 option
+      ; mutable caps : int32 option
+      ; mutable tiled_edges : int32 option
+      ; mutable ssd : bool option
+      ; mutable informed_maximized : bool option
+      ; mutable informed_fullscreen : bool option
+      ; mutable informed_resizing : bool option
+      ; mutable borders : (int32 * int32 * int32 * int32 * int32 * int32) option
       }
   end
 
