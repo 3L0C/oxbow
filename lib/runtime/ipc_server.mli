@@ -6,6 +6,6 @@ val start
   :  ?socket_path:string
   -> sw:Eio.Switch.t
   -> net:_ Eio.Net.t
-  -> wm:Ocdwm_state.Wm.t
+  -> wm:Oxbow_state.Wm.t
   -> unit
   -> unit

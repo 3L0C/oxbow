@@ -7,8 +7,8 @@
     {b Effects:} mutates WM state *)
 val zoom
   :  ?warp:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move_window ?policy window output] removes [window] from its current
@@ -17,9 +17,9 @@ val zoom
 
     {b Effects:} mutates WM state *)
 val move_window
-  :  ?policy:Ocdwm_core.Tag.Policy.t
-  -> Ocdwm_state.Window.t
-  -> Ocdwm_state.Output.t
+  :  ?policy:Oxbow_core.Tag.Policy.t
+  -> Oxbow_state.Window.t
+  -> Oxbow_state.Output.t
   -> unit
 
 (** [send_window_to_logical wm window dir policy] moves [window] in [dir].
@@ -28,10 +28,10 @@ val move_window
 
     {b Effects:} mutates WM state *)
 val send_window_to_logical
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Window.t
-  -> Ocdwm_core.Direction.Logical.t
-  -> Ocdwm_core.Tag.Policy.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Window.t
+  -> Oxbow_core.Direction.Logical.t
+  -> Oxbow_core.Tag.Policy.t
   -> (Yojson.Safe.t option, string) result
 
 (** [send_window_to_spatial wm window dir policy] moves [window] in [dir].
@@ -40,10 +40,10 @@ val send_window_to_logical
 
     {b Effects:} mutates WM state *)
 val send_window_to_spatial
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Window.t
-  -> Ocdwm_core.Direction.Spatial.t
-  -> Ocdwm_core.Tag.Policy.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Window.t
+  -> Oxbow_core.Direction.Spatial.t
+  -> Oxbow_core.Tag.Policy.t
   -> (Yojson.Safe.t option, string) result
 
 (** [send_window_to_name wm window name policy] moves [window] to the output
@@ -52,10 +52,10 @@ val send_window_to_spatial
 
     {b Effects:} mutates WM state *)
 val send_window_to_name
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Window.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Window.t
   -> string
-  -> Ocdwm_core.Tag.Policy.t
+  -> Oxbow_core.Tag.Policy.t
   -> (Yojson.Safe.t option, string) result
 
 (** [send_to_logical wm seat dir policy ~follow] sends [seat]'s focused window
@@ -65,10 +65,10 @@ val send_window_to_name
 
     {b Effects:} mutates WM state *)
 val send_to_logical
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
-  -> Ocdwm_core.Tag.Policy.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Logical.t
+  -> Oxbow_core.Tag.Policy.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
@@ -79,10 +79,10 @@ val send_to_logical
 
     {b Effects:} mutates WM state *)
 val send_to_spatial
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Spatial.t
-  -> Ocdwm_core.Tag.Policy.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Spatial.t
+  -> Oxbow_core.Tag.Policy.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
@@ -93,10 +93,10 @@ val send_to_spatial
 
     {b Effects:} mutates WM state *)
 val send_to_name
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> string
-  -> Ocdwm_core.Tag.Policy.t
+  -> Oxbow_core.Tag.Policy.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
@@ -105,17 +105,17 @@ val send_to_name
     output, or when window is fullscreen, maximized, or fixed.
 
     {b Effects:} mutates WM state *)
-val toggle_floating : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
+val toggle_floating : Oxbow_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [maximize wm window] ends any seat operation and maximizes [window].
 
     {b Effects:} mutates WM state *)
-val maximize : Ocdwm_state.Wm.t -> Ocdwm_state.Window.t -> unit
+val maximize : Oxbow_state.Wm.t -> Oxbow_state.Window.t -> unit
 
 (** [unmaximize window] restores [window] from its maximized state.
 
     {b Effects:} mutates WM state *)
-val unmaximize : Ocdwm_state.Window.t -> unit
+val unmaximize : Oxbow_state.Window.t -> unit
 
 (** [fullscreen wm output window cb] makes [window] fullscreen on [output], or
     on its own output when [output] is [None], moving it between outputs when
@@ -124,29 +124,29 @@ val unmaximize : Ocdwm_state.Window.t -> unit
 
     {b Effects:} mutates WM state *)
 val fullscreen
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Output.t option
-  -> Ocdwm_state.Window.t
-  -> (Ocdwm_state.Wm.t -> Ocdwm_state.Window.t -> Ocdwm_state.Window.Request.t -> unit)
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Output.t option
+  -> Oxbow_state.Window.t
+  -> (Oxbow_state.Wm.t -> Oxbow_state.Window.t -> Oxbow_state.Window.Request.t -> unit)
   -> unit
 
 (** [exit_fullscreen window] restores [window] from its fullscreen state. No-op
     when [window] is not fullscreen.
 
     {b Effects:} mutates WM state *)
-val exit_fullscreen : Ocdwm_state.Window.t -> unit
+val exit_fullscreen : Oxbow_state.Window.t -> unit
 
 (** [close_focused seat] asks [seat]'s focused window to close. *)
-val close_focused : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
+val close_focused : Oxbow_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [move_to ~x ~y window] moves [window] to the extents [x] and [y]. Is
     [Error msg] when the window is fullscreen.
 
     {b Effects:} mutates WM state *)
 val move_window_to
-  :  x:Ocdwm_core.Extent.t
-  -> y:Ocdwm_core.Extent.t
-  -> Ocdwm_state.Window.t
+  :  x:Oxbow_core.Extent.t
+  -> y:Oxbow_core.Extent.t
+  -> Oxbow_state.Window.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move_to ~x ~y seat] moves [seat]'s focused window to the extents [x] and
@@ -154,9 +154,9 @@ val move_window_to
 
     {b Effects:} mutates WM state *)
 val move_to
-  :  x:Ocdwm_core.Extent.t
-  -> y:Ocdwm_core.Extent.t
-  -> Ocdwm_state.Seat.t
+  :  x:Oxbow_core.Extent.t
+  -> y:Oxbow_core.Extent.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move_spatial seat dir by] moves [seat]'s focused window in [dir] by
@@ -164,9 +164,9 @@ val move_to
 
     {b Effects:} mutates WM state *)
 val move_spatial
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Spatial.t
-  -> Ocdwm_core.Extent.t
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Spatial.t
+  -> Oxbow_core.Extent.t
   -> (Yojson.Safe.t option, string) result
 
 (** [resize_window_to ~width ~height window] resizes window to the extents
@@ -174,9 +174,9 @@ val move_spatial
 
     {b Effects:} mutates WM state *)
 val resize_window_to
-  :  width:Ocdwm_core.Extent.t
-  -> height:Ocdwm_core.Extent.t
-  -> Ocdwm_state.Window.t
+  :  width:Oxbow_core.Extent.t
+  -> height:Oxbow_core.Extent.t
+  -> Oxbow_state.Window.t
   -> (Yojson.Safe.t option, string) result
 
 (** [resize_to ~width ~height seat] resizes [seat]'s focused window to the
@@ -184,9 +184,9 @@ val resize_window_to
 
     {b Effects:} mutates WM state *)
 val resize_to
-  :  width:Ocdwm_core.Extent.t
-  -> height:Ocdwm_core.Extent.t
-  -> Ocdwm_state.Seat.t
+  :  width:Oxbow_core.Extent.t
+  -> height:Oxbow_core.Extent.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
 (** [resize_spatial seat dir by] resizes [seat]'s focused window in [dir] by
@@ -194,9 +194,9 @@ val resize_to
 
     {b Effects:} mutates WM state *)
 val resize_spatial
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Spatial.t
-  -> Ocdwm_core.Extent.t
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Spatial.t
+  -> Oxbow_core.Extent.t
   -> (Yojson.Safe.t option, string) result
 
 (** [swap_outputs wm seat ~target ~policy ~follow scope] exchanges the windows
@@ -211,10 +211,10 @@ val resize_spatial
     [scope] controls which windows are swapped. [scope] is one of
     [`Tags | `All | `Visible]. *)
 val swap_outputs
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> target:Ocdwm_ipc.Command.Output.Swap.Target.t
-  -> policy:Ocdwm_core.Tag.Policy.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> target:Oxbow_ipc.Command.Output.Swap.Target.t
+  -> policy:Oxbow_core.Tag.Policy.t
   -> follow:bool
   -> [< `Tags | `All | `Visible ]
   -> (Yojson.Safe.t option, string) result

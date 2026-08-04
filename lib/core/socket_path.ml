@@ -1,5 +1,5 @@
 let default () =
-  match Sys.getenv_opt "OCDWM_SOCKET" with
+  match Sys.getenv_opt "OXBOW_SOCKET" with
   | Some p -> p
   | None ->
     let runtime_dir =
@@ -12,7 +12,7 @@ let default () =
       | Some d -> d
       | None -> "wayland-0"
     in
-    Filename.concat runtime_dir @@ Printf.sprintf "ocdwm-%s.sock" display
+    Filename.concat runtime_dir @@ Printf.sprintf "oxbow-%s.sock" display
 ;;
 
 let resolve ?override () =

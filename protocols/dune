@@ -1,6 +1,6 @@
 (library
  (name river)
- (public_name ocdwm.river)
+ (public_name oxbow.river)
  (libraries wayland fmt unix)
  (modules
   river

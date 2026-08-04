@@ -4,14 +4,14 @@ val registry : Wayland.Registry.t option ref
 (** [on_finished wm_box] handles the finished event.
 
     {b Effects:} mutates WM state *)
-val on_finished : Ocdwm_state.Wm.t Ocdwm_state.Box.t -> unit
+val on_finished : Oxbow_state.Wm.t Oxbow_state.Box.t -> unit
 
 (** [on_manage_start river_wm_v1 wm_box] handles the manage cycle.
 
     {b Effects:} mutates WM state *)
 val on_manage_start
   :  River.Obj.Window_management.Wm.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
 (** [on_output river_wm_v1 river_output wm_box] handles new output creation.
@@ -20,7 +20,7 @@ val on_manage_start
 val on_output
   :  River.Obj.Window_management.Wm.t
   -> River.Obj.Window_management.Output.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
 (** [on_render_start river_wm_v1 wm_box] handles the render cycle.
@@ -28,7 +28,7 @@ val on_output
     {b Effects:} mutates WM state *)
 val on_render_start
   :  River.Obj.Window_management.Wm.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
 (** [on_seat river_wm_v1 river_seat wm_box] handles new seat creation.
@@ -37,7 +37,7 @@ val on_render_start
 val on_seat
   :  River.Obj.Window_management.Wm.t
   -> River.Obj.Window_management.Seat.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
 (** [on_session_locked river_wm_v1 wm_box] handles the session lock request.
@@ -45,7 +45,7 @@ val on_seat
     {b Effects:} mutates WM state *)
 val on_session_locked
   :  River.Obj.Window_management.Wm.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
 (** [on_session_unlocked river_wm_v1 wm_box] handles the session unlock request.
@@ -53,7 +53,7 @@ val on_session_locked
     {b Effects:} mutates WM state *)
 val on_session_unlocked
   :  River.Obj.Window_management.Wm.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
 (** [on_unavailable river_wm_v1] handles the unavailable event.
@@ -69,7 +69,7 @@ val on_unavailable : River.Obj.Window_management.Wm.t -> unit
 val on_window
   :  River.Obj.Window_management.Wm.t
   -> River.Obj.Window_management.Window.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
 (** [on_input_device device wm_box] handles newly added input devices.
@@ -77,7 +77,7 @@ val on_window
     {b Effects:} mutates WM state *)
 val on_input_device
   :  River.Obj.Input.Management.Device.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
 (** [on_libinput_device device wm_box] handles newly added libinput
@@ -86,7 +86,7 @@ val on_input_device
     {b Effects:} mutates WM state *)
 val on_libinput_device
   :  River.Obj.Input.Config.Device.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
 (** [on_xkb_keyboard xkb wm_box] handles newly added xkb keybords.
@@ -94,5 +94,5 @@ val on_libinput_device
     {b Effects:} mutates WM state *)
 val on_xkb_keyboard
   :  River.Obj.Xkb.Config.Keyboard.t
-  -> Ocdwm_state.Wm.t Ocdwm_state.Box.t
+  -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit

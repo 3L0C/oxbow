@@ -1,4 +1,4 @@
-open! Ocdwm_state
+open! Oxbow_state
 
 let show (_ : Ctx.render Ctx.t) (w : Window.t) =
   River.Window_management.River_window_v1.show w.obj

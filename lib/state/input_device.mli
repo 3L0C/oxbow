@@ -35,6 +35,6 @@ val id : Wire.Obj.Input.Management.Device.t -> int32
 val matches
   :  t
   -> pattern:string option
-  -> case:Ocdwm_core.Pattern.Case.t
-  -> role:Ocdwm_core.Input.Role.t option
+  -> case:Oxbow_core.Pattern.Case.t
+  -> role:Oxbow_core.Input.Role.t option
   -> bool

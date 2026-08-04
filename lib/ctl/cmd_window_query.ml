@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let name = "query"
 let doc = "Query the currently focused window"

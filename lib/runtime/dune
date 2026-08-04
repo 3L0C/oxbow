@@ -1,14 +1,14 @@
 (library
- (name ocdwm_runtime)
- (public_name ocdwm.runtime)
+ (name oxbow_runtime)
+ (public_name oxbow.runtime)
  (libraries
-  ocdwm.core
-  ocdwm.ipc
-  ocdwm.layout
-  ocdwm.state
-  ocdwm.ops
-  ocdwm.wire
-  ocdwm.river
+  oxbow.core
+  oxbow.ipc
+  oxbow.layout
+  oxbow.state
+  oxbow.ops
+  oxbow.wire
+  oxbow.river
   wayland
   eio
   eio.unix

@@ -41,21 +41,9 @@ manage:get_xkb_binding
 manage:get_xkb_binding
 manage:get_xkb_binding
 manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
 manage:get_pointer_binding(seat0)
 manage:get_pointer_binding(seat0)
 manage:clear_focus(seat0)
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
 manage:enable
 manage:enable
 manage:enable
@@ -329,22 +317,22 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
 == layout scrolling ==
-manage:propose_dimensions(firefox, 1021x1032)
-manage:propose_dimensions(emacs, 1021x1032)
-manage:propose_dimensions(kitty, 1021x1032)
+manage:propose_dimensions(firefox, 927x1032)
+manage:propose_dimensions(emacs, 927x1032)
+manage:propose_dimensions(kitty, 927x1032)
 manage:focus_window(seat0, firefox)
 manage:op_end(seat0)
 render:set_position(firefox, 24, 24)
 render:show(firefox)
 render:set_clip_box(firefox, 0, 0, 0x0)
 render:set_content_clip_box(firefox, 0, 0, 0x0)
-render:set_position(emacs, 1063, 24)
+render:set_position(emacs, 969, 24)
 render:show(emacs)
-render:set_clip_box(emacs, -4, -4, 861x1040)
+render:set_clip_box(emacs, 0, 0, 0x0)
 render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 2102, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_position(kitty, 1914, 24)
+render:show(kitty)
+render:set_clip_box(kitty, -4, -4, 10x1040)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
@@ -356,13 +344,13 @@ render:set_position(firefox, 24, 24)
 render:show(firefox)
 render:set_clip_box(firefox, 0, 0, 0x0)
 render:set_content_clip_box(firefox, 0, 0, 0x0)
-render:set_position(emacs, 1063, 24)
+render:set_position(emacs, 969, 24)
 render:show(emacs)
-render:set_clip_box(emacs, -4, -4, 861x1040)
+render:set_clip_box(emacs, 0, 0, 0x0)
 render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 2102, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_position(kitty, 1914, 24)
+render:show(kitty)
+render:set_clip_box(kitty, -4, -4, 10x1040)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)

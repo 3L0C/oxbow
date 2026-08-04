@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_ipc
+open! Oxbow_core
+open! Oxbow_ipc
 
 let command_term policy =
   let open Cmdliner.Term.Syntax in

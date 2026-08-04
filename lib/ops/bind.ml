@@ -1,6 +1,6 @@
-open! Ocdwm_core
-open! Ocdwm_ipc
-open! Ocdwm_state
+open! Oxbow_core
+open! Oxbow_ipc
+open! Oxbow_state
 
 type t =
   { mods : int32
@@ -9,41 +9,23 @@ type t =
 
 let install_defaults (wm : Wm.t) seat =
   let modkey = wm.config.modkey in
-  let alt = Wire.Modifiers.mod1 in
-  let shift = Wire.Modifiers.shift in
   let ctrl = Wire.Modifiers.ctrl in
   let xkb_bindings =
     Xkbcommon.Keysym.
       [ (* mods, keysym,  command *)
-        modkey, K_Return, Command.Spawn "kitty"
+        modkey, K_Return, Command.Spawn "foot"
       ; modkey, K_q, Command.Window Close
+      ; modkey, K_Q, Command.Session Exit
       ; modkey, K_j, Command.Window (Focus_logical { dir = Next; warp = None })
       ; modkey, K_k, Command.Window (Focus_logical { dir = Prev; warp = None })
-      ; modkey, K_Escape, Command.Wm Close
-      ; Int32.(logor modkey shift), K_Escape, Command.Session Exit
       ; modkey, K_l, Command.Tag (View_cycle_occupied Next)
       ; modkey, K_h, Command.Tag (View_cycle_occupied Prev)
       ; modkey, K_Tab, Command.Tag (View_cycle Next)
       ; modkey, K_ISO_Left_Tab, Command.Tag (View_cycle Prev)
-      ; Int32.(logor modkey alt), K_Tab, Command.Layout (Cycle Next)
-      ; Int32.(logor modkey alt), K_ISO_Left_Tab, Command.Layout (Cycle Prev)
       ; modkey, K_t, Command.Layout (Select { layout = Tiling; scope = Focused })
       ; modkey, K_s, Command.Layout (Select { layout = Scrolling; scope = Focused })
       ; modkey, K_f, Command.Layout (Select { layout = Floating; scope = Focused })
-      ; Int32.(logor modkey shift), K_space, Command.Window Toggle_floating
       ; modkey, K_v, Command.Window Toggle_fullscreen
-      ; modkey, K_I, Command.Window Toggle_fake_fullscreen
-      ; modkey, K_F, Command.Window Toggle_maximize
-      ; ( modkey
-        , K_H
-        , Command.Layout (Tiling (Mfact { delta = Delta.(Rel (-0.05)); scope = Focused }))
-        )
-      ; ( modkey
-        , K_L
-        , Command.Layout (Tiling (Mfact { delta = Delta.(Rel 0.05); scope = Focused })) )
-      ; ( modkey
-        , K_a
-        , Command.Layout (Tiling (Mfact { delta = Delta.(Abs 0.55); scope = Focused })) )
       ; modkey, K_space, Command.Window (Zoom { warp = None })
       ; modkey, K_J, Command.Window (Shift Next)
       ; modkey, K_K, Command.Window (Shift Prev)
@@ -51,10 +33,19 @@ let install_defaults (wm : Wm.t) seat =
       ; ( modkey
         , K_i
         , Command.Layout (Tiling (Scheme { scheme = Monocle; scope = Focused })) )
+      ; ( modkey
+        , K_z
+        , Command.Layout (Scrolling (Policy { policy = Left; scope = Focused })) )
+      ; ( modkey
+        , K_x
+        , Command.Layout (Scrolling (Policy { policy = Centered; scope = Focused })) )
+      ; ( modkey
+        , K_c
+        , Command.Layout (Scrolling (Policy { policy = Visible; scope = Focused })) )
       ; modkey, K_comma, Command.Window Column_consume
       ; modkey, K_period, Command.Window Column_release
-      ; Int32.(logor modkey ctrl), K_h, Command.Window (Column_move Prev)
       ; Int32.(logor modkey ctrl), K_l, Command.Window (Column_move Next)
+      ; Int32.(logor modkey ctrl), K_h, Command.Window (Column_move Prev)
       ; modkey, K_minus, Command.Window (Column_width (Rel (-0.1)))
       ; modkey, K_equal, Command.Window (Column_width (Rel 0.1))
       ; modkey, K_r, Command.Window Column_width_cycle

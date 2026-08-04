@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let command_term = Cmdliner.Term.const @@ Command.Window Column_width_cycle
 let name = "cycle"

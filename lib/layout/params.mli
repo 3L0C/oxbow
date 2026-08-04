@@ -1,16 +1,16 @@
 module Tiling : sig
   type t =
-    { mutable scheme : Ocdwm_core.Scheme.t
+    { mutable scheme : Oxbow_core.Scheme.t
     ; mutable mfact : float
     ; mutable nmaster : int
-    ; mutable dir : Ocdwm_core.Direction.Spatial.t
+    ; mutable dir : Oxbow_core.Direction.Spatial.t
     }
 end
 
 module Scrolling : sig
   type t =
-    { mutable policy : Ocdwm_core.Scroll_policy.t
-    ; mutable default_width : Ocdwm_core.Width_fac.t
+    { mutable policy : Oxbow_core.Scroll_policy.t
+    ; mutable default_width : Oxbow_core.Width_fac.t
     ; mutable offset : int
     }
 end

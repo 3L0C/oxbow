@@ -1,6 +1,6 @@
-open! Ocdwm_core
-open! Ocdwm_state
-open! Ocdwm_ops
+open! Oxbow_core
+open! Oxbow_state
+open! Oxbow_ops
 
 let capabilities ctx w = Send.set_capabilities ctx w ~caps:Wire.Capabilities.fullscreen
 

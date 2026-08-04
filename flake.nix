@@ -1,4 +1,6 @@
 {
+  description = "oxbow - dynamic window manager for the river Wayland compositor, written in OCaml";
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -75,8 +77,7 @@
 
         checks = {
           inherit pre-commit-check;
-          package-ocdwm = scope'.ocdwm;
-          package-octl = scope'.octl;
+          package-oxbow = scope'.oxbow;
         };
 
         # inherit packages;
@@ -86,10 +87,7 @@
         packages =
           packages
           // {
-            default = pkgs.symlinkJoin {
-              name = "ocdwm";
-              paths = [packages.ocdwm packages.octl];
-            };
+            default = packages.oxbow;
           };
 
         devShells.default = pkgs.mkShell {
@@ -105,7 +103,7 @@
             ${pre-commit-check.shellHook}
 
             echo ""
-            echo "ocdwm development environment"
+            echo "oxbow development environment"
             echo "============================="
             echo ""
             echo "Build commands:"

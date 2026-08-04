@@ -3,6 +3,6 @@
     {b Effects:} mutates WM state; I/O *)
 val handle
   :  Ctx.manage Ctx.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_state.Pending_request.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_state.Pending_request.t
   -> unit

@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_state
+open! Oxbow_core
+open! Oxbow_state
 
 let begin_move wm seat window =
   Focus.focus_window wm seat window;

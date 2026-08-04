@@ -1,11 +1,11 @@
 (executable
  (name main)
- (public_name ocdwm)
- (package ocdwm)
+ (public_name oxbow)
+ (package oxbow)
  (libraries
-  ocdwm.core
-  ocdwm.runtime
-  ocdwm.state
+  oxbow.core
+  oxbow.runtime
+  oxbow.state
   dune-build-info
   cmdliner
   eio_main
@@ -16,10 +16,10 @@
 
 (rule
  (with-stdout-to
-  ocdwm.1
+  oxbow.1
   (run %{exe:main.exe} --help=groff)))
 
 (install
  (section man)
- (package ocdwm)
- (files ocdwm.1))
+ (package oxbow)
+ (files oxbow.1))

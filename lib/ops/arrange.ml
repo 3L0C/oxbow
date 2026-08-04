@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_state
+open! Oxbow_core
+open! Oxbow_state
 
 let outputs_of_scope wm seat (scope : Scope.t) =
   match scope with

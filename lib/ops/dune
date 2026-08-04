@@ -1,12 +1,12 @@
 (library
- (name ocdwm_ops)
- (public_name ocdwm.ops)
+ (name oxbow_ops)
+ (public_name oxbow.ops)
  (libraries
-  ocdwm.core
-  ocdwm.ipc
-  ocdwm.layout
-  ocdwm.state
-  ocdwm.wire
+  oxbow.core
+  oxbow.ipc
+  oxbow.layout
+  oxbow.state
+  oxbow.wire
   eio
   eio.unix
   unix

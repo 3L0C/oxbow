@@ -2,7 +2,7 @@
 
     {b Effects:} mutates WM state *)
 val handle
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_ipc.Command.Input.Cursor.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_ipc.Command.Input.Cursor.t
   -> (Yojson.Safe.t option, string) result

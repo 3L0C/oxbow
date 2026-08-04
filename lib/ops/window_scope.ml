@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_state
+open! Oxbow_core
+open! Oxbow_state
 
 let filter (wm : Wm.t) (seat : Seat.t) (scope : Scope.t) =
   let on_output o =

@@ -1,6 +1,6 @@
 let () =
-  let open Ocdwm_core in
-  let open Ocdwm_ipc in
+  let open Oxbow_core in
+  let open Oxbow_ipc in
   let commands : Command.t list =
     [ Window (Zoom { warp = None })
     ; Spawn "foot"

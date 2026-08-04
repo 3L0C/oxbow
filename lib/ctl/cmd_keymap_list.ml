@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let name = "list"
 let doc = "List active keybindings"

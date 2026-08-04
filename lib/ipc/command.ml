@@ -1,5 +1,5 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
-open! Ocdwm_core
+open! Oxbow_core
 
 module Border = struct
   type t =
@@ -107,7 +107,7 @@ module Layout = struct
           ; scope : Scope.t
           } [@name "orientation"]
       | Scheme of
-          { scheme : Ocdwm_core.Scheme.t
+          { scheme : Oxbow_core.Scheme.t
           ; scope : Scope.t
           } [@name "scheme"]
     [@@deriving yojson]
@@ -116,7 +116,7 @@ module Layout = struct
   type t =
     | Cycle of Direction.Logical.t [@name "cycle"]
     | Select of
-        { layout : Ocdwm_core.Layout.t
+        { layout : Oxbow_core.Layout.t
         ; scope : Scope.t
         } [@name "select"]
     | Scrolling of Scrolling.t [@name "scrolling"]
@@ -142,17 +142,17 @@ module Output = struct
     type t =
       | Tags of
           { target : Target.t
-          ; policy : Ocdwm_core.Tag.Policy.t
+          ; policy : Oxbow_core.Tag.Policy.t
           ; follow : bool
           } [@name "swap_tags"]
       | All of
           { target : Target.t
-          ; policy : Ocdwm_core.Tag.Policy.t
+          ; policy : Oxbow_core.Tag.Policy.t
           ; follow : bool
           } [@name "swap_all"]
       | Visible of
           { target : Target.t
-          ; policy : Ocdwm_core.Tag.Policy.t
+          ; policy : Oxbow_core.Tag.Policy.t
           ; follow : bool
           } [@name "swap_visible"]
     [@@deriving yojson]
@@ -212,7 +212,7 @@ module Window = struct
         ; warp : bool option [@yojson.option]
         } [@name "focus_match"]
     | Tag of
-        { tags : Ocdwm_core.Tag.Arg.t
+        { tags : Oxbow_core.Tag.Arg.t
         ; follow : bool
         } [@name "tag"]
     | Tag_shift of
@@ -225,7 +225,7 @@ module Window = struct
         } [@name "tag_shift_occupied"]
     | Tag_match of
         { wmatch : Window_match.t
-        ; tags : Ocdwm_core.Tag.Arg.t
+        ; tags : Oxbow_core.Tag.Arg.t
         } [@name "tag_match"]
     | Move_drag [@name "move_drag"]
     | Move_to of
@@ -247,21 +247,21 @@ module Window = struct
         } [@name "resize_spatial"]
     | Send_logical of
         { dir : Direction.Logical.t
-        ; policy : Ocdwm_core.Tag.Policy.t
+        ; policy : Oxbow_core.Tag.Policy.t
         ; follow : bool
         } [@name "send_logical"]
     | Send_spatial of
         { dir : Direction.Spatial.t
-        ; policy : Ocdwm_core.Tag.Policy.t
+        ; policy : Oxbow_core.Tag.Policy.t
         ; follow : bool
         } [@name "send_spatial"]
     | Send_name of
         { name : string
-        ; policy : Ocdwm_core.Tag.Policy.t
+        ; policy : Oxbow_core.Tag.Policy.t
         ; follow : bool
         } [@name "send_name"]
     | Shift of Direction.Logical.t [@name "shift"]
-    | Toggle_tag of Ocdwm_core.Tag.Set.t [@name "toggle_tag"]
+    | Toggle_tag of Oxbow_core.Tag.Set.t [@name "toggle_tag"]
     | Toggle_floating [@name "toggle_floating"]
     | Toggle_maximize [@name "toggle_maximize"]
     | Toggle_fullscreen [@name "toggle_fullscreen"]

@@ -21,10 +21,10 @@ val columns : consumes:('a -> bool) -> 'a list -> 'a list list
     within a column split the height evenly. Strip x [offset] is subtracted, so
     rects may lie outside [usable]. Callers apply [Gaps.post]. *)
 val layout
-  :  usable:int Ocdwm_core.Rect.t
+  :  usable:int Oxbow_core.Rect.t
   -> offset:int
   -> ('a * Item.t) list
-  -> ('a * int Ocdwm_core.Rect.t) list
+  -> ('a * int Oxbow_core.Rect.t) list
 
 (** [scroll ~policy ~viewport_w ~max_offset ~offset ~col:(x, w)] is the strip
     offset after applying [policy] to the focused column [col], where [x] is its
@@ -33,7 +33,7 @@ val layout
     [Left] and [Visible] the result is clamped to [0, max 0 max_offset], so
     stale offsets self-heal and the tail column can anchor at the left edge. *)
 val scroll
-  :  policy:Ocdwm_core.Scroll_policy.t
+  :  policy:Oxbow_core.Scroll_policy.t
   -> viewport_w:int
   -> max_offset:int
   -> offset:int

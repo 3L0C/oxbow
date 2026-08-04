@@ -40,15 +40,15 @@ val set_key_repeat : Types.Wm.t -> rate:int -> delay:int -> unit
     {b Effects:} mutates WM state *)
 val set_border_color
   :  Types.Wm.t
-  -> Ocdwm_core.Border_target.t
-  -> Ocdwm_core.Color.t
+  -> Oxbow_core.Border_target.t
+  -> Oxbow_core.Color.t
   -> unit
 
 (** [set_default_width td ~delta] applies [delta] to the default column width of
     [td].
 
     {b Effects:} mutates [td] *)
-val set_default_width : Data.t -> delta:float Ocdwm_core.Delta.t -> unit
+val set_default_width : Data.t -> delta:float Oxbow_core.Delta.t -> unit
 
 (** [copy_tag_data td] is a copy of [td] that shares no mutable record with
     [td]. *)
@@ -58,7 +58,7 @@ val copy_tag_data : Data.t -> Data.t
     configuration.
 
     {b Effects:} mutates WM state *)
-val add_window_rule : Types.Wm.t -> Ocdwm_core.Window_rule.t -> unit
+val add_window_rule : Types.Wm.t -> Oxbow_core.Window_rule.t -> unit
 
 (** [remove_window_rule wm index] removes the window rule at [index] from [wm]'s
     configuration.
@@ -70,13 +70,13 @@ val remove_window_rule : Types.Wm.t -> int -> unit
     pattern as [rule].
 
     {b Effects:} mutates WM state *)
-val replace_window_rule : Types.Wm.t -> Ocdwm_core.Window_rule.t -> unit
+val replace_window_rule : Types.Wm.t -> Oxbow_core.Window_rule.t -> unit
 
 (** [add_input_rule wm rule] adds input rule defined by [rule] to [wm]'s
     configuration.
 
     {b Effects:} mutates WM state *)
-val add_input_rule : Types.Wm.t -> Ocdwm_core.Input_rule.t -> unit
+val add_input_rule : Types.Wm.t -> Oxbow_core.Input_rule.t -> unit
 
 (** [remove_input_rule wm index] removes the input rule at [index] from [wm]'s
     configuration.
@@ -88,7 +88,7 @@ val remove_input_rule : Types.Wm.t -> int -> unit
     [rule].
 
     {b Effects:} mutates WM state *)
-val replace_input_rule : Types.Wm.t -> Ocdwm_core.Input_rule.t -> unit
+val replace_input_rule : Types.Wm.t -> Oxbow_core.Input_rule.t -> unit
 
 (** [declare_mode wm name] appends [name] to the declared modes.
 

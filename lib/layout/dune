@@ -1,4 +1,4 @@
 (library
- (name ocdwm_layout)
- (public_name ocdwm.layout)
- (libraries ocdwm.core logs))
+ (name oxbow_layout)
+ (public_name oxbow.layout)
+ (libraries oxbow.core logs))

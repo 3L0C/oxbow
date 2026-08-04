@@ -1,7 +1,7 @@
-open! Ocdwm_core
-open! Ocdwm_state
-open! Ocdwm_ops
-open! Ocdwm_runtime
+open! Oxbow_core
+open! Oxbow_state
+open! Oxbow_ops
+open! Oxbow_runtime
 
 let sent : Cstruct.t list ref = ref []
 
@@ -42,7 +42,7 @@ let decode (buf : Cstruct.t) : (int32 * int) list =
 let spawn root = fun m -> Wayland.Proxy.spawn (Wayland.Proxy.cast_version root) (silent m)
 
 let make_wm root =
-  Ocdwm_state.Wm.
+  Oxbow_state.Wm.
     { river_wm_v1 =
         spawn root (module River.Proto.Window_management.River_window_manager_v1)
     ; river_xkb_v1 = spawn root (module River.Proto.Xkb.Bindings.River_xkb_bindings_v1)

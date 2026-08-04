@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let name = "drag"
 let doc = "Begin an interactive move operation on the focused window"

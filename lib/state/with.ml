@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 
 let log_of_out = function
   | Some `Debug -> Logs.debug

@@ -1,5 +1,5 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
-open! Ocdwm_core
+open! Oxbow_core
 
 module Reply = struct
   module Available = struct

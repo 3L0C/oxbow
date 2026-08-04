@@ -7,6 +7,6 @@ let () =
     Fake_river.add_window fake ~app_id:(Some "foot");
     Fake_river.tick fake);
   section "outputs" (fun () ->
-    Harness.ipc env (Query Ocdwm_ipc.Query.Outputs)
+    Harness.ipc env (Query Oxbow_ipc.Query.Outputs)
     |> Option.iter (fun j -> print_endline (Yojson.Safe.to_string j)))
 ;;

@@ -1,6 +1,6 @@
-open! Ocdwm_core
-open! Ocdwm_state
-open! Ocdwm_layout
+open! Oxbow_core
+open! Oxbow_state
+open! Oxbow_layout
 
 let with_focused_column ?(scroll_required = true) (seat : Seat.t) f =
   match seat.output with

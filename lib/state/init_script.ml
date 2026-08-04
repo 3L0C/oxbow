@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 
 type t = { pid : int }
 
@@ -18,10 +18,10 @@ let resolve ?override_path () =
   | None ->
     let config_dir =
       match Sys.getenv_opt "XDG_CONFIG_HOME" with
-      | Some d -> Some (d ^ "/ocdwm/init")
+      | Some d -> Some (d ^ "/oxbow/init")
       | None ->
         (match Sys.getenv_opt "HOME" with
-         | Some d -> Some (d ^ "/.config/ocdwm/init")
+         | Some d -> Some (d ^ "/.config/oxbow/init")
          | None -> None)
     in
     (match config_dir with
@@ -39,9 +39,9 @@ let fork ~cmd =
   | 0 ->
     (try Unix.setsid () |> ignore with
      | Unix.Unix_error _ ->
-       Printf.eprintf "ocdwm: [ERROR] Failed setsid during init script fork: %S\n" cmd);
+       Printf.eprintf "oxbow: [ERROR] Failed setsid during init script fork: %S\n" cmd);
     (try Unix.execv argv.(0) argv with
-     | _ -> Printf.eprintf "ocdwm: [ERROR] Failed to exec init script: %S\n" cmd);
+     | _ -> Printf.eprintf "oxbow: [ERROR] Failed to exec init script: %S\n" cmd);
     Stdlib.exit Exit.unavailable
   | pid -> { pid }
 ;;

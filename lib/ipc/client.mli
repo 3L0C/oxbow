@@ -5,7 +5,7 @@ module Error : sig
 end
 
 (** [send ~env ?seat ?socket body] sends [body] as a one-line JSON request over
-    the ocdwm socket and awaits the reply; [socket] overrides the resolved
+    the oxbow socket and awaits the reply; [socket] overrides the resolved
     socket path; [seat] overrides the primary-seat target.
 
     {b Effects:} I/O *)
@@ -17,7 +17,7 @@ val send
   -> (Yojson.Safe.t option, Error.t) result
 
 (** [subscribe ~env ?socket ?output ~kinds f] opens a subscribe stream over the
-    ocdwm socket and calls [f] with each event line until either side closes;
+    oxbow socket and calls [f] with each event line until either side closes;
     [kinds] empty for all kinds, [output] restricts output-keyed kinds.
 
     {b Effects:} I/O; blocks until the stream ends *)

@@ -3,7 +3,7 @@ include module type of Types.Window
 (** [create wm output river_window] is a unique window. *)
 val create
   :  Types.Output.t option
-  -> Ocdwm_core.Width_fac.t
+  -> Oxbow_core.Width_fac.t
   -> Wire.Obj.Window_management.Window.t
   -> t
 
@@ -19,7 +19,7 @@ val set_position : t -> x:int32 -> y:int32 -> unit
 (** [set_geom window geom] updates [window]'s geometry to [geom].
 
     {b Effects:} mutates WM state *)
-val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
+val set_geom : t -> int32 Oxbow_core.Rect.t -> unit
 
 (** [set_defense window d] updates [window]'s defense state to [d].
 
@@ -39,7 +39,7 @@ val set_fullscreen_on : t -> int32 option -> unit
 (** [set_clip window clip] updates [window]'s clip mask to [clip].
 
     {b Effects:} mutates WM state *)
-val set_clip : t -> ([ `Scrolling | `Overview ] * int Ocdwm_core.Rect.t) option -> unit
+val set_clip : t -> ([ `Scrolling | `Overview ] * int Oxbow_core.Rect.t) option -> unit
 
 (** [set_clip_within window ~tag ~bw ~bound] sets [window]'s clip to according
     to [tag] when [window] intersets with [bound].
@@ -49,7 +49,7 @@ val set_clip_within
   :  t
   -> tag:[ `Scrolling | `Overview ]
   -> bw:int
-  -> bound:int Ocdwm_core.Rect.t option
+  -> bound:int Oxbow_core.Rect.t option
   -> unit
 
 (** [set_offscreen window v] marks [window] outside the viewport in scrolling
@@ -65,7 +65,7 @@ val set_offscreen : t -> bool -> unit
 val reject_dimensions : t -> width:int32 -> height:int32 -> unit
 
 (** [on_tags window ~tags] is true when [window]'s tags intersect with [tags]. *)
-val on_tags : t -> tags:Ocdwm_core.Tag.Set.t -> bool
+val on_tags : t -> tags:Oxbow_core.Tag.Set.t -> bool
 
 (** [tag_visible window] is [true] if [window]'s output is in overview mode or
     [window]'s tags intersect its output's selected tags. Is [false] otherwise. *)
@@ -90,7 +90,7 @@ val tile : t -> unit
 
 (** [clamp window geom] is [geom] clamped to [window]'s size hints, if any.
     Converts to [int32 rect] *)
-val clamp : t -> int Ocdwm_core.Rect.t -> int32 Ocdwm_core.Rect.t
+val clamp : t -> int Oxbow_core.Rect.t -> int32 Oxbow_core.Rect.t
 
 (** [set_float_seed_pending window pending] sets [window]'s pending float seed
     flag to [pending].
@@ -182,32 +182,32 @@ val unmaximize : t -> unit
     [~y].
 
     {b Effects:} mutates WM state *)
-val move_to : t -> x:Ocdwm_core.Extent.t -> y:Ocdwm_core.Extent.t -> unit
+val move_to : t -> x:Oxbow_core.Extent.t -> y:Oxbow_core.Extent.t -> unit
 
 (** [move_spatial window dir by] moves [window] in [dir] according to [by]
     extent.
 
     {b Effects:} mutates WM state *)
-val move_spatial : t -> Ocdwm_core.Direction.Spatial.t -> Ocdwm_core.Extent.t -> unit
+val move_spatial : t -> Oxbow_core.Direction.Spatial.t -> Oxbow_core.Extent.t -> unit
 
 (** [resize_to window ~width ~height] resizes [window] according to the extents
     [~width] and [~height].
 
     {b Effects:} mutates WM state *)
-val resize_to : t -> width:Ocdwm_core.Extent.t -> height:Ocdwm_core.Extent.t -> unit
+val resize_to : t -> width:Oxbow_core.Extent.t -> height:Oxbow_core.Extent.t -> unit
 
 (** [resize_spatial window dir by] resizes [window] in [dir] according to [by]
     extent.
 
     {b Effects:} mutates WM state *)
-val resize_spatial : t -> Ocdwm_core.Direction.Spatial.t -> Ocdwm_core.Extent.t -> unit
+val resize_spatial : t -> Oxbow_core.Direction.Spatial.t -> Oxbow_core.Extent.t -> unit
 
 (** [set_tags window tags] sets [window]'s tags to [tags].
 
     @raise Invalid_argument when [Tag.Set.is_empty tags] is [true].
 
     {b Effects:} mutates WM state *)
-val set_tags : t -> Ocdwm_core.Tag.Set.t -> unit
+val set_tags : t -> Oxbow_core.Tag.Set.t -> unit
 
 (** [set_consumes window v] sets the consumes chain-bit on [window] to [v].
 
@@ -218,7 +218,7 @@ val set_consumes : t -> bool -> unit
     [v].
 
     {b Effects:} mutates WM state *)
-val set_scroll_width : t -> Ocdwm_core.Width_fac.t -> unit
+val set_scroll_width : t -> Oxbow_core.Width_fac.t -> unit
 
 (** [set_output window output] sets [window]'s output to [output]. Setting
     [None] records the current output's name if none has been recorded

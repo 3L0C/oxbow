@@ -4,8 +4,8 @@
 
     {b Effects:} mutates WM state *)
 val view
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Tag.Arg.t
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Tag.Arg.t
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_view seat tags] toggles [tags] within the selected set on [seat]'s
@@ -13,23 +13,23 @@ val view
 
     {b Effects:} mutates WM state *)
 val toggle_view
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Tag.Set.t
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Tag.Set.t
   -> (Yojson.Safe.t option, string) result
 
 (** [view_previous seat] reselects the previous tag set on [seat]'s output. Is
     [Error msg] when no previous set exists.
 
     {b Effects:} mutates WM state *)
-val view_previous : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
+val view_previous : Oxbow_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [view_cycle seat dir] advances the lowest selected tag on [seat]'s output
     one position in [dir], wrapping. Is [Error msg] when [seat] has no output.
 
     {b Effects:} mutates WM state *)
 val view_cycle
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
 (** [view_cycle_occupied seat dir] moves the selection to the next occupied tag
@@ -38,8 +38,8 @@ val view_cycle
 
     {b Effects:} mutates WM state *)
 val view_cycle_occupied
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
 (** [tag_window wm seat tags ~follow] assigns [tags] to [seat]'s focused
@@ -49,9 +49,9 @@ val view_cycle_occupied
 
     {b Effects:} mutates WM state *)
 val tag_window
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Tag.Arg.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Tag.Arg.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
@@ -60,8 +60,8 @@ val tag_window
 
     {b Effects:} mutates WM state *)
 val toggle_window_tags
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Tag.Set.t
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Tag.Set.t
   -> (Yojson.Safe.t option, string) result
 
 (** [tag_window_match wm seat wmatch arg] sets the tags resolved from [arg] on
@@ -71,10 +71,10 @@ val toggle_window_tags
 
     {b Effects:} mutates WM state *)
 val tag_window_match
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Window_match.t
-  -> Ocdwm_core.Tag.Arg.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Window_match.t
+  -> Oxbow_core.Tag.Arg.t
   -> (Yojson.Safe.t option, string) result
 
 (** [tag_shift_window wm seat dir ~follow] advances the focused window's lowest tag
@@ -84,9 +84,9 @@ val tag_window_match
 
     {b Effects:} mutates WM state *)
 val tag_shift_window
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Logical.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
@@ -97,8 +97,8 @@ val tag_shift_window
 
     {b Effects:} mutates WM state *)
 val tag_shift_window_occupied
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Logical.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result

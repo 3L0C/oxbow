@@ -4,4 +4,4 @@
     height of the usable area. Rows that do not fit sit below the usable area.
     The viewport follows the focused window with the Visible scroll rule. Each
     window clips to its cell and to the usable area *)
-val arrange : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit
+val arrange : Oxbow_state.Wm.t -> Oxbow_state.Output.t -> unit

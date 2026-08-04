@@ -20,14 +20,14 @@ val dump_new : Fake_river.t -> unit
 (** [ipc env body] sends [body] over the IPC socket and returns the reply.
 
     {b Effects:} I/O *)
-val ipc : Eio_unix.Stdenv.base -> Ocdwm_ipc.Request.Body.t -> Yojson.Safe.t option
+val ipc : Eio_unix.Stdenv.base -> Oxbow_ipc.Request.Body.t -> Yojson.Safe.t option
 
-(** [octl env args] evaluates the octl command line [args] in process, sends the
-    request over [socket_path], and prints the reply like octl. Cmdliner errors
+(** [oxctl env args] evaluates the oxctl command line [args] in process, sends the
+    request over [socket_path], and prints the reply like oxctl. Cmdliner errors
     print with the "err:" mark.
 
     {b Effects:} I/O *)
-val octl : Eio_unix.Stdenv.base -> string list -> unit
+val oxctl : Eio_unix.Stdenv.base -> string list -> unit
 
 (** [run script] starts the runtime loop against a fake river over a socketpair,
     then runs [script]. It returns when [script] returns.

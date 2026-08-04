@@ -2,19 +2,19 @@
     rules of the same effect the last rule wins.
 
     {b Effects:} mutates WM state *)
-val apply_for : Ocdwm_state.Wm.t -> Ocdwm_state.Window.t -> unit
+val apply_for : Oxbow_state.Wm.t -> Oxbow_state.Window.t -> unit
 
 (** [add wm rule] adds [rule] to [wm]'s configured rules. Merges new [rule] effects
     when an existing rule matches [rule]'s pattern.
 
     {b Effects:} mutates WM state *)
 val add
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_core.Window_rule.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_core.Window_rule.t
   -> (Yojson.Safe.t option, string) result
 
 (** [remove wm index] removes the rule at [index] from [wm]'s configured rules.
     Is [Error msg] when no rule matches.
 
     {b Effects:} mutates WM state *)
-val remove : Ocdwm_state.Wm.t -> int -> (Yojson.Safe.t option, string) result
+val remove : Oxbow_state.Wm.t -> int -> (Yojson.Safe.t option, string) result

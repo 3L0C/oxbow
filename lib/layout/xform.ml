@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 
 let pre (dir : Direction.Spatial.t) (area : int Rect.t) =
   match dir with

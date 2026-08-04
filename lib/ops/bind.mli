@@ -1,7 +1,7 @@
 (** [install_defaults wm seat] installs system default keybinds to [seat].
 
     {b Effects:} mutates WM state *)
-val install_defaults : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
+val install_defaults : Oxbow_state.Wm.t -> Oxbow_state.Seat.t -> unit
 
 (** [parse_modifier s] maps recognized modifier strings to Wayland [int32]
     representations. Recognized strings include:
@@ -19,13 +19,13 @@ val parse_modifier : string -> (int32, string) result
 (** [list wm seat ~all] is the JSON keybinding listing for [seat]; its name,
     stored mode, and bindings grouped by declared mode, or for every seat in
     [wm] when [all] is [true]. *)
-val list : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> all:bool -> Yojson.Safe.t
+val list : Oxbow_state.Wm.t -> Oxbow_state.Seat.t -> all:bool -> Yojson.Safe.t
 
 (** [handle wm seat keymap] applies the Bind/Unbind [keymap].
 
     {b Effects:} mutates WM state *)
 val handle
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_ipc.Keymap.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_ipc.Keymap.t
   -> (Yojson.Safe.t option, string) result

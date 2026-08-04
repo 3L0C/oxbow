@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let command_term = Cmdliner.Term.const @@ Command.Tag View_previous
 let name = "previous-selection"

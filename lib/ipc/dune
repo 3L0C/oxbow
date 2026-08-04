@@ -1,6 +1,6 @@
 (library
- (name ocdwm_ipc)
- (public_name ocdwm.ipc)
- (libraries ocdwm.core eio eio.unix yojson ppx_yojson_conv_lib)
+ (name oxbow_ipc)
+ (public_name oxbow.ipc)
+ (libraries oxbow.core eio eio.unix yojson ppx_yojson_conv_lib)
  (preprocess
   (pps ppx_yojson_conv)))

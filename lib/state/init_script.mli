@@ -2,8 +2,8 @@ type t = { pid : int }
 
 (** [resolve ?override_path ()] is the resolved init-script path:
     1. [override_path] if given
-    2. $XDG_CONFIG_HOME/ocdwm/init
-    3. $HOME/.config/ocdwm/init
+    2. $XDG_CONFIG_HOME/oxbow/init
+    3. $HOME/.config/oxbow/init
     Only a path that exists and is executable counts; otherwise [None]. *)
 val resolve : ?override_path:string -> unit -> string option
 

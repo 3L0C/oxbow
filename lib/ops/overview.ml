@@ -1,6 +1,6 @@
-open! Ocdwm_core
-open! Ocdwm_state
-open! Ocdwm_layout
+open! Oxbow_core
+open! Oxbow_state
+open! Oxbow_layout
 
 let arrange (wm : Wm.t) (output : Output.t) =
   let windows = output.focus_stack in

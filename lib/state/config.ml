@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_layout
+open! Oxbow_core
+open! Oxbow_layout
 include Types.Config
 
 let default_tiling () =
@@ -8,7 +8,7 @@ let default_tiling () =
 
 let default_scrolling () =
   Params.Scrolling.
-    { policy = Visible; default_width = Width_fac.of_float 0.55; offset = 0 }
+    { policy = Visible; default_width = Width_fac.of_float 0.5; offset = 0 }
 ;;
 
 let default_gaps () = Params.Gaps.{ inner = 10; outer = 20 }

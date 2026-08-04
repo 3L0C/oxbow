@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 
 module Ctx = struct
   type t =

@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let command_term, bind_command_term =
   Ctl_cli.swap_terms (fun ~target ~policy ~follow ->

@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_state
+open! Oxbow_core
+open! Oxbow_state
 
 let view (seat : Seat.t) arg =
   match seat.output with

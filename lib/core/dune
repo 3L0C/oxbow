@@ -1,6 +1,6 @@
 (library
- (name ocdwm_core)
- (public_name ocdwm.core)
+ (name oxbow_core)
+ (public_name oxbow.core)
  (libraries
   cmdliner
   re

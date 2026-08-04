@@ -1,5 +1,5 @@
 open! Cmdliner
-open! Ocdwm_ctl
+open! Oxbow_ctl
 
 let version =
   match Build_info.V1.version () with
@@ -14,7 +14,7 @@ let setup () =
 
 let main () =
   setup ();
-  Cmd.eval' @@ Cmd_octl.cmd ~version
+  Cmd.eval' @@ Cmd_oxctl.cmd ~version
 ;;
 
 let () = if !Sys.interactive then () else exit (main ())

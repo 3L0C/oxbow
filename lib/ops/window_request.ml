@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_state
+open! Oxbow_core
+open! Oxbow_state
 
 let float_then (window : Window.t) f =
   match window.presentation with

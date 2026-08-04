@@ -1,6 +1,6 @@
-open! Ocdwm_core
-open! Ocdwm_state
-open! Ocdwm_ipc
+open! Oxbow_core
+open! Oxbow_state
+open! Oxbow_ipc
 
 let handle_position (wm : Wm.t) (seat : Seat.t) (x, y) =
   let pos_changed = seat.position <> { x; y } in

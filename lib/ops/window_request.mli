@@ -2,9 +2,9 @@
 
     {b Effects:} mutates WM state *)
 val handle
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Window.t
-  -> Ocdwm_state.Window.Request.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Window.t
+  -> Oxbow_state.Window.Request.t
   -> unit
 
 (** [toggle_maximize wm seat] toggles maximization on [seat]'s focused window.
@@ -12,8 +12,8 @@ val handle
 
     {b Effects:} mutates WM state *)
 val toggle_maximize
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_fake_fullscreen wm seat] toggles fake fullscreen on [seat]'s
@@ -21,16 +21,16 @@ val toggle_maximize
 
     {b Effects:} mutates WM state *)
 val toggle_fake_fullscreen
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_fullscreen wm seat] toggles fullscreen on [seat]'s focused window.
 
     {b Effects:} mutates WM state *)
 val toggle_fullscreen
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move_interactive wm seat] begins a pointer move of [seat]'s hovered
@@ -39,8 +39,8 @@ val toggle_fullscreen
 
     {b Effects:} mutates WM state *)
 val move_interactive
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result
 
 (** [resize_interactive wm seat] begins a pointer resize of [seat]'s hovered
@@ -49,6 +49,6 @@ val move_interactive
 
     {b Effects:} mutates WM state *)
 val resize_interactive
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result

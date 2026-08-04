@@ -1,7 +1,7 @@
-open! Ocdwm_core
-open! Ocdwm_ipc
-open! Ocdwm_state
-open! Ocdwm_layout
+open! Oxbow_core
+open! Oxbow_ipc
+open! Oxbow_state
+open! Oxbow_layout
 
 let to_tags (output : Output.t) =
   match output.name with

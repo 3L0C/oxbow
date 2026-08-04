@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let leaves =
   [ "on", "Turn focus-follows-pointer on", Command.Input (Pointer (Follow true))

@@ -7,7 +7,7 @@ let check ~expect got =
 ;;
 
 let () =
-  let open Ocdwm_ipc in
+  let open Oxbow_ipc in
   List.iter
     (fun k ->
        let j = Record.yojson_of_t k in

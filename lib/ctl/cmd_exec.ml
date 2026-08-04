@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let docv_term = "COMMAND"
 let doc_term = "The $(i,COMMAND) to execute."

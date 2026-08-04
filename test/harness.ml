@@ -1,4 +1,4 @@
-let socket_path = Printf.sprintf "./ocdwm-test-%d.sock" (Unix.getpid ())
+let socket_path = Printf.sprintf "./oxbow-test-%d.sock" (Unix.getpid ())
 
 exception Script_done
 
@@ -40,21 +40,21 @@ let dump_new fake =
 ;;
 
 let ipc env body =
-  match Ocdwm_ipc.Client.send ~env ~socket:socket_path body with
+  match Oxbow_ipc.Client.send ~env ~socket:socket_path body with
   | Ok reply -> reply
   | Error (Connection_failed msg) | Error (Protocol msg) -> failwith msg
 ;;
 
-let octl env args =
+let oxctl env args =
   let stash = ref None in
-  (Ocdwm_ctl.Ctl_cli.dispatch_command_ref
+  (Oxbow_ctl.Ctl_cli.dispatch_command_ref
    := fun ?render ?seat ?socket:_ body ->
         stash := Some (render, seat, body);
         0);
   let errbuf = Buffer.create 256 in
   let err = Format.formatter_of_buffer errbuf in
-  let argv = Array.of_list ("octl" :: args) in
-  let code = Cmdliner.Cmd.eval' ~err ~argv @@ Ocdwm_ctl.Cmd_octl.cmd ~version:"test" in
+  let argv = Array.of_list ("oxctl" :: args) in
+  let code = Cmdliner.Cmd.eval' ~err ~argv @@ Oxbow_ctl.Cmd_oxctl.cmd ~version:"test" in
   Format.pp_print_flush err ();
   Buffer.contents errbuf
   |> String.split_on_char '\n'
@@ -63,7 +63,7 @@ let octl env args =
   match !stash with
   | None -> ()
   | Some (render, seat, body) ->
-    (match Ocdwm_ipc.Client.send ~env ?seat ~socket:socket_path body with
+    (match Oxbow_ipc.Client.send ~env ?seat ~socket:socket_path body with
      | Ok (Some (`String s)) -> print_endline s
      | Ok (Some data) ->
        print_endline
@@ -90,7 +90,7 @@ let run script =
     Eio.Fiber.first
       (fun () ->
          ignore
-         @@ Ocdwm_runtime.Run.loop
+         @@ Oxbow_runtime.Run.loop
               ~socket_path
               ~init_command:None
               ~transport:(Wayland.Unix_transport.of_socket client_sock)

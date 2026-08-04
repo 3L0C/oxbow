@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 
 let pre (gaps : Params.Gaps.t) area =
   let by = max 0 (gaps.outer - (gaps.inner / 2)) in

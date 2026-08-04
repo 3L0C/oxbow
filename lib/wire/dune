@@ -1,6 +1,6 @@
 (library
- (name ocdwm_wire)
- (public_name ocdwm.wire)
+ (name oxbow_wire)
+ (public_name oxbow.wire)
  (wrapped false)
  (modules wire emit)
- (libraries ocdwm.river wayland logs))
+ (libraries oxbow.river wayland logs))

@@ -32,8 +32,8 @@ type t =
   | Focused
   | Input_devices of
       { pattern : string option
-      ; case : Ocdwm_core.Pattern.Case.t
-      ; role : Ocdwm_core.Input.Role.t option
+      ; case : Oxbow_core.Pattern.Case.t
+      ; role : Oxbow_core.Input.Role.t option
       }
   | Input_rules
   | Keymaps of { all : bool }
@@ -43,7 +43,7 @@ type t =
   | Seats
   | Tags of { output : string option }
   | Window_rules
-  | Windows of { filter : Ocdwm_core.Window_match.t }
+  | Windows of { filter : Oxbow_core.Window_match.t }
 
 val t_of_yojson : Yojson.Safe.t -> t
 val yojson_of_t : t -> Yojson.Safe.t

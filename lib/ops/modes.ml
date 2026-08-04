@@ -1,5 +1,5 @@
-open! Ocdwm_state
-open! Ocdwm_ipc
+open! Oxbow_state
+open! Oxbow_ipc
 
 let declare (wm : Wm.t) name =
   if List.mem name wm.config.modes

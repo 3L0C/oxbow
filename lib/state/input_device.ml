@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 include Types.Input_device
 
 let role_to_string (role : Role.t) =

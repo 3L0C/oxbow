@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 include Types.Output
 
 let focused_window o =

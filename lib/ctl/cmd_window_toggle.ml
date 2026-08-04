@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let leaves =
   [ "floating", "Float window if tiled, tile if floating", Command.Window Toggle_floating

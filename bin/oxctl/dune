@@ -1,0 +1,15 @@
+(executable
+ (name main)
+ (public_name oxctl)
+ (package oxbow)
+ (libraries oxbow.core oxbow.ctl dune-build-info cmdliner logs.fmt))
+
+(rule
+ (with-stdout-to
+  oxctl.1
+  (run %{exe:main.exe} --help=groff)))
+
+(install
+ (section man)
+ (package oxbow)
+ (files oxctl.1))

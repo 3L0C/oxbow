@@ -1,4 +1,4 @@
-open! Ocdwm_state
+open! Oxbow_state
 
 let request_exit ?(origin = `Local) (wm : Wm.t) =
   match wm.lifecycle with

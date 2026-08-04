@@ -1,6 +1,6 @@
-open! Ocdwm_core
-open! Ocdwm_state
-open! Ocdwm_ipc
+open! Oxbow_core
+open! Oxbow_state
+open! Oxbow_ipc
 
 let zoom ?warp wm (seat : Seat.t) =
   With.focused_output seat

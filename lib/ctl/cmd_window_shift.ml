@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let mk_leaf (name, doc, dir) =
   Ctl_cli.cmd_pair ~name ~doc @@ Cmdliner.Term.const (Command.Window (Shift dir))

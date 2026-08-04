@@ -1,6 +1,6 @@
-open! Ocdwm_ipc
-open! Ocdwm_state
-open! Ocdwm_ops
+open! Oxbow_ipc
+open! Oxbow_state
+open! Oxbow_ops
 
 let handle_border wm _seat (cmd : Command.Border.t) =
   match cmd with

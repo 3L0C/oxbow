@@ -1,15 +1,15 @@
 (** [layer_shell_sync wm] updates the default layer shell output to [wm]'s
     focused output, if any. *)
-val layer_shell_sync : Ocdwm_state.Wm.t -> unit
+val layer_shell_sync : Oxbow_state.Wm.t -> unit
 
 (** [set_output wm seat output] updates the output of [seat] and sends the necessary
     layer shell requests.
 
     {b Effects:} mutates WM state *)
 val set_output
-  :  Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_state.Output.t option
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_state.Output.t option
   -> unit
 
 (** [focus_window ?force ?warp wm seat window] focuses [window] on [seat].
@@ -21,17 +21,17 @@ val set_output
     {b Effects:} mutates WM state *)
 val focus_window
   :  ?force:bool
-  -> ?warp:Ocdwm_state.Seat.Warp_request.t
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_state.Window.t
+  -> ?warp:Oxbow_state.Seat.Warp_request.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_state.Window.t
   -> unit
 
 (** [refresh wm output] clears focus if no focused window on [output], or
     returns focus to the focused window.
 
     {b Effects:} mutates WM state *)
-val refresh : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit
+val refresh : Oxbow_state.Wm.t -> Oxbow_state.Output.t -> unit
 
 (** [window_logical ?warp wm seat dir] focuses the window in logical direction [dir]
     The payload [warp] overrides the warp on focus configuration. Is [Error msg]
@@ -41,9 +41,9 @@ val refresh : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit
     {b Effects:} mutates WM state *)
 val window_logical
   :  ?warp:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
 (** [window_spatial ?warp wm seat dir] focuses the window in spatial direction [dir]
@@ -54,9 +54,9 @@ val window_logical
     {b Effects:} mutates WM state *)
 val window_spatial
   :  ?warp:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Spatial.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Spatial.t
   -> (Yojson.Safe.t option, string) result
 
 (** [window_match ?warp ~cycle wm seat wmatch] focuses the first (or, next when
@@ -68,9 +68,9 @@ val window_spatial
 val window_match
   :  ?warp:bool
   -> cycle:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Window_match.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Window_match.t
   -> (Yojson.Safe.t option, string) result
 
 (** [focus_output ?warp wm seat output] focuses [output] on [seat].
@@ -81,9 +81,9 @@ val window_match
     {b Effects:} mutates WM state *)
 val focus_output
   :  ?warp:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_state.Output.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_state.Output.t
   -> unit
 
 (** [output_logical ?warp wm seat dir] focuses the output in logical direction
@@ -93,9 +93,9 @@ val focus_output
     {b Effects:} mutates WM state *)
 val output_logical
   :  ?warp:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
 (** [output_spatial ?warp wm seat dir] focuses the output in spatial direction [dir].
@@ -105,9 +105,9 @@ val output_logical
     {b Effects:} mutates WM state *)
 val output_spatial
   :  ?warp:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Spatial.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Spatial.t
   -> (Yojson.Safe.t option, string) result
 
 (** [output_name ?warp wm seat name] focuses the output named [name]. The
@@ -117,32 +117,32 @@ val output_spatial
     {b Effects:} mutates WM state *)
 val output_name
   :  ?warp:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> string
   -> (Yojson.Safe.t option, string) result
 
 (** [remove_window wm window] removes [window] from [wm]'s management.
 
     {b Effects:} mutates WM state *)
-val remove_window : Ocdwm_state.Wm.t -> Ocdwm_state.Window.t -> unit
+val remove_window : Oxbow_state.Wm.t -> Oxbow_state.Window.t -> unit
 
-(** [wm_sync wm] synchronizes River and ocdwm focus state.
+(** [wm_sync wm] synchronizes River and oxbow focus state.
 
     {b Effects:} mutates WM state *)
-val wm_sync : Ocdwm_state.Wm.t -> unit
+val wm_sync : Oxbow_state.Wm.t -> unit
 
 (** [seat_sync wm seat] refreshes the layer focus and cursor target [seat].
 
     {b Effects:} mutates WM state *)
-val seat_sync : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
+val seat_sync : Oxbow_state.Wm.t -> Oxbow_state.Seat.t -> unit
 
 (** [apply_request wm seat] handles the focus request on [seat].
 
     {b Effects:} mutates WM state *)
-val apply_request : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
+val apply_request : Oxbow_state.Wm.t -> Oxbow_state.Seat.t -> unit
 
 (** [apply_interaction wm seat] handles the interaction request on [seat].
 
     {b Effects:} mutates WM state *)
-val apply_interaction : Ocdwm_state.Wm.t -> Ocdwm_state.Seat.t -> unit
+val apply_interaction : Oxbow_state.Wm.t -> Oxbow_state.Seat.t -> unit

@@ -3,14 +3,14 @@
     column exists.
 
     {b Effects:} mutates WM state *)
-val consume : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
+val consume : Oxbow_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [release seat] expels the focused window into its own column, immediately
     left of its former column. Is [Error msg] when [seat] has no output, no
     window is focused, or the focused window is alone in its column.
 
     {b Effects:} mutates WM state *)
-val release : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
+val release : Oxbow_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [move seat dir] hops the focused column over the adjacent column in [dir].
     The hop wraps at the strip ends. Is [Error msg] when [seat] has no output,
@@ -18,8 +18,8 @@ val release : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
 
     {b Effects:} mutates WM state *)
 val move
-  :  Ocdwm_state.Seat.t
-  -> Ocdwm_core.Direction.Logical.t
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
 (** [set_width seat delta ~global] applies [delta] to the width factor of the
@@ -29,8 +29,8 @@ val move
 
     {b Effects:} mutates WM state *)
 val set_width
-  :  Ocdwm_state.Seat.t
-  -> float Ocdwm_core.Delta.t
+  :  Oxbow_state.Seat.t
+  -> float Oxbow_core.Delta.t
   -> global:bool
   -> (Yojson.Safe.t option, string) result
 
@@ -39,14 +39,14 @@ val set_width
     window is focused.
 
     {b Effects:} mutates WM state *)
-val default_width : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
+val default_width : Oxbow_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [cycle_width seat] moves the width factor of the focused column to the next
     preset, with wrap. Is [Error msg] when [seat] has no output or no window is
     focused.
 
     {b Effects:} mutates WM state *)
-val cycle_width : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
+val cycle_width : Oxbow_state.Seat.t -> (Yojson.Safe.t option, string) result
 
 (** [zoom ?warp wm seat] promotes the focused window in the scrolling layout. A
     window in a shared column gets its own column at the front. A solo column
@@ -57,6 +57,6 @@ val cycle_width : Ocdwm_state.Seat.t -> (Yojson.Safe.t option, string) result
     {b Effects:} mutates WM state *)
 val zoom
   :  ?warp:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result

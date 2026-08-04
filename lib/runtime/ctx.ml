@@ -1,4 +1,4 @@
-open! Ocdwm_state
+open! Oxbow_state
 
 type manage = [ `Manage ]
 type render = [ `Render ]

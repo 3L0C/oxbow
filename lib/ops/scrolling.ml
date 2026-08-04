@@ -1,6 +1,6 @@
-open! Ocdwm_core
-open! Ocdwm_state
-open! Ocdwm_layout
+open! Oxbow_core
+open! Oxbow_state
+open! Oxbow_layout
 
 let arrange (wm : Wm.t) (output : Output.t) =
   if not @@ Output.has_visible_fullscreen output

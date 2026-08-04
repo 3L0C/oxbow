@@ -1,6 +1,6 @@
-open! Ocdwm_core
-open! Ocdwm_state
-open! Ocdwm_ops
+open! Oxbow_core
+open! Oxbow_state
+open! Oxbow_ops
 
 let registry : Wayland.Registry.t option ref = ref None
 

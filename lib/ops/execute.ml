@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 
 let exec argv =
   match argv with

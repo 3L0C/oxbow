@@ -1,4 +1,4 @@
-let cmd env (c : Ocdwm_ipc.Command.t) = ignore @@ Harness.ipc env (Command c)
+let cmd env (c : Oxbow_ipc.Command.t) = ignore @@ Harness.ipc env (Command c)
 
 let wait_stable lines =
   let rec go last stable =
@@ -23,10 +23,10 @@ let () =
   Eio.Fiber.first
     (fun () ->
        ignore
-       @@ Ocdwm_ipc.Client.subscribe ~env ~socket:Harness.socket_path ~kinds:[] (fun l ->
+       @@ Oxbow_ipc.Client.subscribe ~env ~socket:Harness.socket_path ~kinds:[] (fun l ->
          lines := l :: !lines))
     (fun () ->
-       cmd env (Tag (View (Concrete (Ocdwm_core.Tag.Set.singleton 2))));
+       cmd env (Tag (View (Concrete (Oxbow_core.Tag.Set.singleton 2))));
        Fake_river.add_window fake ~app_id:(Some "emacs");
        Harness.settle fake;
        wait_stable lines;

@@ -137,7 +137,7 @@ val bind
   -> ?mode:string
   -> int32
   -> Types.Key.t
-  -> Ocdwm_ipc.Command.t
+  -> Oxbow_ipc.Command.t
   -> (bool, string) result
 
 (** [unbind wm seat ?mode mods key] unbinds the command bound to [mods] and

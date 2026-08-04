@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let body_term =
   let open Cmdliner.Term.Syntax in

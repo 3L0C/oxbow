@@ -1,7 +1,7 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
-open! Ocdwm_core
-open! Ocdwm_state
-open! Ocdwm_ipc
+open! Oxbow_core
+open! Oxbow_state
+open! Oxbow_ipc
 
 let handle_window_rules (wm : Wm.t) =
   Ok (Some ([%yojson_of: Window_rule.t list] wm.config.rules.window))

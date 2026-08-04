@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_ipc
+open! Oxbow_core
+open! Oxbow_ipc
 
 let dir_command_term dir =
   let open Cmdliner.Term.Syntax in

@@ -1,5 +1,5 @@
-open! Ocdwm_state
-open! Ocdwm_ipc
+open! Oxbow_state
+open! Oxbow_ipc
 
 let apply (seat : Seat.t) ~name ~size = Emit.set_xcursor_theme seat.obj ~name ~size
 

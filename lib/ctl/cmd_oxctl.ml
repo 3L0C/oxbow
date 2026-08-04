@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 
 let bind_group =
   Ctl_cli.group
@@ -23,8 +23,8 @@ let cmd ~version =
   Ctl_cli.group
     ~version
     ~default:Cli.help_term
-    ~name:"octl"
-    ~doc:"command-line interface for controlling ocdwm"
+    ~name:"oxctl"
+    ~doc:"command-line interface for controlling oxbow"
     [ Cmd_border.cmd
     ; Cmd_exec.cmd
     ; Cmd_gaps.cmd

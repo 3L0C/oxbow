@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_ipc
+open! Oxbow_core
+open! Oxbow_ipc
 include Types.Seat
 
 module Warp_request = struct

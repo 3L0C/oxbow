@@ -1,5 +1,5 @@
-open! Ocdwm_state
-open! Ocdwm_ipc
+open! Oxbow_state
+open! Oxbow_ipc
 
 let set_repeat_info wm ~rate ~delay =
   Config.set_key_repeat wm ~rate ~delay;

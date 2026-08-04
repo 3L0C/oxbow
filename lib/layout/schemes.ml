@@ -1,4 +1,4 @@
-open! Ocdwm_core
+open! Oxbow_core
 
 let rec subdivide ~pick (area : int Rect.t) k n =
   if n <= 1

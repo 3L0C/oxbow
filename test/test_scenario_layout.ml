@@ -1,4 +1,4 @@
-let cmd env (c : Ocdwm_ipc.Command.t) = ignore @@ Harness.ipc env (Command c)
+let cmd env (c : Oxbow_ipc.Command.t) = ignore @@ Harness.ipc env (Command c)
 
 let () =
   Harness.run

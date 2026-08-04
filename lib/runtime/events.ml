@@ -1,6 +1,6 @@
-open! Ocdwm_state
-open! Ocdwm_ipc
-open! Ocdwm_ops
+open! Oxbow_state
+open! Oxbow_ipc
+open! Oxbow_ops
 
 let snapshot_tags (output : Output.t) =
   match output.name, Records.to_tags output with

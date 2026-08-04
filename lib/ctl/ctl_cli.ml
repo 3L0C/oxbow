@@ -1,6 +1,6 @@
 open! Cmdliner
-open! Ocdwm_core
-open! Ocdwm_ipc
+open! Oxbow_core
+open! Oxbow_ipc
 
 let seat =
   Arg.(
@@ -20,7 +20,7 @@ let logical_targets = enum_of Direction.Logical.to_string [ Next; Prev ]
 
 let logical_leaves ~next ~prev =
   List.map
-    (fun (name, (d : Ocdwm_core.Direction.Logical.t)) ->
+    (fun (name, (d : Oxbow_core.Direction.Logical.t)) ->
        ( name
        , (match d with
           | Next -> next
@@ -356,7 +356,7 @@ let warp_flag =
 ;;
 
 let pattern_flags =
-  let open Ocdwm_core in
+  let open Oxbow_core in
   let open Cmdliner.Term.Syntax in
   let+ title = title_flag
   and+ app_id = app_id_flag
@@ -366,7 +366,7 @@ let pattern_flags =
 ;;
 
 let pattern_term =
-  let open Ocdwm_core in
+  let open Oxbow_core in
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ p = pattern_flags in
@@ -409,7 +409,7 @@ let setting_scope_term =
 ;;
 
 let window_match_of source =
-  let open Ocdwm_core in
+  let open Oxbow_core in
   let open Cmdliner.Term.Syntax in
   let+ pattern = source
   and+ invert = invert_flag
@@ -428,7 +428,7 @@ let tags_flag =
 ;;
 
 let presentation_flag =
-  let open Ocdwm_core.Window_rule.Effects.Presentation in
+  let open Oxbow_core.Window_rule.Effects.Presentation in
   Arg.(
     value
     & vflag
@@ -451,7 +451,7 @@ let extent_pos i ~docv ~doc =
 ;;
 
 let resize_to_flag =
-  let open Ocdwm_core.Window_rule.Effects in
+  let open Oxbow_core.Window_rule.Effects in
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ pair =
@@ -469,7 +469,7 @@ let resize_to_flag =
 ;;
 
 let move_to_flag =
-  let open Ocdwm_core.Window_rule.Effects in
+  let open Oxbow_core.Window_rule.Effects in
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ pair =
@@ -593,11 +593,11 @@ let code_conn_failed = 2
 let exit_success = Cmd.Exit.info 0 ~doc:"on success"
 
 let exit_protocol_err =
-  Cmd.Exit.info code_protocol_err ~doc:"on protocol error from ocdwm"
+  Cmd.Exit.info code_protocol_err ~doc:"on protocol error from oxbow"
 ;;
 
 let exit_conn_failed =
-  Cmd.Exit.info code_conn_failed ~doc:"on failure to connect to the ocdwm socket"
+  Cmd.Exit.info code_conn_failed ~doc:"on failure to connect to the oxbow socket"
 ;;
 
 let exits = [ exit_success; exit_protocol_err; exit_conn_failed ]

@@ -7,8 +7,8 @@
    dimensions. *)
 
 let test_tiling () =
-  let open Ocdwm_core in
-  let open Ocdwm_layout in
+  let open Oxbow_core in
+  let open Oxbow_layout in
   let cases = ref 0 in
   let failures = ref 0 in
   let overlaps (a : int Rect.t) (b : int Rect.t) =
@@ -140,8 +140,8 @@ let test_tiling () =
    the policy rules. *)
 
 let test_scrolling () =
-  let open Ocdwm_core in
-  let open Ocdwm_layout in
+  let open Oxbow_core in
+  let open Oxbow_layout in
   let cases = ref 0 in
   let failures = ref 0 in
   let overlaps (a : int Rect.t) (b : int Rect.t) =

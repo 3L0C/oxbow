@@ -18,7 +18,7 @@ val prev_window : t -> Types.Window.t option
 
 (** [tag_data output tags] is the tag data of [output] the first set tag of
     [tags]. Raises [Invalid_argument] if [tags] is the empty set. *)
-val tag_data : t -> Ocdwm_core.Tag.Set.t -> Config.Data.t
+val tag_data : t -> Oxbow_core.Tag.Set.t -> Config.Data.t
 
 (** [to_tag_data output] is the tag data of the first selected tag of [output].
     Raises [Invalid_argument] if [output] has no selected tags. *)
@@ -32,25 +32,25 @@ val at_point : x:int32 -> y:int32 -> t list -> t option
     [tags].  No-op if [Tag.Set.is_empty tags] is [true].
 
     {b Effects:} mutates WM state *)
-val switch_tags : tags:Ocdwm_core.Tag.Set.t -> t -> unit
+val switch_tags : tags:Oxbow_core.Tag.Set.t -> t -> unit
 
 (** [occupied_tags output] is the tag set containing all tags with active
     windows. *)
-val occupied_tags : t -> Ocdwm_core.Tag.Set.t
+val occupied_tags : t -> Oxbow_core.Tag.Set.t
 
 (** [occupied_tags output] is the tag set containing all tags with urgent
     windows. *)
-val urgent_tags : t -> Ocdwm_core.Tag.Set.t
+val urgent_tags : t -> Oxbow_core.Tag.Set.t
 
 (** [current_layout output] is the layout of the first selected tag of [output]. *)
-val current_layout : t -> Ocdwm_core.Layout.t
+val current_layout : t -> Oxbow_core.Layout.t
 
 (** [current_scheme output] is the scheme of the first selected tag of
     [output]. *)
-val current_scheme : t -> Ocdwm_core.Scheme.t
+val current_scheme : t -> Oxbow_core.Scheme.t
 
 (** [windows_on_tags output ~tags] is the list of [output]'s windows on [tags]. *)
-val windows_on_tags : t -> tags:Ocdwm_core.Tag.Set.t -> Types.Window.t list
+val windows_on_tags : t -> tags:Oxbow_core.Tag.Set.t -> Types.Window.t list
 
 (** [visible_windows output] is the list of visible windows on the selected tags
     of [output]. *)
@@ -73,12 +73,12 @@ val is_floating : t option -> bool
 (** [apply_layout td ~layout] applies [layout] to the layout of [td].
 
     {b Effects:} mutates WM state *)
-val apply_layout : Types.Config.Data.t -> layout:Ocdwm_core.Layout.t -> unit
+val apply_layout : Types.Config.Data.t -> layout:Oxbow_core.Layout.t -> unit
 
 (** [apply_scheme td ~scheme] applies [scheme] to the scheme of [td].
 
     {b Effects:} mutates WM state *)
-val apply_scheme : Types.Config.Data.t -> scheme:Ocdwm_core.Scheme.t -> unit
+val apply_scheme : Types.Config.Data.t -> scheme:Oxbow_core.Scheme.t -> unit
 
 (** [enter_overview output] activates overview mode for [output] if not already
     active.
@@ -94,39 +94,39 @@ val exit_overview : t -> unit
 (** [apply_mfact td ~delta] applies [delta] to the mfact of [td].
 
     {b Effects:} mutates WM state *)
-val apply_mfact : Types.Config.Data.t -> delta:float Ocdwm_core.Delta.t -> unit
+val apply_mfact : Types.Config.Data.t -> delta:float Oxbow_core.Delta.t -> unit
 
 (** [apply_nmaster td ~delta] applies [delta] to the nmaster of [td]
 
     {b Effects:} mutates WM state *)
-val apply_nmaster : Types.Config.Data.t -> delta:int Ocdwm_core.Delta.t -> unit
+val apply_nmaster : Types.Config.Data.t -> delta:int Oxbow_core.Delta.t -> unit
 
 (** [apply_gaps_inner td ~delta] applies [delta] to the inner gaps of [td].
 
     {b Effects:} mutates WM state *)
-val apply_gaps_inner : Types.Config.Data.t -> delta:int Ocdwm_core.Delta.t -> unit
+val apply_gaps_inner : Types.Config.Data.t -> delta:int Oxbow_core.Delta.t -> unit
 
 (** [apply_gaps_outer td ~delta] applies [delta] to the outer gaps of [td].
 
     {b Effects:} mutates WM state *)
-val apply_gaps_outer : Types.Config.Data.t -> delta:int Ocdwm_core.Delta.t -> unit
+val apply_gaps_outer : Types.Config.Data.t -> delta:int Oxbow_core.Delta.t -> unit
 
 (** [apply_scroll_policy td ~policy] applies [policy] to the scroll policy of
     [td].
 
     {b Effects:} mutates WM state *)
-val apply_scroll_policy : Types.Config.Data.t -> policy:Ocdwm_core.Scroll_policy.t -> unit
+val apply_scroll_policy : Types.Config.Data.t -> policy:Oxbow_core.Scroll_policy.t -> unit
 
 (** [apply_orientation td ~dir] applies [dir] to the orientation of [td].
 
     {b Effects:} mutates WM state *)
-val apply_orientation : Types.Config.Data.t -> dir:Ocdwm_core.Direction.Spatial.t -> unit
+val apply_orientation : Types.Config.Data.t -> dir:Oxbow_core.Direction.Spatial.t -> unit
 
 (** [set_gaps_overview output ~delta] sets the overview gaps for [output]
     according to [delta].
 
     {b Effects:} mutates WM state *)
-val set_gaps_overview : t -> delta:int Ocdwm_core.Delta.t -> unit
+val set_gaps_overview : t -> delta:int Oxbow_core.Delta.t -> unit
 
 (** [set_overview_head output head] sets [head] as the first window of overview
     mode for [output].
@@ -145,10 +145,10 @@ val set_wm_stack : t -> Types.Window.t list -> unit
 val set_focus_stack : t -> Types.Window.t list -> unit
 
 (** [resolve_tag_arg ~arg output] returns the set of tags according to [arg]. *)
-val resolve_tag_arg : arg:Ocdwm_core.Tag.Arg.t -> t -> Ocdwm_core.Tag.Set.t
+val resolve_tag_arg : arg:Oxbow_core.Tag.Arg.t -> t -> Oxbow_core.Tag.Set.t
 
 (** [to_vector output] is the vector of output. *)
-val to_vector : t -> Ocdwm_core.Vector.t
+val to_vector : t -> Oxbow_core.Vector.t
 
 (** [matches_name output name] is true iff [output]'s name is exactly [name]. *)
 val matches_name : string -> t -> bool
@@ -156,13 +156,13 @@ val matches_name : string -> t -> bool
 (** [resolve_output_logical ~dir current outputs] is [Some output] in the
     logical direction [dir] from [current] or [None] if [outputs] is empty. Is
     [Some current] when [current] is the only output in [outputs]. *)
-val resolve_output_logical : dir:Ocdwm_core.Direction.Logical.t -> t -> t list -> t option
+val resolve_output_logical : dir:Oxbow_core.Direction.Logical.t -> t -> t list -> t option
 
 (** [resolve_output_spatial ~from ~dir current outputs] is [Some output] in the
     spatial direction [dir] from [current] or [None] if no output qualifies. *)
 val resolve_output_spatial
-  :  from:Ocdwm_core.Vector.t
-  -> dir:Ocdwm_core.Direction.Spatial.t
+  :  from:Oxbow_core.Vector.t
+  -> dir:Oxbow_core.Direction.Spatial.t
   -> t
   -> t list
   -> t option
@@ -179,7 +179,7 @@ val set_lifecycle : t -> Lifecycle.t -> unit
 (** [set_usable output usable] sets [output]'s usable geometry to [usable].
 
     {b Effects:} mutates WM state *)
-val set_usable : t -> int Ocdwm_core.Rect.t -> unit
+val set_usable : t -> int Oxbow_core.Rect.t -> unit
 
 (** [set_name output name] sets [output]'s name to [name].
 
@@ -189,7 +189,7 @@ val set_name : t -> string option -> unit
 (** [set_geom output geom] sets [output]'s geometry to [geom].
 
     {b Effects:} mutates WM state *)
-val set_geom : t -> int32 Ocdwm_core.Rect.t -> unit
+val set_geom : t -> int32 Oxbow_core.Rect.t -> unit
 
 (** [set_scroll_offset output offset] sets the scroll offset of the first active
     tag on [output].
@@ -200,7 +200,7 @@ val set_scroll_offset : t -> int -> unit
 (** [apply_default_width td ~delta] applies [delta] to the default width of [td].
 
     {b Effects:} mutates WM state *)
-val apply_default_width : Types.Config.Data.t -> delta:float Ocdwm_core.Delta.t -> unit
+val apply_default_width : Types.Config.Data.t -> delta:float Oxbow_core.Delta.t -> unit
 
 (** [arranges window] is true when [window]'s output owns its dimensions and a
     proposal exists to defend. *)

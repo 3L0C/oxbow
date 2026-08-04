@@ -1,4 +1,4 @@
 (library
- (name ocdwm_ctl)
- (public_name ocdwm.ctl)
- (libraries ocdwm.core ocdwm.ipc cmdliner yojson eio eio_posix logs))
+ (name oxbow_ctl)
+ (public_name oxbow.ctl)
+ (libraries oxbow.core oxbow.ipc cmdliner yojson eio eio_posix logs))

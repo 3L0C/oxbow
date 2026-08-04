@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let query_term = Ctl_cli.output_query (fun output -> Query.Schemes { output })
 let name = "query"

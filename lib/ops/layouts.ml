@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let handle_scrolling wm seat (cmd : Command.Layout.Scrolling.t) =
   match cmd with

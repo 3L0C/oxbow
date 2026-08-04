@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_ipc
+open! Oxbow_core
+open! Oxbow_ipc
 
 let role_arg =
   Ctl_cli.mk_enum "role" ~doc:"Filter to devices with this role." ~docv:"ROLE"

@@ -2,4 +2,4 @@
     of full-height columns. Windows keep true strip positions; off-viewport
     visibility is handled by [Window.is_rendered] and clip state by
     [Window.sync]. *)
-val arrange : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit
+val arrange : Oxbow_state.Wm.t -> Oxbow_state.Output.t -> unit

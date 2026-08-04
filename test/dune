@@ -1,67 +1,67 @@
 (test
  (name test_core)
  (modules test_core)
- (libraries ocdwm.core ocdwm.ipc yojson))
+ (libraries oxbow.core oxbow.ipc yojson))
 
 (test
  (name test_layouts)
  (modules test_layouts)
- (libraries ocdwm.core ocdwm.layout))
+ (libraries oxbow.core oxbow.layout))
 
 (test
  (name test_events)
  (modules test_events)
- (libraries ocdwm.ipc yojson))
+ (libraries oxbow.ipc yojson))
 
 (test
  (name test_scenario_manage)
  (modules test_scenario_manage)
- (libraries harness fake_river ocdwm.ipc yojson))
+ (libraries harness fake_river oxbow.ipc yojson))
 
 (test
  (name test_scenario_window)
  (modules test_scenario_window)
- (libraries harness fake_river ocdwm.ipc yojson))
+ (libraries harness fake_river oxbow.ipc yojson))
 
 (test
  (name test_scenario_tags)
  (modules test_scenario_tags)
- (libraries harness fake_river ocdwm.core ocdwm.ipc yojson))
+ (libraries harness fake_river oxbow.core oxbow.ipc yojson))
 
 (test
  (name test_scenario_layout)
  (modules test_scenario_layout)
- (libraries harness fake_river ocdwm.ipc yojson))
+ (libraries harness fake_river oxbow.ipc yojson))
 
 (test
  (name test_scenario_ctl)
  (modules test_scenario_ctl)
- (libraries harness fake_river ocdwm.ipc yojson))
+ (libraries harness fake_river oxbow.ipc yojson))
 
 (test
  (name test_scenario_subscribe)
  (modules test_scenario_subscribe)
- (libraries harness fake_river ocdwm.ipc ocdwm.core eio eio.unix yojson))
+ (libraries harness fake_river oxbow.ipc oxbow.core eio eio.unix yojson))
 
 (test
  (name test_scenario_bind)
  (modules test_scenario_bind)
- (libraries harness fake_river ocdwm.ipc yojson))
+ (libraries harness fake_river oxbow.ipc yojson))
 
 (test
  (name test_scenario_input)
  (modules test_scenario_input)
- (libraries harness fake_river ocdwm.ipc yojson))
+ (libraries harness fake_river oxbow.ipc yojson))
 
 (test
  (name test_scenario_warp)
  (modules test_scenario_warp)
- (libraries harness fake_river ocdwm.ipc yojson))
+ (libraries harness fake_river oxbow.ipc yojson))
 
 (library
  (name fake_river)
  (modules fake_river)
- (libraries ocdwm.river wayland eio eio.unix logs unix))
+ (libraries oxbow.river wayland eio eio.unix logs unix))
 
 (test
  (name test_fake_river)
@@ -69,7 +69,7 @@
  (libraries
   fake_river
   harness
-  ocdwm.runtime
+  oxbow.runtime
   wayland
   eio
   eio_main
@@ -82,12 +82,12 @@
  (name test_arrange)
  (modules test_arrange)
  (libraries
-  ocdwm.core
-  ocdwm.state
-  ocdwm.ops
-  ocdwm.runtime
-  ocdwm.wire
-  ocdwm.river
+  oxbow.core
+  oxbow.state
+  oxbow.ops
+  oxbow.runtime
+  oxbow.wire
+  oxbow.river
   wayland
   cstruct
   eio
@@ -99,9 +99,9 @@
  (modules harness)
  (libraries
   fake_river
-  ocdwm.runtime
-  ocdwm.ipc
-  ocdwm.ctl
+  oxbow.runtime
+  oxbow.ipc
+  oxbow.ctl
   cmdliner
   wayland
   eio

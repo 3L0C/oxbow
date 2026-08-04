@@ -3,7 +3,7 @@
     fullscreen window.
 
     {b Effects:} mutates WM state *)
-val arrange : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit
+val arrange : Oxbow_state.Wm.t -> Oxbow_state.Output.t -> unit
 
 (** [zoom ?warp wm seat] promotes the focused window to the top of the stack if
     it is not already the master. If it is the master, promote and swap with the
@@ -14,6 +14,6 @@ val arrange : Ocdwm_state.Wm.t -> Ocdwm_state.Output.t -> unit
     {b Effects:} mutates WM state *)
 val zoom
   :  ?warp:bool
-  -> Ocdwm_state.Wm.t
-  -> Ocdwm_state.Seat.t
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
   -> (Yojson.Safe.t option, string) result

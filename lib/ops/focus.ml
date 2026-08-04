@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_state
+open! Oxbow_core
+open! Oxbow_state
 
 let layer_shell_sync (wm : Wm.t) =
   match Wm.focused_output wm with

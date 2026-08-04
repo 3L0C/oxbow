@@ -1,4 +1,4 @@
-open! Ocdwm_ipc
+open! Oxbow_ipc
 
 let leaves =
   [ "on", "Turn warp-on-focus on", Command.Input (Pointer (Warp true))

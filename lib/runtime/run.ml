@@ -1,5 +1,5 @@
-open! Ocdwm_core
-open! Ocdwm_state
+open! Oxbow_core
+open! Oxbow_state
 
 let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   Eio.Switch.run

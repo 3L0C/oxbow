@@ -1,32 +1,32 @@
 module Key = struct
   type t =
     | Keysym of Xkbcommon.Keysym.t
-    | Pointer of Ocdwm_core.Pointer_button.t
+    | Pointer of Oxbow_core.Pointer_button.t
 end
 
 module Config = struct
   module Border = struct
     type t =
       { mutable width : int32
-      ; mutable focused_color : Ocdwm_core.Color.t
-      ; mutable unfocused_color : Ocdwm_core.Color.t
-      ; mutable urgent_color : Ocdwm_core.Color.t
+      ; mutable focused_color : Oxbow_core.Color.t
+      ; mutable unfocused_color : Oxbow_core.Color.t
+      ; mutable urgent_color : Oxbow_core.Color.t
       }
   end
 
   module Data = struct
     type t =
-      { mutable layout : Ocdwm_core.Layout.t
-      ; tiling : Ocdwm_layout.Params.Tiling.t
-      ; scrolling : Ocdwm_layout.Params.Scrolling.t
-      ; gaps : Ocdwm_layout.Params.Gaps.t
+      { mutable layout : Oxbow_core.Layout.t
+      ; tiling : Oxbow_layout.Params.Tiling.t
+      ; scrolling : Oxbow_layout.Params.Scrolling.t
+      ; gaps : Oxbow_layout.Params.Gaps.t
       }
   end
 
   module Rules = struct
     type t =
-      { mutable window : Ocdwm_core.Window_rule.t list
-      ; mutable input : Ocdwm_core.Input_rule.t list
+      { mutable window : Oxbow_core.Window_rule.t list
+      ; mutable input : Oxbow_core.Input_rule.t list
       }
   end
 
@@ -55,7 +55,7 @@ module rec Input_device : sig
   module Role : sig
     type t =
       | Keyboard of { mutable keyboard : Wire.Obj.Xkb.Config.Keyboard.t option }
-      | Pointer of { mutable class_ : Ocdwm_core.Input.Class.t }
+      | Pointer of { mutable class_ : Oxbow_core.Input.Class.t }
       | Touch
       | Tablet
   end
@@ -79,8 +79,8 @@ and Output : sig
 
   module Tags : sig
     type t =
-      { mutable selected : Ocdwm_core.Tag.Set.t
-      ; mutable previous : Ocdwm_core.Tag.Set.t
+      { mutable selected : Oxbow_core.Tag.Set.t
+      ; mutable previous : Oxbow_core.Tag.Set.t
       }
   end
 
@@ -98,8 +98,8 @@ and Output : sig
     ; layer_shell : Wire.Obj.Layer_shell.Output.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable name : string option
-    ; mutable geom : int32 Ocdwm_core.Rect.t
-    ; mutable usable : int Ocdwm_core.Rect.t
+    ; mutable geom : int32 Oxbow_core.Rect.t
+    ; mutable usable : int Oxbow_core.Rect.t
     ; tags : Tags.t
     ; overview : Overview.t
     ; tag_data : Config.Data.t array
@@ -126,16 +126,16 @@ and Window : sig
     type t =
       | Move of { seat : Seat.t }
       | Move_to of
-          { x : Ocdwm_core.Extent.t
-          ; y : Ocdwm_core.Extent.t
+          { x : Oxbow_core.Extent.t
+          ; y : Oxbow_core.Extent.t
           }
       | Resize of
           { seat : Seat.t
           ; edges : int32
           }
       | Resize_to of
-          { w : Ocdwm_core.Extent.t
-          ; h : Ocdwm_core.Extent.t
+          { w : Oxbow_core.Extent.t
+          ; h : Oxbow_core.Extent.t
           }
       | Maximize
       | Unmaximize
@@ -147,10 +147,10 @@ and Window : sig
           { width : int32
           ; height : int32
           }
-      | Set_tags of Ocdwm_core.Tag.Arg.t
+      | Set_tags of Oxbow_core.Tag.Arg.t
       | Send_to_output_name of
           { name : string
-          ; policy : Ocdwm_core.Tag.Policy.t
+          ; policy : Oxbow_core.Tag.Policy.t
           }
       | Float
       | Tile
@@ -198,7 +198,7 @@ and Window : sig
   module Scrolling_props : sig
     type t =
       { mutable consumes : bool
-      ; mutable width : Ocdwm_core.Width_fac.t
+      ; mutable width : Oxbow_core.Width_fac.t
       }
   end
 
@@ -238,12 +238,12 @@ and Window : sig
     ; mutable decoration_hint : Decoration_hint.t option
     ; mutable presentation_hint : Wire.Presentation_mode.t option
     ; mutable defense : Defense.t
-    ; mutable geom : int32 Ocdwm_core.Rect.t
-    ; mutable float_geom : int32 Ocdwm_core.Rect.t option
-    ; mutable clip : ([ `Scrolling | `Overview ] * int Ocdwm_core.Rect.t) option
+    ; mutable geom : int32 Oxbow_core.Rect.t
+    ; mutable float_geom : int32 Oxbow_core.Rect.t option
+    ; mutable clip : ([ `Scrolling | `Overview ] * int Oxbow_core.Rect.t) option
     ; mutable offscreen : bool
     ; mutable size_hints : int32 Size_hints.t
-    ; mutable tags : Ocdwm_core.Tag.Set.t
+    ; mutable tags : Oxbow_core.Tag.Set.t
     ; mutable output : Output.t option
     ; mutable output_before_evac : string option
     ; mutable is_fixed : bool
@@ -314,7 +314,7 @@ and Seat : sig
       ; seat : Seat.t
       ; mode : string
       ; mutable enabled : bool
-      ; command : Ocdwm_ipc.Command.t
+      ; command : Oxbow_ipc.Command.t
       ; mods : int32
       ; keysym : Xkbcommon.Keysym.t
       }
@@ -326,9 +326,9 @@ and Seat : sig
       ; seat : Seat.t
       ; mode : string
       ; mutable enabled : bool
-      ; command : Ocdwm_ipc.Command.t
+      ; command : Oxbow_ipc.Command.t
       ; mods : int32
-      ; button : Ocdwm_core.Pointer_button.t
+      ; button : Oxbow_core.Pointer_button.t
       }
   end
 
@@ -382,16 +382,16 @@ and Wm : sig
   module Ipc : sig
     module Subscriber : sig
       type t =
-        { kinds : Ocdwm_ipc.Record.t list
+        { kinds : Oxbow_ipc.Record.t list
         ; output : string option
-        ; mutable pending : ((Ocdwm_ipc.Record.t * string) * string) list
+        ; mutable pending : ((Oxbow_ipc.Record.t * string) * string) list
         ; wake : Eio.Condition.t
         }
     end
 
     type t =
       { mutable subscribers : Subscriber.t list
-      ; mutable last : ((Ocdwm_ipc.Record.t * string) * Ocdwm_ipc.Event.t) list
+      ; mutable last : ((Oxbow_ipc.Record.t * string) * Oxbow_ipc.Event.t) list
       }
   end
 
