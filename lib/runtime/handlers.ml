@@ -313,8 +313,8 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
         | Some s -> Window.queue_request window @@ Resize { seat = s; edges }
         | None -> ()
 
-      method on_maximize_requested _ = Window.queue_request window Maximize
-      method on_unmaximize_requested _ = Window.queue_request window Unmaximize
+      method on_maximize_requested _ = ()
+      method on_unmaximize_requested _ = ()
 
       method on_fullscreen_requested _ ~output =
         let queue_request o = Window.queue_request window @@ Fullscreen { output = o } in

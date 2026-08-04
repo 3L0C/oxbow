@@ -2,9 +2,7 @@ open! Ocdwm_core
 open! Ocdwm_state
 open! Ocdwm_ops
 
-let capabilities ctx w =
-  Send.set_capabilities ctx w ~caps:Wire.Capabilities.(Int32.logor maximize fullscreen)
-;;
+let capabilities ctx w = Send.set_capabilities ctx w ~caps:Wire.Capabilities.fullscreen
 
 let dimensions ctx (w : Window.t) =
   if w.float_seed_pending
