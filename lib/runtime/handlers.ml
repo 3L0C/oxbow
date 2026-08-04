@@ -349,7 +349,7 @@ let on_input_device proxy (wm_box : Wm.t Box.t) =
   let make role =
     let device =
       Input_device.
-        { obj = proxy; name = !device_name; role; lifecycle = Active; libinput = None }
+        { obj = proxy; name = !device_name; role; lifecycle = New; libinput = None }
     in
     resolve_device device;
     device
@@ -413,7 +413,14 @@ let on_libinput_device device (wm_box : Wm.t Box.t) =
                     (Input_device.role_to_string r)))
            device_box.body
 
-       method on_done _ = Option.iter (Input_rules.apply wm) device_box.body
+       method on_done _ =
+         Option.iter
+           (fun (d : Input_device.t) ->
+              if d.lifecycle = New
+              then (
+                Input_device.set_lifecycle d Active;
+                Input_rules.apply wm d))
+           device_box.body
 
        method on_removed _ =
          Option.iter

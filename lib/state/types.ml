@@ -47,6 +47,7 @@ end
 module rec Input_device : sig
   module Lifecycle : sig
     type t =
+      | New
       | Active
       | Removed
   end

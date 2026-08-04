@@ -113,7 +113,7 @@ let apply_mouse obj dev ~device (settings : Input_rule.Mouse.t) =
 
 let apply (wm : Wm.t) (device : Input_device.t) =
   match device.lifecycle, device.libinput, device.role with
-  | Removed, _, _ | _, None, _ -> ()
+  | (New | Removed), _, _ | _, None, _ -> ()
   | Active, Some dev, Pointer { class_ = Touchpad } ->
     let settings =
       List.fold_left

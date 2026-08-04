@@ -10,6 +10,11 @@ val role_to_string : Role.t -> string
     {b Effects:} mutates WM state; sends River request *)
 val set_keyboard : Types.Wm.t -> t -> Wire.Obj.Xkb.Config.Keyboard.t -> unit
 
+(** [set_lifecycle device lifecycle] sets [device]'s lifecycle to [lifecycle].
+
+    {b Effects:} mutates WM state *)
+val set_lifecycle : t -> Lifecycle.t -> unit
+
 (** [clear_device device proxy] clears [device] if it is holding [proxy].
 
     {b Effects:} mutates WM state *)

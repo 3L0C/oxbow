@@ -22,6 +22,8 @@ let set_keyboard (wm : Types.Wm.t) device keyboard =
     m "cannot set 'xkb' attribute for '%s' input device" @@ role_to_string device.role
 ;;
 
+let set_lifecycle device lifecycle = device.lifecycle <- lifecycle
+
 let clear_device device proxy =
   match device.role with
   | Keyboard k when Phys.opt_holds proxy k.keyboard -> k.keyboard <- None
@@ -31,7 +33,7 @@ let clear_device device proxy =
 let remove_device device =
   match device.lifecycle with
   | Removed -> ()
-  | Active ->
+  | New | Active ->
     Emit.destroy_input_device device.obj;
     device.lifecycle <- Removed
 ;;
