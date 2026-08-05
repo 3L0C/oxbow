@@ -50,8 +50,8 @@ module Input = struct
 
   module Pointer = struct
     type t =
-      | Follow of bool [@name "follow"]
-      | Toggle_follow [@name "toggle_follow"]
+      | Follow of Focus_follows_policy.t [@name "follow"]
+      | Cycle_follow [@name "cycle_follow"]
       | Warp of bool [@name "warp"]
       | Toggle_warp [@name "toggle_warp"]
     [@@deriving yojson]

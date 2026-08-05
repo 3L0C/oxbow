@@ -2,17 +2,29 @@ open! Oxbow_core
 open! Oxbow_state
 open! Oxbow_ipc
 
+let follow_allowed (policy : Focus_follows_policy.t) (w : Window.t) =
+  match policy with
+  | Always -> true
+  | Never -> false
+  | Not_scrolling ->
+    (match w.clip with
+     | Some (`Scrolling, _) -> false
+     | _ -> true)
+;;
+
 let handle_position (wm : Wm.t) (seat : Seat.t) (x, y) =
   let pos_changed = seat.position <> { x; y } in
   Seat.set_position seat (x, y);
-  if wm.config.focus_follows_pointer && Option.is_none seat.op
+  if wm.config.focus_follows_pointer <> Never && Option.is_none seat.op
   then (
     match Output.at_point ~x ~y wm.outputs with
     | None -> Seat.set_cursor_target seat None
     | Some o ->
       if not @@ Phys.opt_holds o seat.output then Seat.focus_output seat @@ Some o;
       (match seat.hovered with
-       | Some w when not @@ Phys.opt_holds w seat.cursor_target ->
+       | Some w
+         when (not @@ Phys.opt_holds w seat.cursor_target)
+              && follow_allowed wm.config.focus_follows_pointer w ->
          if pos_changed then Seat.set_focus_state seat @@ Refresh w;
          Seat.set_cursor_target seat seat.hovered
        | _ -> ()))
@@ -33,9 +45,10 @@ let warp_target seat =
 let handle wm _seat (cmd : Command.Input.Pointer.t) =
   let () =
     match cmd with
-    | Follow b -> Config.set_focus_follows_pointer wm b
-    | Toggle_follow ->
-      Config.set_focus_follows_pointer wm @@ not wm.config.focus_follows_pointer
+    | Follow policy -> Config.set_focus_follows_pointer wm policy
+    | Cycle_follow ->
+      Focus_follows_policy.cycle wm.config.focus_follows_pointer
+      |> Config.set_focus_follows_pointer wm
     | Warp b -> Config.set_warp_on_focus wm b
     | Toggle_warp -> Config.set_warp_on_focus wm @@ not wm.config.warp_on_focus
   in

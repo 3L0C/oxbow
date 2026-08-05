@@ -204,7 +204,10 @@ let seat_sync wm (seat : Seat.t) =
 ;;
 
 let apply_request (wm : Wm.t) (seat : Seat.t) =
-  if wm.config.focus_follows_pointer && Option.is_none seat.op && seat.layer_focus = None
+  if
+    wm.config.focus_follows_pointer <> Never
+    && Option.is_none seat.op
+    && seat.layer_focus = None
   then (
     match seat.focus_state with
     | Refresh w ->

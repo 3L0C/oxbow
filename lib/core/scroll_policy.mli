@@ -6,7 +6,7 @@ type t =
 (** [all] is a list of all scrolling policies. *)
 val all : t list
 
-(** [to_string policy] is the string respresentation of [policy]. *)
+(** [to_string policy] is the string representation of [policy]. *)
 val to_string : t -> string
 
 (** [of_string s] is the scroll policy represented by [s] or [Error msg] if [s]

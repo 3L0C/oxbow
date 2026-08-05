@@ -38,15 +38,15 @@ let default () =
   ; modkey = Wire.Modifiers.mod4
   ; rules = { window = []; input = [] }
   ; modes = [ Mode.normal; Mode.locked ]
-  ; focus_follows_pointer = true
+  ; focus_follows_pointer = Not_scrolling
   ; warp_on_focus = false
   ; repeat_rate = 50
   ; repeat_delay = 250
   }
 ;;
 
-let set_focus_follows_pointer (wm : Types.Wm.t) focus_follows_pointer =
-  wm.config.focus_follows_pointer <- focus_follows_pointer
+let set_focus_follows_pointer (wm : Types.Wm.t) policy =
+  wm.config.focus_follows_pointer <- policy
 ;;
 
 let set_warp_on_focus (wm : Types.Wm.t) warp_on_focus =

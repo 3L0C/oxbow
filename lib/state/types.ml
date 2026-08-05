@@ -37,7 +37,7 @@ module Config = struct
     ; mutable modes : string list
     ; mutable modkey : Wire.Modifiers.t
     ; rules : Rules.t
-    ; mutable focus_follows_pointer : bool
+    ; mutable focus_follows_pointer : Oxbow_core.Focus_follows_policy.t
     ; mutable warp_on_focus : bool
     ; mutable repeat_rate : int
     ; mutable repeat_delay : int

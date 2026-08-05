@@ -6,11 +6,11 @@ val create_tag_data : unit -> Data.t
 (** [default ()] is the default config. *)
 val default : unit -> t
 
-(** [set_focus_follows_pointer wm focus_follows_pointer] sets [wm]'s "focus
-    follows pointer" flag to [focus_follows_pointer].
+(** [set_focus_follows_pointer wm policy] sets the focus follows pointer policy
+    for [wm].
 
     {b Effects:} mutates WM state *)
-val set_focus_follows_pointer : Types.Wm.t -> bool -> unit
+val set_focus_follows_pointer : Types.Wm.t -> Oxbow_core.Focus_follows_policy.t -> unit
 
 (** [set_warp_on_focus wm warp_on_focus] sets [wm]'s "warp on focus" flag to
     [warp_on_focus].

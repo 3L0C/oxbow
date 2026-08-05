@@ -1,12 +1,28 @@
+open! Oxbow_core
 open! Oxbow_ipc
 
-let leaves =
-  [ "on", "Turn focus-follows-pointer on", Command.Input (Pointer (Follow true))
-  ; "off", "Turn focus-follows-pointer off", Command.Input (Pointer (Follow false))
-  ; "toggle", "Toggle focus-follows-pointer", Command.Input (Pointer Toggle_follow)
-  ]
+let command_term policy = Cmdliner.Term.const @@ Command.Input (Pointer (Follow policy))
+
+let policy_targets =
+  Ctl_cli.enum_of Focus_follows_policy.to_string Focus_follows_policy.all
+;;
+
+let mk_leaf (name, policy) =
+  Ctl_cli.cmd_pair
+    ~name
+    ~doc:(Printf.sprintf "Set the focus follows pointer policy to %s" name)
+  @@ command_term policy
 ;;
 
 let name = "follow"
-let doc = "Whether pointer motion changes focus"
-let cmd, bind_cmd = Ctl_cli.group_pair ~name ~doc @@ Ctl_cli.const_leaves leaves
+let doc = "How pointer motion changes focus"
+
+let cycle_leaf =
+  Ctl_cli.cmd_pair ~name:"cycle" ~doc:"Cycle the focus follows pointer policy"
+  @@ Cmdliner.Term.const
+  @@ Command.Input (Pointer Cycle_follow)
+;;
+
+let cmd, bind_cmd =
+  Ctl_cli.group_pair ~name ~doc @@ (cycle_leaf :: List.map mk_leaf policy_targets)
+;;
