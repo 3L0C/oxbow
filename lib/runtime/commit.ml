@@ -206,8 +206,13 @@ let borders ctx (seat : Seat.t) =
        match w.output with
        | None -> ()
        | Some o ->
+         let w_width =
+           match w.presentation with
+           | Maximized _ | Fullscreen _ -> 0l
+           | Tiled | Floating -> width
+         in
          let r, g, b, a = color w o |> Color.channels in
-         Send.set_borders ctx w ~edges ~width ~r ~g ~b ~a)
+         Send.set_borders ctx w ~edges ~width:w_width ~r ~g ~b ~a)
     wm.windows
 ;;
 
