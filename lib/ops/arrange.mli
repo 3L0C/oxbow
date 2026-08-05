@@ -53,17 +53,6 @@ val set_gaps_overview
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_scroll_policy wm seat policy scope] sets the scrolling layout policy on
-    the output according to [scope].
-
-    {b Effects:} mutates WM state *)
-val set_scroll_policy
-  :  Oxbow_state.Wm.t
-  -> Oxbow_state.Seat.t
-  -> Oxbow_core.Scroll_policy.t
-  -> Oxbow_core.Scope.t
-  -> (Yojson.Safe.t option, string) result
-
 (** [set_default_width wm seat delta scope] sets the default column width on the
     output according to [scope].
 
@@ -131,6 +120,17 @@ val select_scheme
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
   -> Oxbow_core.Scheme.t
+  -> Oxbow_core.Scope.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [select_scroll_policy wm seat policy scope] sets the layout to [Scrolling]
+    with the scrolling [policy] on the output according to [scope].
+
+    {b Effects:} mutates WM state *)
+val select_scroll_policy
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Scroll_policy.t
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 

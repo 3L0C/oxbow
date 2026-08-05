@@ -45,10 +45,6 @@ let set_gaps_overview wm seat delta scope =
     Ok None)
 ;;
 
-let set_scroll_policy wm seat policy scope =
-  apply_scoped wm seat scope ~f:(Output.apply_scroll_policy ~policy)
-;;
-
 let set_default_width wm seat delta scope =
   apply_scoped wm seat scope ~f:(Output.apply_default_width ~delta)
 ;;
@@ -151,9 +147,16 @@ let set_layout wm seat (layout : Layout.t) scope =
 ;;
 
 let select_scheme wm seat scheme scope =
-  match set_layout wm seat Tiling scope with
-  | Error _ as e -> e
-  | Ok _ -> apply_scoped wm seat scope ~f:(Output.apply_scheme ~scheme)
+  set_layout wm seat Tiling scope
+  |> Result.map (fun _ -> apply_scoped wm seat scope ~f:(Output.apply_scheme ~scheme))
+  |> Result.join
+;;
+
+let select_scroll_policy wm seat policy scope =
+  set_layout wm seat Scrolling scope
+  |> Result.map (fun _ ->
+    apply_scoped wm seat scope ~f:(Output.apply_scroll_policy ~policy))
+  |> Result.join
 ;;
 
 let cycle_scheme wm seat dir =
