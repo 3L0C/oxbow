@@ -40,8 +40,7 @@ let to_layout (output : Output.t) =
   match output.name with
   | None -> None
   | Some name ->
-    let layout = Output.current_layout output in
-    let scheme = Output.current_scheme output in
+    let td = Output.to_tag_data output in
     let visible = Output.visible_windows output in
     let focused_index =
       match Output.focused_window output with
@@ -52,12 +51,17 @@ let to_layout (output : Output.t) =
     Some
       Record.Layout.
         { output = name
-        ; layout = Layout.to_string layout
+        ; layout = Layout.to_string td.layout
         ; scheme =
-            (match layout with
-             | Tiling -> Some (Scheme.to_string scheme)
+            (match td.layout with
+             | Tiling -> Some (Scheme.to_string td.tiling.scheme)
              | Scrolling | Floating -> None)
-        ; symbol = Symbol.render layout ~scheme ~ctx
+        ; symbol =
+            Symbol.render
+              td.layout
+              ~scheme:td.tiling.scheme
+              ~policy:td.scrolling.policy
+              ~ctx
         }
 ;;
 
