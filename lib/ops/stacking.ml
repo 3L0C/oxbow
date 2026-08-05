@@ -38,8 +38,7 @@ let apply (intent : Focus_intent.t) (output : Output.t) =
         | [] -> true
       in
       splice_focus_stack [ window ];
-      if not @@ Tag.Set.intersects window.tags output.tags.selected
-      then Output.switch_tags ~tags:window.tags output;
+      if not @@ Window.tag_visible window then Output.switch_tags ~tags:window.tags output;
       if Output.current_layout output = Scrolling && changed then Schedule.manage ())
   | Push windows ->
     Output.set_wm_stack output @@ windows @ List.filter (not_in windows) output.wm_stack;

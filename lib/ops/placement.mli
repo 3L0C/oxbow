@@ -209,7 +209,9 @@ val resize_spatial
     at the head of the focus order of the second output, and the view switches
     to its tags. When no window arrived, focus moves to the second output.
     [scope] controls which windows are swapped. [scope] is one of
-    [`Tags | `All | `Visible]. *)
+    [`Tags | `All | `Visible].
+
+    {b Effects:} mutates WM state *)
 val swap_outputs
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
@@ -217,4 +219,23 @@ val swap_outputs
   -> policy:Oxbow_core.Tag.Policy.t
   -> follow:bool
   -> [< `Tags | `All | `Visible ]
+  -> (Yojson.Safe.t option, string) result
+
+(** [set_sticky seat scope] sets the sticky scope of the focused window on
+    [seat]. Is [Error msg] when [seat] has no focused window.
+
+    {b Effects:} mutates WM state *)
+val set_sticky
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Sticky.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [toggle_sticky seat toggle] sets the focused window to [toggle] when it is
+    [Off], and [Off] otherwise. Is [Error msg] when [seat] has no focused
+    window.
+
+    {b Effects:} mutates WM state *)
+val toggle_sticky
+  :  Oxbow_state.Seat.t
+  -> Oxbow_core.Sticky.Toggle.t
   -> (Yojson.Safe.t option, string) result

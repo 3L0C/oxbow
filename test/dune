@@ -58,6 +58,11 @@
  (modules test_scenario_warp)
  (libraries harness fake_river oxbow.ipc yojson))
 
+(test
+ (name test_scenario_sticky)
+ (modules test_scenario_sticky)
+ (libraries harness fake_river oxbow.core oxbow.ipc yojson))
+
 (library
  (name fake_river)
  (modules fake_river)

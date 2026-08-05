@@ -67,6 +67,10 @@ val reject_dimensions : t -> width:int32 -> height:int32 -> unit
 (** [on_tags window ~tags] is true when [window]'s tags intersect with [tags]. *)
 val on_tags : t -> tags:Oxbow_core.Tag.Set.t -> bool
 
+(** [occupied_tags ?except windows] is the union of the tags of [windows]. The
+    tags of [except] do not count. *)
+val occupied_tags : ?except:t -> t list -> Oxbow_core.Tag.Set.t
+
 (** [tag_visible window] is [true] if [window]'s output is in overview mode or
     [window]'s tags intersect its output's selected tags. Is [false] otherwise. *)
 val tag_visible : t -> bool
@@ -293,6 +297,11 @@ val set_presentation_hint : t -> Wire.Presentation_mode.t option -> unit
 
     {b Effects:} mutates WM state *)
 val set_size_hints : t -> int32 Size_hints.t -> unit
+
+(** [set_sticky window scope] sets [window]'s sticky scope to [scope].
+
+    {b Effects:} mutates WM state *)
+val set_sticky : t -> Oxbow_core.Sticky.t -> unit
 
 (** [set_is_fixed window is_fixed] sets [window]'s fixed status to [is_fixed].
 

@@ -148,6 +148,7 @@ and Window : sig
           ; height : int32
           }
       | Set_tags of Oxbow_core.Tag.Arg.t
+      | Set_sticky of Oxbow_core.Sticky.t
       | Send_to_output_name of
           { name : string
           ; policy : Oxbow_core.Tag.Policy.t
@@ -246,6 +247,7 @@ and Window : sig
     ; mutable tags : Oxbow_core.Tag.Set.t
     ; mutable output : Output.t option
     ; mutable output_before_evac : string option
+    ; mutable sticky : Oxbow_core.Sticky.t
     ; mutable is_fixed : bool
     ; mutable is_urgent : bool
     ; mutable is_fake_fullscreen : bool

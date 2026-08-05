@@ -588,6 +588,11 @@ let send_events_arg =
        [ Enabled; Disabled; Disabled_on_external_mouse ]
 ;;
 
+let sticky_arg =
+  mk_enum "sticky" ~doc:"Set the sticky state of the window." ~docv:"OPTION"
+  @@ enum_of Sticky.to_string Sticky.all
+;;
+
 let code_protocol_err = 1
 let code_conn_failed = 2
 let exit_success = Cmd.Exit.info 0 ~doc:"on success"

@@ -45,6 +45,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
        | Some o -> o.tags.selected)
   ; output
   ; output_before_evac = None
+  ; sticky = Off
   ; is_fixed = false
   ; is_urgent = false
   ; is_fake_fullscreen = false
@@ -110,10 +111,28 @@ let tag_layout (o : Types.Output.t) =
 
 let on_tags w ~tags = Tag.Set.intersects tags w.tags
 
+let occupied_tags ?except windows =
+  List.fold_left
+    (fun s w ->
+       match except with
+       | Some w' when w' == w -> s
+       | Some _ | None -> Tag.Set.union s w.tags)
+    Tag.Set.empty
+    windows
+;;
+
 let tag_visible w =
   match w.output with
   | None -> false
-  | Some o -> o.overview.enabled || on_tags ~tags:o.tags.selected w
+  | Some o ->
+    if o.overview.enabled
+    then true
+    else (
+      match w.sticky with
+      | Off -> on_tags ~tags:o.tags.selected w
+      | All -> true
+      | Occupied ->
+        occupied_tags ~except:w o.wm_stack |> Tag.Set.intersects o.tags.selected)
 ;;
 
 let is_tiled w = w.presentation = Tiled
@@ -446,6 +465,14 @@ let set_close_pending w v = w.close_pending <- v
 let set_decoration_hint w hint = w.decoration_hint <- hint
 let set_presentation_hint w hint = w.presentation_hint <- hint
 let set_size_hints w hints = w.size_hints <- hints
+
+let set_sticky w scope =
+  if w.sticky <> scope
+  then (
+    w.sticky <- scope;
+    Schedule.manage ())
+;;
+
 let set_is_fixed w is_fixed = w.is_fixed <- is_fixed
 
 let rehome w name =

@@ -295,3 +295,22 @@ let swap_outputs
       | None -> Focus.focus_output wm seat b);
     Ok None
 ;;
+
+let set_sticky seat scope =
+  With.focused_window seat
+  @@ fun _o w ->
+  Window.set_sticky w scope;
+  Ok None
+;;
+
+let toggle_sticky seat toggle =
+  With.focused_window seat
+  @@ fun _o w ->
+  let scope =
+    match w.sticky with
+    | Off -> Sticky.of_toggle toggle
+    | Occupied | All -> Off
+  in
+  Window.set_sticky w scope;
+  Ok None
+;;

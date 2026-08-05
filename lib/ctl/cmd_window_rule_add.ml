@@ -11,14 +11,15 @@ let command_term =
      and+ tags = Ctl_cli.tags_flag
      and+ presentation = Ctl_cli.presentation_flag
      and+ resize_to = Ctl_cli.resize_to_flag
-     and+ move_to = Ctl_cli.move_to_flag in
+     and+ move_to = Ctl_cli.move_to_flag
+     and+ sticky = Ctl_cli.sticky_arg in
      let output : Window_rule.Effects.Output.t option =
        match name with
        | None -> None
        | Some name -> Some { name; policy }
      in
      let effects : Window_rule.Effects.t =
-       { output; tags; presentation; resize_to; move_to }
+       { output; tags; presentation; resize_to; move_to; sticky }
      in
      if Window_rule.Effects.is_empty effects
      then Error "give at least one effect"

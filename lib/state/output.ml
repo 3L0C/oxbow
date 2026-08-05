@@ -59,12 +59,7 @@ let switch_tags ~tags o =
     Schedule.manage ())
 ;;
 
-let occupied_tags o =
-  List.fold_left
-    (fun s (w : Types.Window.t) -> Tag.Set.union s w.tags)
-    Tag.Set.empty
-    o.wm_stack
-;;
+let occupied_tags o = Window.occupied_tags o.wm_stack
 
 let urgent_tags o =
   List.fold_left

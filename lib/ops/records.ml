@@ -33,6 +33,7 @@ let to_window (wm : Wm.t) (window : Window.t) =
     ; urgent = window.is_urgent
     ; hidden = not @@ Window.is_rendered window
     ; presentation = Window.presentation_string window
+    ; sticky = Sticky.to_string window.sticky
     }
 ;;
 

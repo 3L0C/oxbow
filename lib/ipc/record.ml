@@ -23,6 +23,7 @@ module Window = struct
     ; urgent : bool
     ; hidden : bool
     ; presentation : string
+    ; sticky : string
     }
   [@@deriving yojson]
 end

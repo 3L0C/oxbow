@@ -23,6 +23,7 @@ module Window : sig
     ; urgent : bool
     ; hidden : bool
     ; presentation : string
+    ; sticky : string
     }
 
   val t_of_yojson : Yojson.Safe.t -> t

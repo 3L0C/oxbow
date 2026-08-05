@@ -42,6 +42,7 @@ module Effects = struct
     ; presentation : Presentation.t option [@yojson.option]
     ; resize_to : Resize_to.t option [@yojson.option]
     ; move_to : Move_to.t option [@yojson.option]
+    ; sticky : Sticky.t option [@yojson.option]
     }
   [@@deriving yojson]
 

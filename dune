@@ -7,7 +7,7 @@
     -w
     +a-4-40-41-42-44-45-48-58-70
     -warn-error
-    -a
+    -a+8
     -strict-sequence
     -strict-formats)))
  (release

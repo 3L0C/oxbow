@@ -70,6 +70,7 @@ let rec handle wm window (request : Window.Request.t) =
   | Exit_fullscreen -> Placement.exit_fullscreen window
   | Dimensions d -> handle_set_dimensions wm window d.width d.height
   | Set_tags arg -> handle_set_tags wm window arg
+  | Set_sticky scope -> Window.set_sticky window scope
   | Send_to_output_name { name; policy } ->
     Placement.send_window_to_name wm window name policy
     |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e

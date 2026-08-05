@@ -19,6 +19,7 @@ let apply_effects
    | Maximize -> queue Maximize
    | Fake_fullscreen -> queue Fake_fullscreen);
   (e.resize_to |>? fun { w; h } -> queue (Resize_to { w; h }));
+  (e.sticky |>? fun s -> queue (Set_sticky s));
   e.move_to |>? fun { x; y } -> queue (Move_to { x; y })
 ;;
 
