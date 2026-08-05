@@ -11,8 +11,8 @@ let () =
     Fake_river.add_window fake ~app_id:(Some "firefox"));
   section "mfact +0.05" (fun () ->
     cmd env (Layout (Tiling (Mfact { delta = Rel 0.05; scope = Focused }))));
-  section "scheme monocle" (fun () ->
-    cmd env (Layout (Tiling (Scheme { scheme = Monocle; scope = Focused }))));
+  section "select scheme monocle" (fun () ->
+    cmd env (Layout (Tiling (Select { scheme = Monocle; scope = Focused }))));
   section "layout floating" (fun () ->
     cmd env (Layout (Select { layout = Floating; scope = Focused })));
   section "layout scrolling" (fun () ->

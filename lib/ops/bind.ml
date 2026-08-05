@@ -29,19 +29,19 @@ let install_defaults (wm : Wm.t) seat =
       ; modkey, K_space, Command.Window (Zoom { warp = None })
       ; modkey, K_J, Command.Window (Shift Next)
       ; modkey, K_K, Command.Window (Shift Prev)
-      ; modkey, K_y, Command.Layout (Tiling (Scheme { scheme = Even; scope = Focused }))
+      ; modkey, K_y, Command.Layout (Tiling (Select { scheme = Even; scope = Focused }))
       ; ( modkey
         , K_i
-        , Command.Layout (Tiling (Scheme { scheme = Monocle; scope = Focused })) )
+        , Command.Layout (Tiling (Select { scheme = Monocle; scope = Focused })) )
       ; ( modkey
         , K_z
-        , Command.Layout (Scrolling (Policy { policy = Left; scope = Focused })) )
+        , Command.Layout (Scrolling (Select { policy = Left; scope = Focused })) )
       ; ( modkey
         , K_x
-        , Command.Layout (Scrolling (Policy { policy = Centered; scope = Focused })) )
+        , Command.Layout (Scrolling (Select { policy = Centered; scope = Focused })) )
       ; ( modkey
         , K_c
-        , Command.Layout (Scrolling (Policy { policy = Visible; scope = Focused })) )
+        , Command.Layout (Scrolling (Select { policy = Visible; scope = Focused })) )
       ; modkey, K_comma, Command.Window Column_consume
       ; modkey, K_period, Command.Window Column_release
       ; Int32.(logor modkey ctrl), K_l, Command.Window (Column_move Next)

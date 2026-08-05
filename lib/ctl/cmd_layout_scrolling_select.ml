@@ -4,7 +4,7 @@ open! Oxbow_ipc
 let command_term policy =
   let open Cmdliner.Term.Syntax in
   let+ scope = Ctl_cli.setting_scope_term in
-  Command.Layout (Scrolling (Policy { policy; scope }))
+  Command.Layout (Scrolling (Select { policy; scope }))
 ;;
 
 let scroll_targets = Ctl_cli.enum_of Scroll_policy.to_string Scroll_policy.all
@@ -12,10 +12,8 @@ let scroll_targets = Ctl_cli.enum_of Scroll_policy.to_string Scroll_policy.all
 let mk_leaf (name, policy) =
   Ctl_cli.cmd_pair
     ~name
-    ~doc:(Printf.sprintf "Set the scrolling layout policy to %s" name)
+    ~doc:(Printf.sprintf "Switch the scrolling layout with %s policy" name)
   @@ command_term policy
 ;;
 
-let name = "policy"
-let doc = "Set the scrolling layout policy"
-let cmd, bind_cmd = Ctl_cli.group_pair ~name ~doc @@ List.map mk_leaf scroll_targets
+let cmds, bind_cmds = List.map mk_leaf scroll_targets |> List.split

@@ -16,9 +16,10 @@ let cmd, bind_cmd =
     ~default:command_term
     ~extra:[ Cmd_layout_tiling_query.cmd ]
   @@ Cmd_layout_tiling_cycle.(List.combine cmds bind_cmds)
-  @ Cmd_layout_tiling_scheme.(List.combine cmds bind_cmds)
+  @ Cmd_layout_tiling_select.(List.combine cmds bind_cmds)
   @ [ Cmd_layout_tiling_mfact.(cmd, bind_cmd)
     ; Cmd_layout_tiling_nmaster.(cmd, bind_cmd)
     ; Cmd_layout_tiling_orientation.(cmd, bind_cmd)
+    ; Cmd_layout_tiling_scheme.(cmd, bind_cmd)
     ]
 ;;

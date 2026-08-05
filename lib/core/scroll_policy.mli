@@ -3,6 +3,9 @@ type t =
   | Left
   | Centered
 
+(** [all] is a list of all scrolling policies. *)
+val all : t list
+
 (** [to_string policy] is the string respresentation of [policy]. *)
 val to_string : t -> string
 

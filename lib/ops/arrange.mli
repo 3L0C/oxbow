@@ -1,3 +1,14 @@
+(** [set_tiling_scheme wm seat scheme scope] sets the tiling layout scheme on
+    the output according to [scope].
+
+    {b Effects:} mutates WM state *)
+val set_tiling_scheme
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Scheme.t
+  -> Oxbow_core.Scope.t
+  -> (Yojson.Safe.t option, string) result
+
 (** [set_mfact wm seat delta scope] adjusts the master-area fraction on output
     according to [scope].
 
@@ -39,6 +50,17 @@ val set_gaps_outer
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
   -> int Oxbow_core.Delta.t
+  -> Oxbow_core.Scope.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [set_scrolling_policy wm seat policy scope] sets the scrolling layout policy
+    on the output according to [scope].
+
+    {b Effects:} mutates WM state *)
+val set_scrolling_policy
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Scroll_policy.t
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
@@ -112,22 +134,22 @@ val set_layout
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [select_scheme wm seat scheme scope] sets the scheme on the output according
-    to [scope].
+(** [select_tiling_scheme wm seat scheme scope] switches to the [Tiling] layout
+    with the scheme on the output applied to [scope].
 
     {b Effects:} mutates WM state *)
-val select_scheme
+val select_tiling_scheme
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
   -> Oxbow_core.Scheme.t
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [select_scroll_policy wm seat policy scope] sets the layout to [Scrolling]
-    with the scrolling [policy] on the output according to [scope].
+(** [select_scrolling_policy wm seat policy scope] switches to the [Scrolling]
+    layout with the policy on the output applied to [scope].
 
     {b Effects:} mutates WM state *)
-val select_scroll_policy
+val select_scrolling_policy
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
   -> Oxbow_core.Scroll_policy.t

@@ -239,7 +239,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
-== scheme monocle ==
+== select scheme monocle ==
 manage:propose_dimensions(firefox, 1872x1032)
 manage:propose_dimensions(emacs, 1872x1032)
 manage:propose_dimensions(kitty, 1872x1032)

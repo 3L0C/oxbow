@@ -4,6 +4,8 @@ type t =
   | Centered [@name "centered"]
 [@@deriving yojson]
 
+let all = [ Visible; Left; Centered ]
+
 let to_string = function
   | Visible -> "visible"
   | Left -> "left"

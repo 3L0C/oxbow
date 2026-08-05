@@ -80,6 +80,10 @@ end
 module Layout = struct
   module Scrolling = struct
     type t =
+      | Select of
+          { policy : Scroll_policy.t
+          ; scope : Scope.t
+          } [@name "select"]
       | Policy of
           { policy : Scroll_policy.t
           ; scope : Scope.t
@@ -106,6 +110,10 @@ module Layout = struct
           { dir : Direction.Spatial.t
           ; scope : Scope.t
           } [@name "orientation"]
+      | Select of
+          { scheme : Oxbow_core.Scheme.t
+          ; scope : Scope.t
+          } [@name "select"]
       | Scheme of
           { scheme : Oxbow_core.Scheme.t
           ; scope : Scope.t

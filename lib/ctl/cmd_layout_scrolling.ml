@@ -10,11 +10,9 @@ let name = "scrolling"
 let doc = "Switch to the scrolling layout"
 
 let cmd, bind_cmd =
-  Ctl_cli.group_pair
-    ~name
-    ~doc
-    ~default:command_term
-    [ Cmd_layout_scrolling_default_width.(cmd, bind_cmd)
+  Ctl_cli.group_pair ~name ~doc ~default:command_term
+  @@ Cmd_layout_scrolling_select.(List.combine cmds bind_cmds)
+  @ [ Cmd_layout_scrolling_default_width.(cmd, bind_cmd)
     ; Cmd_layout_scrolling_policy.(cmd, bind_cmd)
     ]
 ;;

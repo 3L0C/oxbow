@@ -22,6 +22,10 @@ let apply_scoped wm seat scope ~f =
   Ok None
 ;;
 
+let set_tiling_scheme wm seat scheme scope =
+  apply_scoped wm seat scope ~f:(Output.apply_scheme ~scheme)
+;;
+
 let set_mfact wm seat delta scope =
   apply_scoped wm seat scope ~f:(Output.apply_mfact ~delta)
 ;;
@@ -43,6 +47,10 @@ let set_gaps_overview wm seat delta scope =
     List.iter (Output.set_gaps_overview ~delta) outputs;
     Schedule.manage ();
     Ok None)
+;;
+
+let set_scrolling_policy wm seat policy scope =
+  apply_scoped wm seat scope ~f:(Output.apply_scroll_policy ~policy)
 ;;
 
 let set_default_width wm seat delta scope =
@@ -146,13 +154,13 @@ let set_layout wm seat (layout : Layout.t) scope =
     apply_scoped wm seat scope ~f:(Output.apply_layout ~layout)
 ;;
 
-let select_scheme wm seat scheme scope =
+let select_tiling_scheme wm seat scheme scope =
   set_layout wm seat Tiling scope
   |> Result.map (fun _ -> apply_scoped wm seat scope ~f:(Output.apply_scheme ~scheme))
   |> Result.join
 ;;
 
-let select_scroll_policy wm seat policy scope =
+let select_scrolling_policy wm seat policy scope =
   set_layout wm seat Scrolling scope
   |> Result.map (fun _ ->
     apply_scoped wm seat scope ~f:(Output.apply_scroll_policy ~policy))
@@ -163,7 +171,7 @@ let cycle_scheme wm seat dir =
   With.focused_output seat
   @@ fun o ->
   let scheme = Scheme.cycle (Output.current_scheme o) dir in
-  select_scheme wm seat scheme Focused
+  select_tiling_scheme wm seat scheme Focused
 ;;
 
 let cycle_layout wm seat dir =
