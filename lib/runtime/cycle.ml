@@ -60,6 +60,7 @@ let close_windows ctx =
           match w.lifecycle with
           | Closing ->
             disconnect_seats w wm.seats;
+            Swallow.on_close w;
             Focus.remove_window (Ctx.wm ctx) w;
             List.iter
               (fun (c : Window.t) ->
@@ -85,12 +86,20 @@ let close_seats ctx =
        wm.seats
 ;;
 
+let manage_window ctx (window : Window.t) =
+  let wm = Ctx.wm ctx in
+  List.rev window.requests |> List.iter (Window_request.handle wm window);
+  Window.clear_requests window
+;;
+
 let manage_new_window ctx (window : Window.t) =
   let wm = Ctx.wm ctx in
   Option.iter (Stacking.push [ window ]) window.output;
   if window.is_fixed || Option.is_some window.parent
   then Window.set_presentation window Floating;
   Window_rules.apply_for wm window;
+  manage_window ctx window;
+  Swallow.try_swallow wm window;
   Window.set_lifecycle window Active;
   match window.output with
   | Some o ->
@@ -99,12 +108,6 @@ let manage_new_window ctx (window : Window.t) =
       || (window.presentation = Tiled && Output.current_layout o = Floating)
     then Window.set_float_seed_pending window true
   | _ -> ()
-;;
-
-let manage_window ctx (window : Window.t) =
-  let wm = Ctx.wm ctx in
-  List.rev window.requests |> List.iter (Window_request.handle wm window);
-  Window.clear_requests window
 ;;
 
 let manage_new_seat ctx (seat : Seat.t) =

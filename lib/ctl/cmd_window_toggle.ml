@@ -5,6 +5,9 @@ let leaves =
   ; "fullscreen", "Toggle real fullscreen", Command.Window Toggle_fullscreen
   ; "fake-fullscreen", "Toggle fake fullscreen", Command.Window Toggle_fake_fullscreen
   ; "maximize", "Toggle maximize", Command.Window Toggle_maximize
+  ; ( "swallow"
+    , "Swallow the terminal under the focused window, or release it"
+    , Command.Window Toggle_swallow )
   ]
 ;;
 

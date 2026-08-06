@@ -116,12 +116,12 @@ render:place_top(kitty)
 render:set_presentation_mode
 == events ==
 {"event":"tags","output":"FAKE-1","viewed":[1],"occupied":[1],"urgent":[],"focused":[1]}
-{"event":"window","id":1,"identifier":null,"title":"kitty","app_id":"kitty","output":"FAKE-1","tags":[1],"focused":true,"urgent":false,"hidden":false,"presentation":"tiled","sticky":"off"}
+{"event":"window","id":1,"identifier":null,"title":"kitty","app_id":"kitty","output":"FAKE-1","tags":[1],"focused":true,"urgent":false,"hidden":false,"presentation":"tiled","sticky":"off","swallowing":false}
 {"event":"layout","output":"FAKE-1","layout":"tiling","scheme":"even","symbol":"[]="}
 {"event":"mode","seat":"seat0","mode":"normal"}
 {"event":"focus","seat":"seat0","output":"FAKE-1","title":"kitty","app_id":"kitty","tags":[1]}
 {"event":"tags","output":"FAKE-1","viewed":[2],"occupied":[1],"urgent":[],"focused":[]}
 {"event":"focus","seat":"seat0","output":"FAKE-1","title":null,"app_id":null,"tags":null}
 {"event":"tags","output":"FAKE-1","viewed":[2],"occupied":[1,2],"urgent":[],"focused":[2]}
-{"event":"window","id":2,"identifier":null,"title":"emacs","app_id":"emacs","output":"FAKE-1","tags":[2],"focused":true,"urgent":false,"hidden":false,"presentation":"tiled","sticky":"off"}
+{"event":"window","id":2,"identifier":null,"title":"emacs","app_id":"emacs","output":"FAKE-1","tags":[2],"focused":true,"urgent":false,"hidden":false,"presentation":"tiled","sticky":"off","swallowing":false}
 {"event":"focus","seat":"seat0","output":"FAKE-1","title":"emacs","app_id":"emacs","tags":[2]}

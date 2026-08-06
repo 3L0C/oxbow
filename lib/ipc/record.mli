@@ -24,6 +24,7 @@ module Window : sig
     ; hidden : bool
     ; presentation : string
     ; sticky : string
+    ; swallowing : bool
     }
 
   val t_of_yojson : Yojson.Safe.t -> t

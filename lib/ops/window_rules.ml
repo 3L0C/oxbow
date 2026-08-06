@@ -20,7 +20,15 @@ let apply_effects
    | Fake_fullscreen -> queue Fake_fullscreen);
   (e.resize_to |>? fun { w; h } -> queue (Resize_to { w; h }));
   (e.sticky |>? fun s -> queue (Set_sticky s));
-  e.move_to |>? fun { x; y } -> queue (Move_to { x; y })
+  (e.move_to |>? fun { x; y } -> queue (Move_to { x; y }));
+  e.swallow
+  |>? fun r ->
+  Window.set_swallow_role
+    window
+    (match r with
+     | Auto -> Auto
+     | Terminal -> Terminal
+     | Disabled -> Disabled)
 ;;
 
 let apply (window : Window.t) ({ pattern; effects } : Window_rule.t) =

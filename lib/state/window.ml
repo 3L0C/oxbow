@@ -46,6 +46,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; output
   ; output_before_evac = None
   ; sticky = Off
+  ; swallow = Auto
   ; is_fixed = false
   ; is_urgent = false
   ; is_fake_fullscreen = false
@@ -122,9 +123,9 @@ let occupied_tags ?except windows =
 ;;
 
 let tag_visible w =
-  match w.output with
-  | None -> false
-  | Some o ->
+  match w.output, w.swallow with
+  | None, _ | _, Swallowed_by _ -> false
+  | Some o, _ ->
     if o.overview.enabled
     then true
     else (
@@ -137,6 +138,19 @@ let tag_visible w =
 
 let is_tiled w = w.presentation = Tiled
 let is_tiled_on_tag w = tag_visible w && is_tiled w
+
+let swallowing w =
+  match w.swallow with
+  | Swallowing _ -> true
+  | Auto | Terminal | Disabled | Swallowed_by _ -> false
+;;
+
+let can_swallow w =
+  match w.swallow with
+  | Terminal -> true
+  | Auto | Disabled | Swallowing _ | Swallowed_by _ -> false
+;;
+
 let remember_float w = w.float_geom <- Some w.geom
 
 let tile w =
@@ -471,6 +485,22 @@ let set_sticky w scope =
   then (
     w.sticky <- scope;
     Schedule.manage ())
+;;
+
+let set_swallow w v =
+  w.swallow <- v;
+  Schedule.manage ()
+;;
+
+let set_swallow_role w v =
+  match w.swallow with
+  | Swallowing _ | Swallowed_by _ -> ()
+  | Auto | Terminal | Disabled -> set_swallow w v
+;;
+
+let swallow ~host ~child =
+  set_swallow child (Swallowing host);
+  set_swallow host (Swallowed_by child)
 ;;
 
 let set_is_fixed w is_fixed = w.is_fixed <- is_fixed

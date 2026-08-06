@@ -96,6 +96,7 @@ let handle_window wm seat (cmd : Command.Window.t) =
   | Shift dir -> Stacking.shift seat dir
   | Set_sticky scope -> Placement.set_sticky seat scope
   | Toggle_sticky toggle -> Placement.toggle_sticky seat toggle
+  | Toggle_swallow -> Swallow.toggle wm seat
   | Toggle_tag arg -> Tags.toggle_window_tags seat arg
   | Toggle_floating -> Placement.toggle_floating seat
   | Toggle_maximize -> Window_request.toggle_maximize wm seat

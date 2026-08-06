@@ -31,3 +31,14 @@ val shift
   :  Oxbow_state.Seat.t
   -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
+
+(** [replace ~old_w ~new_w output] puts [new_w] in [old_w]'s slot in [output]'s
+    wm and focus stacks. [new_w] leaves any other slot it held. [old_w] leaves
+    both stacks.
+
+    {b Effects:} mutates WM state *)
+val replace
+  :  old_w:Oxbow_state.Window.t
+  -> new_w:Oxbow_state.Window.t
+  -> Oxbow_state.Output.t
+  -> unit

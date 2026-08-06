@@ -8,9 +8,10 @@ module Config = struct
   module Border = struct
     type t =
       { mutable width : int32
-      ; mutable focused_color : Oxbow_core.Color.t
-      ; mutable unfocused_color : Oxbow_core.Color.t
-      ; mutable urgent_color : Oxbow_core.Color.t
+      ; mutable focused : Oxbow_core.Color.t
+      ; mutable unfocused : Oxbow_core.Color.t
+      ; mutable urgent : Oxbow_core.Color.t
+      ; mutable swallowing : Oxbow_core.Color.t
       }
   end
 
@@ -210,6 +211,15 @@ and Window : sig
       | Hold of int32 * int32
   end
 
+  module Swallow : sig
+    type t =
+      | Auto
+      | Terminal
+      | Disabled
+      | Swallowing of Window.t
+      | Swallowed_by of Window.t
+  end
+
   module Committed : sig
     type t =
       { mutable proposed : (int32 * int32) option
@@ -248,6 +258,7 @@ and Window : sig
     ; mutable output : Output.t option
     ; mutable output_before_evac : string option
     ; mutable sticky : Oxbow_core.Sticky.t
+    ; mutable swallow : Swallow.t
     ; mutable is_fixed : bool
     ; mutable is_urgent : bool
     ; mutable is_fake_fullscreen : bool

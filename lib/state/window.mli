@@ -81,6 +81,12 @@ val is_tiled : t -> bool
 (** [is_tiled_on_tag window] is [tag_visible window && is_tiled window] *)
 val is_tiled_on_tag : t -> bool
 
+(** [swallowing window] is [true] when [window] hides a terminal. *)
+val swallowing : t -> bool
+
+(** [can_swallow window] is [true] when window is able to swallow its child. *)
+val can_swallow : t -> bool
+
 (** [remember_float window] saves [window]'s current geometry to restore when
     [window] transitions to the floating state.
 
@@ -302,6 +308,23 @@ val set_size_hints : t -> int32 Size_hints.t -> unit
 
     {b Effects:} mutates WM state *)
 val set_sticky : t -> Oxbow_core.Sticky.t -> unit
+
+(** [set_swallow window v] updates [window]'s swallow value to [v].
+
+    {b Effects:} mutates WM state *)
+val set_swallow : t -> Swallow.t -> unit
+
+(** [set_swallow_role window v] updates [window]'s swallow value to [v]. No-op
+    when [window] is already swallowing or swallowed.
+
+    {b Effects:} mutates WM state *)
+val set_swallow_role : t -> Swallow.t -> unit
+
+(** [swallow ~host ~child] sets [Swallowing host] on [child] and
+    [Swallowed_by child] on [host].
+
+    {b Effects:} mutate WM state *)
+val swallow : host:t -> child:t -> unit
 
 (** [set_is_fixed window is_fixed] sets [window]'s fixed status to [is_fixed].
 

@@ -21,10 +21,11 @@ val add_output : t -> name:string -> unit
     {b Effects:} sends Wayland events *)
 val add_seat : t -> name:string -> unit
 
-(** [add_window t ~app_id] announces one window, then ticks.
+(** [add_window ?pid t ~app_id] announces one window, then ticks. When [pid]
+    is present, the unreliable_pid event follows the app_id event.
 
     {b Effects:} sends Wayland events *)
-val add_window : t -> app_id:string option -> unit
+val add_window : ?pid:int -> t -> app_id:string option -> unit
 
 (** [close_window t ~app_id] sends closed on the first window with [app_id],
     then ticks.

@@ -593,12 +593,15 @@ let add_seat t ~name =
   tick t
 ;;
 
-let add_window t ~app_id =
+let add_window ?pid t ~app_id =
   let wm = await_wm t in
   let w = Wm_server.River_window_manager_v1.window wm (window_handlers t) in
   adopt t w ~owner:(Option.value ~default:"?" app_id);
   t.windows <- (app_id, w) :: t.windows;
   Wm_server.River_window_v1.app_id w ~app_id;
+  Option.iter
+    (fun p -> Wm_server.River_window_v1.unreliable_pid w ~unreliable_pid:(Int32.of_int p))
+    pid;
   Wm_server.River_window_v1.title w ~title:app_id;
   Wm_server.River_window_v1.dimensions w ~width:640l ~height:480l;
   tick t

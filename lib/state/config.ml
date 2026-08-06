@@ -16,9 +16,10 @@ let default_gaps () = Params.Gaps.{ inner = 10; outer = 20 }
 let default_borders =
   Border.
     { width = 4l
-    ; focused_color = Color.of_string_exn "#7FB4CA"
-    ; unfocused_color = Color.of_string_exn "#727169"
-    ; urgent_color = Color.of_string_exn "#FF5D62"
+    ; focused = Color.of_string_exn "#7FB4CA"
+    ; unfocused = Color.of_string_exn "#727169"
+    ; urgent = Color.of_string_exn "#FF5D62"
+    ; swallowing = Color.of_string_exn "#98BB6C"
     }
 ;;
 
@@ -74,9 +75,10 @@ let set_key_repeat (wm : Types.Wm.t) ~rate ~delay =
 let set_border_color (wm : Types.Wm.t) (border : Border_target.t) color =
   Schedule.manage ();
   match border with
-  | Urgent -> wm.config.borders.urgent_color <- color
-  | Focused -> wm.config.borders.focused_color <- color
-  | Unfocused -> wm.config.borders.unfocused_color <- color
+  | Urgent -> wm.config.borders.urgent <- color
+  | Focused -> wm.config.borders.focused <- color
+  | Unfocused -> wm.config.borders.unfocused <- color
+  | Swallowing -> wm.config.borders.swallowing <- color
 ;;
 
 let set_default_width (td : Data.t) ~(delta : float Delta.t) =

@@ -593,6 +593,11 @@ let sticky_arg =
   @@ enum_of Sticky.to_string Sticky.all
 ;;
 
+let swallow_arg =
+  mk_enum "swallow" ~doc:"Set the swallow role of the window." ~docv:"ROLE"
+  @@ enum_of Swallow_role.to_string Swallow_role.all
+;;
+
 let code_protocol_err = 1
 let code_conn_failed = 2
 let exit_success = Cmd.Exit.info 0 ~doc:"on success"

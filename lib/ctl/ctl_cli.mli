@@ -206,6 +206,9 @@ val send_events_arg : Oxbow_core.Input_rule.Send_events.t option Cmdliner.Term.t
 (** [sticky_arg] is the [--sticky] flag accepting a valid sticky scope. *)
 val sticky_arg : Oxbow_core.Sticky.t option Cmdliner.Term.t
 
+(** [swallow_arg] is the [--swallow] flag accepting a valid role. *)
+val swallow_arg : Oxbow_core.Swallow_role.t option Cmdliner.Term.t
+
 (** [render_lines json] formats a JSON list reply for display: one line per
     item, with the leading list index. The index is the remove index of the
     item. Nested objects flatten into key=value pairs with the wire names. A

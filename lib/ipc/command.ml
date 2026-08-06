@@ -276,6 +276,7 @@ module Window = struct
     | Toggle_fake_fullscreen [@name "toggle_fake_fullscreen"]
     | Set_sticky of Oxbow_core.Sticky.t [@name "set_sticky"]
     | Toggle_sticky of Oxbow_core.Sticky.Toggle.t [@name "toggle_sticky"]
+    | Toggle_swallow [@name "toggle_swallow"]
     | Zoom of { warp : bool option [@yojson.option] } [@name "zoom"]
     | Column_consume [@name "column_consume"]
     | Column_release [@name "column_release"]

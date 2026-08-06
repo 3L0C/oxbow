@@ -79,3 +79,12 @@ let shift (seat : Seat.t) (dir : Direction.Logical.t) =
        Output.set_wm_stack o @@ Ring.hop_left (( == ) w) Window.tag_visible o.wm_stack;
        Ok None)
 ;;
+
+let replace ~old_w ~new_w (output : Output.t) =
+  let swap =
+    List.filter_map (fun w ->
+      if w == new_w then None else if w == old_w then Some new_w else Some w)
+  in
+  Output.set_wm_stack output @@ swap output.wm_stack;
+  Output.set_focus_stack output @@ swap output.focus_stack
+;;

@@ -189,12 +189,14 @@ let borders ctx (seat : Seat.t) =
   let borders = wm.config.borders in
   let color (w : Window.t) o =
     if w.is_urgent
-    then borders.urgent_color
+    then borders.urgent
     else if not @@ Phys.opt_holds o seat.output
-    then borders.unfocused_color
+    then borders.unfocused
+    else if Window.swallowing w
+    then borders.swallowing
     else if Phys.opt_holds w (Output.focused_window o)
-    then borders.focused_color
-    else borders.unfocused_color
+    then borders.focused
+    else borders.unfocused
   in
   let edges =
     let open Wire in

@@ -1,0 +1,111 @@
+open! Oxbow_core
+open! Oxbow_state
+
+let read_parent_pid pid =
+  let path = Printf.sprintf "/proc/%d/stat" pid in
+  match In_channel.with_open_text path In_channel.input_line with
+  | exception Sys_error _ -> None
+  | None -> None
+  | Some line ->
+    (match String.rindex_opt line ')' with
+     | None -> None
+     | Some i ->
+       let rest = String.sub line (i + 1) (String.length line - i - 1) in
+       let fields = String.split_on_char ' ' rest |> List.filter (fun s -> s <> "") in
+       Option.bind (List.nth_opt fields 1) int_of_string_opt)
+;;
+
+let parent_pid = ref read_parent_pid
+
+let ancestors pid =
+  let rec walk depth pid' =
+    if depth = 0
+    then []
+    else (
+      match !parent_pid pid' with
+      | None -> []
+      | Some p -> p :: walk (depth - 1) p)
+  in
+  walk 64 pid
+;;
+
+let find_host (wm : Wm.t) (child : Window.t) =
+  let chain =
+    match child.unreliable_pid with
+    | Some p -> ancestors (Int32.to_int p)
+    | None -> []
+  in
+  let eligible w =
+    Window.can_swallow w
+    && Window.is_tiled w
+    && Phys.opt_equal w.output child.output
+    && Tag.Set.intersects w.tags child.tags
+    &&
+    match w.unreliable_pid with
+    | Some p -> List.mem (Int32.to_int p) chain
+    | None -> false
+  in
+  List.find_opt eligible wm.windows
+;;
+
+let swallow ~(host : Window.t) ~child =
+  Window.set_tags child host.tags;
+  Option.iter (Stacking.replace ~old_w:host ~new_w:child) host.output;
+  Window.swallow ~host ~child
+;;
+
+let try_swallow (wm : Wm.t) (child : Window.t) =
+  let eligible =
+    (match child.unreliable_pid with
+     | Some pid -> Int32.to_int pid > 0
+     | None -> false)
+    && (match child.swallow with
+        | Auto -> true
+        | Terminal | Disabled | Swallowing _ | Swallowed_by _ -> false)
+    && Window.is_tiled child
+    && Option.is_none child.parent
+    && child.sticky = Off
+    && Option.is_some child.output
+  in
+  if eligible
+  then (
+    match find_host wm child with
+    | None -> ()
+    | Some host -> swallow ~host ~child)
+;;
+
+let unswallow (child : Window.t) =
+  match child.swallow with
+  | Auto | Terminal | Disabled | Swallowed_by _ -> ()
+  | Swallowing host ->
+    Window.set_tags host child.tags;
+    (match child.output with
+     | None -> ()
+     | Some o ->
+       Stacking.replace ~old_w:child ~new_w:host o;
+       Stacking.push [ child ] o);
+    Window.set_swallow host Terminal;
+    Window.set_swallow child Auto
+;;
+
+let on_close (w : Window.t) =
+  match w.swallow with
+  | Auto | Terminal | Disabled -> ()
+  | Swallowing _ -> unswallow w
+  | Swallowed_by child ->
+    Window.set_swallow child Auto;
+    Window.set_swallow w Terminal
+;;
+
+let toggle (wm : Wm.t) (seat : Seat.t) =
+  With.focused_window seat
+  @@ fun _o w ->
+  match w.swallow with
+  | Terminal | Disabled | Swallowed_by _ -> Ok None
+  | Swallowing _ ->
+    unswallow w;
+    Ok None
+  | Auto ->
+    try_swallow wm w;
+    Ok None
+;;
