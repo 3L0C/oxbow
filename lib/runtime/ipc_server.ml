@@ -53,6 +53,7 @@ module Handler = struct
     try Ok (Request.t_of_yojson json) with
     | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (Failure msg, _) -> Error msg
     | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error _ -> Error "invalid request shape"
+    | exn -> Error (Printexc.to_string exn)
   ;;
 
   let decode_line ~wm line =

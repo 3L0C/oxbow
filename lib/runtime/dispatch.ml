@@ -152,7 +152,10 @@ let handle ctx seat ({ body; reply } : Pending_request.t) =
       | Query query -> handle_query (Ctx.wm ctx) seat query
       | Subscribe _ -> Error "subscribe handled at the connection layer"
     with
-    | exn -> Error (Printexc.to_string exn)
+    | exn ->
+      let estr = Printexc.to_string exn in
+      Logs.err (fun m -> m "dispatch raised: %s@.%s" estr (Printexc.get_backtrace ()));
+      Error estr
   in
   match result, reply with
   | Ok _, None -> ()

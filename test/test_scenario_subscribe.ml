@@ -28,6 +28,10 @@ let () =
     (fun () ->
        cmd env (Tag (View (Concrete (Oxbow_core.Tag.Set.singleton 2))));
        Fake_river.add_window fake ~app_id:(Some "emacs");
+       cmd env (Layout (Select { layout = Scrolling; scope = Focused }));
+       cmd env (Keymap (Mode (Declare "resize")));
+       cmd env (Keymap (Mode (Enter "resize")));
+       cmd env (Window (Focus_logical { dir = Next; warp = None }));
        Harness.settle fake;
        wait_stable lines;
        Harness.section "events";

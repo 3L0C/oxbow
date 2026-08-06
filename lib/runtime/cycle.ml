@@ -190,6 +190,8 @@ let manage (wm : Wm.t) proxy =
       ~finally:(fun () ->
         River.Window_management.River_window_manager_v1.manage_finish proxy)
       (fun () ->
+         Exceptions.guard "manage cycle"
+         @@ fun () ->
          Ctx.with_manage wm (fun ctx ->
            Focus.layer_shell_sync wm;
            reap ctx;
@@ -201,7 +203,10 @@ let manage (wm : Wm.t) proxy =
 ;;
 
 let render wm proxy =
-  Ctx.with_render wm (fun ctx ->
-    Commit.render ctx;
-    River.Window_management.River_window_manager_v1.render_finish proxy)
+  Fun.protect
+    ~finally:(fun () ->
+      River.Window_management.River_window_manager_v1.render_finish proxy)
+    (fun () ->
+       Exceptions.guard "render cycle"
+       @@ fun () -> Ctx.with_render wm (fun ctx -> Commit.render ctx))
 ;;

@@ -5,3 +5,8 @@ exception Unavailable
 
     @raise [Unavailable] *)
 val unavailable : unit -> 'a
+
+(** [guard name f] runs [f]. If [f] raises, [guard] logs the exception with a
+    backtrace under [name], then returns. It re-raises [Unavailable] and
+    [Eio.Cancel.Cancelled]. *)
+val guard : string -> (unit -> unit) -> unit
