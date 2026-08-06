@@ -27,6 +27,19 @@ val add_seat : t -> name:string -> unit
     {b Effects:} sends Wayland events *)
 val add_window : ?pid:int -> t -> app_id:string option -> unit
 
+(** [send_dimensions_hint t ~app_id ~min_w ~min_h ~max_w ~max_h] sends
+    dimensions_hint on the first window with [app_id], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val send_dimensions_hint
+  :  t
+  -> app_id:string option
+  -> min_w:int32
+  -> min_h:int32
+  -> max_w:int32
+  -> max_h:int32
+  -> unit
+
 (** [close_window t ~app_id] sends closed on the first window with [app_id],
     then ticks.
 

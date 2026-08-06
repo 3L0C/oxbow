@@ -15,5 +15,17 @@ let () =
   section "close emacs" (fun () -> Fake_river.close_window fake ~app_id:(Some "emacs"));
   section "focused" (fun () ->
     Harness.ipc env (Query Focused)
-    |> Option.iter (fun j -> print_endline @@ Yojson.Safe.to_string j))
+    |> Option.iter (fun j -> print_endline @@ Yojson.Safe.to_string j));
+  section "galculator arrives without hint" (fun () ->
+    Fake_river.add_window fake ~app_id:(Some "galculator"));
+  section "late fixed hint" (fun () ->
+    Fake_river.send_dimensions_hint
+      fake
+      ~app_id:(Some "galculator")
+      ~min_w:300l
+      ~min_h:200l
+      ~max_w:300l
+      ~max_h:200l);
+  section "galculator floats" (fun () ->
+    Harness.oxctl env [ "window"; "list"; "--app-id"; "^galculator$" ])
 ;;

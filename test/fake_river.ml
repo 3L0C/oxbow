@@ -607,6 +607,19 @@ let add_window ?pid t ~app_id =
   tick t
 ;;
 
+let send_dimensions_hint t ~app_id ~min_w ~min_h ~max_w ~max_h =
+  match List.assoc_opt app_id t.windows with
+  | None -> failwith "send_dimensions_hint: no window with this app_id"
+  | Some w ->
+    Wm_server.River_window_v1.dimensions_hint
+      w
+      ~min_width:min_w
+      ~min_height:min_h
+      ~max_width:max_w
+      ~max_height:max_h;
+    tick t
+;;
+
 let close_window t ~app_id =
   match List.assoc_opt app_id t.windows with
   | None -> failwith "close_window: no window with this app_id"

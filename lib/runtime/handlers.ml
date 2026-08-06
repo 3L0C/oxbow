@@ -281,15 +281,20 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
       method on_identifier _ ~identifier = Window.set_identifier window @@ Some identifier
 
       method on_dimensions_hint _ ~min_width ~min_height ~max_width ~max_height =
-        Window.set_is_fixed
-          window
-          (min_width > 0l
-           && min_height > 0l
-           && min_width = max_width
-           && min_height = max_height);
+        let is_fixed =
+          min_width > 0l
+          && min_height > 0l
+          && min_width = max_width
+          && min_height = max_height
+        in
+        Window.set_is_fixed window is_fixed;
         Window.set_size_hints
           window
-          { min_w = min_width; max_w = max_width; min_h = min_height; max_h = max_height }
+          { min_w = min_width; max_w = max_width; min_h = min_height; max_h = max_height };
+        if is_fixed && window.presentation = Tiled && window.lifecycle = Active
+        then (
+          Window.float window;
+          Schedule.manage ())
 
       method on_decoration_hint _ ~hint =
         Window.Decoration_hint.(
