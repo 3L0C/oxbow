@@ -35,6 +35,7 @@ let to_window (wm : Wm.t) (window : Window.t) =
     ; presentation = Window.presentation_string window
     ; sticky = Sticky.to_string window.sticky
     ; swallowing = Window.swallowing window
+    ; labels = window.labels
     }
 ;;
 

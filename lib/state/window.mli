@@ -309,6 +309,18 @@ val set_size_hints : t -> int32 Size_hints.t -> unit
     {b Effects:} mutates WM state *)
 val set_sticky : t -> Oxbow_core.Sticky.t -> unit
 
+(** [add_label window label] adds [label] to [window]'s label set. No-op when
+    the label is present.
+
+    {b Effects:} mutates WM state *)
+val add_label : t -> string -> unit
+
+(** [remove_label window label] removes [label] from [window]'s label set. No-op
+    when label is absent.
+
+    {b Effects:} mutates WM state *)
+val remove_label : t -> string -> unit
+
 (** [set_swallow window v] updates [window]'s swallow value to [v].
 
     {b Effects:} mutates WM state *)

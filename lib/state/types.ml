@@ -99,6 +99,7 @@ and Output : sig
     ; layer_shell : Wire.Obj.Layer_shell.Output.t
     ; mutable lifecycle : Lifecycle.t
     ; mutable name : string option
+    ; mutable labels : string list
     ; mutable geom : int32 Oxbow_core.Rect.t
     ; mutable usable : int Oxbow_core.Rect.t
     ; tags : Tags.t
@@ -259,6 +260,7 @@ and Window : sig
     ; mutable output_before_evac : string option
     ; mutable sticky : Oxbow_core.Sticky.t
     ; mutable swallow : Swallow.t
+    ; mutable labels : string list
     ; mutable is_fixed : bool
     ; mutable is_urgent : bool
     ; mutable is_fake_fullscreen : bool

@@ -186,6 +186,8 @@ module Output = struct
         ; until_release : string option
         } [@name "overview_cycle"]
     | Swap of Swap.t [@name "swap"]
+    | Label_add of string [@name "label_add"]
+    | Label_remove of string [@name "label_remove"]
   [@@deriving yojson]
 end
 
@@ -286,6 +288,8 @@ module Window = struct
     | Column_width_cycle [@name "column_width_cycle"]
     | Rule_add of Window_rule.t [@name "rule_add"]
     | Rule_remove of int [@name "rule_remove"]
+    | Label_add of string [@name "label_add"]
+    | Label_remove of string [@name "label_remove"]
   [@@deriving yojson]
 end
 

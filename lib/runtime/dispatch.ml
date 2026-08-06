@@ -50,6 +50,8 @@ let handle_output wm seat (cmd : Command.Output.t) =
     Placement.swap_outputs wm seat ~target ~policy ~follow `All
   | Swap (Visible { target; policy; follow }) ->
     Placement.swap_outputs wm seat ~target ~policy ~follow `Visible
+  | Label_add label -> Labels.output_add seat label
+  | Label_remove label -> Labels.output_remove seat label
 ;;
 
 let handle_session ctx _seat (cmd : Command.Session.t) =
@@ -111,6 +113,8 @@ let handle_window wm seat (cmd : Command.Window.t) =
   | Column_width_cycle -> Column.cycle_width seat
   | Rule_add rule -> Window_rules.add wm rule
   | Rule_remove index -> Window_rules.remove wm index
+  | Label_add label -> Labels.window_add seat label
+  | Label_remove label -> Labels.window_remove seat label
 ;;
 
 let handle_wm ctx _seat (cmd : Command.Wm.t) =

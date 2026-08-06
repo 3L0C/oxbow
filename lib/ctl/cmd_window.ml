@@ -9,6 +9,7 @@ let cmd, bind_cmd =
     [ Cmd_window_close.(cmd, bind_cmd)
     ; Cmd_window_column.(cmd, bind_cmd)
     ; Cmd_window_focus.(cmd, bind_cmd)
+    ; Cmd_window_label.(cmd, bind_cmd)
     ; Cmd_window_move.(cmd, bind_cmd)
     ; Cmd_window_resize.(cmd, bind_cmd)
     ; Cmd_window_rule.(cmd, bind_cmd)

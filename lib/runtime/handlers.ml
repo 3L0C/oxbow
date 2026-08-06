@@ -52,6 +52,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
       ; layer_shell
       ; lifecycle = Active
       ; name = None
+      ; labels = []
       ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
       ; usable = { x = 0; y = 0; w = 0; h = 0 }
       ; tags = { selected = Tag.Set.singleton 1; previous = Tag.Set.singleton 1 }

@@ -395,7 +395,7 @@ render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
 == galculator floats ==
-0: id=4 identifier=null title=galculator app_id=galculator output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off swallowing=false
+0: id=4 identifier=null title=galculator app_id=galculator output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off swallowing=false labels=
 manage:focus_window(seat0, galculator)
 manage:op_end(seat0)
 render:set_position(galculator, 810, 440)

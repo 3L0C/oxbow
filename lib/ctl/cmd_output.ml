@@ -1,25 +1,15 @@
 let name = "output"
 let doc = "Operate on outputs"
 
-let cmd =
-  Ctl_cli.group
+let cmd, bind_cmd =
+  Ctl_cli.group_pair
     ~name
     ~doc
-    [ Cmd_output_column.cmd
-    ; Cmd_output_focus.cmd
-    ; Cmd_output_list.cmd
-    ; Cmd_output_overview.cmd
-    ; Cmd_output_swap.cmd
-    ]
-;;
-
-let bind_cmd =
-  Ctl_cli.group
-    ~name
-    ~doc
-    [ Cmd_output_column.bind_cmd
-    ; Cmd_output_focus.bind_cmd
-    ; Cmd_output_overview.bind_cmd
-    ; Cmd_output_swap.bind_cmd
+    ~extra:[ Cmd_output_list.cmd ]
+    [ Cmd_output_column.(cmd, bind_cmd)
+    ; Cmd_output_focus.(cmd, bind_cmd)
+    ; Cmd_output_label.(cmd, bind_cmd)
+    ; Cmd_output_overview.(cmd, bind_cmd)
+    ; Cmd_output_swap.(cmd, bind_cmd)
     ]
 ;;

@@ -172,6 +172,13 @@ let set_usable o usable =
 ;;
 
 let set_name o name = o.name <- name
+
+let add_label o label =
+  if not @@ List.mem label o.labels
+  then o.labels <- label :: o.labels |> List.sort String.compare
+;;
+
+let remove_label o label = o.labels <- List.filter (( <> ) label) o.labels
 let set_geom o geom = o.geom <- geom
 let set_scroll_offset o offset = (to_tag_data o).scrolling.offset <- offset
 let apply_default_width td ~delta = Config.set_default_width ~delta td

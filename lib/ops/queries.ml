@@ -10,10 +10,13 @@ let handle_window_rules (wm : Wm.t) =
 let handle_keymaps wm seat all = Ok (Some (Bind.list wm seat ~all))
 
 let handle_outputs (wm : Wm.t) =
-  Ok
-    (Some
-       ([%yojson_of: string list]
-          (List.filter_map (fun (o : Output.t) -> o.name) wm.outputs)))
+  let records =
+    List.filter_map
+      (fun (o : Output.t) ->
+         Option.map (fun name -> Record.Output.{ name; labels = o.labels }) o.name)
+      wm.outputs
+  in
+  Ok (Some ([%yojson_of: Record.Output.t list] records))
 ;;
 
 let handle_focused seat =

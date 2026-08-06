@@ -25,6 +25,15 @@ module Window = struct
     ; presentation : string
     ; sticky : string
     ; swallowing : bool
+    ; labels : string list
+    }
+  [@@deriving yojson]
+end
+
+module Output = struct
+  type t =
+    { name : string
+    ; labels : string list
     }
   [@@deriving yojson]
 end

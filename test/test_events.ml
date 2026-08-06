@@ -46,7 +46,7 @@ let () =
           }));
   check
     ~expect:
-      {|{"event":"window","id":1,"identifier":null,"title":null,"app_id":"foot","output":"DP-1","tags":[1,2],"focused":false,"urgent":false,"hidden":true,"presentation":"tiled","sticky":"off","swallowing":false}|}
+      {|{"event":"window","id":1,"identifier":null,"title":null,"app_id":"foot","output":"DP-1","tags":[1,2],"focused":false,"urgent":false,"hidden":true,"presentation":"tiled","sticky":"off","swallowing":false,"labels":[]}|}
     (Event.to_line
        (Window
           { id = 1
@@ -61,6 +61,7 @@ let () =
           ; presentation = "tiled"
           ; sticky = "off"
           ; swallowing = false
+          ; labels = []
           }));
   check
     ~expect:

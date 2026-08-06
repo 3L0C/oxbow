@@ -103,6 +103,7 @@ let make_output root =
         spawn root (module River.Proto.Layer_shell.River_layer_shell_output_v1)
     ; lifecycle = Active
     ; name = None
+    ; labels = []
     ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
     ; usable = { x = 0; y = 0; w = 1920; h = 1080 }
     ; tags = { selected = Tag.Set.singleton 1; previous = Tag.Set.singleton 1 }

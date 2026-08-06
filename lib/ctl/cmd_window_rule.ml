@@ -1,16 +1,10 @@
 let name = "rules"
 let doc = "Manage window rules"
 
-let cmd =
-  Ctl_cli.group
+let cmd, bind_cmd =
+  Ctl_cli.group_pair
     ~name
     ~doc
-    [ Cmd_window_rule_add.cmd; Cmd_window_rule_remove.cmd; Cmd_window_rule_list.cmd ]
-;;
-
-let bind_cmd =
-  Ctl_cli.group
-    ~name
-    ~doc
-    [ Cmd_window_rule_add.bind_cmd; Cmd_window_rule_remove.bind_cmd ]
+    ~extra:[ Cmd_window_rule_list.cmd ]
+    [ Cmd_window_rule_add.(cmd, bind_cmd); Cmd_window_rule_remove.(cmd, bind_cmd) ]
 ;;

@@ -73,6 +73,11 @@
  (modules test_scenario_column)
  (libraries harness fake_river oxbow.ipc yojson))
 
+(test
+ (name test_scenario_label)
+ (modules test_scenario_label)
+ (libraries harness fake_river oxbow.ipc yojson))
+
 (library
  (name fake_river)
  (modules fake_river)

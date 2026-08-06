@@ -593,6 +593,19 @@ let sticky_arg =
   @@ enum_of Sticky.to_string Sticky.all
 ;;
 
+let label_conv =
+  let parser = function
+    | "" -> Error "label must not be empty"
+    | s -> Ok s
+  in
+  Arg.Conv.make ~docv:"LABEL" ~parser ~pp:Format.pp_print_string ()
+;;
+
+let label_arg =
+  let open Cmdliner in
+  Arg.(required & pos 0 (some label_conv) None & info [] ~doc:"The label")
+;;
+
 let swallow_arg =
   mk_enum "swallow" ~doc:"Set the swallow role of the window." ~docv:"ROLE"
   @@ enum_of Swallow_role.to_string Swallow_role.all

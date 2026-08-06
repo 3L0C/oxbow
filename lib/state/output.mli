@@ -186,6 +186,18 @@ val set_usable : t -> int Oxbow_core.Rect.t -> unit
     {b Effects:} mutates WM state *)
 val set_name : t -> string option -> unit
 
+(** [add_label output label] adds [label] to [output]'s label set. No-op when
+    the label is present.
+
+    {b Effects:} mutates WM state *)
+val add_label : t -> string -> unit
+
+(** [remove_label output label] removes [label] from [output]'s label set. No-op
+    when label is absent.
+
+    {b Effects:} mutates WM state *)
+val remove_label : t -> string -> unit
+
 (** [set_geom output geom] sets [output]'s geometry to [geom].
 
     {b Effects:} mutates WM state *)

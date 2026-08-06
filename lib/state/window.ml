@@ -47,6 +47,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; output_before_evac = None
   ; sticky = Off
   ; swallow = Auto
+  ; labels = []
   ; is_fixed = false
   ; is_urgent = false
   ; is_fake_fullscreen = false
@@ -486,6 +487,13 @@ let set_sticky w scope =
     w.sticky <- scope;
     Schedule.manage ())
 ;;
+
+let add_label w label =
+  if not @@ List.mem label w.labels
+  then w.labels <- label :: w.labels |> List.sort String.compare
+;;
+
+let remove_label w label = w.labels <- List.filter (( <> ) label) w.labels
 
 let set_swallow w v =
   w.swallow <- v;

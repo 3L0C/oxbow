@@ -25,6 +25,17 @@ module Window : sig
     ; presentation : string
     ; sticky : string
     ; swallowing : bool
+    ; labels : string list
+    }
+
+  val t_of_yojson : Yojson.Safe.t -> t
+  val yojson_of_t : t -> Yojson.Safe.t
+end
+
+module Output : sig
+  type t =
+    { name : string
+    ; labels : string list
     }
 
   val t_of_yojson : Yojson.Safe.t -> t
