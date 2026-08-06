@@ -8,13 +8,19 @@ module Case : sig
 end
 
 module Matcher : sig
-  type t = title:string option -> app_id:string option -> identifier:string option -> bool
+  type t =
+    title:string option
+    -> app_id:string option
+    -> identifier:string option
+    -> labels:string list
+    -> bool
 end
 
 type t =
   { title : string option
   ; app_id : string option
   ; identifier : string option
+  ; label : string option
   ; case : Case.t
   }
 
@@ -36,8 +42,8 @@ val re_compile : case:Case.t -> string -> (Re.re, string) result
 val matches : case:Case.t -> pattern:string option -> string -> bool
 
 (** [compile p] compiles [p] into a matcher. A window matches when every field
-    of [p] matches; an absent field matches any value. Is [Error msg] when
-    a regex is malformed. *)
+    of [p] matches; an absent field matches any value. Is [Error msg] when a
+    regex is malformed. *)
 val compile : t -> (Matcher.t, string) result
 
 (** [to_string p] renders [p] for display: the fields, then the case rule in

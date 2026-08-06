@@ -114,86 +114,272 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
-== window label add - scratch ==
-manage:focus_window(seat0, kitty)
+manage:get_node(emacs)
+manage:set_capabilities(emacs)
+manage:propose_dimensions(emacs, 1021x1032)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:propose_dimensions(kitty, 833x1032)
+manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_position(kitty, 24, 24)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
+render:place_top(emacs)
 render:set_presentation_mode
-== window label add - term ==
-manage:focus_window(seat0, kitty)
-manage:op_end(seat0)
-render:set_position(kitty, 24, 24)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
+render:place_top(emacs)
 render:set_presentation_mode
-== window label add - scratch (no-op) ==
+== focus kitty ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_position(kitty, 24, 24)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== kitty: label add - scratch ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== kitty: label add - term ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== kitty: label add - scratch (no-op) ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
 == window list - expect [term;scratch] ==
-0: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=scratch term
+0: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=
+1: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=scratch term
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_position(kitty, 24, 24)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
-== window label remove - scratch ==
+== kitty: label remove - scratch ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_position(kitty, 24, 24)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
 == window list - expect [term] ==
-0: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=term
+0: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=
+1: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=term
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_position(kitty, 24, 24)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
-== output label add - main ==
+== FAKE-1: label add - main ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_position(kitty, 24, 24)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
 == output list - expect [main] ==
 [{"name":"FAKE-1","labels":["main"]}]
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_position(kitty, 24, 24)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== kitty: label add - empty (expect error) ==
+err: Usage: [01moxctl window label add[m [[01m--help[m] [[04mOPTION[m]… [04mLABEL[m
+err: oxctl: [04mLABEL[m argument: label must not be empty
+exit: 124
+== FAKE-1: label add empty - (expect error) ==
+err: Usage: [01moxctl output label add[m [[01m--help[m] [[04mOPTION[m]… [04mLABEL[m
+err: oxctl: [04mLABEL[m argument: label must not be empty
+exit: 124
+== focus emacs ==
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
+render:place_top(emacs)
 render:set_presentation_mode
-== window label add empty - expect error ==
-err: Usage: [01moxctl window label add[m [[01m--help[m] [[04mOPTION[m]… [04mLABEL[m
-err: oxctl: [04mLABEL[m argument: label must not be empty
-exit: 124
-== output label add empty - expect error ==
-err: Usage: [01moxctl output label add[m [[01m--help[m] [[04mOPTION[m]… [04mLABEL[m
-err: oxctl: [04mLABEL[m argument: label must not be empty
-exit: 124
+== emacs: label add - term ==
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+== focus --label=term ==
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+== focus --cycle --label=term ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== window list - expect [term] ==
+0: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=term
+1: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=term
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== window list - expect [] ==
+
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode

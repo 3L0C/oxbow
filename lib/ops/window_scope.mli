@@ -8,7 +8,11 @@ val filter
 
 (** [holds matches window] is [matches] applied to [window]. *)
 val holds
-  :  (title:string option -> app_id:string option -> identifier:string option -> bool)
+  :  (title:string option
+      -> app_id:string option
+      -> identifier:string option
+      -> labels:string list
+      -> bool)
   -> Oxbow_state.Window.t
   -> bool
 

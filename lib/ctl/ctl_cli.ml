@@ -226,6 +226,16 @@ let identifier_flag =
         ~doc:"Match REGEX against the window's identifier.")
 ;;
 
+let label_flag =
+  Arg.(
+    value
+    & opt (some string) None
+    & info
+        [ "label" ]
+        ~docv:"REGEX"
+        ~doc:"Match REGEX against each of the window's labels.")
+;;
+
 let case_flag =
   Arg.(
     value
@@ -361,8 +371,9 @@ let pattern_flags =
   let+ title = title_flag
   and+ app_id = app_id_flag
   and+ identifier = identifier_flag
+  and+ label = label_flag
   and+ case = case_flag in
-  ({ title; app_id; identifier; case } : Pattern.t)
+  ({ title; app_id; identifier; label; case } : Pattern.t)
 ;;
 
 let pattern_term =
@@ -371,7 +382,7 @@ let pattern_term =
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ p = pattern_flags in
      if Pattern.is_empty p
-     then Error "give at least one of --title, --app-id, or --identifier"
+     then Error "give at least one of --title, --app-id, --identifier, or --label"
      else Ok p
 ;;
 

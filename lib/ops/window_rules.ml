@@ -35,7 +35,12 @@ let apply (window : Window.t) ({ pattern; effects } : Window_rule.t) =
   match Pattern.compile pattern with
   | Error e -> Logs.debug @@ fun m -> m "%s" e
   | Ok matches ->
-    if matches ~title:window.title ~app_id:window.app_id ~identifier:window.identifier
+    if
+      matches
+        ~title:window.title
+        ~app_id:window.app_id
+        ~identifier:window.identifier
+        ~labels:window.labels
     then (
       let queue r = Window.queue_request window r in
       apply_effects queue effects window)

@@ -27,7 +27,7 @@ let compile m =
   | Error e -> Error e
   | Ok matcher ->
     Ok
-      (fun ~title ~app_id ~identifier ->
-        let hit = matcher ~title ~app_id ~identifier in
+      (fun ~title ~app_id ~identifier ~labels ->
+        let hit = matcher ~title ~app_id ~identifier ~labels in
         if m.invert then not hit else hit)
 ;;

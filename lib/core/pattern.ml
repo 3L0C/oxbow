@@ -8,19 +8,25 @@ module Case = struct
 end
 
 module Matcher = struct
-  type t = title:string option -> app_id:string option -> identifier:string option -> bool
+  type t =
+    title:string option
+    -> app_id:string option
+    -> identifier:string option
+    -> labels:string list
+    -> bool
 end
 
 type t =
   { title : string option [@yojson.option]
   ; app_id : string option [@yojson.option]
   ; identifier : string option [@yojson.option]
+  ; label : string option [@yojson.option]
   ; case : Case.t
   }
 [@@deriving yojson]
 
 let equal (a : t) (b : t) = a = b
-let is_empty (p : t) = p.title = None && p.app_id = None && p.identifier = None
+let is_empty = Json_slots.is_empty yojson_of_t
 
 let re_compile ~(case : Case.t) s =
   let flags =
@@ -48,18 +54,26 @@ let compile (p : t) =
     | None -> Ok None
     | Some s -> Result.map Option.some (re_compile ~case:p.case s)
   in
-  match comp p.title, comp p.app_id, comp p.identifier with
-  | Error e, _, _ | _, Error e, _ | _, _, Error e -> Error e
-  | Ok title, Ok app_id, Ok identifier ->
+  match comp p.title, comp p.app_id, comp p.identifier, comp p.label with
+  | Error e, _, _, _ | _, Error e, _, _ | _, _, Error e, _ | _, _, _, Error e -> Error e
+  | Ok title, Ok app_id, Ok identifier, Ok label ->
     let hit re value =
       match re, value with
       | None, _ -> true
       | Some _, None -> false
       | Some re, Some v -> Re.execp re v
     in
+    let hit_any re values =
+      match re with
+      | None -> true
+      | Some re -> List.exists (Re.execp re) values
+    in
     Ok
-      (fun ~title:w_title ~app_id:w_app_id ~identifier:w_identifier ->
-        hit title w_title && hit app_id w_app_id && hit identifier w_identifier)
+      (fun ~title:w_title ~app_id:w_app_id ~identifier:w_identifier ~labels ->
+        hit title w_title
+        && hit app_id w_app_id
+        && hit identifier w_identifier
+        && hit_any label labels)
 ;;
 
 let to_string p =
@@ -74,6 +88,7 @@ let to_string p =
       [ field_value "title" p.title
       ; field_value "app-id" p.app_id
       ; field_value "identifier" p.identifier
+      ; field_value "label" p.label
       ]
   in
   let body = String.concat " " parts in

@@ -15,7 +15,7 @@ let filter (wm : Wm.t) (seat : Seat.t) (scope : Scope.t) =
 ;;
 
 let holds matches (w : Window.t) =
-  matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier
+  matches ~title:w.title ~app_id:w.app_id ~identifier:w.identifier ~labels:w.labels
 ;;
 
 let matching wm seat (m : Window_match.t) =
