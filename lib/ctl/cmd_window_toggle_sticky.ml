@@ -11,6 +11,6 @@ let mk_leaf (name, scope) =
   @@ command_term scope
 ;;
 
-let name = "toggle"
+let name = "sticky"
 let doc = "Toggle the window sticky state"
 let cmd, bind_cmd = Ctl_cli.group_pair ~name ~doc (List.map mk_leaf toggle_targets)
