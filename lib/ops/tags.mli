@@ -42,17 +42,18 @@ val view_cycle_occupied
   -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [tag_window wm seat tags ~follow] assigns [tags] to [seat]'s focused
-    window. When [follow] is [true] focus follows the moved window. Is
-    [Error msg] when there is no focused window, the set resolves empty, or
-    [tags] is [Occupied] and the window has no output.
+(** [tag_window wm seat ~tags ~follow ~target] assigns [tags] according to
+    [target]. When [follow] is [true] focus follows the moved window. Is
+    [Error msg] when [target] is unresolved, the set resolves empty, or [tags]
+    is [Occupied] and the window has no output.
 
     {b Effects:} mutates WM state *)
 val tag_window
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Tag.Arg.t
+  -> tags:Oxbow_core.Tag.Arg.t
   -> follow:bool
+  -> target:Oxbow_core.Target.Window.t
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_window_tags seat tags] toggles [tags] on [seat]'s focused window.

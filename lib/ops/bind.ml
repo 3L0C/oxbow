@@ -14,7 +14,7 @@ let install_defaults (wm : Wm.t) seat =
     Xkbcommon.Keysym.
       [ (* mods, keysym,  command *)
         modkey, K_Return, Command.Spawn "foot"
-      ; modkey, K_q, Command.Window Close
+      ; modkey, K_q, Command.Window (Close Focused)
       ; modkey, K_Q, Command.Session Exit
       ; modkey, K_j, Command.Window (Focus_logical { dir = Next; warp = None })
       ; modkey, K_k, Command.Window (Focus_logical { dir = Prev; warp = None })

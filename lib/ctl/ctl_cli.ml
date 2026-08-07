@@ -431,6 +431,21 @@ let window_match_of source =
 let window_match_term = window_match_of pattern_term
 let window_match_any_term = window_match_of pattern_flags
 
+let all_flag =
+  Arg.(value & flag & info [ "all" ] ~doc:"Act on every match, not only the best match.")
+;;
+
+let target_window_term =
+  let open Oxbow_core in
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ wmatch = window_match_any_term
+     and+ all = all_flag in
+     if Pattern.is_empty wmatch.pattern
+     then if all then Error "--all needs a pattern" else Ok (Focused : Target.Window.t)
+     else Ok (Matching { wmatch; all })
+;;
+
 let tags_flag =
   Arg.(
     value

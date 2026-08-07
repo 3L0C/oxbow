@@ -178,11 +178,13 @@ let exit_fullscreen (window : Window.t) =
     Schedule.manage ()
 ;;
 
-let close_focused seat =
-  With.focused_window seat
-  @@ fun _o w ->
-  Window.set_close_pending w true;
-  Ok None
+let close wm seat target =
+  match
+    Targets.transact_windows wm seat target ~plan:(fun w ->
+      Ok (fun () -> Window.set_close_pending w true))
+  with
+  | Error _ as e -> e
+  | Ok _ -> Ok None
 ;;
 
 let unless_fullscreen ~verb w act =

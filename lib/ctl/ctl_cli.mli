@@ -114,6 +114,10 @@ val window_match_term : Oxbow_core.Window_match.t Cmdliner.Term.t
     pattern. Such a match selects every window in the scope. *)
 val window_match_any_term : Oxbow_core.Window_match.t Cmdliner.Term.t
 
+(** [target_window_term] is [window_match_any_term], and [--all] to indiatce a
+    command should apply to all matching windows. *)
+val target_window_term : Oxbow_core.Target.Window.t Cmdliner.Term.t
+
 (** [tags_flag] is the [--tags TAGS] option: indices, ranges, a bitmask, or the
     literal [occupied]. *)
 val tags_flag : Oxbow_core.Tag.Arg.t option Cmdliner.Term.t

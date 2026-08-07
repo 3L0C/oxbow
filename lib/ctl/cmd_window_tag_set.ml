@@ -3,8 +3,9 @@ open! Oxbow_ipc
 let command_term =
   let open Cmdliner.Term.Syntax in
   let+ tags = Ctl_cli.tag_arg
-  and+ follow = Ctl_cli.follow_flag in
-  Command.Window (Tag { tags; follow })
+  and+ follow = Ctl_cli.follow_flag
+  and+ target = Ctl_cli.target_window_term in
+  Command.Window (Tag { tags; follow; target })
 ;;
 
 let name = "set"

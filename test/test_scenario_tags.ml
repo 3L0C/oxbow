@@ -11,7 +11,12 @@ let () =
   section "move focused window to tag 2" (fun () ->
     cmd
       env
-      (Window (Tag { tags = Concrete (Oxbow_core.Tag.Set.singleton 2); follow = false })));
+      (Window
+         (Tag
+            { tags = Concrete (Oxbow_core.Tag.Set.singleton 2)
+            ; follow = false
+            ; target = Focused
+            })));
   section "view tag 2" (fun () ->
     cmd env (Tag (View (Concrete (Oxbow_core.Tag.Set.singleton 2)))));
   section "view previous" (fun () -> cmd env (Tag View_previous));

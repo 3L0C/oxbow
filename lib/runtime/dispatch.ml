@@ -74,11 +74,11 @@ let handle_tag seat (cmd : Command.Tag.t) =
 
 let handle_window wm seat (cmd : Command.Window.t) =
   match cmd with
-  | Close -> Placement.close_focused seat
+  | Close target -> Placement.close wm seat target
   | Focus_logical { dir; warp } -> Focus.window_logical ?warp wm seat dir
   | Focus_spatial { dir; warp } -> Focus.window_spatial ?warp wm seat dir
   | Focus_match { wmatch; cycle; warp } -> Focus.window_match ?warp ~cycle wm seat wmatch
-  | Tag { tags; follow } -> Tags.tag_window wm seat tags ~follow
+  | Tag { tags; follow; target } -> Tags.tag_window wm seat ~tags ~follow ~target
   | Tag_shift { dir; follow } -> Tags.tag_shift_window wm seat dir ~follow
   | Tag_shift_occupied { dir; follow } ->
     Tags.tag_shift_window_occupied wm seat dir ~follow

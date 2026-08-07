@@ -67,22 +67,25 @@ let view_cycle_occupied (seat : Seat.t) (dir : Direction.Logical.t) =
       Ok None)
 ;;
 
-let tag_window wm seat (tags : Tag.Arg.t) ~follow =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
-    let resolve s =
-      if Tag.Set.is_empty s
-      then Error Messages.tag_set_is_empty
-      else (
-        Window.set_tags w s;
-        if follow then Focus.focus_window ~force:true wm seat w;
-        Ok None)
-    in
-    (match w.output, tags with
-     | Some o, _ -> Output.resolve_tag_arg ~arg:tags o |> resolve
-     | None, Concrete s -> resolve s
-     | None, Occupied -> Error "cannot use 'occupied' for window with no output")
+let tag_window wm seat ~(tags : Tag.Arg.t) ~follow ~target =
+  let result =
+    Targets.transact_windows wm seat target ~plan:(fun w ->
+      let resolve s =
+        if Tag.Set.is_empty s
+        then Error Messages.tag_set_is_empty
+        else Ok (fun () -> Window.set_tags w s)
+      in
+      match w.output, tags with
+      | Some o, _ -> Output.resolve_tag_arg ~arg:tags o |> resolve
+      | None, Concrete s -> resolve s
+      | None, Occupied -> Error "cannot use 'occupied' for window with no output")
+  in
+  match result with
+  | Error _ as e -> e
+  | Ok windows ->
+    if follow
+    then List.nth_opt windows 0 |> Option.iter (Focus.focus_window ~force:true wm seat);
+    Ok None
 ;;
 
 let toggle_window_tags seat tags =

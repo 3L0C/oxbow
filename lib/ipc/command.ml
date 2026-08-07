@@ -207,7 +207,7 @@ end
 
 module Window = struct
   type t =
-    | Close [@name "close"]
+    | Close of Target.Window.t [@name "close"]
     | Focus_logical of
         { dir : Direction.Logical.t
         ; warp : bool option [@yojson.option]
@@ -224,6 +224,7 @@ module Window = struct
     | Tag of
         { tags : Oxbow_core.Tag.Arg.t
         ; follow : bool
+        ; target : Target.Window.t
         } [@name "tag"]
     | Tag_shift of
         { dir : Direction.Logical.t

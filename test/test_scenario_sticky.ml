@@ -11,7 +11,12 @@ let () =
   section "emacs tag 2" (fun () ->
     cmd
       env
-      (Window (Tag { tags = Concrete (Oxbow_core.Tag.Set.singleton 2); follow = false })));
+      (Window
+         (Tag
+            { tags = Concrete (Oxbow_core.Tag.Set.singleton 2)
+            ; follow = false
+            ; target = Focused
+            })));
   section "sticky kitty - all" (fun () -> cmd env (Window (Set_sticky All)));
   section "view tag 2" (fun () ->
     cmd env (Tag (View (Concrete (Oxbow_core.Tag.Set.singleton 2)))));

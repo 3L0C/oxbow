@@ -136,8 +136,13 @@ val fullscreen
     {b Effects:} mutates WM state *)
 val exit_fullscreen : Oxbow_state.Window.t -> unit
 
-(** [close_focused seat] asks [seat]'s focused window to close. *)
-val close_focused : Oxbow_state.Seat.t -> (Yojson.Safe.t option, string) result
+(** [close wm seat target] requests close on every window of [target]. An absent
+    target is the focused window. *)
+val close
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
+  -> (Yojson.Safe.t option, string) result
 
 (** [move_to ~x ~y window] moves [window] to the extents [x] and [y]. Is
     [Error msg] when the window is fullscreen.

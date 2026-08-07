@@ -1,0 +1,573 @@
+== arrive ==
+render:set_presentation_mode
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_seat
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_pointer_binding(seat0)
+manage:get_pointer_binding(seat0)
+manage:clear_focus(seat0)
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_node(kitty)
+manage:set_capabilities(kitty)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode
+manage:get_node(foot)
+manage:set_capabilities(foot)
+manage:propose_dimensions(foot, 1021x1032)
+manage:set_tiled(foot)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:propose_dimensions(kitty, 833x1032)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode
+manage:get_node(mpv)
+manage:set_capabilities(mpv)
+manage:propose_dimensions(mpv, 1021x1032)
+manage:set_tiled(mpv)
+manage:use_ssd(mpv)
+manage:inform_unmaximized(mpv)
+manage:inform_not_fullscreen(mpv)
+manage:inform_resize_end(mpv)
+manage:propose_dimensions(foot, 833x507)
+manage:propose_dimensions(kitty, 833x507)
+manage:focus_window(seat0, mpv)
+manage:op_end(seat0)
+manage:focus_window(seat0, mpv)
+manage:op_end(seat0)
+render:set_borders(mpv, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(foot, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(mpv, 24, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 549)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:place_top(mpv)
+render:set_presentation_mode
+render:set_position(mpv, 24, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 549)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:place_top(mpv)
+render:set_presentation_mode
+manage:get_node(emacs)
+manage:set_capabilities(emacs)
+manage:propose_dimensions(emacs, 1021x1032)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:propose_dimensions(mpv, 833x332)
+manage:propose_dimensions(foot, 833x332)
+manage:propose_dimensions(kitty, 833x332)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(mpv, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:place_top(mpv)
+render:place_top(emacs)
+render:set_presentation_mode
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:place_top(mpv)
+render:place_top(emacs)
+render:set_presentation_mode
+== window close --app-id=mpv ==
+manage:close(mpv)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:place_top(mpv)
+render:place_top(emacs)
+render:set_presentation_mode
+== window focus match --app-id=kitty ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(foot)
+render:place_top(mpv)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== window label add scratch ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(foot)
+render:place_top(mpv)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode
+== window focus match --app-id=foot ==
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(mpv)
+render:place_top(emacs)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode
+== window label add scratch ==
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(mpv)
+render:place_top(emacs)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode
+== window tag set --app-id=emacs --follow 3 ==
+manage:propose_dimensions(emacs, 1872x1032)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(foot, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:hide(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:hide(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:hide(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:hide(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:hide(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:hide(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:set_presentation_mode
+== window list ==
+0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=3 focused=true urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=
+1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off swallowing=false labels=
+2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off swallowing=false labels=scratch
+3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off swallowing=false labels=scratch
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:hide(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 1063, 374)
+render:hide(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 724)
+render:hide(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(emacs)
+render:set_presentation_mode
+== window tag set --label=scratch --all --follow 2 ==
+manage:propose_dimensions(foot, 1021x1032)
+manage:propose_dimensions(kitty, 833x1032)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(foot, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 24, 24)
+render:hide(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:hide(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:hide(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:hide(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode
+== window list ==
+0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=3 focused=false urgent=false hidden=true presentation=tiled sticky=off swallowing=false labels=
+1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off swallowing=false labels=
+2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=2 focused=true urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=scratch
+3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=2 focused=false urgent=false hidden=false presentation=tiled sticky=off swallowing=false labels=scratch
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:hide(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:hide(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode
+== window close --app-id=nope ==
+err: no window matching app-id=nope
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:hide(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:hide(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode
+== window close ==
+manage:close(foot)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_position(emacs, 24, 24)
+render:hide(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(mpv, 1063, 24)
+render:hide(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode
