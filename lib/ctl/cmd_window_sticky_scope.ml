@@ -1,9 +1,12 @@
 open! Oxbow_core
 open! Oxbow_ipc
 
-(* TODO add an option to sticky a targeted window like window focus where no
-   window target means the focused window. *)
-let command_term scope = Cmdliner.Term.const @@ Command.Window (Set_sticky scope)
+let command_term scope =
+  let open Cmdliner.Term.Syntax in
+  let+ target = Ctl_cli.target_any_window_term in
+  Command.Window { cmd = Set_sticky scope; target }
+;;
+
 let scope_targets = Ctl_cli.enum_of Sticky.to_string Sticky.all
 
 let mk_leaf (name, policy) =

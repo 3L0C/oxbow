@@ -1,17 +1,15 @@
 open! Oxbow_state
 
-let window_add seat label =
-  With.focused_window seat
-  @@ fun _o w ->
-  Window.add_label w label;
-  Ok None
+let window_add wm seat target label =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    Ok (fun () -> Window.add_label w label))
 ;;
 
-let window_remove seat label =
-  With.focused_window seat
-  @@ fun _o w ->
-  Window.remove_label w label;
-  Ok None
+let window_remove wm seat target label =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    Ok (fun () -> Window.remove_label w label))
 ;;
 
 let output_add seat label =

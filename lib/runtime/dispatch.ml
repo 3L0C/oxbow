@@ -43,7 +43,7 @@ let handle_output wm seat (cmd : Command.Output.t) =
   | Toggle_overview -> Arrange.toggle_overview wm seat
   | Cycle_overview { dir; until_release } ->
     Arrange.cycle_overview wm seat dir ~until_release
-  | Column_width delta -> Column.set_width seat delta ~global:true
+  | Column_width delta -> Column.set_width wm seat Focused delta ~global:true
   | Swap (Tags { target; policy; follow }) ->
     Placement.swap_outputs wm seat ~target ~policy ~follow `Tags
   | Swap (All { target; policy; follow }) ->
@@ -72,49 +72,48 @@ let handle_tag seat (cmd : Command.Tag.t) =
   | View_cycle_occupied dir -> Tags.view_cycle_occupied seat dir
 ;;
 
-let handle_window wm seat (cmd : Command.Window.t) =
+let handle_window wm seat ((cmd : Command.Window.t), target) =
   match cmd with
-  | Close target -> Placement.close wm seat target
-  | Focus_logical { dir; warp } -> Focus.window_logical ?warp wm seat dir
-  | Focus_spatial { dir; warp } -> Focus.window_spatial ?warp wm seat dir
-  | Focus_match { wmatch; cycle; warp } -> Focus.window_match ?warp ~cycle wm seat wmatch
-  | Tag { tags; follow; target } -> Tags.tag_window wm seat ~tags ~follow ~target
-  | Tag_shift { dir; follow } -> Tags.tag_shift_window wm seat dir ~follow
+  | Close -> Placement.close wm seat target
+  | Focus_logical { dir; warp } -> Focus.window_logical ?warp wm seat target dir
+  | Focus_spatial { dir; warp } -> Focus.window_spatial ?warp wm seat target dir
+  | Focus_match { warp } -> Focus.window_match ?warp wm seat target
+  | Tag { tags; follow } -> Tags.tag_window wm seat target ~tags ~follow
+  | Tag_shift { dir; follow } -> Tags.tag_shift_window wm seat target dir ~follow
   | Tag_shift_occupied { dir; follow } ->
-    Tags.tag_shift_window_occupied wm seat dir ~follow
-  | Tag_match { wmatch; tags } -> Tags.tag_window_match wm seat wmatch tags
+    Tags.tag_shift_window_occupied wm seat target dir ~follow
   | Move_drag -> Window_request.move_interactive wm seat
-  | Move_to { x; y } -> Placement.move_to ~x ~y seat
-  | Move_spatial { dir; by } -> Placement.move_spatial seat dir by
+  | Move_to { x; y } -> Placement.move_to ~x ~y wm seat target
+  | Move_spatial { dir; by } -> Placement.move_spatial wm seat target dir by
   | Resize_drag -> Window_request.resize_interactive wm seat
-  | Resize_to { w; h } -> Placement.resize_to ~width:w ~height:h seat
-  | Resize_spatial { dir; by } -> Placement.resize_spatial seat dir by
+  | Resize_to { w; h } -> Placement.resize_to ~width:w ~height:h wm seat target
+  | Resize_spatial { dir; by } -> Placement.resize_spatial wm seat target dir by
   | Send_logical { dir; policy; follow } ->
-    Placement.send_to_logical wm seat dir policy ~follow
+    Placement.send_to_logical wm seat target dir policy ~follow
   | Send_spatial { dir; policy; follow } ->
-    Placement.send_to_spatial wm seat dir policy ~follow
+    Placement.send_to_spatial wm seat target dir policy ~follow
   | Send_name { name; policy; follow } ->
-    Placement.send_to_name wm seat name policy ~follow
-  | Shift dir -> Stacking.shift seat dir
-  | Set_sticky scope -> Placement.set_sticky seat scope
-  | Toggle_sticky toggle -> Placement.toggle_sticky seat toggle
-  | Toggle_swallow -> Swallow.toggle wm seat
-  | Toggle_tag arg -> Tags.toggle_window_tags seat arg
-  | Toggle_floating -> Placement.toggle_floating seat
-  | Toggle_maximize -> Window_request.toggle_maximize wm seat
-  | Toggle_fullscreen -> Window_request.toggle_fullscreen wm seat
-  | Toggle_fake_fullscreen -> Window_request.toggle_fake_fullscreen wm seat
-  | Zoom { warp } -> Placement.zoom ?warp wm seat
-  | Column_consume -> Column.consume seat
-  | Column_release -> Column.release seat
-  | Column_move dir -> Column.move seat dir
-  | Column_width delta -> Column.set_width seat delta ~global:false
-  | Column_width_default -> Column.default_width seat
-  | Column_width_cycle -> Column.cycle_width seat
+    Placement.send_to_name wm seat target name policy ~follow
+  | Shift dir -> Stacking.shift wm seat target dir
+  | Set_sticky scope -> Placement.set_sticky wm seat target scope
+  | Toggle_sticky toggle -> Placement.toggle_sticky wm seat target toggle
+  | Toggle_swallow -> Swallow.toggle wm seat target
+  | Toggle_tag tags -> Tags.toggle_window_tags wm seat target tags
+  | Toggle_floating -> Placement.toggle_floating wm seat target
+  | Toggle_maximize -> Window_request.toggle_maximize wm seat target
+  | Toggle_fullscreen -> Window_request.toggle_fullscreen wm seat target
+  | Toggle_fake_fullscreen -> Window_request.toggle_fake_fullscreen wm seat target
+  | Zoom { warp } -> Placement.zoom ?warp wm seat target
+  | Column_consume -> Column.consume wm seat target
+  | Column_release -> Column.release wm seat target
+  | Column_move dir -> Column.move wm seat target dir
+  | Column_width delta -> Column.set_width wm seat target delta ~global:false
+  | Column_width_default -> Column.default_width wm seat target
+  | Column_width_cycle -> Column.cycle_width wm seat target
   | Rule_add rule -> Window_rules.add wm rule
   | Rule_remove index -> Window_rules.remove wm index
-  | Label_add label -> Labels.window_add seat label
-  | Label_remove label -> Labels.window_remove seat label
+  | Label_add label -> Labels.window_add wm seat target label
+  | Label_remove label -> Labels.window_remove wm seat target label
 ;;
 
 let handle_wm ctx _seat (cmd : Command.Wm.t) =
@@ -139,7 +138,7 @@ let handle_command ctx seat (cmd : Command.t) =
   | Session c -> handle_session ctx seat c
   | Spawn cmd -> Execute.spawn cmd
   | Tag c -> handle_tag seat c
-  | Window c -> handle_window wm seat c
+  | Window { cmd; target } -> handle_window wm seat (cmd, target)
   | Wm c -> handle_wm ctx seat c
 ;;
 

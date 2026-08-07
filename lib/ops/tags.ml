@@ -67,9 +67,9 @@ let view_cycle_occupied (seat : Seat.t) (dir : Direction.Logical.t) =
       Ok None)
 ;;
 
-let tag_window wm seat ~(tags : Tag.Arg.t) ~follow ~target =
+let tag_window wm seat target ~(tags : Tag.Arg.t) ~follow =
   let result =
-    Targets.transact_windows wm seat target ~plan:(fun w ->
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
       let resolve s =
         if Tag.Set.is_empty s
         then Error Messages.tag_set_is_empty
@@ -88,45 +88,21 @@ let tag_window wm seat ~(tags : Tag.Arg.t) ~follow ~target =
     Ok None
 ;;
 
-let toggle_window_tags seat tags =
+let toggle_window_tags wm seat target tags =
   if Tag.Set.is_empty tags
   then Error Messages.tag_set_is_empty
-  else (
-    match Seat.focused_window seat with
-    | None -> Error Messages.no_focused_window
-    | Some w ->
+  else
+    Result.map (fun _ -> None)
+    @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
       let new_tags = Tag.Set.symmetric_diff w.tags tags in
       if Tag.Set.is_empty new_tags
       then Error "toggle would leave window invisible"
-      else (
-        Window.set_tags w new_tags;
-        Ok None))
+      else Ok (fun () -> Window.set_tags w new_tags))
 ;;
 
-let tag_window_match wm seat m (arg : Tag.Arg.t) =
-  match arg with
-  | Concrete s when Tag.Set.is_empty s -> Error Messages.tag_set_is_empty
-  | _ ->
-    (match Window_scope.matching wm seat m with
-     | Error _ as e -> e
-     | Ok (_, matching) ->
-       if List.is_empty matching
-       then Error (Printf.sprintf "no window matches: %S" (Window_match.to_string m))
-       else (
-         List.iter
-           (fun (w : Window.t) ->
-              match w.output, arg with
-              | Some o, _ -> Window.set_tags w @@ Output.resolve_tag_arg ~arg o
-              | None, Concrete s -> Window.set_tags w s
-              | None, Occupied -> ())
-           matching;
-         Ok None))
-;;
-
-let tag_shift_window wm seat (dir : Direction.Logical.t) ~follow =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
+let tag_shift_window wm seat target (dir : Direction.Logical.t) ~follow =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
     let tags =
       match dir with
       | Next -> Tag.Set.next w.tags
@@ -134,29 +110,30 @@ let tag_shift_window wm seat (dir : Direction.Logical.t) ~follow =
     in
     if Tag.Set.is_empty tags
     then Error Messages.tag_set_is_empty
-    else (
-      Window.set_tags w tags;
-      if follow then Focus.focus_window ~force:true wm seat w;
-      Ok None)
+    else
+      Ok
+        (fun () ->
+          Window.set_tags w tags;
+          if follow then Focus.focus_window ~force:true wm seat w))
 ;;
 
-let tag_shift_window_occupied wm seat (dir : Direction.Logical.t) ~follow =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
-    (match w.output with
-     | None -> Error Messages.window_missing_output
-     | Some o ->
-       let occupied = Output.occupied_tags o in
-       if Tag.Set.is_empty occupied
-       then Error "no occupied tags"
-       else (
-         let tags =
-           match dir with
-           | Next -> Tag.Set.next_occupied ~selected:w.tags ~occupied
-           | Prev -> Tag.Set.prev_occupied ~selected:w.tags ~occupied
-         in
-         Window.set_tags w tags;
-         if follow then Focus.focus_window ~force:true wm seat w;
-         Ok None))
+let tag_shift_window_occupied wm seat target (dir : Direction.Logical.t) ~follow =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    match w.output with
+    | None -> Error Messages.window_missing_output
+    | Some o ->
+      let occupied = Output.occupied_tags o in
+      if Tag.Set.is_empty occupied
+      then Error "no occupied tags"
+      else (
+        let tags =
+          match dir with
+          | Next -> Tag.Set.next_occupied ~selected:w.tags ~occupied
+          | Prev -> Tag.Set.prev_occupied ~selected:w.tags ~occupied
+        in
+        Ok
+          (fun () ->
+            Window.set_tags w tags;
+            if follow then Focus.focus_window ~force:true wm seat w)))
 ;;

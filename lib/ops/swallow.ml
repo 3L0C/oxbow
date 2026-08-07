@@ -97,15 +97,11 @@ let on_close (w : Window.t) =
     Window.set_swallow w Terminal
 ;;
 
-let toggle (wm : Wm.t) (seat : Seat.t) =
-  With.focused_window seat
-  @@ fun _o w ->
-  match w.swallow with
-  | Terminal | Disabled | Swallowed_by _ -> Ok None
-  | Swallowing _ ->
-    unswallow w;
-    Ok None
-  | Auto ->
-    try_swallow wm w;
-    Ok None
+let toggle wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    match w.swallow with
+    | Terminal | Disabled | Swallowed_by _ -> Ok ignore
+    | Swallowing _ -> Ok (fun () -> unswallow w)
+    | Auto -> Ok (fun () -> try_swallow wm w))
 ;;

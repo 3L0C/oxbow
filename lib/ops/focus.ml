@@ -44,61 +44,61 @@ let refresh_layer_shell wm (seat : Seat.t) =
     | None -> ())
 ;;
 
-let window_logical ?warp wm seat (dir : Direction.Logical.t) =
-  match Seat.focused_window seat, seat.output with
-  | Some w, _ when Window.is_fullscreen w -> Error Messages.window_is_fullscreen
-  | _, None -> Error Messages.seat_missing_output
-  | _, Some o ->
-    let target =
-      match dir with
-      | Next -> Output.next_window o
-      | Prev -> Output.prev_window o
-    in
-    (match target with
-     | None -> Error "no window to focus"
-     | Some w ->
-       focus_window ~warp:(Seat.Warp_request.of_override warp) wm seat w;
-       Ok None)
+let window_logical ?warp wm seat target (dir : Direction.Logical.t) =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    if Window.is_fullscreen w
+    then Error Messages.window_is_fullscreen
+    else (
+      match w.output with
+      | None -> Error Messages.seat_missing_output
+      | Some o ->
+        let target =
+          match dir with
+          | Next -> Output.next_window o
+          | Prev -> Output.prev_window o
+        in
+        (match target with
+         | None -> Error "no window to focus"
+         | Some w ->
+           Ok
+             (fun () -> focus_window ~warp:(Seat.Warp_request.of_override warp) wm seat w))))
 ;;
 
-let window_spatial ?warp wm seat (dir : Direction.Spatial.t) =
-  match Seat.focused_window seat, seat.output with
-  | Some w, _ when Window.is_fullscreen w -> Error Messages.window_is_fullscreen
-  | _, None -> Error Messages.seat_missing_output
-  | None, Some _ -> Error Messages.no_focused_window
-  | Some current, Some o ->
-    let from = Vector.center (Rect.to_int current.geom) in
-    let target =
-      Vector.nearest_in_direction
-        ~from
-        ~dir
-        (fun (w : Window.t) ->
-           if w == current || (not @@ Window.is_tiled w) || (not @@ Window.tag_visible w)
-           then None
-           else Some (Rect.to_int w.geom |> Vector.center))
-        o.wm_stack
-    in
-    (match target with
-     | None -> Error (Printf.sprintf "no window %s" (Direction.Spatial.to_string dir))
-     | Some w ->
-       focus_window ~warp:(Seat.Warp_request.of_override warp) wm seat w;
-       Ok None)
+let window_spatial ?warp wm seat target (dir : Direction.Spatial.t) =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun current ->
+    if Window.is_fullscreen current
+    then Error Messages.window_is_fullscreen
+    else (
+      match current.output with
+      | None -> Error Messages.seat_missing_output
+      | Some o ->
+        let from = Vector.center (Rect.to_int current.geom) in
+        let target =
+          Vector.nearest_in_direction
+            ~from
+            ~dir
+            (fun w ->
+               if
+                 w == current
+                 || (not @@ Window.is_tiled w)
+                 || (not @@ Window.tag_visible w)
+               then None
+               else Some (Rect.to_int w.geom |> Vector.center))
+            o.wm_stack
+        in
+        (match target with
+         | None -> Error (Printf.sprintf "no window %s" (Direction.Spatial.to_string dir))
+         | Some w ->
+           Ok
+             (fun () -> focus_window ~warp:(Seat.Warp_request.of_override warp) wm seat w))))
 ;;
 
-let window_match ?warp ~cycle (wm : Wm.t) seat m =
-  match Window_scope.matching wm seat m with
-  | Error _ as e -> e
-  | Ok (matches, matching) ->
-    let target =
-      match Seat.focused_window seat with
-      | Some w when cycle && matches w -> Ring.next_or_first w matching
-      | _ -> List.nth_opt matching 0
-    in
-    (match target with
-     | None -> Error (Printf.sprintf "no window matches: %S" (Window_match.to_string m))
-     | Some w ->
-       focus_window ~force:true ~warp:(Seat.Warp_request.of_override warp) wm seat w;
-       Ok None)
+let window_match ?warp wm seat target =
+  Result.bind (Targets.resolve_one_window wm seat target) (fun window ->
+    focus_window ~force:true ~warp:(Seat.Warp_request.of_override warp) wm seat window;
+    Ok None)
 ;;
 
 let focus_output ?warp wm seat output =

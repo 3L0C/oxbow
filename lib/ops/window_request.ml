@@ -72,51 +72,41 @@ let rec handle wm window (request : Window.Request.t) =
   | Set_tags arg -> handle_set_tags wm window arg
   | Set_sticky scope -> Window.set_sticky window scope
   | Send_to_output_name { name; policy } ->
-    Placement.send_window_to_name wm window name policy
-    |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e
+    Result.iter_error (fun e -> Logs.warn @@ fun m -> m "%s" e)
+    @@ Placement.send_window_to_name wm window name policy
   | Float -> Window.float window
   | Tile -> Window.tile window
 ;;
 
-let toggle_maximize wm seat =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
-    (match w.presentation with
-     | Maximized _ ->
-       handle wm w Unmaximize;
-       Ok None
-     | Tiled | Floating ->
-       handle wm w Maximize;
-       Ok None
-     | Fullscreen _ -> Error "cannot toggle maximization while window is fullscreen")
+let toggle_maximize wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    match w.presentation with
+    | Maximized _ -> Ok (fun () -> handle wm w Unmaximize)
+    | Tiled | Floating -> Ok (fun () -> handle wm w Maximize)
+    | Fullscreen _ -> Error "cannot toggle maximization while window is fullscreen")
 ;;
 
-let toggle_fake_fullscreen wm seat =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
-    (match w.presentation with
-     | Fullscreen _ ->
-       Error "cannot toggle fake fullscreen when window is actually fullscreen"
-     | _ ->
-       (if w.is_fake_fullscreen then Exit_fake_fullscreen else Fake_fullscreen)
-       |> handle wm w;
-       Ok None)
+let toggle_fake_fullscreen wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    match w.presentation with
+    | Fullscreen _ ->
+      Error "cannot toggle fake fullscreen when window is actually fullscreen"
+    | _ ->
+      Ok
+        (fun () ->
+          (if w.is_fake_fullscreen then Exit_fake_fullscreen else Fake_fullscreen)
+          |> handle wm w))
 ;;
 
-let toggle_fullscreen wm seat =
-  match Seat.focused_window seat with
-  | None -> Error Messages.no_focused_window
-  | Some w ->
-    (match w.presentation with
-     | Fullscreen _ ->
-       handle wm w Exit_fullscreen;
-       Ok None
-     | _ when Option.is_none w.output -> Error Messages.window_missing_output
-     | _ ->
-       handle wm w @@ Fullscreen { output = w.output };
-       Ok None)
+let toggle_fullscreen wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    match w.presentation with
+    | Fullscreen _ -> Ok (fun () -> handle wm w Exit_fullscreen)
+    | _ when Option.is_none w.output -> Error Messages.window_missing_output
+    | _ -> Ok (fun () -> handle wm w @@ Fullscreen { output = w.output }))
 ;;
 
 let move_interactive wm (seat : Seat.t) =

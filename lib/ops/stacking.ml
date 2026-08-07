@@ -63,21 +63,28 @@ let restore_focus_order ~like (output : Output.t) =
 
 let focus_window window = Option.iter (apply (Promote window)) window.output
 
-let shift (seat : Seat.t) (dir : Direction.Logical.t) =
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o when o.overview.enabled -> Error "cannot shift the window stack from overview"
-  | Some o ->
-    let has_other = Output.visible_window_count o > 1 in
-    (match Output.focused_window o, dir with
-     | None, _ -> Error Messages.no_focused_window
-     | Some _, _ when not has_other -> Error "no other visible window to shift"
-     | Some w, Next ->
-       Output.set_wm_stack o @@ Ring.hop_right (( == ) w) Window.tag_visible o.wm_stack;
-       Ok None
-     | Some w, Prev ->
-       Output.set_wm_stack o @@ Ring.hop_left (( == ) w) Window.tag_visible o.wm_stack;
-       Ok None)
+let shift wm seat target (dir : Direction.Logical.t) =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    With.output w
+    @@ fun o ->
+    if o.overview.enabled
+    then Error "cannot shift the window stack from overview"
+    else (
+      let has_other = Output.visible_window_count o > 1 in
+      match Output.focused_window o, dir with
+      | None, _ -> Error Messages.no_focused_window
+      | Some _, _ when not has_other -> Error "no other visible window to shift"
+      | Some w, Next ->
+        Ok
+          (fun () ->
+            Output.set_wm_stack o
+            @@ Ring.hop_right (( == ) w) Window.tag_visible o.wm_stack)
+      | Some w, Prev ->
+        Ok
+          (fun () ->
+            Output.set_wm_stack o
+            @@ Ring.hop_left (( == ) w) Window.tag_visible o.wm_stack)))
 ;;
 
 let replace ~old_w ~new_w (output : Output.t) =

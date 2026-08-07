@@ -24,7 +24,8 @@ let command_term =
      in
      if Window_rule.Effects.is_empty effects
      then Error "give at least one effect"
-     else Ok (Command.Window (Rule_add { pattern; effects }))
+     else (* NOTE [target] is not used *)
+       Ok (Command.Window { cmd = Rule_add { pattern; effects }; target = Focused })
 ;;
 
 let name = "add"

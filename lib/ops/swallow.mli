@@ -22,11 +22,12 @@ val unswallow : Oxbow_state.Window.t -> unit
     {b Effects:} mutates WM state *)
 val on_close : Oxbow_state.Window.t -> unit
 
-(** [toggle wm seat] swallows under, or restores from, the focused window on
-    [seat]. Is [Error msg] when [seat] has no focused window.
+(** [toggle wm seat target] swallows under, or restores from, the [target]
+    windows. Is [Error msg] when [target] has no match.
 
     {b Effects:} mutates WM state *)
 val toggle
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> (Yojson.Safe.t option, string) result

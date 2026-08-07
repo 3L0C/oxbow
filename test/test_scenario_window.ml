@@ -10,8 +10,9 @@ let () =
     Fake_river.add_window fake ~app_id:(Some "emacs");
     Fake_river.add_window fake ~app_id:(Some "firefox"));
   section "focus prev" (fun () ->
-    cmd env (Window (Focus_logical { dir = Prev; warp = None })));
-  section "zoom" (fun () -> cmd env (Window (Zoom { warp = None })));
+    cmd env (Window { cmd = Focus_logical { dir = Prev; warp = None }; target = Focused }));
+  section "zoom" (fun () ->
+    cmd env (Window { cmd = Zoom { warp = None }; target = Focused }));
   section "close emacs" (fun () -> Fake_river.close_window fake ~app_id:(Some "emacs"));
   section "focused" (fun () ->
     Harness.ipc env (Query Focused)

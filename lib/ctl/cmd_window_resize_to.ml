@@ -16,8 +16,8 @@ let command_term =
       ~doc:
         "The $(i,HEIGHT) of the window. May be a fixed pixel size (e.g. $(b,100)) or a \
          percentage of the usable height (e.g. $(b,50%))"
-  in
-  Command.Window (Resize_to { w; h })
+  and+ target = Ctl_cli.target_any_window_term in
+  Command.Window { cmd = Resize_to { w; h }; target }
 ;;
 
 let name = "to"

@@ -31,7 +31,9 @@ let () =
        cmd env (Layout (Select { layout = Scrolling; scope = Focused }));
        cmd env (Keymap (Mode (Declare "resize")));
        cmd env (Keymap (Mode (Enter "resize")));
-       cmd env (Window (Focus_logical { dir = Next; warp = None }));
+       cmd
+         env
+         (Window { cmd = Focus_logical { dir = Next; warp = None }; target = Focused });
        Harness.settle fake;
        wait_stable lines;
        Harness.section "events";

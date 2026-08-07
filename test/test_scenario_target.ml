@@ -21,6 +21,22 @@ let () =
   oxctl "window list";
   oxctl "window tag set --label=scratch --all --follow 2";
   oxctl "window list";
+  oxctl "window tag set --app-id=.* --cycle 5";
+  oxctl "window list";
+  oxctl "window tag set --app-id ^(emacs|mpv)$ --cycle 6";
+  oxctl "window list";
+  oxctl "window focus match --app-id=.* --cycle";
+  oxctl "window list";
+  oxctl "window focus match --app-id=.* --cycle";
+  oxctl "window list";
+  oxctl "window focus match --app-id=.* --cycle";
+  oxctl "window list";
+  oxctl "window toggle floating --app-id=kitty";
+  oxctl "window list";
+  oxctl "window toggle fullscreen --app-id=kitty --all";
+  oxctl "window label add seen --app-id=emacs";
+  oxctl "window list";
+  oxctl "window close --all";
   oxctl "window close --app-id=nope";
   oxctl "window close"
 ;;

@@ -3,9 +3,9 @@ open! Oxbow_ipc
 let command_term =
   let open Cmdliner.Term.Syntax in
   let+ target = Ctl_cli.target_one_window_term in
-  Command.Window { cmd = Column_width_default; target }
+  Command.Window { cmd = Toggle_maximize; target }
 ;;
 
-let name = "default"
-let doc = "Restore the target column width to the current tag's default width value"
+let name = "maximize"
+let doc = "Toggle maximize"
 let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc command_term

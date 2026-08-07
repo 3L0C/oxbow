@@ -1,8 +1,12 @@
 open! Oxbow_ipc
 
-let mk_leaf (name, doc, dir) =
-  Ctl_cli.cmd_pair ~name ~doc @@ Cmdliner.Term.const (Command.Window (Shift dir))
+let command_term dir =
+  let open Cmdliner.Term.Syntax in
+  let+ target = Ctl_cli.target_one_window_term in
+  Command.Window { cmd = Shift dir; target }
 ;;
+
+let mk_leaf (name, doc, dir) = Ctl_cli.cmd_pair ~name ~doc @@ command_term dir
 
 let targets =
   Ctl_cli.logical_leaves

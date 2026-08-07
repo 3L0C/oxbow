@@ -111,11 +111,11 @@ module Layout = struct
           ; scope : Scope.t
           } [@name "orientation"]
       | Select of
-          { scheme : Oxbow_core.Scheme.t
+          { scheme : Scheme.t
           ; scope : Scope.t
           } [@name "select"]
       | Scheme of
-          { scheme : Oxbow_core.Scheme.t
+          { scheme : Scheme.t
           ; scope : Scope.t
           } [@name "scheme"]
     [@@deriving yojson]
@@ -124,7 +124,7 @@ module Layout = struct
   type t =
     | Cycle of Direction.Logical.t [@name "cycle"]
     | Select of
-        { layout : Oxbow_core.Layout.t
+        { layout : Layout.t
         ; scope : Scope.t
         } [@name "select"]
     | Scrolling of Scrolling.t [@name "scrolling"]
@@ -150,17 +150,17 @@ module Output = struct
     type t =
       | Tags of
           { target : Target.t
-          ; policy : Oxbow_core.Tag.Policy.t
+          ; policy : Tag.Policy.t
           ; follow : bool
           } [@name "swap_tags"]
       | All of
           { target : Target.t
-          ; policy : Oxbow_core.Tag.Policy.t
+          ; policy : Tag.Policy.t
           ; follow : bool
           } [@name "swap_all"]
       | Visible of
           { target : Target.t
-          ; policy : Oxbow_core.Tag.Policy.t
+          ; policy : Tag.Policy.t
           ; follow : bool
           } [@name "swap_visible"]
     [@@deriving yojson]
@@ -207,7 +207,7 @@ end
 
 module Window = struct
   type t =
-    | Close of Target.Window.t [@name "close"]
+    | Close [@name "close"]
     | Focus_logical of
         { dir : Direction.Logical.t
         ; warp : bool option [@yojson.option]
@@ -216,15 +216,10 @@ module Window = struct
         { dir : Direction.Spatial.t
         ; warp : bool option [@yojson.option]
         } [@name "focus_spatial"]
-    | Focus_match of
-        { wmatch : Window_match.t
-        ; cycle : bool
-        ; warp : bool option [@yojson.option]
-        } [@name "focus_match"]
+    | Focus_match of { warp : bool option [@yojson.option] } [@name "focus_match"]
     | Tag of
         { tags : Oxbow_core.Tag.Arg.t
         ; follow : bool
-        ; target : Target.Window.t
         } [@name "tag"]
     | Tag_shift of
         { dir : Direction.Logical.t
@@ -234,10 +229,6 @@ module Window = struct
         { dir : Direction.Logical.t
         ; follow : bool
         } [@name "tag_shift_occupied"]
-    | Tag_match of
-        { wmatch : Window_match.t
-        ; tags : Oxbow_core.Tag.Arg.t
-        } [@name "tag_match"]
     | Move_drag [@name "move_drag"]
     | Move_to of
         { x : Extent.t
@@ -277,8 +268,8 @@ module Window = struct
     | Toggle_maximize [@name "toggle_maximize"]
     | Toggle_fullscreen [@name "toggle_fullscreen"]
     | Toggle_fake_fullscreen [@name "toggle_fake_fullscreen"]
-    | Set_sticky of Oxbow_core.Sticky.t [@name "set_sticky"]
-    | Toggle_sticky of Oxbow_core.Sticky.Toggle.t [@name "toggle_sticky"]
+    | Set_sticky of Sticky.t [@name "set_sticky"]
+    | Toggle_sticky of Sticky.Toggle.t [@name "toggle_sticky"]
     | Toggle_swallow [@name "toggle_swallow"]
     | Zoom of { warp : bool option [@yojson.option] } [@name "zoom"]
     | Column_consume [@name "column_consume"]
@@ -309,6 +300,9 @@ type t =
   | Session of Session.t [@name "session"]
   | Spawn of string [@name "spawn"]
   | Tag of Tag.t [@name "tag"]
-  | Window of Window.t [@name "window"]
+  | Window of
+      { cmd : Window.t
+      ; target : Target.Window.t
+      } [@name "window"]
   | Wm of Wm.t [@name "wm"]
 [@@deriving yojson]

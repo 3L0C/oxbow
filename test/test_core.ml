@@ -2,9 +2,9 @@ let () =
   let open Oxbow_core in
   let open Oxbow_ipc in
   let commands : Command.t list =
-    [ Window (Zoom { warp = None })
+    [ Window { cmd = Zoom { warp = None }; target = Focused }
     ; Spawn "foot"
-    ; Window (Focus_logical { dir = Next; warp = None })
+    ; Window { cmd = Focus_logical { dir = Next; warp = None }; target = Focused }
     ; Layout (Tiling (Mfact { delta = Delta.Rel 0.05; scope = Focused }))
     ; Layout (Tiling (Mfact { delta = Delta.Abs 0.55; scope = Focused }))
     ; Tag (View (Concrete (Tag.Set.singleton 3)))

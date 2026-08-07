@@ -17,8 +17,10 @@ let () =
     Fake_river.add_window ~pid:42 fake ~app_id:(Some "foot"));
   section "mpv arrives - swallows foot" (fun () ->
     Fake_river.add_window ~pid:100 fake ~app_id:(Some "mpv"));
-  section "toggle - foot returns" (fun () -> cmd env (Window Toggle_swallow));
-  section "toggle - swallows foot again" (fun () -> cmd env (Window Toggle_swallow));
+  section "toggle - foot returns" (fun () ->
+    cmd env (Window { cmd = Toggle_swallow; target = Focused }));
+  section "toggle - swallows foot again" (fun () ->
+    cmd env (Window { cmd = Toggle_swallow; target = Focused }));
   section "mpv closes - foot returns" (fun () ->
     Fake_river.close_window fake ~app_id:(Some "mpv"))
 ;;

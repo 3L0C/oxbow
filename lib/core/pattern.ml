@@ -26,7 +26,11 @@ type t =
 [@@deriving yojson]
 
 let equal (a : t) (b : t) = a = b
-let is_empty = Json_slots.is_empty yojson_of_t
+
+let is_empty = function
+  | { title = None; app_id = None; identifier = None; label = None; case = _ } -> true
+  | _ -> false
+;;
 
 let re_compile ~(case : Case.t) s =
   let flags =

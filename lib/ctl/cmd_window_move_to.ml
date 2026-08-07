@@ -19,10 +19,10 @@ let command_term =
          the output's usable area. A pixel offset (e.g. $(b,100)) or a percentage of the \
          usable width/height (e.g. $(b,25%) places the top edge a quarter of the way \
          down)"
-  in
-  Command.Window (Move_to { x; y })
+  and+ target = Ctl_cli.target_any_window_term in
+  Command.Window { cmd = Move_to { x; y }; target }
 ;;
 
 let name = "to"
-let doc = "Move the focused window to point ($(i,X), $(i,Y))"
+let doc = "Move the target window to point ($(i,X), $(i,Y))"
 let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc command_term

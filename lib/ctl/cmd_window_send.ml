@@ -5,10 +5,14 @@ let dir_command_term dir =
   let open Cmdliner.Term.Syntax in
   let open Direction in
   let+ policy = Ctl_cli.policy_flag
-  and+ follow = Ctl_cli.follow_flag in
-  match dir with
-  | Logical d -> Command.Window (Send_logical { dir = d; policy; follow })
-  | Spatial d -> Command.Window (Send_spatial { dir = d; policy; follow })
+  and+ follow = Ctl_cli.follow_flag
+  and+ target = Ctl_cli.target_any_window_term in
+  let (cmd : Command.Window.t) =
+    match dir with
+    | Logical d -> Send_logical { dir = d; policy; follow }
+    | Spatial d -> Send_spatial { dir = d; policy; follow }
+  in
+  Command.Window { cmd; target }
 ;;
 
 let dir_leaf (name, dir) =
@@ -20,8 +24,9 @@ let to_command_term =
   let open Cmdliner.Term.Syntax in
   let+ name = Ctl_cli.output_name_arg
   and+ policy = Ctl_cli.policy_flag
-  and+ follow = Ctl_cli.follow_flag in
-  Command.Window (Send_name { name; policy; follow })
+  and+ follow = Ctl_cli.follow_flag
+  and+ target = Ctl_cli.target_any_window_term in
+  Command.Window { cmd = Send_name { name; policy; follow }; target }
 ;;
 
 let to_pair = Ctl_cli.cmd_pair ~name:"to" ~doc:"Send to the named output" to_command_term

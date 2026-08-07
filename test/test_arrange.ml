@@ -153,7 +153,7 @@ let () =
        Printf.printf "window(index=%d, id=%lu): %s\n" i (Wire.id w.obj) (pp_rect w.geom))
     output.wm_stack;
   Focus.focus_output wm seat output;
-  Focus.window_logical wm seat Prev
+  Focus.window_logical wm seat Focused Prev
   |> Result.iter_error (fun e -> Printf.printf "focus prev request failed: %s" e);
   Arrange.retile wm output;
   List.iteri

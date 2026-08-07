@@ -3,10 +3,14 @@ open! Oxbow_ipc
 
 let command_term (dir : Direction.t) =
   let open Cmdliner.Term.Syntax in
-  let+ warp = Ctl_cli.warp_flag in
-  match dir with
-  | Logical dir -> Command.Window (Focus_logical { dir; warp })
-  | Spatial dir -> Command.Window (Focus_spatial { dir; warp })
+  let+ warp = Ctl_cli.warp_flag
+  and+ target = Ctl_cli.target_one_window_term in
+  let (cmd : Command.Window.t) =
+    match dir with
+    | Logical dir -> Focus_logical { dir; warp }
+    | Spatial dir -> Focus_spatial { dir; warp }
+  in
+  Command.Window { cmd; target }
 ;;
 
 let mk_leaf (name, dir) =

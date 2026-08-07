@@ -1,20 +1,10 @@
 open! Oxbow_ipc
 
 let command_term =
-  let open Cmdliner in
   let open Cmdliner.Term.Syntax in
-  let+ wmatch = Ctl_cli.window_match_term
-  and+ cycle =
-    Arg.(
-      value
-      & flag
-      & info
-          [ "cycle" ]
-          ~doc:
-            "If the currently focused window matches the search, focus the next matching \
-             window, if any")
+  let+ target = Ctl_cli.target_one_window_term
   and+ warp = Ctl_cli.warp_flag in
-  Command.Window (Focus_match { wmatch; cycle; warp })
+  Command.Window { cmd = Focus_match { warp }; target }
 ;;
 
 let name = "match"

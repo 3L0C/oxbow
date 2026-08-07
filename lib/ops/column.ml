@@ -2,111 +2,121 @@ open! Oxbow_core
 open! Oxbow_state
 open! Oxbow_layout
 
-let with_focused_column ?(scroll_required = true) (seat : Seat.t) f =
-  match seat.output with
-  | None -> Error Messages.seat_missing_output
-  | Some o when scroll_required && Output.current_layout o <> Scrolling ->
-    Error Messages.not_scrolling
-  | Some o ->
-    (match Output.focused_window o with
-     | None -> Error Messages.no_focused_window
-     | Some w ->
-       let cols =
-         Strip.columns
-           ~consumes:(fun (w : Window.t) -> w.scrolling.consumes)
-           (Output.tiled_windows o)
-       in
-       (match List.find_opt (List.memq w) cols with
-        | None -> Error "focused window is not in the strip"
-        | Some col -> f o w cols col))
-;;
-
-let consume seat =
-  with_focused_column seat
-  @@ fun _o _w cols col ->
-  let rec next_exists = function
-    | c :: _ :: _ when c == col -> true
-    | _ :: rest -> next_exists rest
-    | [] -> false
-  in
-  if not @@ next_exists cols
-  then Error "no next column to consume"
+let with_column_of ?(scroll_required = true) w f =
+  With.output w
+  @@ fun o ->
+  if scroll_required && Output.current_layout o <> Scrolling
+  then Error Messages.not_scrolling
   else (
-    let last = List.rev col |> List.hd in
-    Window.set_consumes last true;
-    Ok None)
-;;
-
-let release seat =
-  with_focused_column seat
-  @@ fun o w _cols col ->
-  match col with
-  | [ _ ] -> Error "focused window is alone in its column"
-  | _ ->
-    let head = List.hd col in
-    let remaining = List.filter (( != ) w) col in
-    let stack' = Ring.hop_left (( == ) w) (( == ) head) o.wm_stack in
-    Output.set_wm_stack o stack';
-    Window.set_consumes w false;
-    (List.rev remaining |> List.hd |> fun w -> Window.set_consumes w false);
-    Ok None
-;;
-
-let move seat (dir : Direction.Logical.t) =
-  with_focused_column seat
-  @@ fun o _w cols col ->
-  match cols with
-  | [ _ ] -> Error "no other column"
-  | _ ->
-    let hop =
-      match dir with
-      | Next -> Ring.hop_right
-      | Prev -> Ring.hop_left
+    let cols =
+      Strip.columns
+        ~consumes:(fun (w : Window.t) -> w.scrolling.consumes)
+        (Output.tiled_windows o)
     in
-    let order = hop (( == ) col) (fun _ -> true) cols |> List.concat in
-    Output.set_wm_stack o @@ Ring.rearrange (fun w -> List.memq w order) order o.wm_stack;
-    Ok None
+    match List.find_opt (List.memq w) cols with
+    | None -> Error "target window is not in the strip"
+    | Some col -> f o cols col)
 ;;
 
-let set_width seat (delta : float Delta.t) ~global =
-  with_focused_column ~scroll_required:false seat
-  @@ fun o _w _cols col ->
-  let apply ~f w = Width_fac.of_float f |> Window.set_scroll_width w in
-  match List.nth_opt col 0 with
-  | None -> Error "not in a column"
-  | Some w ->
-    let f =
-      match delta with
-      | Abs a -> a
-      | Rel r -> Width_fac.to_float w.scrolling.width +. r
+let consume wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    with_column_of w
+    @@ fun _o cols col ->
+    let rec next_exists = function
+      | c :: _ :: _ when c == col -> true
+      | _ :: rest -> next_exists rest
+      | [] -> false
     in
-    if global then List.iter (apply ~f) o.wm_stack else apply ~f w;
-    Ok None
+    if not @@ next_exists cols
+    then Error "no next column to consume"
+    else (
+      let last = List.rev col |> List.hd in
+      Ok (fun () -> Window.set_consumes last true)))
 ;;
 
-let default_width seat =
-  with_focused_column seat
-  @@ fun o _w _cols col ->
-  match List.nth_opt col 0 with
-  | None -> Error "not in a column"
-  | Some w ->
-    Window.set_scroll_width w (Output.to_tag_data o).scrolling.default_width;
-    Ok None
+let release wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    with_column_of w
+    @@ fun o _cols col ->
+    match col with
+    | [ _ ] -> Error "target window is alone in its column"
+    | _ ->
+      let head = List.hd col in
+      let remaining = List.filter (( != ) w) col in
+      let stack' = Ring.hop_left (( == ) w) (( == ) head) o.wm_stack in
+      Ok
+        (fun () ->
+          Output.set_wm_stack o stack';
+          Window.set_consumes w false;
+          List.rev remaining |> List.hd |> fun w -> Window.set_consumes w false))
 ;;
 
-let cycle_width seat =
-  with_focused_column seat
-  @@ fun _o _w _cols col ->
-  match List.nth_opt col 0 with
-  | None -> Error "not in a column"
-  | Some w ->
-    Width_fac.cycle w.scrolling.width |> Window.set_scroll_width w;
-    Ok None
+let move wm seat target (dir : Direction.Logical.t) =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    with_column_of w
+    @@ fun o cols col ->
+    match cols with
+    | [ _ ] -> Error "no other column"
+    | _ ->
+      let hop =
+        match dir with
+        | Next -> Ring.hop_right
+        | Prev -> Ring.hop_left
+      in
+      let order = hop (( == ) col) (fun _ -> true) cols |> List.concat in
+      Ok
+        (fun () ->
+          Output.set_wm_stack o
+          @@ Ring.rearrange (fun w -> List.memq w order) order o.wm_stack))
 ;;
 
-let zoom ?warp wm seat =
-  with_focused_column seat
-  @@ fun o w cols col ->
+let set_width wm seat target (delta : float Delta.t) ~global =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    with_column_of ~scroll_required:false w
+    @@ fun o _cols col ->
+    let apply ~f w = Width_fac.of_float f |> Window.set_scroll_width w in
+    match List.nth_opt col 0 with
+    | None -> Error "not in a column"
+    | Some w ->
+      let f =
+        match delta with
+        | Abs a -> a
+        | Rel r -> Width_fac.to_float w.scrolling.width +. r
+      in
+      Ok (fun () -> if global then List.iter (apply ~f) o.wm_stack else apply ~f w))
+;;
+
+let default_width wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    with_column_of w
+    @@ fun o _cols col ->
+    match List.nth_opt col 0 with
+    | None -> Error "not in a column"
+    | Some w ->
+      Ok
+        (fun () ->
+          Window.set_scroll_width w (Output.to_tag_data o).scrolling.default_width))
+;;
+
+let cycle_width wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
+    with_column_of w
+    @@ fun _o _cols col ->
+    match List.nth_opt col 0 with
+    | None -> Error "not in a column"
+    | Some w ->
+      Ok (fun () -> Width_fac.cycle w.scrolling.width |> Window.set_scroll_width w))
+;;
+
+let zoom ?warp wm seat w =
+  with_column_of w
+  @@ fun o cols col ->
   let warp = Seat.Warp_request.of_override warp in
   match col with
   | _ :: _ :: _ ->
@@ -145,5 +155,5 @@ let zoom ?warp wm seat =
        Focus.focus_window ~force:true ~warp wm seat next_head;
        Ok None
      | _ -> Error "no other column")
-  | [] -> Error "focused window is not in the strip"
+  | [] -> Error "window is not in the strip"
 ;;

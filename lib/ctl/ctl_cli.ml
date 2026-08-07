@@ -15,6 +15,13 @@ let seat =
 
 let socket = Cli.socket_arg
 let enum_of to_string l = List.map (fun x -> to_string x, x) l
+
+let mk_enum name ~doc ~docv l =
+  let open Cmdliner in
+  let doc = Printf.sprintf "%s The value is %s" doc (Arg.doc_alts_enum l) in
+  Arg.(value & opt (some (enum l)) None & info [ name ] ~docv ~doc)
+;;
+
 let spatial_targets = enum_of Direction.Spatial.to_string [ Up; Down; Left; Right ]
 let logical_targets = enum_of Direction.Logical.to_string [ Next; Prev ]
 
@@ -376,14 +383,14 @@ let pattern_flags =
   ({ title; app_id; identifier; label; case } : Pattern.t)
 ;;
 
+let pattern_needed = "give at least one of --title, --app-id, --identifier, or --label"
+
 let pattern_term =
   let open Oxbow_core in
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ p = pattern_flags in
-     if Pattern.is_empty p
-     then Error "give at least one of --title, --app-id, --identifier, or --label"
-     else Ok p
+     if Pattern.is_empty p then Error pattern_needed else Ok p
 ;;
 
 let scope_term =
@@ -431,20 +438,46 @@ let window_match_of source =
 let window_match_term = window_match_of pattern_term
 let window_match_any_term = window_match_of pattern_flags
 
-let all_flag =
-  Arg.(value & flag & info [ "all" ] ~doc:"Act on every match, not only the best match.")
+let select_any_flag =
+  let open Oxbow_core in
+  Arg.(
+    value
+    & vflag
+        Target.Select.Best
+        [ Target.Select.All, info [ "all" ] ~doc:"Act on every match."
+        ; ( Target.Select.Cycle
+          , info [ "cycle" ] ~doc:"Act on the next match after the focused window." )
+        ])
 ;;
 
-let target_window_term =
+let select_one_flag =
+  let open Oxbow_core in
+  Arg.(
+    value
+    & vflag
+        Target.Select.Best
+        [ ( Target.Select.Cycle
+          , info [ "cycle" ] ~doc:"Act on the next match after the focused window." )
+        ])
+;;
+
+let target_window_term select_flag =
   let open Oxbow_core in
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ wmatch = window_match_any_term
-     and+ all = all_flag in
+     and+ (select : Target.Select.t) = select_flag in
      if Pattern.is_empty wmatch.pattern
-     then if all then Error "--all needs a pattern" else Ok (Focused : Target.Window.t)
-     else Ok (Matching { wmatch; all })
+     then (
+       match select with
+       | Best -> Ok Target.Window.Focused
+       | All | Cycle ->
+         Error (Printf.sprintf "--%s needs a pattern" (Target.Select.to_string select)))
+     else Ok (Matching { wmatch; select })
 ;;
+
+let target_any_window_term = target_window_term select_any_flag
+let target_one_window_term = target_window_term select_one_flag
 
 let tags_flag =
   Arg.(
@@ -510,12 +543,6 @@ let move_to_flag =
      | None -> Ok None
      | Some [ x; y ] -> Ok (Some ({ x; y } : Move_to.t))
      | Some _ -> Error "--move-to takes two values: X,Y"
-;;
-
-let mk_enum name ~doc ~docv l =
-  let open Cmdliner in
-  let doc = Printf.sprintf "%s The value is %s" doc (Arg.doc_alts_enum l) in
-  Arg.(value & opt (some (enum l)) None & info [ name ] ~docv ~doc)
 ;;
 
 let bool_state = Cmdliner.Arg.enum [ "enabled", true; "disabled", false ]

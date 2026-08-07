@@ -1,6 +1,15 @@
 (** [enum_of to_string l] keys each value of [l] by its name. *)
 val enum_of : ('a -> string) -> 'a list -> (string * 'a) list
 
+(** [mk_enum name ~doc ~docv l] is the optional flag --[name] accepting an enum of
+    choices defined by [l]. The term appends the choice list to [doc]. *)
+val mk_enum
+  :  string
+  -> doc:string
+  -> docv:string
+  -> (string * 'a) list
+  -> 'a option Cmdliner.Term.t
+
 (** [logical_targets] is each logical direction keyed by its name. *)
 val logical_targets : (string * Oxbow_core.Direction.Logical.t) list
 
@@ -114,9 +123,13 @@ val window_match_term : Oxbow_core.Window_match.t Cmdliner.Term.t
     pattern. Such a match selects every window in the scope. *)
 val window_match_any_term : Oxbow_core.Window_match.t Cmdliner.Term.t
 
-(** [target_window_term] is [window_match_any_term], and [--all] to indiatce a
-    command should apply to all matching windows. *)
-val target_window_term : Oxbow_core.Target.Window.t Cmdliner.Term.t
+(** [target_any_window_term] is [window_match_any_term], and [--all]/[--cycle]
+    to control the match selection. *)
+val target_any_window_term : Oxbow_core.Target.Window.t Cmdliner.Term.t
+
+(** [target_one_window_term] is [window_match_any_term], and [--cycle] to control
+    the match selection. *)
+val target_one_window_term : Oxbow_core.Target.Window.t Cmdliner.Term.t
 
 (** [tags_flag] is the [--tags TAGS] option: indices, ranges, a bitmask, or the
     literal [occupied]. *)
@@ -140,15 +153,6 @@ val resize_to_flag : Oxbow_core.Window_rule.Effects.Resize_to.t option Cmdliner.
     from the top-left of the usable area, or a percentage of it. The term
     rejects a list that does not hold two values. *)
 val move_to_flag : Oxbow_core.Window_rule.Effects.Move_to.t option Cmdliner.Term.t
-
-(** [mk_enum name ~doc ~docv l] is the optional flag --[name] accepting an enum of
-    choices defined by [l]. The term appends the choice list to [doc]. *)
-val mk_enum
-  :  string
-  -> doc:string
-  -> docv:string
-  -> (string * 'a) list
-  -> 'a option Cmdliner.Term.t
 
 (** [bool_state_arg name ~doc ~docv] is the optional flag --[name]. The flag
     takes enabled or disabled. *)

@@ -1,11 +1,27 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
 
+module Select = struct
+  type t =
+    | Best [@name "best"]
+    | All [@name "all"]
+    | Cycle [@name "cycle"]
+  [@@deriving yojson]
+
+  let all = [ Best; All; Cycle ]
+
+  let to_string = function
+    | Best -> "best"
+    | All -> "all"
+    | Cycle -> "cycle"
+  ;;
+end
+
 module Window = struct
   type t =
     | Focused [@name "focused"]
     | Matching of
         { wmatch : Window_match.t
-        ; all : bool
+        ; select : Select.t
         } [@name "matching"]
   [@@deriving yojson]
 end

@@ -22,13 +22,15 @@ val push : Oxbow_state.Window.t list -> Oxbow_state.Output.t -> unit
     {b Effects:} mutates WM state *)
 val focus_window : Oxbow_state.Window.t -> unit
 
-(** [shift seat dir] shifts the focused window one slot in [dir] through the
-    tile stack, wrapping at the head and tail. Is [Error msg] when [seat] has no
-    output, no window is focused, or no other window exists.
+(** [shift wm seat target dir] shifts the window [target] one slot in [dir]
+    through the tile stack, wrapping at the head and tail. Is [Error msg] when
+    the [target] window has no output, or no other window exists.
 
     {b Effects:} mutates WM state *)
 val shift
-  :  Oxbow_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 

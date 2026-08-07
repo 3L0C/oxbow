@@ -33,44 +33,43 @@ val focus_window
     {b Effects:} mutates WM state *)
 val refresh : Oxbow_state.Wm.t -> Oxbow_state.Output.t -> unit
 
-(** [window_logical ?warp wm seat dir] focuses the window in logical direction [dir]
-    The payload [warp] overrides the warp on focus configuration. Is [Error msg]
-    when the focused window is fullscreen, [seat] has no output, or there is no
-    window to focus.
+(** [window_logical ?warp wm seat target dir] focuses the window in logical
+    direction [dir] of the window [target]. [warp] overrides the warp on focus
+    configuration. Is [Error msg] when the target window is fullscreen, window
+    has no output, or there is no window to focus.
 
     {b Effects:} mutates WM state *)
 val window_logical
   :  ?warp:bool
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [window_spatial ?warp wm seat dir] focuses the window in spatial direction [dir]
-    The payload [warp] overrides the warp on focus configuration. Is [Error msg]
-    when the focused window is fullscreen, [seat] has no output, or there is no
-    window to focus.
+(** [window_spatial ?warp wm seat target dir] focuses the window in spatial
+    direction [dir] of the window [target]. [warp] overrides the warp on focus
+    configuration. Is [Error msg] when the target window is fullscreen, window
+    has no output, or there is no window to focus.
 
     {b Effects:} mutates WM state *)
 val window_spatial
   :  ?warp:bool
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Direction.Spatial.t
   -> (Yojson.Safe.t option, string) result
 
-(** [window_match ?warp ~cycle wm seat wmatch] focuses the first (or, next when
-    [cycle] is [true]) window matching [wmatch]. The payload [warp] overrides the
-    warp on focus configuration. Is [Error msg] when [wmatch]'s regex fails to
-    compile or no window matches.
+(** [window_match ?warp wm seat target] focuses the window [target]. [warp]
+    overrides the warp on focus configuration.
 
     {b Effects:} mutates WM state *)
 val window_match
   :  ?warp:bool
-  -> cycle:bool
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Window_match.t
+  -> Oxbow_core.Target.Window.t
   -> (Yojson.Safe.t option, string) result
 
 (** [focus_output ?warp wm seat output] focuses [output] on [seat].

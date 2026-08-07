@@ -3,9 +3,12 @@ open! Oxbow_ipc
 let command_term dir =
   let open Cmdliner.Term.Syntax in
   let+ occupied = Ctl_cli.occupied_flag
-  and+ follow = Ctl_cli.follow_flag in
-  Command.Window
-    (if occupied then Tag_shift_occupied { dir; follow } else Tag_shift { dir; follow })
+  and+ follow = Ctl_cli.follow_flag
+  and+ target = Ctl_cli.target_any_window_term in
+  let (cmd : Command.Window.t) =
+    if occupied then Tag_shift_occupied { dir; follow } else Tag_shift { dir; follow }
+  in
+  Command.Window { cmd; target }
 ;;
 
 let mk_leaf (name, dir) =

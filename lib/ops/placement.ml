@@ -2,14 +2,15 @@ open! Oxbow_core
 open! Oxbow_state
 open! Oxbow_ipc
 
-let zoom ?warp wm (seat : Seat.t) =
-  With.focused_output seat
-  @@ fun o ->
-  match Output.current_layout o with
-  | _ when o.overview.enabled -> Error "cannot zoom from overview"
-  | Floating -> Error "cannot zoom in the floating layout"
-  | Scrolling -> Column.zoom ?warp wm seat
-  | Tiling -> Tiling.zoom ?warp wm seat
+let zoom ?warp wm seat target =
+  Result.bind (Targets.resolve_one_window wm seat target) (fun w ->
+    With.output w
+    @@ fun o ->
+    match Output.current_layout o with
+    | _ when o.overview.enabled -> Error "cannot zoom from overview"
+    | Floating -> Error "cannot zoom in the floating layout"
+    | Scrolling -> Column.zoom ?warp wm seat w
+    | Tiling -> Tiling.zoom ?warp wm seat w)
 ;;
 
 let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
@@ -50,20 +51,25 @@ let send_to ~(src : Output.t) ~(dst : Output.t) window policy =
 ;;
 
 let send_result ~src window policy ~err = function
-  | Some o when o != src ->
-    send_to ~src ~dst:o window policy;
-    Ok None
+  | Some o when o != src -> Ok (fun () -> send_to ~src ~dst:o window policy)
   | _ -> Error err
 ;;
 
-let send_window_to_logical (wm : Wm.t) window dir policy =
+let plan_send_window_to_logical (wm : Wm.t) window dir policy =
   With.output window
   @@ fun current ->
   Output.resolve_output_logical ~dir current wm.outputs
   |> send_result ~src:current window policy ~err:Messages.no_other_output
 ;;
 
-let send_window_to_spatial (wm : Wm.t) window dir policy =
+let send_window_to_logical wm window dir policy =
+  Result.map (fun commit ->
+    commit ();
+    None)
+  @@ plan_send_window_to_logical wm window dir policy
+;;
+
+let plan_send_window_to_spatial (wm : Wm.t) window dir policy =
   With.output window
   @@ fun current ->
   let from = Output.to_vector current in
@@ -75,11 +81,18 @@ let send_window_to_spatial (wm : Wm.t) window dir policy =
        ~err:(Printf.sprintf "no output %s" (Direction.Spatial.to_string dir))
 ;;
 
-let send_window_to_name (wm : Wm.t) window name policy =
+let send_window_to_spatial wm window dir policy =
+  Result.map (fun commit ->
+    commit ();
+    None)
+  @@ plan_send_window_to_spatial wm window dir policy
+;;
+
+let plan_send_window_to_name (wm : Wm.t) window name policy =
   With.output window
   @@ fun current ->
   if Output.matches_name name current
-  then Ok None
+  then Ok ignore
   else
     Output.resolve_output_name name wm.outputs
     |> send_result
@@ -89,48 +102,64 @@ let send_window_to_name (wm : Wm.t) window name policy =
          ~err:(Printf.sprintf "no output named %S" name)
 ;;
 
-let follow_focus wm seat ~follow send =
-  With.focused_window seat
-  @@ fun _o w ->
-  match send w with
-  | Ok _ as result when follow ->
-    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
-    result
-  | result -> result
+let send_window_to_name wm window name policy =
+  Result.map (fun commit ->
+    commit ();
+    None)
+  @@ plan_send_window_to_name wm window name policy
 ;;
 
-let send_to_logical wm seat dir policy ~follow =
-  follow_focus wm seat ~follow (fun w -> send_window_to_logical wm w dir policy)
-;;
-
-let send_to_spatial wm seat dir policy ~follow =
-  follow_focus wm seat ~follow (fun w -> send_window_to_spatial wm w dir policy)
-;;
-
-let send_to_name wm seat name policy ~follow =
-  follow_focus wm seat ~follow (fun w -> send_window_to_name wm w name policy)
-;;
-
-let toggle_floating seat =
-  With.focused_window seat
-  @@ fun o w ->
-  if Output.current_layout o = Floating
-  then Error "cannot toggle floating from the floating layout"
-  else if o.overview.enabled
-  then Error "cannot toggle floating from overview"
-  else (
-    match w.presentation with
-    | Fullscreen _ -> Error "cannot toggle float while window is fullscreen"
-    | Maximized _ -> Error "cannot toggle float while window is maximized"
-    | Floating when w.is_fixed -> Error "cannot tile a fixed window"
-    | Tiled ->
-      Window.float w;
-      Schedule.manage ();
+let follow_focus wm seat ~follow ~send =
+  Result.bind (send ()) (function
+    | w :: _ when follow ->
+      Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
       Ok None
-    | Floating ->
-      Window.tile w;
-      Schedule.manage ();
-      Ok None)
+    | _ -> Ok None)
+;;
+
+let send_to_logical wm seat target dir policy ~follow =
+  follow_focus wm seat ~follow ~send:(fun () ->
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      plan_send_window_to_logical wm w dir policy))
+;;
+
+let send_to_spatial wm seat target dir policy ~follow =
+  follow_focus wm seat ~follow ~send:(fun () ->
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      plan_send_window_to_spatial wm w dir policy))
+;;
+
+let send_to_name wm seat target name policy ~follow =
+  follow_focus wm seat ~follow ~send:(fun () ->
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      plan_send_window_to_name wm w name policy))
+;;
+
+let toggle_floating wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    match w.output with
+    | None -> Error Messages.window_missing_output
+    | Some o ->
+      if Output.current_layout o = Floating
+      then Error "cannot toggle floating from the floating layout"
+      else if o.overview.enabled
+      then Error "cannot toggle floating from overview"
+      else (
+        match w.presentation with
+        | Fullscreen _ -> Error "cannot toggle float while window is fullscreen"
+        | Maximized _ -> Error "cannot toggle float while window is maximized"
+        | Floating when w.is_fixed -> Error "cannot tile a fixed window"
+        | Tiled ->
+          Ok
+            (fun () ->
+              Window.float w;
+              Schedule.manage ())
+        | Floating ->
+          Ok
+            (fun () ->
+              Window.tile w;
+              Schedule.manage ())))
 ;;
 
 let maximize (wm : Wm.t) window =
@@ -179,48 +208,66 @@ let exit_fullscreen (window : Window.t) =
 ;;
 
 let close wm seat target =
-  match
-    Targets.transact_windows wm seat target ~plan:(fun w ->
-      Ok (fun () -> Window.set_close_pending w true))
-  with
-  | Error _ as e -> e
-  | Ok _ -> Ok None
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    Ok (fun () -> Window.set_close_pending w true))
 ;;
 
-let unless_fullscreen ~verb w act =
+let unless_fullscreen ~verb w f =
   if Window.is_fullscreen w
   then Error (Printf.sprintf "cannot %s a fullscreen window" verb)
-  else (
-    act ();
-    Schedule.manage ();
-    Ok None)
+  else
+    Ok
+      (fun () ->
+        f ();
+        Schedule.manage ())
 ;;
 
-let move_window_to ~x ~y w =
+let plan_move_window_to ~x ~y w =
   unless_fullscreen ~verb:"move" w @@ fun () -> Window.move_to w ~x ~y
 ;;
 
-let move_to ~x ~y seat = With.focused_window seat @@ fun _o w -> move_window_to ~x ~y w
-
-let move_spatial seat dir by =
-  With.focused_window seat
-  @@ fun _o w ->
-  unless_fullscreen ~verb:"move" w @@ fun () -> Window.move_spatial w dir by
+let move_window_to ~x ~y w =
+  Result.map (fun commit ->
+    commit ();
+    None)
+  @@ plan_move_window_to ~x ~y w
 ;;
 
-let resize_window_to ~width ~height window =
+let move_to ~x ~y wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    plan_move_window_to ~x ~y w)
+;;
+
+let move_spatial wm seat target dir by =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    unless_fullscreen ~verb:"move" w @@ fun () -> Window.move_spatial w dir by)
+;;
+
+let plan_resize_window_to ~width ~height window =
   unless_fullscreen ~verb:"resize" window
   @@ fun () -> Window.resize_to window ~width ~height
 ;;
 
-let resize_to ~width ~height seat =
-  With.focused_window seat @@ fun _o w -> resize_window_to ~width ~height w
+let resize_window_to ~width ~height window =
+  Result.map (fun commit ->
+    commit ();
+    None)
+  @@ plan_resize_window_to ~width ~height window
 ;;
 
-let resize_spatial seat dir by =
-  With.focused_window seat
-  @@ fun _o w ->
-  unless_fullscreen ~verb:"resize" w @@ fun () -> Window.resize_spatial w dir by
+let resize_to ~width ~height wm seat target =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    plan_resize_window_to ~width ~height w)
+;;
+
+let resize_spatial wm seat target dir by =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    unless_fullscreen ~verb:"resize" w @@ fun () -> Window.resize_spatial w dir by)
 ;;
 
 let swap_outputs
@@ -298,21 +345,19 @@ let swap_outputs
     Ok None
 ;;
 
-let set_sticky seat scope =
-  With.focused_window seat
-  @@ fun _o w ->
-  Window.set_sticky w scope;
-  Ok None
+let set_sticky wm seat target scope =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    Ok (fun () -> Window.set_sticky w scope))
 ;;
 
-let toggle_sticky seat toggle =
-  With.focused_window seat
-  @@ fun _o w ->
-  let scope =
-    match w.sticky with
-    | Off -> Sticky.of_toggle toggle
-    | Occupied | All -> Off
-  in
-  Window.set_sticky w scope;
-  Ok None
+let toggle_sticky wm seat target toggle =
+  Result.map (fun _ -> None)
+  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
+    let scope =
+      match w.sticky with
+      | Off -> Sticky.of_toggle toggle
+      | Occupied | All -> Off
+    in
+    Ok (fun () -> Window.set_sticky w scope))
 ;;

@@ -34,9 +34,9 @@ let arrange (wm : Wm.t) output =
         d_xs)
 ;;
 
-let zoom ?warp wm seat =
-  With.focused_window seat
-  @@ fun o w ->
+let zoom ?warp wm seat w =
+  With.output w
+  @@ fun o ->
   if Output.current_layout o <> Tiling
   then Error "cannot zoom outside the tiling layout"
   else if w.presentation <> Tiled

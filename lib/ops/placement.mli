@@ -1,14 +1,15 @@
-(** [zoom ?warp wm seat] promotes the focused window to the top of the stack if
-    it is not already the master. If it is the master, promote and swap with the
-    next window. The payload [warp] overrides the warp on focus configuration.
-    Is [Error msg] when [seat] has no output or focused window, the focused
-    window is not tiled, or no other tiled window exists.
+(** [zoom ?warp wm seat target] promotes the window [target] to the top of the
+    stack if it is not already the master. If it is the master, promote and swap
+    with the next window. [warp] overrides the warp on focus configuration. Is
+    [Error msg] when window has no output, is not tiled, or no other tiled
+    window exists.
 
     {b Effects:} mutates WM state *)
 val zoom
   :  ?warp:bool
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move_window ?policy window output] removes [window] from its current
@@ -34,9 +35,9 @@ val send_window_to_logical
   -> Oxbow_core.Tag.Policy.t
   -> (Yojson.Safe.t option, string) result
 
-(** [send_window_to_spatial wm window dir policy] moves [window] in [dir].
-    [window] will be assigned tags according to [policy]. Is [Error msg] when
-    [window] has no output, or no output exists in [dir].
+(** [send_window_to_spatial wm window dir policy] moves the window [window] in
+    [dir]. [window] will be assigned tags according to [policy]. Is [Error msg]
+    when [window] has no output, or no output exists in [dir].
 
     {b Effects:} mutates WM state *)
 val send_window_to_spatial
@@ -46,9 +47,10 @@ val send_window_to_spatial
   -> Oxbow_core.Tag.Policy.t
   -> (Yojson.Safe.t option, string) result
 
-(** [send_window_to_name wm window name policy] moves [window] to the output
-    matching [name]. [window] will be assigned tags according to [policy]. Is
-    [Error msg] when [window] has no output, or no output named [name] exists.
+(** [send_window_to_name wm window name policy] moves the window [window] to the
+    output matching [name]. [window] will be assigned tags according to
+    [policy]. Is [Error msg] when [window] has no output, or no output named
+    [name] exists.
 
     {b Effects:} mutates WM state *)
 val send_window_to_name
@@ -58,54 +60,62 @@ val send_window_to_name
   -> Oxbow_core.Tag.Policy.t
   -> (Yojson.Safe.t option, string) result
 
-(** [send_to_logical wm seat dir policy ~follow] sends [seat]'s focused window
-    to the output in logical direction [dir], resolving its tags per [policy].
-    When [follow] is [true] focus follows the moved window. Is [Error msg] when
-    [window] has no output, or no other output exists.
+(** [send_to_logical wm seat target dir policy ~follow] sends the [target]
+    windows to the output in logical direction [dir], resolving its tags per
+    [policy]. When [follow] is [true] focus follows the moved window. Is
+    [Error msg] when any [target] window has no output, or no other output exists.
 
     {b Effects:} mutates WM state *)
 val send_to_logical
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Direction.Logical.t
   -> Oxbow_core.Tag.Policy.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [send_to_spatial wm seat dir policy ~follow] sends [seat]'s focused window
-    to the output in spatial direction [dir], resolving its tags per [policy].
-    When [follow] is [true] focus follows the moved window. Is [Error msg] when
-    [window] has no output, or no output exists in [dir].
+(** [send_to_spatial wm seat target dir policy ~follow] sends the [target]
+    windows to the output in spatial direction [dir], resolving its tags per
+    [policy]. When [follow] is [true] focus follows the moved window. Is
+    [Error msg] when any [target] window has no output, or no output exists in
+    [dir].
 
     {b Effects:} mutates WM state *)
 val send_to_spatial
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Direction.Spatial.t
   -> Oxbow_core.Tag.Policy.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [send_to_name wm seat name policy ~follow] sends [seat]'s focused window to
-    the output named [name], resolving its tags per [policy]. When [follow] is
-    [true] focus follows the moved window. Is [Error msg] when [window] has no
-    output, or no output named [name] exists.
+(** [send_to_name wm seat target name policy ~follow] sends the [target] windows
+    to the output named [name], resolving its tags per [policy]. When [follow]
+    is [true] focus follows the moved window. Is [Error msg] when any [target]
+    window has no output, or no output named [name] exists.
 
     {b Effects:} mutates WM state *)
 val send_to_name
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> string
   -> Oxbow_core.Tag.Policy.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [toggle_floating seat] toggles [seat]'s focused window between tiled and
-    floating. Is [Error msg] when [seat] has no focused window, window has no
-    output, or when window is fullscreen, maximized, or fixed.
+(** [toggle_floating wm seat target] toggles the [target] windows between tiled
+    and floating. Is [Error msg] when a target window has no output, or when
+    window is fullscreen, maximized, or fixed.
 
     {b Effects:} mutates WM state *)
-val toggle_floating : Oxbow_state.Seat.t -> (Yojson.Safe.t option, string) result
+val toggle_floating
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
+  -> (Yojson.Safe.t option, string) result
 
 (** [maximize wm window] ends any seat operation and maximizes [window].
 
@@ -136,8 +146,7 @@ val fullscreen
     {b Effects:} mutates WM state *)
 val exit_fullscreen : Oxbow_state.Window.t -> unit
 
-(** [close wm seat target] requests close on every window of [target]. An absent
-    target is the focused window. *)
+(** [close wm seat target] requests close on the [target] windows. *)
 val close
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
@@ -154,22 +163,26 @@ val move_window_to
   -> Oxbow_state.Window.t
   -> (Yojson.Safe.t option, string) result
 
-(** [move_to ~x ~y seat] moves [seat]'s focused window to the extents [x] and
-    [y]. Is [Error msg] when the window is fullscreen.
+(** [move_to ~x ~y wm seat target] moves the [target] windows to the extents [x]
+    and [y]. Is [Error msg] when the any [target] window is fullscreen.
 
     {b Effects:} mutates WM state *)
 val move_to
   :  x:Oxbow_core.Extent.t
   -> y:Oxbow_core.Extent.t
+  -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> (Yojson.Safe.t option, string) result
 
-(** [move_spatial seat dir by] moves [seat]'s focused window in [dir] by
-    [by]. Is [Error msg] when the window is fullscreen.
+(** [move_spatial wm seat target dir by] moves the [target] windows in [dir] by
+    [by]. Is [Error msg] when the any [target] window is fullscreen.
 
     {b Effects:} mutates WM state *)
 val move_spatial
-  :  Oxbow_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Direction.Spatial.t
   -> Oxbow_core.Extent.t
   -> (Yojson.Safe.t option, string) result
@@ -184,22 +197,27 @@ val resize_window_to
   -> Oxbow_state.Window.t
   -> (Yojson.Safe.t option, string) result
 
-(** [resize_to ~width ~height seat] resizes [seat]'s focused window to the
-    extents [width] and [height]. Is [Error msg] when the window is fullscreen.
+(** [resize_to ~width ~height wm seat target] resizes the [target] windows to
+    the extents [width] and [height]. Is [Error msg] when any [target] window is
+    fullscreen.
 
     {b Effects:} mutates WM state *)
 val resize_to
   :  width:Oxbow_core.Extent.t
   -> height:Oxbow_core.Extent.t
+  -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> (Yojson.Safe.t option, string) result
 
-(** [resize_spatial seat dir by] resizes [seat]'s focused window in [dir] by
-    [by]. Is [Error msg] when the window is fullscreen.
+(** [resize_spatial wm seat target dir by] resizes the [target] windows in [dir]
+    by [by]. Is [Error msg] when any [target] window is fullscreen.
 
     {b Effects:} mutates WM state *)
 val resize_spatial
-  :  Oxbow_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Direction.Spatial.t
   -> Oxbow_core.Extent.t
   -> (Yojson.Safe.t option, string) result
@@ -226,21 +244,25 @@ val swap_outputs
   -> [< `Tags | `All | `Visible ]
   -> (Yojson.Safe.t option, string) result
 
-(** [set_sticky seat scope] sets the sticky scope of the focused window on
-    [seat]. Is [Error msg] when [seat] has no focused window.
+(** [set_sticky wm seat target scope] sets the sticky scope of the [target]
+    windows. Is [Error msg] when no windows match [target].
 
     {b Effects:} mutates WM state *)
 val set_sticky
-  :  Oxbow_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Sticky.t
   -> (Yojson.Safe.t option, string) result
 
-(** [toggle_sticky seat toggle] sets the focused window to [toggle] when it is
-    [Off], and [Off] otherwise. Is [Error msg] when [seat] has no focused
-    window.
+(** [toggle_sticky wm seat target toggle] sets the [target] windows to [toggle]
+    when it is [Off], and [Off] otherwise. Is [Error msg] when no windows match
+    [target].
 
     {b Effects:} mutates WM state *)
 val toggle_sticky
-  :  Oxbow_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Sticky.Toggle.t
   -> (Yojson.Safe.t option, string) result

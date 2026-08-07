@@ -42,7 +42,7 @@ val view_cycle_occupied
   -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
-(** [tag_window wm seat ~tags ~follow ~target] assigns [tags] according to
+(** [tag_window wm seat target ~tags ~follow] assigns [tags] according to
     [target]. When [follow] is [true] focus follows the moved window. Is
     [Error msg] when [target] is unresolved, the set resolves empty, or [tags]
     is [Occupied] and the window has no output.
@@ -51,55 +51,47 @@ val view_cycle_occupied
 val tag_window
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> tags:Oxbow_core.Tag.Arg.t
   -> follow:bool
-  -> target:Oxbow_core.Target.Window.t
   -> (Yojson.Safe.t option, string) result
 
-(** [toggle_window_tags seat tags] toggles [tags] on [seat]'s focused window.
-    Is [Error msg] when the toggle would leave the window on no tags.
+(** [toggle_window_tags wm seat target tags] toggles [tags] on the [target]
+    windows. Is [Error msg] when the toggle would leave any [target] window with
+    no tags.
 
     {b Effects:} mutates WM state *)
 val toggle_window_tags
-  :  Oxbow_state.Seat.t
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Tag.Set.t
   -> (Yojson.Safe.t option, string) result
 
-(** [tag_window_match wm seat wmatch arg] sets the tags resolved from [arg] on
-    every window matching [wmatch]; [occupied] resolves against each window's
-    own output, skipping windows with none. Is [Error msg] when [wmatch]'s regex
-    fails to compile, no window matches, or a concrete set is empty.
-
-    {b Effects:} mutates WM state *)
-val tag_window_match
-  :  Oxbow_state.Wm.t
-  -> Oxbow_state.Seat.t
-  -> Oxbow_core.Window_match.t
-  -> Oxbow_core.Tag.Arg.t
-  -> (Yojson.Safe.t option, string) result
-
-(** [tag_shift_window wm seat dir ~follow] advances the focused window's lowest tag
-    one position in [dir], wrapping. When [follow] is [true] focus follows the
-    moved window. Is [Error msg] when [seat] has no focused window or the window
-    has no tags.
+(** [tag_shift_window wm seat target dir ~follow] advances the [target] windows
+    lowest tag one position in [dir], wrapping. When [follow] is [true] focus
+    follows the moved window. Is [Error msg] when any [target] window has no
+    tags.
 
     {b Effects:} mutates WM state *)
 val tag_shift_window
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Direction.Logical.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
 
-(** [tag_shift_window_occupied wm seat dir ~follow] moves the focused window to the
-    next occupied tag in [dir], wrapping. When [follow] is true focus follows
-    the moved window. Is [Error msg] when [seat] has no focused window, the
-    window has no output, or the output has no occupied tags.
+(** [tag_shift_window_occupied wm seat target dir ~follow] moves the [target]
+    windows to the next occupied tag in [dir], wrapping. When [follow] is true
+    focus follows the moved window. Is [Error msg] when any [target] window has
+    no output, or the output has no occupied tags.
 
     {b Effects:} mutates WM state *)
 val tag_shift_window_occupied
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Window.t
   -> Oxbow_core.Direction.Logical.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
