@@ -34,6 +34,11 @@
  (libraries harness fake_river oxbow.ipc yojson))
 
 (test
+ (name test_scenario_scrolling)
+ (modules test_scenario_scrolling)
+ (libraries harness fake_river oxbow.ipc yojson))
+
+(test
  (name test_scenario_ctl)
  (modules test_scenario_ctl)
  (libraries harness fake_river oxbow.ipc yojson))

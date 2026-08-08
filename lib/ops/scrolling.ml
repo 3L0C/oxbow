@@ -41,7 +41,7 @@ let arrange (wm : Wm.t) (output : Output.t) =
           (match List.find_opt (fun (w, _) -> w == f) placed with
            | Some (_, g) -> Some (g.x - area.x, g.w)
            | None -> nearest_col ())
-        | _ -> nearest_col ()
+        | _ -> None
       in
       let offset =
         match col with
