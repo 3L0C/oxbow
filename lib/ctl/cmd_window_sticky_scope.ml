@@ -4,7 +4,7 @@ open! Oxbow_ipc
 let command_term scope =
   let open Cmdliner.Term.Syntax in
   let+ target = Ctl_cli.target_any_window_term in
-  Command.Window { cmd = Set_sticky scope; target }
+  Command.Window (Set_sticky { scope; target })
 ;;
 
 let scope_targets = Ctl_cli.enum_of Sticky.to_string Sticky.all
@@ -12,7 +12,7 @@ let scope_targets = Ctl_cli.enum_of Sticky.to_string Sticky.all
 let mk_leaf (name, policy) =
   Ctl_cli.cmd_pair
     ~name
-    ~doc:(Printf.sprintf "Set the focused window sticky scope to %s" name)
+    ~doc:(Printf.sprintf "Set the target window(s) sticky scope to %s" name)
   @@ command_term policy
 ;;
 

@@ -6,15 +6,17 @@ let command_term dir =
   and+ follow = Ctl_cli.follow_flag
   and+ target = Ctl_cli.target_any_window_term in
   let (cmd : Command.Window.t) =
-    if occupied then Tag_shift_occupied { dir; follow } else Tag_shift { dir; follow }
+    if occupied
+    then Tag_shift_occupied { dir; follow; target }
+    else Tag_shift { dir; follow; target }
   in
-  Command.Window { cmd; target }
+  Command.Window cmd
 ;;
 
 let mk_leaf (name, dir) =
   Ctl_cli.cmd_pair
     ~name
-    ~doc:(Printf.sprintf "Shift the focused window to the %s tag" name)
+    ~doc:(Printf.sprintf "Shift the target window to the %s tag" name)
   @@ command_term dir
 ;;
 

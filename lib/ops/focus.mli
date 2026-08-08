@@ -43,7 +43,7 @@ val window_logical
   :  ?warp:bool
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
@@ -57,7 +57,7 @@ val window_spatial
   :  ?warp:bool
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> Oxbow_core.Direction.Spatial.t
   -> (Yojson.Safe.t option, string) result
 
@@ -69,7 +69,7 @@ val window_match
   :  ?warp:bool
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> (Yojson.Safe.t option, string) result
 
 (** [focus_output ?warp wm seat output] focuses [output] on [seat].
@@ -84,6 +84,17 @@ val focus_output
   -> Oxbow_state.Seat.t
   -> Oxbow_state.Output.t
   -> unit
+
+(** [output_match ?warp wm seat target] focuses the output [target]. [warp]
+    overrides the warp on focus configuration.
+
+    {b Effects:} mutates WM state *)
+val output_match
+  :  ?warp:bool
+  -> Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Target.Output.One.t
+  -> (Yojson.Safe.t option, string) result
 
 (** [output_logical ?warp wm seat dir] focuses the output in logical direction
     [dir]. The payload [warp] overrides the warp on focus configuration. Is
@@ -107,18 +118,6 @@ val output_spatial
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
   -> Oxbow_core.Direction.Spatial.t
-  -> (Yojson.Safe.t option, string) result
-
-(** [output_name ?warp wm seat name] focuses the output named [name]. The
-    payload [warp] overrides the warp on focus configuration. Is [Error msg]
-    when no output is named [name].
-
-    {b Effects:} mutates WM state *)
-val output_name
-  :  ?warp:bool
-  -> Oxbow_state.Wm.t
-  -> Oxbow_state.Seat.t
-  -> string
   -> (Yojson.Safe.t option, string) result
 
 (** [remove_window wm window] removes [window] from [wm]'s management.

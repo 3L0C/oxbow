@@ -14,7 +14,7 @@ val handle
 val toggle_maximize
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_fake_fullscreen wm seat target] toggles fake fullscreen on the
@@ -25,7 +25,7 @@ val toggle_maximize
 val toggle_fake_fullscreen
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> (Yojson.Safe.t option, string) result
 
 (** [toggle_fullscreen wm seat target] toggles fullscreen on the [target]
@@ -35,7 +35,7 @@ val toggle_fake_fullscreen
 val toggle_fullscreen
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move_interactive wm seat] begins a pointer move of [seat]'s hovered window.

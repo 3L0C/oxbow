@@ -7,10 +7,10 @@ let command_term (dir : Direction.t) =
   and+ target = Ctl_cli.target_one_window_term in
   let (cmd : Command.Window.t) =
     match dir with
-    | Logical dir -> Focus_logical { dir; warp }
-    | Spatial dir -> Focus_spatial { dir; warp }
+    | Logical dir -> Focus_logical { dir; warp; target }
+    | Spatial dir -> Focus_spatial { dir; warp; target }
   in
-  Command.Window { cmd; target }
+  Command.Window cmd
 ;;
 
 let mk_leaf (name, dir) =

@@ -14,16 +14,14 @@ let install_defaults (wm : Wm.t) seat =
     Xkbcommon.Keysym.
       [ (* mods, keysym,  command *)
         modkey, K_Return, Command.Spawn "foot"
-      ; modkey, K_q, Command.Window { cmd = Close; target = Focused }
+      ; modkey, K_q, Command.Window (Close (One Focused))
       ; modkey, K_Q, Command.Session Exit
       ; ( modkey
         , K_j
-        , Command.Window
-            { cmd = Focus_logical { dir = Next; warp = None }; target = Focused } )
+        , Command.Window (Focus_logical { dir = Next; warp = None; target = Focused }) )
       ; ( modkey
         , K_k
-        , Command.Window
-            { cmd = Focus_logical { dir = Prev; warp = None }; target = Focused } )
+        , Command.Window (Focus_logical { dir = Prev; warp = None; target = Focused }) )
       ; modkey, K_l, Command.Tag (View_cycle_occupied Next)
       ; modkey, K_h, Command.Tag (View_cycle_occupied Prev)
       ; modkey, K_Tab, Command.Tag (View_cycle Next)
@@ -31,10 +29,10 @@ let install_defaults (wm : Wm.t) seat =
       ; modkey, K_t, Command.Layout (Select { layout = Tiling; scope = Focused })
       ; modkey, K_s, Command.Layout (Select { layout = Scrolling; scope = Focused })
       ; modkey, K_f, Command.Layout (Select { layout = Floating; scope = Focused })
-      ; modkey, K_v, Command.Window { cmd = Toggle_fullscreen; target = Focused }
-      ; modkey, K_space, Command.Window { cmd = Zoom { warp = None }; target = Focused }
-      ; modkey, K_J, Command.Window { cmd = Shift Next; target = Focused }
-      ; modkey, K_K, Command.Window { cmd = Shift Prev; target = Focused }
+      ; modkey, K_v, Command.Window (Toggle_fullscreen Focused)
+      ; modkey, K_space, Command.Window (Zoom { warp = None; target = Focused })
+      ; modkey, K_J, Command.Window (Shift { dir = Next; target = Focused })
+      ; modkey, K_K, Command.Window (Shift { dir = Prev; target = Focused })
       ; modkey, K_y, Command.Layout (Tiling (Select { scheme = Even; scope = Focused }))
       ; ( modkey
         , K_i
@@ -48,20 +46,22 @@ let install_defaults (wm : Wm.t) seat =
       ; ( modkey
         , K_c
         , Command.Layout (Scrolling (Select { policy = Visible; scope = Focused })) )
-      ; modkey, K_comma, Command.Window { cmd = Column_consume; target = Focused }
-      ; modkey, K_period, Command.Window { cmd = Column_release; target = Focused }
+      ; modkey, K_comma, Command.Window (Column_consume Focused)
+      ; modkey, K_period, Command.Window (Column_release Focused)
       ; ( Int32.(logor modkey ctrl)
         , K_l
-        , Command.Window { cmd = Column_move Next; target = Focused } )
+        , Command.Window (Column_move { dir = Next; target = Focused }) )
       ; ( Int32.(logor modkey ctrl)
         , K_h
-        , Command.Window { cmd = Column_move Prev; target = Focused } )
+        , Command.Window (Column_move { dir = Prev; target = Focused }) )
       ; ( modkey
         , K_minus
-        , Command.Window { cmd = Column_width (Rel (-0.1)); target = Focused } )
-      ; modkey, K_equal, Command.Window { cmd = Column_width (Rel 0.1); target = Focused }
-      ; modkey, K_r, Command.Window { cmd = Column_width_cycle; target = Focused }
-      ; modkey, K_R, Command.Window { cmd = Column_width_default; target = Focused }
+        , Command.Window (Column_width { delta = Rel (-0.1); target = Focused }) )
+      ; ( modkey
+        , K_equal
+        , Command.Window (Column_width { delta = Rel 0.1; target = Focused }) )
+      ; modkey, K_r, Command.Window (Column_width_cycle Focused)
+      ; modkey, K_R, Command.Window (Column_width_default Focused)
       ]
   in
   let num_keys = Xkbcommon.Keysym.[ K_1; K_2; K_3; K_4; K_5; K_6; K_7; K_8; K_9 ] in
@@ -75,8 +75,8 @@ let install_defaults (wm : Wm.t) seat =
   let pointer_bindings =
     Pointer_button.
       [ (* mods, button,  command *)
-        modkey, Btn_left, Command.Window { cmd = Move_drag; target = Focused }
-      ; modkey, Btn_right, Command.Window { cmd = Resize_drag; target = Focused }
+        modkey, Btn_left, Command.Window Move_drag
+      ; modkey, Btn_right, Command.Window Resize_drag
       ]
   in
   List.iter (fun (m, k, a) -> ignore @@ Seat.bind wm seat m (Keysym k) a) xkb_bindings;

@@ -36,6 +36,7 @@ module Output : sig
   type t =
     { name : string
     ; labels : string list
+    ; focused : bool
     }
 
   val t_of_yojson : Yojson.Safe.t -> t

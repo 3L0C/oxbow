@@ -3,9 +3,9 @@ open! Oxbow_ipc
 let command_term =
   let open Cmdliner.Term.Syntax in
   let+ target = Ctl_cli.target_any_window_term in
-  Command.Window { cmd = Toggle_swallow; target }
+  Command.Window (Toggle_swallow target)
 ;;
 
 let name = "swallow"
-let doc = "Swallow the terminal under the focused window, or release it"
+let doc = "Swallow the terminal under the target window, or release it"
 let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc command_term

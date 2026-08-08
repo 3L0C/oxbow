@@ -6,7 +6,7 @@
 val consume
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> (Yojson.Safe.t option, string) result
 
 (** [release wm seat target] expels the [target] window into its own column,
@@ -17,7 +17,7 @@ val consume
 val release
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move wm seat target dir] hops the column of the [target] window over the
@@ -28,7 +28,7 @@ val release
 val move
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 
@@ -41,7 +41,7 @@ val move
 val set_width
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> float Oxbow_core.Delta.t
   -> global:bool
   -> (Yojson.Safe.t option, string) result
@@ -53,7 +53,7 @@ val set_width
 val default_width
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> (Yojson.Safe.t option, string) result
 
 (** [cycle_width wm seat target] moves the width factor of the column of the
@@ -64,7 +64,7 @@ val default_width
 val cycle_width
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> (Yojson.Safe.t option, string) result
 
 (** [zoom ?warp wm seat window] promotes [window] in the scrolling layout. A

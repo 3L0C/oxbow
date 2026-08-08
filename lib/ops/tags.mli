@@ -51,7 +51,7 @@ val view_cycle_occupied
 val tag_window
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> tags:Oxbow_core.Tag.Arg.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
@@ -64,7 +64,7 @@ val tag_window
 val toggle_window_tags
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> Oxbow_core.Tag.Set.t
   -> (Yojson.Safe.t option, string) result
 
@@ -77,7 +77,7 @@ val toggle_window_tags
 val tag_shift_window
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> Oxbow_core.Direction.Logical.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result
@@ -91,7 +91,7 @@ val tag_shift_window
 val tag_shift_window_occupied
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> Oxbow_core.Direction.Logical.t
   -> follow:bool
   -> (Yojson.Safe.t option, string) result

@@ -11,10 +11,9 @@ let () =
     Fake_river.add_window fake ~app_id:(Some "firefox"));
   section "layout scrolling" (fun () ->
     cmd env (Layout (Select { layout = Scrolling; scope = Focused })));
-  section "consume" (fun () ->
-    cmd env (Window { cmd = Column_consume; target = Focused }));
+  section "consume" (fun () -> cmd env (Window (Column_consume Focused)));
   section "focus last in column" (fun () ->
-    cmd env (Window { cmd = Focus_logical { dir = Next; warp = None }; target = Focused }));
+    cmd env (Window (Focus_logical { dir = Next; warp = None; target = Focused })));
   section "zoom last member" (fun () ->
-    cmd env (Window { cmd = Zoom { warp = None }; target = Focused }))
+    cmd env (Window (Zoom { warp = None; target = Focused })))
 ;;

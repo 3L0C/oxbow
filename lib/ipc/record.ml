@@ -34,6 +34,7 @@ module Output = struct
   type t =
     { name : string
     ; labels : string list
+    ; focused : bool
     }
   [@@deriving yojson]
 end

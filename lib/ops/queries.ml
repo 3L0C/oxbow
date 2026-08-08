@@ -9,11 +9,15 @@ let handle_window_rules (wm : Wm.t) =
 
 let handle_keymaps wm seat all = Ok (Some (Bind.list wm seat ~all))
 
-let handle_outputs (wm : Wm.t) =
+let handle_outputs (wm : Wm.t) (seat : Seat.t) =
   let records =
     List.filter_map
       (fun (o : Output.t) ->
-         Option.map (fun name -> Record.Output.{ name; labels = o.labels }) o.name)
+         Option.map
+           (fun name ->
+              Record.Output.
+                { name; labels = o.labels; focused = Phys.opt_holds o seat.output })
+           o.name)
       wm.outputs
   in
   Ok (Some ([%yojson_of: Record.Output.t list] records))
@@ -98,7 +102,7 @@ let handle wm seat (query : Query.t) =
   | Input_rules -> handle_input_rules wm
   | Keymaps { all } -> handle_keymaps wm seat all
   | Layouts _ -> handle_layouts
-  | Outputs -> handle_outputs wm
+  | Outputs -> handle_outputs wm seat
   | Schemes _ -> handle_schemes
   | Seats -> handle_seats wm
   | Tags { output } -> handle_tags wm output

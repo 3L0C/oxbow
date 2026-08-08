@@ -15,22 +15,11 @@ let dir_leaf (name, dir) =
   @@ dir_command dir
 ;;
 
-let name_command_term =
-  let open Cmdliner.Term.Syntax in
-  let+ name = Ctl_cli.output_name_arg
-  and+ warp = Ctl_cli.warp_flag in
-  Command.Output (Focus_name { name; warp })
-;;
-
-let name_leafs =
-  Ctl_cli.cmd_pair ~name:"name" ~doc:"Focus the named output" name_command_term
-;;
-
 let name = "focus"
-let doc = "Focus an output by direction or name"
+let doc = "Focus an output by direction or match pattern"
 
 let cmd, bind_cmd =
   Ctl_cli.group_pair ~name ~doc
-  @@ [ name_leafs ]
+  @@ [ Cmd_output_focus_match.(cmd, bind_cmd) ]
   @ List.map dir_leaf Ctl_cli.direction_targets
 ;;

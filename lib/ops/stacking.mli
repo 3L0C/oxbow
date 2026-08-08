@@ -30,7 +30,7 @@ val focus_window : Oxbow_state.Window.t -> unit
 val shift
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> Oxbow_core.Direction.Logical.t
   -> (Yojson.Safe.t option, string) result
 

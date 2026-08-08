@@ -10,11 +10,13 @@ let command_term dir =
         "The distance to move the window by. May be a pixel offset (e.g. $(b,100)) or a \
          percentage of the usable width (e.g. $(b,25%))"
   and+ target = Ctl_cli.target_any_window_term in
-  Command.Window { cmd = Move_spatial { dir; by }; target }
+  Command.Window (Move_spatial { dir; by; target })
 ;;
 
 let mk_leaf (name, dir) =
-  Ctl_cli.cmd_pair ~name ~doc:(Printf.sprintf "Move %s by N (px or %%, signed)" name)
+  Ctl_cli.cmd_pair
+    ~name
+    ~doc:(Printf.sprintf "Move the target window(s) %s by N (px or %%, signed)" name)
   @@ command_term dir
 ;;
 

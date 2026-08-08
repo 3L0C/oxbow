@@ -19,10 +19,8 @@ let holds matches (w : Window.t) =
 ;;
 
 let matching wm seat (m : Window_match.t) =
-  match Window_match.compile m with
-  | Error _ as e -> e
-  | Ok matches ->
-    (match filter wm seat m.scope with
-     | Error _ as e -> e
-     | Ok windows -> Ok (holds matches, List.find_all (holds matches) windows))
+  Result.bind (Window_pattern.compile m.pattern)
+  @@ fun matches ->
+  Result.bind (filter wm seat m.scope)
+  @@ fun windows -> Ok (holds matches, List.find_all (holds matches) windows)
 ;;

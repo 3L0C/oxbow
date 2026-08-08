@@ -176,8 +176,8 @@ module Output = struct
         { dir : Direction.Spatial.t
         ; warp : bool option [@yojson.option]
         } [@name "focus_spatial"]
-    | Focus_name of
-        { name : string
+    | Focus_match of
+        { target : Target.Output.One.t
         ; warp : bool option [@yojson.option]
         } [@name "focus_name"]
     | Toggle_overview [@name "toggle_overview"]
@@ -186,8 +186,14 @@ module Output = struct
         ; until_release : string option
         } [@name "overview_cycle"]
     | Swap of Swap.t [@name "swap"]
-    | Label_add of string [@name "label_add"]
-    | Label_remove of string [@name "label_remove"]
+    | Label_add of
+        { label : string
+        ; target : Target.Output.Any.t
+        } [@name "label_add"]
+    | Label_remove of
+        { label : string
+        ; target : Target.Output.Any.t
+        } [@name "label_remove"]
   [@@deriving yojson]
 end
 
@@ -207,81 +213,123 @@ end
 
 module Window = struct
   type t =
-    | Close [@name "close"]
+    | Close of Target.Window.Any.t [@name "close"]
     | Focus_logical of
         { dir : Direction.Logical.t
         ; warp : bool option [@yojson.option]
+        ; target : Target.Window.One.t
         } [@name "focus_logical"]
     | Focus_spatial of
         { dir : Direction.Spatial.t
         ; warp : bool option [@yojson.option]
+        ; target : Target.Window.One.t
         } [@name "focus_spatial"]
-    | Focus_match of { warp : bool option [@yojson.option] } [@name "focus_match"]
+    | Focus_match of
+        { warp : bool option [@yojson.option]
+        ; target : Target.Window.One.t
+        } [@name "focus_match"]
     | Tag of
         { tags : Oxbow_core.Tag.Arg.t
         ; follow : bool
+        ; target : Target.Window.Any.t
         } [@name "tag"]
     | Tag_shift of
         { dir : Direction.Logical.t
         ; follow : bool
+        ; target : Target.Window.Any.t
         } [@name "tag_shift"]
     | Tag_shift_occupied of
         { dir : Direction.Logical.t
         ; follow : bool
+        ; target : Target.Window.Any.t
         } [@name "tag_shift_occupied"]
     | Move_drag [@name "move_drag"]
     | Move_to of
         { x : Extent.t
         ; y : Extent.t
+        ; target : Target.Window.Any.t
         } [@name "move_to"]
     | Move_spatial of
         { dir : Direction.Spatial.t
         ; by : Extent.t
+        ; target : Target.Window.Any.t
         } [@name "move_spatial"]
     | Resize_drag [@name "resize_drag"]
     | Resize_to of
         { w : Extent.t
         ; h : Extent.t
+        ; target : Target.Window.Any.t
         } [@name "resize_to"]
     | Resize_spatial of
         { dir : Direction.Spatial.t
         ; by : Extent.t
+        ; target : Target.Window.Any.t
         } [@name "resize_spatial"]
     | Send_logical of
         { dir : Direction.Logical.t
         ; policy : Oxbow_core.Tag.Policy.t
         ; follow : bool
+        ; target : Target.Window.Any.t
         } [@name "send_logical"]
     | Send_spatial of
         { dir : Direction.Spatial.t
         ; policy : Oxbow_core.Tag.Policy.t
         ; follow : bool
+        ; target : Target.Window.Any.t
         } [@name "send_spatial"]
     | Send_name of
         { name : string
         ; policy : Oxbow_core.Tag.Policy.t
         ; follow : bool
+        ; target : Target.Window.Any.t
         } [@name "send_name"]
-    | Shift of Direction.Logical.t [@name "shift"]
-    | Toggle_tag of Oxbow_core.Tag.Set.t [@name "toggle_tag"]
-    | Toggle_floating [@name "toggle_floating"]
-    | Toggle_maximize [@name "toggle_maximize"]
-    | Toggle_fullscreen [@name "toggle_fullscreen"]
-    | Toggle_fake_fullscreen [@name "toggle_fake_fullscreen"]
-    | Set_sticky of Sticky.t [@name "set_sticky"]
-    | Toggle_sticky of Sticky.Toggle.t [@name "toggle_sticky"]
-    | Toggle_swallow [@name "toggle_swallow"]
-    | Zoom of { warp : bool option [@yojson.option] } [@name "zoom"]
-    | Column_consume [@name "column_consume"]
-    | Column_release [@name "column_release"]
-    | Column_move of Direction.Logical.t [@name "column_move"]
-    | Column_width of float Delta.t [@name "column_width"]
-    | Column_width_default [@name "column_width_default"]
-    | Column_width_cycle [@name "column_width_cycle"]
+    | Shift of
+        { dir : Direction.Logical.t
+        ; target : Target.Window.One.t
+        } [@name "shift"]
+    | Toggle_tag of
+        { tags : Oxbow_core.Tag.Set.t
+        ; target : Target.Window.Any.t
+        } [@name "toggle_tag"]
+    | Toggle_floating of Target.Window.Any.t [@name "toggle_floating"]
+    | Toggle_maximize of Target.Window.One.t [@name "toggle_maximize"]
+    | Toggle_fullscreen of Target.Window.One.t [@name "toggle_fullscreen"]
+    | Toggle_fake_fullscreen of Target.Window.Any.t [@name "toggle_fake_fullscreen"]
+    | Set_sticky of
+        { scope : Sticky.t
+        ; target : Target.Window.Any.t
+        } [@name "set_sticky"]
+    | Toggle_sticky of
+        { toggle : Sticky.Toggle.t
+        ; target : Target.Window.Any.t
+        } [@name "toggle_sticky"]
+    | Toggle_swallow of Target.Window.Any.t [@name "toggle_swallow"]
+    | Zoom of
+        { warp : bool option [@yojson.option]
+        ; target : Target.Window.One.t
+        } [@name "zoom"]
+    | Column_consume of Target.Window.One.t [@name "column_consume"]
+    | Column_release of Target.Window.One.t [@name "column_release"]
+    | Column_move of
+        { dir : Direction.Logical.t
+        ; target : Target.Window.One.t
+        } [@name "column_move"]
+    | Column_width of
+        { delta : float Delta.t
+        ; target : Target.Window.One.t
+        } [@name "column_width"]
+    | Column_width_default of Target.Window.One.t [@name "column_width_default"]
+    | Column_width_cycle of Target.Window.One.t [@name "column_width_cycle"]
     | Rule_add of Window_rule.t [@name "rule_add"]
     | Rule_remove of int [@name "rule_remove"]
-    | Label_add of string [@name "label_add"]
-    | Label_remove of string [@name "label_remove"]
+    | Label_add of
+        { label : string
+        ; target : Target.Window.Any.t
+        } [@name "label_add"]
+    | Label_remove of
+        { label : string
+        ; target : Target.Window.Any.t
+        } [@name "label_remove"]
   [@@deriving yojson]
 end
 
@@ -300,9 +348,6 @@ type t =
   | Session of Session.t [@name "session"]
   | Spawn of string [@name "spawn"]
   | Tag of Tag.t [@name "tag"]
-  | Window of
-      { cmd : Window.t
-      ; target : Target.Window.t
-      } [@name "window"]
+  | Window of Window.t [@name "window"]
   | Wm of Wm.t [@name "wm"]
 [@@deriving yojson]

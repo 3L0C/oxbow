@@ -3,8 +3,7 @@ open! Oxbow_ipc
 let command_term =
   let open Cmdliner.Term.Syntax in
   let+ index = Ctl_cli.index_arg in
-  (* NOTE the target is not used *)
-  Command.Window { cmd = Rule_remove index; target = Focused }
+  Command.Window (Rule_remove index)
 ;;
 
 let name = "remove"

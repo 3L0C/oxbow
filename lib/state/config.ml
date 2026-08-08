@@ -121,7 +121,7 @@ let replace_window_rule (wm : Types.Wm.t) (rule : Window_rule.t) =
   wm.config.rules.window
   <- List.map
        (fun (r : Window_rule.t) ->
-          if Pattern.equal rule.pattern r.pattern then rule else r)
+          if Window_pattern.equal rule.pattern r.pattern then rule else r)
        wm.config.rules.window
 ;;
 

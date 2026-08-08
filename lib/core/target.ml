@@ -1,39 +1,44 @@
-open! Ppx_yojson_conv_lib.Yojson_conv
-
 module Select = struct
   type t =
     | Best [@name "best"]
-    | All [@name "all"]
     | Cycle [@name "cycle"]
   [@@deriving yojson]
-
-  let all = [ Best; All; Cycle ]
-
-  let to_string = function
-    | Best -> "best"
-    | All -> "all"
-    | Cycle -> "cycle"
-  ;;
 end
 
 module Window = struct
-  type t =
-    | Focused [@name "focused"]
-    | Matching of
-        { wmatch : Window_match.t
-        ; select : Select.t
-        } [@name "matching"]
-  [@@deriving yojson]
+  module One = struct
+    type t =
+      | Focused [@name "focused"]
+      | Matching of
+          { wmatch : Window_match.t
+          ; select : Select.t
+          } [@name "matching"]
+    [@@deriving yojson]
+  end
+
+  module Any = struct
+    type t =
+      | One of One.t [@name "one"]
+      | All of { wmatch : Window_match.t } [@name "all"]
+    [@@deriving yojson]
+  end
 end
 
 module Output = struct
-  type t =
-    | Focused [@name "focused"]
-    | Matching of string [@name "matching"]
-  [@@deriving yojson]
-end
+  module One = struct
+    type t =
+      | Focused [@name "focused"]
+      | Matching of
+          { omatch : Output_match.t
+          ; select : Select.t
+          } [@name "matching"]
+    [@@deriving yojson]
+  end
 
-type t =
-  | Window of Window.t [@name "window"]
-  | Output of Output.t [@name "output"]
-[@@deriving yojson]
+  module Any = struct
+    type t =
+      | One of One.t [@name "one"]
+      | All of { omatch : Output_match.t } [@name "all"]
+    [@@deriving yojson]
+  end
+end

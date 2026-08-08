@@ -23,5 +23,28 @@ let () =
   o "focus --label=term" [ "window"; "focus"; "match"; "--label=term" ];
   o "focus --cycle --label=term" [ "window"; "focus"; "match"; "--cycle"; "--label=term" ];
   o "window list - expect [term]" [ "window"; "list"; "--label=te.*" ];
-  o "window list - expect []" [ "window"; "list"; "--label=none" ]
+  o "window list - expect []" [ "window"; "list"; "--label=none" ];
+  o
+    "label-as - video_player"
+    [ "window"; "rules"; "add"; "--label-as=video_player"; "--app-id=mpv" ];
+  o
+    "label-as - browser"
+    [ "window"; "rules"; "add"; "--label-as=browser"; "--app-id=firefox" ];
+  section "test label-as rule" (fun () ->
+    Fake_river.add_window fake ~app_id:(Some "firefox");
+    Fake_river.add_window fake ~app_id:(Some "mpv"));
+  o "window list - expect [mpv]" [ "window"; "list"; "--label=video_player" ];
+  o "window list - expect [firefox]" [ "window"; "list"; "--label=browser" ];
+  section "test output labels" (fun () ->
+    Fake_river.add_output fake ~name:"FAKE-2";
+    Fake_river.add_output fake ~name:"FAKE-3");
+  o "output label" [ "output"; "label"; "add"; "--name=FAKE-1"; "first" ];
+  o "output label" [ "output"; "label"; "add"; "--name=FAKE-2"; "second" ];
+  o "output label" [ "output"; "label"; "add"; "--name=FAKE-3"; "third" ];
+  o "output focus label" [ "output"; "focus"; "match"; "--label=second" ];
+  o "window list - expect [FAKE-2]" [ "output"; "list" ];
+  o "output focus label" [ "output"; "focus"; "match"; "--label=first" ];
+  o "window list - expect [FAKE-1]" [ "output"; "list" ];
+  o "output focus label" [ "output"; "focus"; "match"; "--label=third" ];
+  o "window list - expect [FAKE-3]" [ "output"; "list" ]
 ;;

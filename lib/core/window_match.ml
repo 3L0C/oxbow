@@ -1,14 +1,23 @@
 open! Ppx_yojson_conv_lib.Yojson_conv
 
+module Matcher = struct
+  type t =
+    title:string option
+    -> app_id:string option
+    -> identifier:string option
+    -> labels:string list
+    -> bool
+end
+
 type t =
-  { pattern : Pattern.t
+  { pattern : Window_pattern.t
   ; invert : bool
   ; scope : Scope.t
   }
 [@@deriving yojson]
 
 let to_string m =
-  let pattern = Pattern.to_string m.pattern in
+  let pattern = Window_pattern.to_string m.pattern in
   let invert = if m.invert then Some "invert" else None in
   let scope =
     match m.scope with
@@ -20,14 +29,4 @@ let to_string m =
   match tags with
   | [] -> pattern
   | _ -> String.concat ", " tags |> Printf.sprintf "%s [%s]" pattern
-;;
-
-let compile m =
-  match Pattern.compile m.pattern with
-  | Error e -> Error e
-  | Ok matcher ->
-    Ok
-      (fun ~title ~app_id ~identifier ~labels ->
-        let hit = matcher ~title ~app_id ~identifier ~labels in
-        if m.invert then not hit else hit)
 ;;

@@ -12,15 +12,17 @@ let () =
     cmd
       env
       (Window
-         { cmd = Tag { tags = Concrete (Oxbow_core.Tag.Set.singleton 2); follow = false }
-         ; target = Focused
-         }));
+         (Tag
+            { tags = Concrete (Oxbow_core.Tag.Set.singleton 2)
+            ; follow = false
+            ; target = One Focused
+            })));
   section "sticky kitty - all" (fun () ->
-    cmd env (Window { cmd = Set_sticky All; target = Focused }));
+    cmd env (Window (Set_sticky { scope = All; target = One Focused })));
   section "view tag 2" (fun () ->
     cmd env (Tag (View (Concrete (Oxbow_core.Tag.Set.singleton 2)))));
   section "sticky kitty - occupied" (fun () ->
-    cmd env (Window { cmd = Set_sticky Occupied; target = Focused }));
+    cmd env (Window (Set_sticky { scope = Occupied; target = One Focused })));
   section "view tag 3" (fun () ->
     cmd env (Tag (View (Concrete (Oxbow_core.Tag.Set.singleton 3)))));
   section "focused" (fun () ->

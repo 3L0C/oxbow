@@ -44,6 +44,7 @@ module Effects = struct
     ; move_to : Move_to.t option [@yojson.option]
     ; sticky : Sticky.t option [@yojson.option]
     ; swallow : Swallow_role.t option [@yojson.option]
+    ; label_as : string option [@yojson.option]
     }
   [@@deriving yojson]
 
@@ -52,7 +53,7 @@ module Effects = struct
 end
 
 type t =
-  { pattern : Pattern.t
+  { pattern : Window_pattern.t
   ; effects : Effects.t
   }
 [@@deriving yojson]

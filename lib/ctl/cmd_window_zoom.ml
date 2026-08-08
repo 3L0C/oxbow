@@ -4,7 +4,7 @@ let command_term =
   let open Cmdliner.Term.Syntax in
   let+ warp = Ctl_cli.warp_flag
   and+ target = Ctl_cli.target_one_window_term in
-  Command.Window { cmd = Zoom { warp }; target }
+  Command.Window (Zoom { warp; target })
 ;;
 
 let name = "zoom"

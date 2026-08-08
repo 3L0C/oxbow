@@ -13,19 +13,19 @@ let command_term =
      and+ resize_to = Ctl_cli.resize_to_flag
      and+ move_to = Ctl_cli.move_to_flag
      and+ sticky = Ctl_cli.sticky_arg
-     and+ swallow = Ctl_cli.swallow_arg in
+     and+ swallow = Ctl_cli.swallow_arg
+     and+ label_as = Ctl_cli.label_as_arg in
      let output : Window_rule.Effects.Output.t option =
        match name with
        | None -> None
        | Some name -> Some { name; policy }
      in
      let effects : Window_rule.Effects.t =
-       { output; tags; presentation; resize_to; move_to; sticky; swallow }
+       { output; tags; presentation; resize_to; move_to; sticky; swallow; label_as }
      in
      if Window_rule.Effects.is_empty effects
      then Error "give at least one effect"
-     else (* NOTE [target] is not used *)
-       Ok (Command.Window { cmd = Rule_add { pattern; effects }; target = Focused })
+     else Ok (Command.Window (Rule_add { pattern; effects }))
 ;;
 
 let name = "add"

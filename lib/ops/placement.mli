@@ -9,7 +9,7 @@ val zoom
   :  ?warp:bool
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.One.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move_window ?policy window output] removes [window] from its current
@@ -69,7 +69,7 @@ val send_window_to_name
 val send_to_logical
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> Oxbow_core.Direction.Logical.t
   -> Oxbow_core.Tag.Policy.t
   -> follow:bool
@@ -85,7 +85,7 @@ val send_to_logical
 val send_to_spatial
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> Oxbow_core.Direction.Spatial.t
   -> Oxbow_core.Tag.Policy.t
   -> follow:bool
@@ -100,7 +100,7 @@ val send_to_spatial
 val send_to_name
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> string
   -> Oxbow_core.Tag.Policy.t
   -> follow:bool
@@ -114,7 +114,7 @@ val send_to_name
 val toggle_floating
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> (Yojson.Safe.t option, string) result
 
 (** [maximize wm window] ends any seat operation and maximizes [window].
@@ -150,7 +150,7 @@ val exit_fullscreen : Oxbow_state.Window.t -> unit
 val close
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move_to ~x ~y window] moves [window] to the extents [x] and [y]. Is
@@ -172,7 +172,7 @@ val move_to
   -> y:Oxbow_core.Extent.t
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> (Yojson.Safe.t option, string) result
 
 (** [move_spatial wm seat target dir by] moves the [target] windows in [dir] by
@@ -182,7 +182,7 @@ val move_to
 val move_spatial
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> Oxbow_core.Direction.Spatial.t
   -> Oxbow_core.Extent.t
   -> (Yojson.Safe.t option, string) result
@@ -207,7 +207,7 @@ val resize_to
   -> height:Oxbow_core.Extent.t
   -> Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> (Yojson.Safe.t option, string) result
 
 (** [resize_spatial wm seat target dir by] resizes the [target] windows in [dir]
@@ -217,7 +217,7 @@ val resize_to
 val resize_spatial
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> Oxbow_core.Direction.Spatial.t
   -> Oxbow_core.Extent.t
   -> (Yojson.Safe.t option, string) result
@@ -251,7 +251,7 @@ val swap_outputs
 val set_sticky
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> Oxbow_core.Sticky.t
   -> (Yojson.Safe.t option, string) result
 
@@ -263,6 +263,6 @@ val set_sticky
 val toggle_sticky
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> Oxbow_core.Sticky.Toggle.t
   -> (Yojson.Safe.t option, string) result

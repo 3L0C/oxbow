@@ -39,7 +39,7 @@ let handle_output wm seat (cmd : Command.Output.t) =
   match cmd with
   | Focus_logical { dir; warp } -> Focus.output_logical ?warp wm seat dir
   | Focus_spatial { dir; warp } -> Focus.output_spatial ?warp wm seat dir
-  | Focus_name { name; warp } -> Focus.output_name ?warp wm seat name
+  | Focus_match { target; warp } -> Focus.output_match ?warp wm seat target
   | Toggle_overview -> Arrange.toggle_overview wm seat
   | Cycle_overview { dir; until_release } ->
     Arrange.cycle_overview wm seat dir ~until_release
@@ -50,8 +50,8 @@ let handle_output wm seat (cmd : Command.Output.t) =
     Placement.swap_outputs wm seat ~target ~policy ~follow `All
   | Swap (Visible { target; policy; follow }) ->
     Placement.swap_outputs wm seat ~target ~policy ~follow `Visible
-  | Label_add label -> Labels.output_add seat label
-  | Label_remove label -> Labels.output_remove seat label
+  | Label_add { label; target } -> Labels.output_add wm seat target label
+  | Label_remove { label; target } -> Labels.output_remove wm seat target label
 ;;
 
 let handle_session ctx _seat (cmd : Command.Session.t) =
@@ -72,48 +72,48 @@ let handle_tag seat (cmd : Command.Tag.t) =
   | View_cycle_occupied dir -> Tags.view_cycle_occupied seat dir
 ;;
 
-let handle_window wm seat ((cmd : Command.Window.t), target) =
+let handle_window wm seat (cmd : Command.Window.t) =
   match cmd with
-  | Close -> Placement.close wm seat target
-  | Focus_logical { dir; warp } -> Focus.window_logical ?warp wm seat target dir
-  | Focus_spatial { dir; warp } -> Focus.window_spatial ?warp wm seat target dir
-  | Focus_match { warp } -> Focus.window_match ?warp wm seat target
-  | Tag { tags; follow } -> Tags.tag_window wm seat target ~tags ~follow
-  | Tag_shift { dir; follow } -> Tags.tag_shift_window wm seat target dir ~follow
-  | Tag_shift_occupied { dir; follow } ->
+  | Close target -> Placement.close wm seat target
+  | Focus_logical { dir; warp; target } -> Focus.window_logical ?warp wm seat target dir
+  | Focus_spatial { dir; warp; target } -> Focus.window_spatial ?warp wm seat target dir
+  | Focus_match { warp; target } -> Focus.window_match ?warp wm seat target
+  | Tag { tags; follow; target } -> Tags.tag_window wm seat target ~tags ~follow
+  | Tag_shift { dir; follow; target } -> Tags.tag_shift_window wm seat target dir ~follow
+  | Tag_shift_occupied { dir; follow; target } ->
     Tags.tag_shift_window_occupied wm seat target dir ~follow
   | Move_drag -> Window_request.move_interactive wm seat
-  | Move_to { x; y } -> Placement.move_to ~x ~y wm seat target
-  | Move_spatial { dir; by } -> Placement.move_spatial wm seat target dir by
+  | Move_to { x; y; target } -> Placement.move_to ~x ~y wm seat target
+  | Move_spatial { dir; by; target } -> Placement.move_spatial wm seat target dir by
   | Resize_drag -> Window_request.resize_interactive wm seat
-  | Resize_to { w; h } -> Placement.resize_to ~width:w ~height:h wm seat target
-  | Resize_spatial { dir; by } -> Placement.resize_spatial wm seat target dir by
-  | Send_logical { dir; policy; follow } ->
+  | Resize_to { w; h; target } -> Placement.resize_to ~width:w ~height:h wm seat target
+  | Resize_spatial { dir; by; target } -> Placement.resize_spatial wm seat target dir by
+  | Send_logical { dir; policy; follow; target } ->
     Placement.send_to_logical wm seat target dir policy ~follow
-  | Send_spatial { dir; policy; follow } ->
+  | Send_spatial { dir; policy; follow; target } ->
     Placement.send_to_spatial wm seat target dir policy ~follow
-  | Send_name { name; policy; follow } ->
+  | Send_name { name; policy; follow; target } ->
     Placement.send_to_name wm seat target name policy ~follow
-  | Shift dir -> Stacking.shift wm seat target dir
-  | Set_sticky scope -> Placement.set_sticky wm seat target scope
-  | Toggle_sticky toggle -> Placement.toggle_sticky wm seat target toggle
-  | Toggle_swallow -> Swallow.toggle wm seat target
-  | Toggle_tag tags -> Tags.toggle_window_tags wm seat target tags
-  | Toggle_floating -> Placement.toggle_floating wm seat target
-  | Toggle_maximize -> Window_request.toggle_maximize wm seat target
-  | Toggle_fullscreen -> Window_request.toggle_fullscreen wm seat target
-  | Toggle_fake_fullscreen -> Window_request.toggle_fake_fullscreen wm seat target
-  | Zoom { warp } -> Placement.zoom ?warp wm seat target
-  | Column_consume -> Column.consume wm seat target
-  | Column_release -> Column.release wm seat target
-  | Column_move dir -> Column.move wm seat target dir
-  | Column_width delta -> Column.set_width wm seat target delta ~global:false
-  | Column_width_default -> Column.default_width wm seat target
-  | Column_width_cycle -> Column.cycle_width wm seat target
+  | Shift { dir; target } -> Stacking.shift wm seat target dir
+  | Set_sticky { scope; target } -> Placement.set_sticky wm seat target scope
+  | Toggle_sticky { toggle; target } -> Placement.toggle_sticky wm seat target toggle
+  | Toggle_swallow target -> Swallow.toggle wm seat target
+  | Toggle_tag { tags; target } -> Tags.toggle_window_tags wm seat target tags
+  | Toggle_floating target -> Placement.toggle_floating wm seat target
+  | Toggle_maximize target -> Window_request.toggle_maximize wm seat target
+  | Toggle_fullscreen target -> Window_request.toggle_fullscreen wm seat target
+  | Toggle_fake_fullscreen target -> Window_request.toggle_fake_fullscreen wm seat target
+  | Zoom { warp; target } -> Placement.zoom ?warp wm seat target
+  | Column_consume target -> Column.consume wm seat target
+  | Column_release target -> Column.release wm seat target
+  | Column_move { dir; target } -> Column.move wm seat target dir
+  | Column_width { delta; target } -> Column.set_width wm seat target delta ~global:false
+  | Column_width_default target -> Column.default_width wm seat target
+  | Column_width_cycle target -> Column.cycle_width wm seat target
   | Rule_add rule -> Window_rules.add wm rule
   | Rule_remove index -> Window_rules.remove wm index
-  | Label_add label -> Labels.window_add wm seat target label
-  | Label_remove label -> Labels.window_remove wm seat target label
+  | Label_add { label; target } -> Labels.window_add wm seat target label
+  | Label_remove { label; target } -> Labels.window_remove wm seat target label
 ;;
 
 let handle_wm ctx _seat (cmd : Command.Wm.t) =
@@ -138,7 +138,7 @@ let handle_command ctx seat (cmd : Command.t) =
   | Session c -> handle_session ctx seat c
   | Spawn cmd -> Execute.spawn cmd
   | Tag c -> handle_tag seat c
-  | Window { cmd; target } -> handle_window wm seat (cmd, target)
+  | Window c -> handle_window wm seat c
   | Wm c -> handle_wm ctx seat c
 ;;
 

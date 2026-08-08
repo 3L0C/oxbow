@@ -21,18 +21,19 @@ let apply_effects
   (e.resize_to |>? fun { w; h } -> queue (Resize_to { w; h }));
   (e.sticky |>? fun s -> queue (Set_sticky s));
   (e.move_to |>? fun { x; y } -> queue (Move_to { x; y }));
-  e.swallow
-  |>? fun r ->
-  Window.set_swallow_role
-    window
-    (match r with
-     | Auto -> Auto
-     | Terminal -> Terminal
-     | Disabled -> Disabled)
+  (e.swallow
+   |>? fun r ->
+   Window.set_swallow_role
+     window
+     (match r with
+      | Auto -> Auto
+      | Terminal -> Terminal
+      | Disabled -> Disabled));
+  e.label_as |>? fun l -> Window.add_label window l
 ;;
 
 let apply (window : Window.t) ({ pattern; effects } : Window_rule.t) =
-  match Pattern.compile pattern with
+  match Window_pattern.compile pattern with
   | Error e -> Logs.debug @@ fun m -> m "%s" e
   | Ok matches ->
     if
@@ -47,7 +48,7 @@ let apply (window : Window.t) ({ pattern; effects } : Window_rule.t) =
 ;;
 
 let apply_for (wm : Wm.t) window = List.iter (apply window) wm.config.rules.window
-let same (p : Pattern.t) (r : Window_rule.t) = Pattern.equal p r.pattern
+let same (p : Window_pattern.t) (r : Window_rule.t) = Window_pattern.equal p r.pattern
 
 let add (wm : Wm.t) (rule : Window_rule.t) =
   match List.find_opt (same rule.pattern) wm.config.rules.window with

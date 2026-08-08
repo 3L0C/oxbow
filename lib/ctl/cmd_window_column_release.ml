@@ -3,7 +3,7 @@ open! Oxbow_ipc
 let command_term =
   let open Cmdliner.Term.Syntax in
   let+ target = Ctl_cli.target_one_window_term in
-  Command.Window { cmd = Column_release; target }
+  Command.Window (Column_release target)
 ;;
 
 let name = "release"

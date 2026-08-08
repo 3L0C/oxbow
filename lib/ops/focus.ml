@@ -96,9 +96,10 @@ let window_spatial ?warp wm seat target (dir : Direction.Spatial.t) =
 ;;
 
 let window_match ?warp wm seat target =
-  Result.bind (Targets.resolve_one_window wm seat target) (fun window ->
-    focus_window ~force:true ~warp:(Seat.Warp_request.of_override warp) wm seat window;
-    Ok None)
+  Result.bind (Targets.resolve_one_window wm seat target)
+  @@ fun window ->
+  focus_window ~force:true ~warp:(Seat.Warp_request.of_override warp) wm seat window;
+  Ok None
 ;;
 
 let focus_output ?warp wm seat output =
@@ -107,6 +108,13 @@ let focus_output ?warp wm seat output =
   match Output.focused_window output with
   | Some w -> focus_window wm seat w
   | None -> ()
+;;
+
+let output_match ?warp wm seat target =
+  Result.bind (Targets.resolve_one_output wm seat target)
+  @@ fun output ->
+  focus_output ?warp wm seat output;
+  Ok None
 ;;
 
 let output_logical ?warp (wm : Wm.t) (seat : Seat.t) (dir : Direction.Logical.t) =
@@ -142,21 +150,6 @@ let output_spatial ?warp (wm : Wm.t) (seat : Seat.t) (dir : Direction.Spatial.t)
      | Some o ->
        focus_output ?warp wm seat o;
        Ok None)
-;;
-
-let output_name ?warp (wm : Wm.t) (seat : Seat.t) (name : string) =
-  match
-    List.find_opt
-      (fun (o : Output.t) -> Option.fold ~none:false ~some:(fun n -> n = name) o.name)
-      wm.outputs
-  with
-  | None -> Error (Printf.sprintf "no output named %S" name)
-  | Some o ->
-    (match seat.output with
-     | None -> focus_output ?warp wm seat o
-     | Some o' when o != o' -> focus_output ?warp wm seat o
-     | _ -> ());
-    Ok None
 ;;
 
 let focus_parent (child : Window.t) =

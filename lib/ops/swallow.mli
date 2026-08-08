@@ -29,5 +29,5 @@ val on_close : Oxbow_state.Window.t -> unit
 val toggle
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Target.Window.t
+  -> Oxbow_core.Target.Window.Any.t
   -> (Yojson.Safe.t option, string) result

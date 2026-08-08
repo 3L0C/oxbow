@@ -380,7 +380,7 @@ let pattern_flags =
   and+ identifier = identifier_flag
   and+ label = label_flag
   and+ case = case_flag in
-  ({ title; app_id; identifier; label; case } : Pattern.t)
+  ({ title; app_id; identifier; label; case } : Window_pattern.t)
 ;;
 
 let pattern_needed = "give at least one of --title, --app-id, --identifier, or --label"
@@ -390,7 +390,7 @@ let pattern_term =
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ p = pattern_flags in
-     if Pattern.is_empty p then Error pattern_needed else Ok p
+     if Window_pattern.is_empty p then Error pattern_needed else Ok p
 ;;
 
 let scope_term =
@@ -438,16 +438,26 @@ let window_match_of source =
 let window_match_term = window_match_of pattern_term
 let window_match_any_term = window_match_of pattern_flags
 
-let select_any_flag =
+let output_pattern_flags =
   let open Oxbow_core in
-  Arg.(
-    value
-    & vflag
-        Target.Select.Best
-        [ Target.Select.All, info [ "all" ] ~doc:"Act on every match."
-        ; ( Target.Select.Cycle
-          , info [ "cycle" ] ~doc:"Act on the next match after the focused window." )
-        ])
+  let open Cmdliner.Term.Syntax in
+  let+ name =
+    Arg.(
+      value
+      & opt (some string) None
+      & info [ "name" ] ~docv:"REGEX" ~doc:"Match REGEX against the output's name.")
+  and+ label =
+    Arg.(
+      value
+      & opt (some string) None
+      & info
+          [ "label" ]
+          ~docv:"REGEX"
+          ~doc:"Match REGEX against each of the output's labels.")
+  and+ invert =
+    Arg.(value & flag & info [ "invert" ] ~doc:"Select the outputs that do not match.")
+  and+ case = case_flag in
+  ({ name; label; case; invert } : Output_match.t)
 ;;
 
 let select_one_flag =
@@ -461,23 +471,80 @@ let select_one_flag =
         ])
 ;;
 
-let target_window_term select_flag =
+let target_one_window_term =
   let open Oxbow_core in
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
   @@ let+ wmatch = window_match_any_term
-     and+ (select : Target.Select.t) = select_flag in
-     if Pattern.is_empty wmatch.pattern
+     and+ select = select_one_flag in
+     if Window_pattern.is_empty wmatch.pattern
      then (
        match select with
-       | Best -> Ok Target.Window.Focused
-       | All | Cycle ->
-         Error (Printf.sprintf "--%s needs a pattern" (Target.Select.to_string select)))
+       | Best -> Ok Target.Window.One.Focused
+       | Cycle -> Error "--cycle needs a pattern")
      else Ok (Matching { wmatch; select })
 ;;
 
-let target_any_window_term = target_window_term select_any_flag
-let target_one_window_term = target_window_term select_one_flag
+let pick_any_flag =
+  Arg.(
+    value
+    & vflag
+        (`Select Target.Select.Best)
+        [ `All, info [ "all" ] ~doc:"Act on every match."
+        ; ( `Select Target.Select.Cycle
+          , info [ "cycle" ] ~doc:"Act on the next match after the focused window" )
+        ])
+;;
+
+let target_any_window_term =
+  let open Oxbow_core in
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ wmatch = window_match_any_term
+     and+ pick = pick_any_flag in
+     if Window_pattern.is_empty wmatch.pattern
+     then (
+       match pick with
+       | `Select Best -> Ok (Target.Window.Any.One Focused)
+       | `All -> Error "--all needs a pattern"
+       | `Select Cycle -> Error "--cycle needs a pattern")
+     else (
+       match pick with
+       | `Select select -> Ok (One (Matching { wmatch; select }))
+       | `All -> Ok (All { wmatch }))
+;;
+
+let target_one_output_term =
+  let open Oxbow_core in
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ omatch = output_pattern_flags
+     and+ select = select_one_flag in
+     if Output_match.is_empty omatch
+     then (
+       match select with
+       | Best -> Ok Target.Output.One.Focused
+       | Cycle -> Error "--cycle needs a pattern")
+     else Ok (Matching { omatch; select })
+;;
+
+let target_any_output_term =
+  let open Oxbow_core in
+  let open Cmdliner.Term.Syntax in
+  Cmdliner.Term.term_result' ~usage:true
+  @@ let+ omatch = output_pattern_flags
+     and+ pick = pick_any_flag in
+     if Output_match.is_empty omatch
+     then (
+       match pick with
+       | `Select Best -> Ok (Target.Output.Any.One Focused)
+       | `All -> Error "--all needs a pattern"
+       | `Select Cycle -> Error "--cycle needs a pattern")
+     else (
+       match pick with
+       | `Select select -> Ok (One (Matching { omatch; select }))
+       | `All -> Ok (All { omatch }))
+;;
 
 let tags_flag =
   Arg.(
@@ -662,6 +729,14 @@ let label_arg =
 let swallow_arg =
   mk_enum "swallow" ~doc:"Set the swallow role of the window." ~docv:"ROLE"
   @@ enum_of Swallow_role.to_string Swallow_role.all
+;;
+
+let label_as_arg =
+  let open Cmdliner in
+  Arg.(
+    value
+    & opt (some label_conv) None
+    & info [ "label-as" ] ~doc:"Add LABEL to matching windows")
 ;;
 
 let code_protocol_err = 1

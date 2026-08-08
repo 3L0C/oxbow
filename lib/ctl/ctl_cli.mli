@@ -107,7 +107,7 @@ val warp_flag : bool option Cmdliner.Term.t
 (** [pattern_term] is [title_flag], [app_id_flag], [identifier_flag], and
     [case_flag] in a [Pattern.t]. Each criterion is a PCRE regex. Will error if
     no flag is given. *)
-val pattern_term : Oxbow_core.Pattern.t Cmdliner.Term.t
+val pattern_term : Oxbow_core.Window_pattern.t Cmdliner.Term.t
 
 (** [setting_scope_term] is the target scope of a setting command: the bare form
     for the selected tags on the focused output, [--output NAME] for every tag
@@ -125,11 +125,19 @@ val window_match_any_term : Oxbow_core.Window_match.t Cmdliner.Term.t
 
 (** [target_any_window_term] is [window_match_any_term], and [--all]/[--cycle]
     to control the match selection. *)
-val target_any_window_term : Oxbow_core.Target.Window.t Cmdliner.Term.t
+val target_any_window_term : Oxbow_core.Target.Window.Any.t Cmdliner.Term.t
 
 (** [target_one_window_term] is [window_match_any_term], and [--cycle] to control
     the match selection. *)
-val target_one_window_term : Oxbow_core.Target.Window.t Cmdliner.Term.t
+val target_one_window_term : Oxbow_core.Target.Window.One.t Cmdliner.Term.t
+
+(** [target_one_output_term] is the output match flags, and [--cycle] to
+    control the match selection. An empty pattern is the focused output. *)
+val target_one_output_term : Oxbow_core.Target.Output.One.t Cmdliner.Term.t
+
+(** [target_any_output_term] is [target_one_output_term], and [--all] to act
+    on every match. *)
+val target_any_output_term : Oxbow_core.Target.Output.Any.t Cmdliner.Term.t
 
 (** [tags_flag] is the [--tags TAGS] option: indices, ranges, a bitmask, or the
     literal [occupied]. *)
@@ -219,6 +227,9 @@ val label_arg : string Cmdliner.Term.t
 
 (** [swallow_arg] is the [--swallow] flag accepting a valid role. *)
 val swallow_arg : Oxbow_core.Swallow_role.t option Cmdliner.Term.t
+
+(** [label_as_arg] is the [--label-as] flag accepting a valid label. *)
+val label_as_arg : string option Cmdliner.Term.t
 
 (** [render_lines json] formats a JSON list reply for display: one line per
     item, with the leading list index. The index is the remove index of the
