@@ -1,14 +1,25 @@
 open! Oxbow_core
 include Types.Output
 
+let from_stack o =
+  match o.focus_stack with
+  | w :: _ when Window.tag_visible w -> Some w
+  | stack ->
+    let visible_on_tags w =
+      Window.tag_visible w && Window.on_tags w ~tags:o.tags.selected
+    in
+    (match List.find_opt visible_on_tags stack with
+     | Some _ as s -> s
+     | None -> List.find_opt Window.tag_visible stack)
+;;
+
 let focused_window o =
-  let from_stack () = List.find_opt Window.tag_visible o.focus_stack in
   if o.overview.enabled
   then (
     match o.overview.head with
     | Some w -> Some w
-    | None -> from_stack ())
-  else from_stack ()
+    | None -> from_stack o)
+  else from_stack o
 ;;
 
 let nav_stack o = if o.overview.enabled then o.focus_stack else o.wm_stack
