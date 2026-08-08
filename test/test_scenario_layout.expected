@@ -199,7 +199,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
-== mfact +0.05 ==
+== layout tiling mfact +0.05 ==
 manage:propose_dimensions(firefox, 1116x1032)
 manage:propose_dimensions(emacs, 738x507)
 manage:propose_dimensions(kitty, 738x507)
@@ -239,7 +239,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
-== select scheme monocle ==
+== layout tiling scheme monocle ==
 manage:propose_dimensions(firefox, 1872x1032)
 manage:propose_dimensions(emacs, 1872x1032)
 manage:propose_dimensions(kitty, 1872x1032)
@@ -356,7 +356,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
-== toggle overview ==
+== output overview ==
 manage:propose_dimensions(firefox, 619x517)
 manage:propose_dimensions(emacs, 619x517)
 manage:propose_dimensions(kitty, 618x517)
@@ -396,7 +396,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
-== layouts ==
+== layout query ==
 {"available":["tiling","scrolling","floating"]}
 manage:focus_window(seat0, firefox)
 manage:op_end(seat0)

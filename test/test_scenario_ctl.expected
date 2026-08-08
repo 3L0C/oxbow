@@ -114,7 +114,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
-== rules add ==
+== window rules add --app-id ^mpv$ --float --tags 3 ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:set_position(kitty, 24, 24)
@@ -157,7 +157,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
-== rules list ==
+== window rules list ==
 0: pattern=app_id=^mpv$ case=sensitive effects=tags=concrete 4 presentation=float
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -171,7 +171,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
-== rules remove ==
+== window rules remove 0 ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:set_position(mpv, 640, 300)
@@ -184,7 +184,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
-== rules remove out of range ==
+== window rules remove 7 ==
 err: no window rule at index 7
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -244,7 +244,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
-== gaps inner, focused ==
+== gaps inner 4 ==
 manage:propose_dimensions(emacs, 1024x1032)
 manage:propose_dimensions(kitty, 836x1032)
 manage:focus_window(seat0, emacs)
@@ -281,7 +281,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
-== gaps inner, output ==
+== gaps inner 6 --output FAKE-1 ==
 manage:propose_dimensions(emacs, 1023x1032)
 manage:propose_dimensions(kitty, 835x1032)
 manage:focus_window(seat0, emacs)
@@ -318,7 +318,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
-== gaps inner, all ==
+== gaps inner 8 --all ==
 manage:propose_dimensions(emacs, 1022x1032)
 manage:propose_dimensions(kitty, 834x1032)
 manage:focus_window(seat0, emacs)
@@ -376,7 +376,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
-== window list json ==
+== window list --json ==
 [{"id":3,"identifier":null,"title":"emacs","app_id":"emacs","output":"FAKE-1","tags":[1],"focused":true,"urgent":false,"hidden":false,"presentation":"tiled","sticky":"off","swallowing":false,"labels":[]},{"id":2,"identifier":null,"title":"mpv","app_id":"mpv","output":"FAKE-1","tags":[3],"focused":false,"urgent":false,"hidden":true,"presentation":"floating","sticky":"off","swallowing":false,"labels":[]},{"id":1,"identifier":null,"title":"kitty","app_id":"kitty","output":"FAKE-1","tags":[1],"focused":false,"urgent":false,"hidden":false,"presentation":"tiled","sticky":"off","swallowing":false,"labels":[]}]
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)

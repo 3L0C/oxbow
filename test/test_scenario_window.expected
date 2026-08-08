@@ -199,7 +199,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
-== focus prev ==
+== window focus prev ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:set_borders(firefox, w=4, rgba=72727272 71717171 69696969 ffffffff)
@@ -220,7 +220,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(kitty)
 render:set_presentation_mode
-== zoom ==
+== window zoom ==
 manage:propose_dimensions(firefox, 833x507)
 manage:propose_dimensions(kitty, 1021x1032)
 manage:focus_window(seat0, kitty)
@@ -289,7 +289,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(firefox)
 render:place_top(kitty)
 render:set_presentation_mode
-== focused ==
+== window query ==
 {"seat":"seat0","output":"FAKE-1","title":"kitty","app_id":"kitty","tags":[1]}
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -394,7 +394,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
-== galculator floats ==
+== window list --app-id ^galculator$ ==
 0: id=4 identifier=null title=galculator app_id=galculator output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off swallowing=false labels=
 manage:focus_window(seat0, galculator)
 manage:op_end(seat0)

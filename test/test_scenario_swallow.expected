@@ -89,7 +89,7 @@ manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode
 render:set_presentation_mode
-== rule: foot is a terminal ==
+== window rules add --app-id=^foot$ --swallow=terminal ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode
@@ -154,7 +154,7 @@ render:set_clip_box(foot, 0, 0, 0x0)
 render:set_content_clip_box(foot, 0, 0, 0x0)
 render:place_top(mpv)
 render:set_presentation_mode
-== toggle - foot returns ==
+== window toggle swallow ==
 manage:propose_dimensions(mpv, 1021x1032)
 manage:propose_dimensions(foot, 833x1032)
 manage:focus_window(seat0, mpv)
@@ -184,7 +184,7 @@ render:set_content_clip_box(foot, 0, 0, 0x0)
 render:place_top(foot)
 render:place_top(mpv)
 render:set_presentation_mode
-== toggle - swallows foot again ==
+== window toggle swallow ==
 manage:propose_dimensions(mpv, 1872x1032)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)

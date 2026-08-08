@@ -1,31 +1,15 @@
-let cmd env (c : Oxbow_ipc.Command.t) = ignore @@ Harness.ipc env (Command c)
-
 let () =
   Harness.run
-  @@ fun env fake ~section ->
+  @@ fun _env fake ~section ~oxctl ->
   section "arrive" (fun () ->
     Fake_river.add_output fake ~name:"FAKE-1";
     Fake_river.add_seat fake ~name:"seat0";
     Fake_river.add_window fake ~app_id:(Some "kitty");
     Fake_river.add_window fake ~app_id:(Some "emacs"));
-  section "emacs tag 2" (fun () ->
-    cmd
-      env
-      (Window
-         (Tag
-            { tags = Concrete (Oxbow_core.Tag.Set.singleton 2)
-            ; follow = false
-            ; target = One Focused
-            })));
-  section "sticky kitty - all" (fun () ->
-    cmd env (Window (Set_sticky { scope = All; target = One Focused })));
-  section "view tag 2" (fun () ->
-    cmd env (Tag (View (Concrete (Oxbow_core.Tag.Set.singleton 2)))));
-  section "sticky kitty - occupied" (fun () ->
-    cmd env (Window (Set_sticky { scope = Occupied; target = One Focused })));
-  section "view tag 3" (fun () ->
-    cmd env (Tag (View (Concrete (Oxbow_core.Tag.Set.singleton 3)))));
-  section "focused" (fun () ->
-    Harness.ipc env (Query Focused)
-    |> Option.iter (fun j -> print_endline @@ Yojson.Safe.to_string j))
+  oxctl "window tag set 2";
+  oxctl "window toggle sticky all";
+  oxctl "tag view 2";
+  oxctl "window sticky occupied";
+  oxctl "tag view 3";
+  oxctl "window query"
 ;;

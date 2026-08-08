@@ -6,12 +6,13 @@ let setup () =
 ;;
 
 let test_boot () =
-  Harness.run @@ fun _env fake ~section:_ -> Fake_river.add_output fake ~name:"FAKE-1"
+  Harness.run
+  @@ fun _env fake ~section:_ ~oxctl:_ -> Fake_river.add_output fake ~name:"FAKE-1"
 ;;
 
 let test_admit () =
   Harness.run
-  @@ fun _env fake ~section:_ ->
+  @@ fun _env fake ~section:_ ~oxctl:_ ->
   Fake_river.add_output fake ~name:"FAKE-1";
   Fake_river.add_window fake ~app_id:(Some "foot");
   assert (
@@ -22,7 +23,7 @@ let test_admit () =
 
 let test_inlet_schedule () =
   Harness.run
-  @@ fun _env fake ~section:_ ->
+  @@ fun _env fake ~section:_ ~oxctl:_ ->
   Fake_river.add_output fake ~name:"FAKE-1";
   Fake_river.add_seat fake ~name:"seat0";
   let before = Fake_river.manage_dirty_count fake in
@@ -32,7 +33,7 @@ let test_inlet_schedule () =
 
 let test_idle_quiet () =
   Harness.run
-  @@ fun _env fake ~section:_ ->
+  @@ fun _env fake ~section:_ ~oxctl:_ ->
   Fake_river.add_output fake ~name:"FAKE-1";
   for _ = 1 to 100 do
     Eio.Fiber.yield ()

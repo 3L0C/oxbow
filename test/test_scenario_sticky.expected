@@ -151,7 +151,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
-== emacs tag 2 ==
+== window tag set 2 ==
 manage:propose_dimensions(kitty, 1872x1032)
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -179,7 +179,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
-== sticky kitty - all ==
+== window toggle sticky all ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -204,7 +204,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
-== view tag 2 ==
+== tag view 2 ==
 manage:propose_dimensions(kitty, 833x1032)
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -232,7 +232,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
-== sticky kitty - occupied ==
+== window sticky occupied ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -259,7 +259,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
-== view tag 3 ==
+== tag view 3 ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
@@ -283,7 +283,7 @@ render:hide(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:set_presentation_mode
-== focused ==
+== window query ==
 {"seat":"seat0","output":"FAKE-1","title":null,"app_id":null,"tags":null}
 manage:clear_focus(seat0)
 manage:op_end(seat0)

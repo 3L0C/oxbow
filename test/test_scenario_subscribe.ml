@@ -1,5 +1,3 @@
-let cmd env (c : Oxbow_ipc.Command.t) = ignore @@ Harness.ipc env (Command c)
-
 let wait_stable lines =
   let rec go last stable =
     if stable >= 50
@@ -14,7 +12,7 @@ let wait_stable lines =
 
 let () =
   Harness.run
-  @@ fun env fake ~section ->
+  @@ fun env fake ~section ~oxctl ->
   section "arrive" (fun () ->
     Fake_river.add_output fake ~name:"FAKE-1";
     Fake_river.add_seat fake ~name:"seat0";
@@ -26,12 +24,12 @@ let () =
        @@ Oxbow_ipc.Client.subscribe ~env ~socket:Harness.socket_path ~kinds:[] (fun l ->
          lines := l :: !lines))
     (fun () ->
-       cmd env (Tag (View (Concrete (Oxbow_core.Tag.Set.singleton 2))));
-       Fake_river.add_window fake ~app_id:(Some "emacs");
-       cmd env (Layout (Select { layout = Scrolling; scope = Focused }));
-       cmd env (Keymap (Mode (Declare "resize")));
-       cmd env (Keymap (Mode (Enter "resize")));
-       cmd env (Window (Focus_logical { dir = Next; warp = None; target = Focused }));
+       oxctl "tag view 2";
+       section "spawn emacs" (fun () -> Fake_river.add_window fake ~app_id:(Some "emacs"));
+       oxctl "layout scrolling";
+       oxctl "keymap mode declare resize";
+       oxctl "keymap mode enter resize";
+       oxctl "window focus next";
        Harness.settle fake;
        wait_stable lines;
        Harness.section "events";

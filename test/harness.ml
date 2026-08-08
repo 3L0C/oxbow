@@ -87,6 +87,10 @@ let run script =
       f ();
       dump_new fake
     in
+    let oxctl_helper t =
+      let args = String.split_on_char ' ' t in
+      section_helper t (fun () -> oxctl env args)
+    in
     Eio.Fiber.first
       (fun () ->
          ignore
@@ -97,7 +101,7 @@ let run script =
               ~net:(Eio.Stdenv.net env)
               ~clock:(Eio.Stdenv.clock env)
               ())
-      (fun () -> script env fake ~section:section_helper);
+      (fun () -> script env fake ~section:section_helper ~oxctl:oxctl_helper);
     raise Script_done
   with
   | Script_done -> ()

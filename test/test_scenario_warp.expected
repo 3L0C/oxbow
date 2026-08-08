@@ -151,7 +151,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
-== warp on ==
+== input pointer warp on ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -165,7 +165,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
-== focus next warps ==
+== window focus next ==
 manage:focus_window(seat0, kitty)
 manage:pointer_warp(seat0, (1479, 540))
 manage:op_end(seat0)
@@ -182,7 +182,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
-== focus next, --no-warp wins ==
+== window focus next --no-warp ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
@@ -198,7 +198,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
-== warp off ==
+== input pointer warp off ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -212,7 +212,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
-== focus next stays ==
+== window focus next ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
@@ -228,7 +228,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
-== focus next, --warp wins ==
+== window focus next --warp ==
 manage:focus_window(seat0, emacs)
 manage:pointer_warp(seat0, (534, 540))
 manage:op_end(seat0)

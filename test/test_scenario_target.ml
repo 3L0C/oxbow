@@ -1,10 +1,6 @@
 let () =
   Harness.run
-  @@ fun env fake ~section ->
-  let oxctl t =
-    let args = String.split_on_char ' ' t in
-    section t (fun () -> Harness.oxctl env args)
-  in
+  @@ fun _env fake ~section ~oxctl ->
   section "arrive" (fun () ->
     Fake_river.add_output fake ~name:"FAKE-1";
     Fake_river.add_seat fake ~name:"seat0";

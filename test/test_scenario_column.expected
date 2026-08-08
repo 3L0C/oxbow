@@ -239,7 +239,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
-== consume ==
+== window column consume ==
 manage:propose_dimensions(firefox, 927x507)
 manage:propose_dimensions(emacs, 927x507)
 manage:focus_window(seat0, firefox)
@@ -278,7 +278,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
-== focus last in column ==
+== window focus next ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:set_borders(firefox, w=4, rgba=72727272 71717171 69696969 ffffffff)
@@ -317,7 +317,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(emacs)
 render:set_presentation_mode
-== zoom last member ==
+== window zoom ==
 manage:propose_dimensions(firefox, 927x1032)
 manage:propose_dimensions(emacs, 927x1032)
 manage:focus_window(seat0, emacs)

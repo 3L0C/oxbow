@@ -37,5 +37,6 @@ val run
   :  (Eio_unix.Stdenv.base
       -> Fake_river.t
       -> section:(string -> (unit -> unit) -> unit)
+      -> oxctl:(string -> unit)
       -> unit)
   -> unit
