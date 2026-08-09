@@ -253,7 +253,7 @@ let case_flag =
         ])
 ;;
 
-let device_pattern_arg =
+let device_pattern_flag =
   Arg.(
     value
     & opt (some string) None
@@ -614,16 +614,16 @@ let move_to_flag =
 
 let bool_state = Cmdliner.Arg.enum [ "enabled", true; "disabled", false ]
 
-let bool_state_arg name ~doc ~docv =
+let bool_state_flag name ~doc ~docv =
   Arg.(value & opt (some bool_state) None & info [ name ] ~docv ~doc)
 ;;
 
-let accel_profile_arg =
+let accel_profile_flag =
   mk_enum "accel-profile" ~doc:"Set the pointer acceleration profile." ~docv:"PROFILE"
   @@ enum_of Input_rule.Accel_profile.to_string [ None; Flat; Adaptive; Custom ]
 ;;
 
-let accel_speed_arg =
+let accel_speed_flag =
   Arg.(
     value
     & opt (some float) None
@@ -633,16 +633,16 @@ let accel_speed_arg =
         ~doc:"Set the pointer acceleration speed. The range is -1.0 to 1.0.")
 ;;
 
-let button_map_arg name ~doc =
+let button_map_flag name ~doc =
   mk_enum name ~doc ~docv:"BUTTON" @@ enum_of Input_rule.Button_map.to_string [ Lrm; Lmr ]
 ;;
 
-let drag_lock_arg =
+let drag_lock_flag =
   mk_enum "drag-lock" ~doc:"Set the drag lock mode for tap-and-drag." ~docv:"OPTION"
   @@ enum_of Input_rule.Drag_lock.to_string [ Disabled; Enabled_timeout; Enabled_sticky ]
 ;;
 
-let three_finger_drag_arg =
+let three_finger_drag_flag =
   mk_enum
     "three-finger-drag"
     ~doc:"Set the drag gesture with three or four fingers."
@@ -650,33 +650,33 @@ let three_finger_drag_arg =
   @@ enum_of Input_rule.Three_finger_drag.to_string [ Disabled; Enabled_3fg; Enabled_4fg ]
 ;;
 
-let click_method_arg =
+let click_method_flag =
   mk_enum "click-method" ~doc:"Set the click method of the touchpad." ~docv:"METHOD"
   @@ enum_of Input_rule.Click_method.to_string [ None; Button_areas; Clickfinger ]
 ;;
 
-let natural_scroll_arg =
-  bool_state_arg
+let natural_scroll_flag =
+  bool_state_flag
     "natural-scroll"
     ~doc:"Enable or disable the natural scroll direction."
     ~docv:"OPTION"
 ;;
 
-let left_handed_arg =
-  bool_state_arg
+let left_handed_flag =
+  bool_state_flag
     "left-handed"
     ~doc:"Enable or disable the left-handed button layout."
     ~docv:"OPTION"
 ;;
 
-let middle_emulation_arg =
-  bool_state_arg
+let middle_emulation_flag =
+  bool_state_flag
     "middle-emulation"
     ~doc:"Enable or disable middle-button emulation."
     ~docv:"OPTION"
 ;;
 
-let scroll_factor_arg =
+let scroll_factor_flag =
   Arg.(
     value
     & opt (some float) None
@@ -686,14 +686,14 @@ let scroll_factor_arg =
         ~doc:"Multiply the scroll distance by $(docv).")
 ;;
 
-let scroll_method_arg =
+let scroll_method_flag =
   mk_enum "scroll-method" ~doc:"Set the scroll method of the device." ~docv:"METHOD"
   @@ enum_of
        Input_rule.Scroll_method.to_string
        [ No_scroll; Two_finger; Edge; On_button_down ]
 ;;
 
-let scroll_button_arg =
+let scroll_button_flag =
   mk_enum
     "scroll-button"
     ~doc:"Set the button that starts on-button-down scroll."
@@ -701,14 +701,14 @@ let scroll_button_arg =
   @@ enum_of Pointer_button.to_string Pointer_button.all
 ;;
 
-let send_events_arg =
+let send_events_flag =
   mk_enum "send-events" ~doc:"Set the send-events mode of the device." ~docv:"OPTION"
   @@ enum_of
        Input_rule.Send_events.to_string
        [ Enabled; Disabled; Disabled_on_external_mouse ]
 ;;
 
-let sticky_arg =
+let sticky_flag =
   mk_enum "sticky" ~doc:"Set the sticky state of the window." ~docv:"OPTION"
   @@ enum_of Sticky.to_string Sticky.all
 ;;
@@ -726,17 +726,29 @@ let label_arg =
   Arg.(required & pos 0 (some label_conv) None & info [] ~doc:"The label")
 ;;
 
-let swallow_arg =
+let swallow_flag =
   mk_enum "swallow" ~doc:"Set the swallow role of the window." ~docv:"ROLE"
   @@ enum_of Swallow_role.to_string Swallow_role.all
 ;;
 
-let label_as_arg =
+let label_as_flag =
   let open Cmdliner in
   Arg.(
     value
     & opt (some label_conv) None
-    & info [ "label-as" ] ~doc:"Add LABEL to matching windows")
+    & info [ "label-as" ] ~doc:"Add LABEL to matching windows.")
+;;
+
+let spawn_position_flag =
+  mk_enum "spawn-position" ~doc:"Set the stack position of the window." ~docv:"POSITION"
+  @@ enum_of Spawn_position.to_string Spawn_position.all
+;;
+
+let spawn_focus_flag =
+  bool_state_flag
+    "spawn-focus"
+    ~doc:"When enabled, the window takes focus on spawn."
+    ~docv:"OPTION"
 ;;
 
 let code_protocol_err = 1

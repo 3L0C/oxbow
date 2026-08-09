@@ -65,9 +65,9 @@ val swap_terms
     patterns match case-insensitively when set. *)
 val case_flag : Oxbow_core.Pattern.Case.t Cmdliner.Term.t
 
-(** [device_pattern_arg] is the [--name REGEX] flag for a PCRE regex on the input
+(** [device_pattern_flag] is the [--name REGEX] flag for a PCRE regex on the input
     device name. *)
-val device_pattern_arg : string option Cmdliner.Term.t
+val device_pattern_flag : string option Cmdliner.Term.t
 
 (** [output_name_arg] is the required leading [OUTPUT_NAME] positional. *)
 val output_name_arg : string Cmdliner.Term.t
@@ -162,74 +162,80 @@ val resize_to_flag : Oxbow_core.Window_rule.Effects.Resize_to.t option Cmdliner.
     rejects a list that does not hold two values. *)
 val move_to_flag : Oxbow_core.Window_rule.Effects.Move_to.t option Cmdliner.Term.t
 
-(** [bool_state_arg name ~doc ~docv] is the optional flag --[name]. The flag
+(** [bool_state_flag name ~doc ~docv] is the optional flag --[name]. The flag
     takes enabled or disabled. *)
-val bool_state_arg : string -> doc:string -> docv:string -> bool option Cmdliner.Term.t
+val bool_state_flag : string -> doc:string -> docv:string -> bool option Cmdliner.Term.t
 
-(** [accel_profile_arg] is the [--accel-profile] flag accepting only valid
+(** [accel_profile_flag] is the [--accel-profile] flag accepting only valid
     profile names. *)
-val accel_profile_arg : Oxbow_core.Input_rule.Accel_profile.t option Cmdliner.Term.t
+val accel_profile_flag : Oxbow_core.Input_rule.Accel_profile.t option Cmdliner.Term.t
 
-(** [accel_speed_arg] is the [--accel-speed] flag taking a speed in the range of
+(** [accel_speed_flag] is the [--accel-speed] flag taking a speed in the range of
     -1.0 to 1.0. *)
-val accel_speed_arg : float option Cmdliner.Term.t
+val accel_speed_flag : float option Cmdliner.Term.t
 
-(** [button_map_arg name ~doc] is the --[name] flag accepting a valid button
+(** [button_map_flag name ~doc] is the --[name] flag accepting a valid button
     map. *)
-val button_map_arg
+val button_map_flag
   :  string
   -> doc:string
   -> Oxbow_core.Input_rule.Button_map.t option Cmdliner.Term.t
 
-(** [drag_lock_arg] is the [--drag-lock] flag accepting a drag lock setting. *)
-val drag_lock_arg : Oxbow_core.Input_rule.Drag_lock.t option Cmdliner.Term.t
+(** [drag_lock_flag] is the [--drag-lock] flag accepting a drag lock setting. *)
+val drag_lock_flag : Oxbow_core.Input_rule.Drag_lock.t option Cmdliner.Term.t
 
-(** [three_finger_drag_arg] is the [--three-finger-drag] flag accepting a valid
+(** [three_finger_drag_flag] is the [--three-finger-drag] flag accepting a valid
     three finger drag setting. *)
-val three_finger_drag_arg
+val three_finger_drag_flag
   : Oxbow_core.Input_rule.Three_finger_drag.t option Cmdliner.Term.t
 
-(** [click_method_arg] is the [--click-method] flag accepting a valid click
+(** [click_method_flag] is the [--click-method] flag accepting a valid click
     method. *)
-val click_method_arg : Oxbow_core.Input_rule.Click_method.t option Cmdliner.Term.t
+val click_method_flag : Oxbow_core.Input_rule.Click_method.t option Cmdliner.Term.t
 
-(** [natural_scroll_arg] is the [--natural-scroll] flag to enable or disable
+(** [natural_scroll_flag] is the [--natural-scroll] flag to enable or disable
     natural scrolling. *)
-val natural_scroll_arg : bool option Cmdliner.Term.t
+val natural_scroll_flag : bool option Cmdliner.Term.t
 
-(** [left_handed_arg] is the [--left-handed] flag to enable or disable left
+(** [left_handed_flag] is the [--left-handed] flag to enable or disable left
     handed button layout. *)
-val left_handed_arg : bool option Cmdliner.Term.t
+val left_handed_flag : bool option Cmdliner.Term.t
 
-(** [middle_emulation_arg] is the [--middle-emulation] flag to enable or disable
+(** [middle_emulation_flag] is the [--middle-emulation] flag to enable or disable
     middle-button emulation. *)
-val middle_emulation_arg : bool option Cmdliner.Term.t
+val middle_emulation_flag : bool option Cmdliner.Term.t
 
-(** [scroll_factor_arg] is the [--scroll-factor] flag to set the scroll factor. *)
-val scroll_factor_arg : float option Cmdliner.Term.t
+(** [scroll_factor_flag] is the [--scroll-factor] flag to set the scroll factor. *)
+val scroll_factor_flag : float option Cmdliner.Term.t
 
-(** [scroll_method_arg] is the [--scroll-method] flag accepting a valid scroll
+(** [scroll_method_flag] is the [--scroll-method] flag accepting a valid scroll
     method. *)
-val scroll_method_arg : Oxbow_core.Input_rule.Scroll_method.t option Cmdliner.Term.t
+val scroll_method_flag : Oxbow_core.Input_rule.Scroll_method.t option Cmdliner.Term.t
 
-(** [scroll_button_arg] is the [--scroll-button] flag accepting a valid scroll
+(** [scroll_button_flag] is the [--scroll-button] flag accepting a valid scroll
     button. *)
-val scroll_button_arg : Oxbow_core.Pointer_button.t option Cmdliner.Term.t
+val scroll_button_flag : Oxbow_core.Pointer_button.t option Cmdliner.Term.t
 
-(** [send_events_arg] is the [--send-events] flag accepting a valid send event. *)
-val send_events_arg : Oxbow_core.Input_rule.Send_events.t option Cmdliner.Term.t
+(** [send_events_flag] is the [--send-events] flag accepting a valid send event. *)
+val send_events_flag : Oxbow_core.Input_rule.Send_events.t option Cmdliner.Term.t
 
-(** [sticky_arg] is the [--sticky] flag accepting a valid sticky scope. *)
-val sticky_arg : Oxbow_core.Sticky.t option Cmdliner.Term.t
+(** [sticky_flag] is the [--sticky] flag accepting a valid sticky scope. *)
+val sticky_flag : Oxbow_core.Sticky.t option Cmdliner.Term.t
 
 (** [label_arg] is the required trailing [LABEL] positional. *)
 val label_arg : string Cmdliner.Term.t
 
-(** [swallow_arg] is the [--swallow] flag accepting a valid role. *)
-val swallow_arg : Oxbow_core.Swallow_role.t option Cmdliner.Term.t
+(** [swallow_flag] is the [--swallow] flag accepting a valid role. *)
+val swallow_flag : Oxbow_core.Swallow_role.t option Cmdliner.Term.t
 
-(** [label_as_arg] is the [--label-as] flag accepting a valid label. *)
-val label_as_arg : string option Cmdliner.Term.t
+(** [label_as_flag] is the [--label-as] flag accepting a valid label. *)
+val label_as_flag : string option Cmdliner.Term.t
+
+(** [spawn_position_flag] is the [--spawn-position] flag accepting a valid position. *)
+val spawn_position_flag : Oxbow_core.Spawn_position.t option Cmdliner.Term.t
+
+(** [spawn_focus_flag] is the [--spawn-focus] flag changes focus on spawn. *)
+val spawn_focus_flag : bool option Cmdliner.Term.t
 
 (** [render_lines json] formats a JSON list reply for display: one line per
     item, with the leading list index. The index is the remove index of the

@@ -330,6 +330,8 @@ module Window = struct
         { label : string
         ; target : Target.Window.Any.t
         } [@name "label_remove"]
+    | Spawn_position of Spawn_position.t [@name "spawn_position"]
+    | Spawn_focus of bool [@name "spawn_focus"]
   [@@deriving yojson]
 end
 

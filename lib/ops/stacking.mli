@@ -17,6 +17,19 @@ val restore_focus_order : like:Oxbow_state.Window.t list -> Oxbow_state.Output.t
     {b Effects:} mutates WM state *)
 val push : Oxbow_state.Window.t list -> Oxbow_state.Output.t -> unit
 
+(** [spawn ~position ~focus ~window output] inserts the spawning [window] into
+    [output]'s wm and focus stacks. [position] picks the wm stack slot relative
+    to the focused window. When [focus] is [true] the window becomes the head of
+    the focus stack. When [focus] is false it goes directly behind the head.
+
+    {b Effects:} mutates WM state *)
+val spawn
+  :  position:Oxbow_core.Spawn_position.t
+  -> focus:bool
+  -> window:Oxbow_state.Window.t
+  -> Oxbow_state.Output.t
+  -> unit
+
 (** [focus_window window] focuses [window].
 
     {b Effects:} mutates WM state *)

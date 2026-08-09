@@ -39,8 +39,18 @@ let dump_new fake =
   seen := List.length all
 ;;
 
+(* Run.loop binds the ipc socket late in its setup. Retry with yields
+   until the bind wins the race with the script fiber. *)
+let rec send ?seat ?(tries = 1000) env body =
+  match Oxbow_ipc.Client.send ~env ?seat ~socket:socket_path body with
+  | Error (Connection_failed _) when tries > 0 ->
+    Eio.Fiber.yield ();
+    send ?seat ~tries:(tries - 1) env body
+  | r -> r
+;;
+
 let ipc env body =
-  match Oxbow_ipc.Client.send ~env ~socket:socket_path body with
+  match send env body with
   | Ok reply -> reply
   | Error (Connection_failed msg) | Error (Protocol msg) -> failwith msg
 ;;
@@ -63,7 +73,7 @@ let oxctl env args =
   match !stash with
   | None -> ()
   | Some (render, seat, body) ->
-    (match Oxbow_ipc.Client.send ~env ?seat ~socket:socket_path body with
+    (match send ?seat env body with
      | Ok (Some (`String s)) -> print_endline s
      | Ok (Some data) ->
        print_endline

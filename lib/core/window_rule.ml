@@ -45,6 +45,8 @@ module Effects = struct
     ; sticky : Sticky.t option [@yojson.option]
     ; swallow : Swallow_role.t option [@yojson.option]
     ; label_as : string option [@yojson.option]
+    ; spawn_position : Spawn_position.t option [@yojson.option]
+    ; spawn_focus : bool option [@yojson.option]
     }
   [@@deriving yojson]
 

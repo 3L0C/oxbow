@@ -3,6 +3,8 @@ open! Oxbow_state
 
 let ( |>? ) o f = Option.iter f o
 
+(* Effect order: output, tags, presentation, resize, move, sticky, swallow, label.
+   Roughly, placement targets -> mode -> geometry -> etc. *)
 let apply_effects
       (queue : Window.Request.t -> unit)
       (e : Window_rule.Effects.t)
@@ -14,13 +16,13 @@ let apply_effects
    |>? function
    | Float -> queue Float
    | Tile -> queue Tile
-   | Fullscreen -> queue (Fullscreen { output = window.output })
+   | Fullscreen -> queue (Fullscreen { output = None })
    | Windowed -> queue Exit_fullscreen
    | Maximize -> queue Maximize
    | Fake_fullscreen -> queue Fake_fullscreen);
   (e.resize_to |>? fun { w; h } -> queue (Resize_to { w; h }));
-  (e.sticky |>? fun s -> queue (Set_sticky s));
   (e.move_to |>? fun { x; y } -> queue (Move_to { x; y }));
+  (e.sticky |>? fun s -> queue (Set_sticky s));
   (e.swallow
    |>? fun r ->
    Window.set_swallow_role
@@ -73,4 +75,24 @@ let remove (wm : Wm.t) index =
   | Some _ ->
     Config.remove_window_rule wm index;
     Ok None
+;;
+
+let spawn_for (wm : Wm.t) (window : Window.t) =
+  List.fold_left
+    (fun (position, focus) ({ pattern; effects } : Window_rule.t) ->
+       match Window_pattern.compile pattern with
+       | Error _ -> position, focus
+       | Ok matches ->
+         if
+           matches
+             ~title:window.title
+             ~app_id:window.app_id
+             ~identifier:window.identifier
+             ~labels:window.labels
+         then
+           ( Option.value effects.spawn_position ~default:position
+           , Option.value effects.spawn_focus ~default:focus )
+         else position, focus)
+    (wm.config.spawn.position, wm.config.spawn.focus)
+    wm.config.rules.window
 ;;

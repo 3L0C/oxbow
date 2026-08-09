@@ -18,3 +18,10 @@ val add
 
     {b Effects:} mutates WM state *)
 val remove : Oxbow_state.Wm.t -> int -> (Yojson.Safe.t option, string) result
+
+(** [spawn_for wm window] resolves the spawn position and the focus flag for
+    [window]. *)
+val spawn_for
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Window.t
+  -> Oxbow_core.Spawn_position.t * bool

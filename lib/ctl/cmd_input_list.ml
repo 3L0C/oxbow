@@ -8,7 +8,7 @@ let role_arg =
 
 let command_term =
   let open Cmdliner.Term.Syntax in
-  let+ pattern = Ctl_cli.device_pattern_arg
+  let+ pattern = Ctl_cli.device_pattern_flag
   and+ case = Ctl_cli.case_flag
   and+ role = role_arg in
   Query.Input_devices { pattern; case; role }

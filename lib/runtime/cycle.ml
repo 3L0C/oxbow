@@ -94,7 +94,8 @@ let manage_window ctx (window : Window.t) =
 
 let manage_new_window ctx (window : Window.t) =
   let wm = Ctx.wm ctx in
-  Option.iter (Stacking.push [ window ]) window.output;
+  let position, focus = Window_rules.spawn_for wm window in
+  Option.iter (Stacking.spawn ~position ~focus ~window) window.output;
   if window.is_fixed || Option.is_some window.parent
   then Window.set_presentation window Floating;
   Window_rules.apply_for wm window;

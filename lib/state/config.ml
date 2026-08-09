@@ -38,6 +38,7 @@ let default () =
   ; cursor_theme = None
   ; modkey = Wire.Modifiers.mod4
   ; rules = { window = []; input = [] }
+  ; spawn = { position = Master; focus = true }
   ; modes = [ Mode.normal; Mode.locked ]
   ; focus_follows_pointer = Not_scrolling
   ; warp_on_focus = false
@@ -90,6 +91,9 @@ let set_default_width (td : Data.t) ~(delta : float Delta.t) =
   in
   td.scrolling.default_width <- Width_fac.of_float f
 ;;
+
+let set_spawn_position (wm : Types.Wm.t) position = wm.config.spawn.position <- position
+let set_spawn_focus (wm : Types.Wm.t) b = wm.config.spawn.focus <- b
 
 let copy_tag_data (td : Data.t) =
   Data.

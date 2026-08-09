@@ -114,6 +114,12 @@ let handle_window wm seat (cmd : Command.Window.t) =
   | Rule_remove index -> Window_rules.remove wm index
   | Label_add { label; target } -> Labels.window_add wm seat target label
   | Label_remove { label; target } -> Labels.window_remove wm seat target label
+  | Spawn_position position ->
+    Config.set_spawn_position wm position;
+    Ok None
+  | Spawn_focus b ->
+    Config.set_spawn_focus wm b;
+    Ok None
 ;;
 
 let handle_wm ctx _seat (cmd : Command.Wm.t) =

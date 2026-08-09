@@ -31,6 +31,13 @@ module Config = struct
       }
   end
 
+  module Spawn = struct
+    type t =
+      { mutable position : Oxbow_core.Spawn_position.t
+      ; mutable focus : bool
+      }
+  end
+
   type t =
     { default_tag_config : Data.t
     ; borders : Border.t
@@ -38,6 +45,7 @@ module Config = struct
     ; mutable modes : string list
     ; mutable modkey : Wire.Modifiers.t
     ; rules : Rules.t
+    ; spawn : Spawn.t
     ; mutable focus_follows_pointer : Oxbow_core.Focus_follows_policy.t
     ; mutable warp_on_focus : bool
     ; mutable repeat_rate : int

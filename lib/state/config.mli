@@ -47,8 +47,19 @@ val set_border_color
 (** [set_default_width td ~delta] applies [delta] to the default column width of
     [td].
 
-    {b Effects:} mutates [td] *)
+    {b Effects:} mutates WM state *)
 val set_default_width : Data.t -> delta:float Oxbow_core.Delta.t -> unit
+
+(** [set_spawn_position wm position] sets [position] as the spawn position of
+    new windows for [wm].
+
+    {b Effects:} mutates WM state *)
+val set_spawn_position : Types.Wm.t -> Oxbow_core.Spawn_position.t -> unit
+
+(** [set_spawn_focus wm b] sets [wm]'s focus on spawn to [b].
+
+    {b Effects:} mutates WM state *)
+val set_spawn_focus : Types.Wm.t -> bool -> unit
 
 (** [copy_tag_data td] is a copy of [td] that shares no mutable record with
     [td]. *)

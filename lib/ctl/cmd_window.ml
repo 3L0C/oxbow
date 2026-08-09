@@ -15,6 +15,7 @@ let cmd, bind_cmd =
     ; Cmd_window_rule.(cmd, bind_cmd)
     ; Cmd_window_send.(cmd, bind_cmd)
     ; Cmd_window_shift.(cmd, bind_cmd)
+    ; Cmd_window_spawn.(cmd, bind_cmd)
     ; Cmd_window_sticky.(cmd, bind_cmd)
     ; Cmd_window_tag.(cmd, bind_cmd)
     ; Cmd_window_toggle.(cmd, bind_cmd)
