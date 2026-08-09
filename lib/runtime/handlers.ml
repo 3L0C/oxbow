@@ -34,7 +34,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
         wm.river_lsh_v1
         ~output:river_output
       @@ object
-           inherit [_] River.Layer_shell.River_layer_shell_output_v1.v1
+           inherit [_] River.Obj.Layer_shell.Client.output
 
            method on_non_exclusive_area _ ~x ~y ~width ~height =
              Exceptions.guard "on_non_exclusive_area"
@@ -71,7 +71,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
     Wayland.Proxy.Handler.attach
       river_output
       object
-        inherit [_] River.Window_management.River_output_v1.v4
+        inherit [_] River.Obj.Window_management.Client.output
         method on_removed _ = Output.set_lifecycle output Removed
 
         method on_wl_output _ ~name =
@@ -147,7 +147,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
     let layer_shell =
       River.Layer_shell.River_layer_shell_v1.get_seat wm.river_lsh_v1 ~seat:river_seat
       @@ object
-           inherit [_] River.Layer_shell.River_layer_shell_seat_v1.v1
+           inherit [_] River.Obj.Layer_shell.Client.seat
 
            method on_focus_none _ =
              Exceptions.guard "on_focus_none"
@@ -205,7 +205,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
     Wayland.Proxy.Handler.attach
       river_seat
       object
-        inherit [_] River.Window_management.River_seat_v1.v4
+        inherit [_] River.Obj.Window_management.Client.seat
         method on_removed _ = Seat.set_lifecycle seat Closing
 
         method on_pointer_enter _ ~window =
@@ -289,7 +289,7 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
     Wayland.Proxy.Handler.attach
       river_window
       object
-        inherit [_] River.Window_management.River_window_v1.v4
+        inherit [_] River.Obj.Window_management.Client.window
         method on_closed _ = Window.set_lifecycle window Closing
 
         method on_dimensions _ ~width ~height =
@@ -424,7 +424,7 @@ let on_input_device proxy (wm_box : Wm.t Box.t) =
     in
     Wayland.Proxy.Handler.attach proxy
     @@ object
-         inherit [_] River.Input.Management.River_input_device_v1.v1
+         inherit [_] River.Obj.Input.Management.Client.device
          method on_type _ ~type_ = device_kind := Some type_
          method on_name _ ~name = device_name := name
 
@@ -463,7 +463,7 @@ let on_libinput_device device (wm_box : Wm.t Box.t) =
     let device_box : Input_device.t Box.t = { body = None } in
     Wayland.Proxy.Handler.attach device
     @@ object
-         inherit [_] River.Input.Config.River_libinput_device_v1.v2
+         inherit [_] River.Obj.Input.Config.Client.device
 
          method on_input_device _ ~device:paired =
            Exceptions.guard "on_input_device"
@@ -573,7 +573,7 @@ let on_xkb_keyboard keyboard (wm_box : Wm.t Box.t) =
     let device_ref : int32 option ref = ref None in
     Wayland.Proxy.Handler.attach keyboard
     @@ object
-         inherit [_] River.Xkb.Config.River_xkb_keyboard_v1.v1
+         inherit [_] River.Obj.Xkb.Config.Client.keyboard
 
          method on_input_device _ ~device =
            Exceptions.guard "on_input_device"

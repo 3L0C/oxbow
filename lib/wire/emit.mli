@@ -1,8 +1,8 @@
 (** [manage_dirty wm] asks river for a manage sequence. *)
-val manage_dirty : Wire.Obj.Window_management.Wm.t -> unit
+val manage_dirty : Wire.Obj.Window_management.t -> unit
 
 (** [exit_session wm] asks river to end the session. *)
-val exit_session : Wire.Obj.Window_management.Wm.t -> unit
+val exit_session : Wire.Obj.Window_management.t -> unit
 
 (** [set_xcursor_theme seat ~name ~size] sets the cursor theme of [seat]. *)
 val set_xcursor_theme

@@ -411,7 +411,7 @@ and Wm : sig
   end
 
   type t =
-    { river_wm_v1 : Wire.Obj.Window_management.Wm.t
+    { river_wm_v1 : Wire.Obj.Window_management.t
     ; river_xkb_v1 : Wire.Obj.Xkb.Bindings.t
     ; river_lsh_v1 : Wire.Obj.Layer_shell.t
     ; river_input_v1 : Wire.Obj.Input.Management.t

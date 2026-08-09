@@ -19,7 +19,7 @@ let set_repeat_info device ~rate ~delay =
 let get_node window =
   River.Window_management.River_window_v1.get_node window
   @@ object
-       inherit [_] River.Window_management.River_node_v1.v4
+       inherit [_] River.Obj.Window_management.Client.node
      end
 ;;
 
@@ -27,7 +27,7 @@ let create_xkb_binding river_xkb_v1 ~seat ~keysym ~mods ~on_pressed =
   River.Xkb.Bindings.River_xkb_bindings_v1.get_xkb_binding
     river_xkb_v1
     object
-      inherit [_] River.Xkb.Bindings.River_xkb_binding_v1.v3
+      inherit [_] River.Obj.Xkb.Bindings.Client.binding
       method on_stop_repeat _ = ()
       method on_released _ = ()
       method on_pressed _ = on_pressed ()
@@ -41,7 +41,7 @@ let create_pointer_binding seat ~button ~mods ~on_pressed =
   River.Window_management.River_seat_v1.get_pointer_binding
     seat
     object
-      inherit [_] River.Window_management.River_pointer_binding_v1.v4
+      inherit [_] River.Obj.Window_management.Client.pointer_binding
       method on_released _ = ()
       method on_pressed _ = on_pressed ()
     end
@@ -53,7 +53,7 @@ let create_xkb_bindings_seat xkb ~seat ~on_modifiers_update =
   River.Xkb.Bindings.River_xkb_bindings_v1.get_seat
     xkb
     object
-      inherit [_] River.Xkb.Bindings.River_xkb_bindings_seat_v1.v3
+      inherit [_] River.Obj.Xkb.Bindings.Client.seat
       method on_modifiers_update _ ~old ~new_ = on_modifiers_update ~old ~new_
       method on_ate_unbound_key _ = ()
     end
@@ -102,7 +102,7 @@ let destroy_input_device device =
 let libinput_result ~device ~setting =
   Wayland.Proxy.Handler.cast_version
     object
-      inherit [_] River.Input.Config.River_libinput_result_v1.v1
+      inherit [_] River.Obj.Input.Config.Client.result
       method on_success = ()
 
       method on_unsupported =

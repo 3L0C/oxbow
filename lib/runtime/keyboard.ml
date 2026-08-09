@@ -23,7 +23,7 @@ let set_layout_file wm ~path =
       River.Xkb.Config.River_xkb_config_v1.create_keymap
         wm.river_xkb_config_v1
         object
-          inherit [_] River.Xkb.Config.River_xkb_keymap_v1.v1
+          inherit [_] River.Obj.Xkb.Config.Client.keymap
 
           method on_success proxy =
             let self = Wayland.Proxy.cast_version proxy in

@@ -7,7 +7,6 @@ module Xkb_server = River.Server.Xkb.Bindings
 module Xkb_proto = River.Proto.Xkb.Bindings
 module Lsh_server = River.Server.Layer_shell
 module Lsh_proto = River.Proto.Layer_shell
-module Input_server = River.Server.Input
 module Input_proto = River.Proto.Input
 module Cfg_server = River.Server.Xkb.Config
 module Cfg_proto = River.Proto.Xkb.Config
@@ -24,14 +23,15 @@ type t =
   { mutable phase : phase
   ; mutable trace : string list
   ; mutable manage_dirty_count : int
-  ; mutable bindings : [ `V3 ] Xkb_server.River_xkb_binding_v1.t list
-  ; mutable wm : [ `V5 ] Wm_server.River_window_manager_v1.t option
+  ; mutable bindings : River.Obj.Xkb.Bindings.v Xkb_server.River_xkb_binding_v1.t list
+  ; mutable wm : River.Obj.Window_management.v Wm_server.River_window_manager_v1.t option
   ; mutable registry : [ `V1 ] Wl.Wl_registry.t option
   ; mutable next_global : int32
   ; mutable wl_outputs : (int32 * string) list
   ; mutable wl_seats : (int32 * string) list
   ; mutable dirty : bool
-  ; mutable windows : (string option * [ `V5 ] Wm_server.River_window_v1.t) list
+  ; mutable windows :
+      (string option * River.Obj.Window_management.v Wm_server.River_window_v1.t) list
   ; mutable owners : (int32 * string) list
   ; phase_done : Eio.Condition.t
   ; wm_ready : Eio.Condition.t
@@ -128,7 +128,7 @@ let recordf t p name fmt =
 
 let node_handlers t =
   object
-    inherit [_] Wm_server.River_node_v1.v5
+    inherit [_] River.Obj.Window_management.Server.node
     method on_set_position n ~x ~y = recordf t n "set_position" "%ld, %ld" x y
     method on_place_top n = recordl t n "place_top"
     method on_place_bottom n = recordl t n "place_bottom"
@@ -140,7 +140,7 @@ let node_handlers t =
 
 let decoration_handlers t =
   object
-    inherit [_] Wm_server.River_decoration_v1.v5
+    inherit [_] River.Obj.Window_management.Server.decoration
     method on_sync_next_commit d = recordl t d "sync_next_commit"
     method on_set_offset d ~x ~y = recordf t d "set_offset" "%ld, %ld" x y
     method on_destroy d = recordl t d "destroy"
@@ -149,7 +149,7 @@ let decoration_handlers t =
 
 let output_handlers t =
   object
-    inherit [_] Wm_server.River_output_v1.v5
+    inherit [_] River.Obj.Window_management.Server.output
     method on_set_presentation_mode _ ~mode:_ = record t "set_presentation_mode"
     method on_destroy _ = record t "destroy"
   end
@@ -157,7 +157,7 @@ let output_handlers t =
 
 let pointer_binding_handlers t =
   object
-    inherit [_] Wm_server.River_pointer_binding_v1.v5
+    inherit [_] River.Obj.Window_management.Server.pointer_binding
     method on_enable _ = record t "enable"
     method on_disable _ = record t "disable"
     method on_destroy _ = record t "destroy"
@@ -166,7 +166,7 @@ let pointer_binding_handlers t =
 
 let seat_handlers t =
   object
-    inherit [_] Wm_server.River_seat_v1.v5
+    inherit [_] River.Obj.Window_management.Server.seat
 
     method on_set_xcursor_theme s ~name ~size =
       recordf t s "set_xcursor_theme" "%s, %ldpx" name size
@@ -187,7 +187,7 @@ let seat_handlers t =
 
 let window_handlers t =
   object
-    inherit [_] Wm_server.River_window_v1.v5
+    inherit [_] River.Obj.Window_management.Server.window
 
     method on_propose_dimensions w ~width ~height =
       recordf t w "propose_dimensions" "%ldx%ld" width height
@@ -242,7 +242,7 @@ let window_handlers t =
 
 let shell_surface_handlers t =
   object
-    inherit [_] Wm_server.River_shell_surface_v1.v5
+    inherit [_] River.Obj.Window_management.Server.shell_surface
 
     method on_get_node w node =
       Proxy.Handler.attach node (node_handlers t);
@@ -256,7 +256,7 @@ let shell_surface_handlers t =
 
 let wm_handlers t =
   (object
-     inherit [_] Wm_server.River_window_manager_v1.v5
+     inherit [_] River.Obj.Window_management.Server.t
      method on_manage_finish _ = finish_phase t
      method on_render_finish _ = finish_phase t
 
@@ -271,12 +271,15 @@ let wm_handlers t =
      method on_get_shell_surface _ ss ~surface:_ =
        Proxy.Handler.attach ss (shell_surface_handlers t)
    end
-    :> ([ `River_window_manager_v1 ], [ `V5 ], [ `Server ]) Proxy.Service_handler.t)
+    :> ( [ `River_window_manager_v1 ]
+         , River.Obj.Window_management.v
+         , [ `Server ] )
+         Proxy.Service_handler.t)
 ;;
 
 let binding_handlers t =
   object
-    inherit [_] Xkb_server.River_xkb_binding_v1.v3
+    inherit [_] River.Obj.Xkb.Bindings.Server.binding
     method on_enable _ = record t "enable"
     method on_disable _ = record t "disable"
     method on_set_layout_override _ ~layout:_ = record t "set_layout_override"
@@ -286,7 +289,7 @@ let binding_handlers t =
 
 let bindings_seat_handlers t =
   object
-    inherit [_] Xkb_server.River_xkb_bindings_seat_v1.v3
+    inherit [_] River.Obj.Xkb.Bindings.Server.seat
     method on_modifiers_watch _ ~modifiers:_ = record t "modifiers_watch"
     method on_ensure_next_key_eaten _ = record t "ensure_next_key_eaten"
     method on_cancel_ensure_next_key_eaten _ = record t "cancel_ensure_next_key_eaten"
@@ -296,7 +299,7 @@ let bindings_seat_handlers t =
 
 let xkb_bindings_handlers t =
   (object
-     inherit [_] Xkb_server.River_xkb_bindings_v1.v3
+     inherit [_] River.Obj.Xkb.Bindings.Server.t
      method on_destroy _ = record t "destroy"
 
      method on_get_seat _ s ~seat:_ =
@@ -308,12 +311,15 @@ let xkb_bindings_handlers t =
        t.bindings <- t.bindings @ [ Proxy.cast_version binding ];
        record t "get_xkb_binding"
    end
-    :> ([ `River_xkb_bindings_v1 ], [ `V3 ], [ `Server ]) Proxy.Service_handler.t)
+    :> ( [ `River_xkb_bindings_v1 ]
+         , River.Obj.Xkb.Bindings.v
+         , [ `Server ] )
+         Proxy.Service_handler.t)
 ;;
 
 let layer_shell_output_handlers _t =
   object
-    inherit [_] Lsh_server.River_layer_shell_output_v1.v1
+    inherit [_] River.Obj.Layer_shell.Server.output
     method on_set_default _ = ()
     method on_destroy _ = ()
   end
@@ -321,14 +327,14 @@ let layer_shell_output_handlers _t =
 
 let layer_shell_seat_handlers _t =
   object
-    inherit [_] Lsh_server.River_layer_shell_seat_v1.v1
+    inherit [_] River.Obj.Layer_shell.Server.seat
     method on_destroy _ = ()
   end
 ;;
 
 let layer_shell_handlers t =
   (object
-     inherit [_] Lsh_server.River_layer_shell_v1.v1
+     inherit [_] River.Obj.Layer_shell.Server.t
      method on_destroy _ = ()
 
      method on_get_output _ o ~output:_ =
@@ -342,40 +348,49 @@ let layer_shell_handlers t =
 
      method on_get_seat _ s ~seat:_ = Proxy.Handler.attach s (layer_shell_seat_handlers t)
    end
-    :> ([ `River_layer_shell_v1 ], [ `V1 ], [ `Server ]) Proxy.Service_handler.t)
+    :> ( [ `River_layer_shell_v1 ]
+         , River.Obj.Layer_shell.v
+         , [ `Server ] )
+         Proxy.Service_handler.t)
 ;;
 
 let input_manager_handlers _t =
   (object
-     inherit [_] Input_server.Management.River_input_manager_v1.v1
+     inherit [_] River.Obj.Input.Management.Server.t
      method on_create_seat _ ~name:_ = ()
      method on_destroy_seat _ ~name:_ = ()
      method on_stop _ = ()
      method on_destroy _ = ()
    end
-    :> ([ `River_input_manager_v1 ], [ `V1 ], [ `Server ]) Proxy.Service_handler.t)
+    :> ( [ `River_input_manager_v1 ]
+         , River.Obj.Input.Management.v
+         , [ `Server ] )
+         Proxy.Service_handler.t)
 ;;
 
 let libinput_manager_handlers _t =
   (object
-     inherit [_] Input_server.Config.River_libinput_config_v1.v2
+     inherit [_] River.Obj.Input.Config.Server.t
      method on_create_accel_config _ _ ~profile:_ = ()
      method on_stop _ = ()
      method on_destroy _ = ()
    end
-    :> ([ `River_libinput_config_v1 ], [ `V2 ], [ `Server ]) Proxy.Service_handler.t)
+    :> ( [ `River_libinput_config_v1 ]
+         , River.Obj.Input.Config.v
+         , [ `Server ] )
+         Proxy.Service_handler.t)
 ;;
 
 let keymap_handlers _t =
   object
-    inherit [_] Cfg_server.River_xkb_keymap_v1.v1
+    inherit [_] River.Obj.Xkb.Config.Server.keymap
     method on_destroy _ = ()
   end
 ;;
 
 let xkb_config_handlers t =
   (object
-     inherit [_] Cfg_server.River_xkb_config_v1.v1
+     inherit [_] River.Obj.Xkb.Config.Server.t
      method on_stop _ = ()
      method on_destroy _ = ()
 
@@ -384,7 +399,10 @@ let xkb_config_handlers t =
        Proxy.Handler.attach keymap (keymap_handlers t);
        Cfg_server.River_xkb_keymap_v1.success keymap
    end
-    :> ([ `River_xkb_config_v1 ], [ `V1 ], [ `Server ]) Proxy.Service_handler.t)
+    :> ( [ `River_xkb_config_v1 ]
+         , River.Obj.Xkb.Config.v
+         , [ `Server ] )
+         Proxy.Service_handler.t)
 ;;
 
 let wl_output_handlers _t =
@@ -475,32 +493,32 @@ let display_handlers t =
         t
         ~name:name_wm
         ~interface:Wm_proto.River_window_manager_v1.interface
-        ~version:5l;
+        ~version:River.Obj.Window_management.version;
       announce
         t
         ~name:name_xkb_bindings
         ~interface:Xkb_proto.River_xkb_bindings_v1.interface
-        ~version:3l;
+        ~version:River.Obj.Xkb.Bindings.version;
       announce
         t
         ~name:name_layer_shell
         ~interface:Lsh_proto.River_layer_shell_v1.interface
-        ~version:1l;
+        ~version:River.Obj.Layer_shell.version;
       announce
         t
         ~name:name_input_manager
         ~interface:Input_proto.Management.River_input_manager_v1.interface
-        ~version:1l;
+        ~version:River.Obj.Input.Management.version;
       announce
         t
         ~name:name_libinput_manager
         ~interface:Input_proto.Config.River_libinput_config_v1.interface
-        ~version:2l;
+        ~version:River.Obj.Input.Config.version;
       announce
         t
         ~name:name_xkb_config
         ~interface:Cfg_proto.River_xkb_config_v1.interface
-        ~version:1l
+        ~version:River.Obj.Xkb.Config.version
   end
 ;;
 

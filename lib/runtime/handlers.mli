@@ -10,7 +10,7 @@ val on_finished : Oxbow_state.Wm.t Oxbow_state.Box.t -> unit
 
     {b Effects:} mutates WM state *)
 val on_manage_start
-  :  River.Obj.Window_management.Wm.t
+  :  River.Obj.Window_management.t
   -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
@@ -18,7 +18,7 @@ val on_manage_start
 
     {b Effects:} mutates WM state *)
 val on_output
-  :  River.Obj.Window_management.Wm.t
+  :  River.Obj.Window_management.t
   -> River.Obj.Window_management.Output.t
   -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
@@ -27,7 +27,7 @@ val on_output
 
     {b Effects:} mutates WM state *)
 val on_render_start
-  :  River.Obj.Window_management.Wm.t
+  :  River.Obj.Window_management.t
   -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
@@ -35,7 +35,7 @@ val on_render_start
 
     {b Effects:} mutates WM state *)
 val on_seat
-  :  River.Obj.Window_management.Wm.t
+  :  River.Obj.Window_management.t
   -> River.Obj.Window_management.Seat.t
   -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
@@ -44,7 +44,7 @@ val on_seat
 
     {b Effects:} mutates WM state *)
 val on_session_locked
-  :  River.Obj.Window_management.Wm.t
+  :  River.Obj.Window_management.t
   -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
@@ -52,7 +52,7 @@ val on_session_locked
 
     {b Effects:} mutates WM state *)
 val on_session_unlocked
-  :  River.Obj.Window_management.Wm.t
+  :  River.Obj.Window_management.t
   -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit
 
@@ -61,13 +61,13 @@ val on_session_unlocked
     {b Effects:} mutates WM state
 
     @raise Exceptions.Unavailable *)
-val on_unavailable : River.Obj.Window_management.Wm.t -> unit
+val on_unavailable : River.Obj.Window_management.t -> unit
 
 (** [on_window river_wm_v1 river_window wm_box] handles new window creation.
 
     {b Effects:} mutates WM state *)
 val on_window
-  :  River.Obj.Window_management.Wm.t
+  :  River.Obj.Window_management.t
   -> River.Obj.Window_management.Window.t
   -> Oxbow_state.Wm.t Oxbow_state.Box.t
   -> unit

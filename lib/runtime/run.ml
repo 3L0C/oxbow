@@ -16,7 +16,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let river_wm_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Window_management.River_window_manager_v1.v5
+         inherit [_] River.Obj.Window_management.Client.t
          method on_finished _ = Handlers.on_finished wm_box
          method on_manage_start proxy = Handlers.on_manage_start proxy wm_box
 
@@ -36,19 +36,19 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let river_xkb_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Xkb.Bindings.River_xkb_bindings_v1.v3
+         inherit [_] River.Obj.Xkb.Bindings.Client.t
        end
   in
   let river_lsh_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Layer_shell.River_layer_shell_v1.v1
+         inherit [_] River.Obj.Layer_shell.Client.t
        end
   in
   let river_input_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Input.Management.River_input_manager_v1.v1
+         inherit [_] River.Obj.Input.Management.Client.t
          method on_input_device _ device = Handlers.on_input_device device wm_box
          method on_finished = ignore
        end
@@ -56,7 +56,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let river_libinput_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Input.Config.River_libinput_config_v1.v2
+         inherit [_] River.Obj.Input.Config.Client.t
          method on_libinput_device _ device = Handlers.on_libinput_device device wm_box
          method on_finished = ignore
        end
@@ -64,7 +64,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let river_xkb_config_v1 =
     Wayland.Registry.bind registry
     @@ object
-         inherit [_] River.Xkb.Config.River_xkb_config_v1.v1
+         inherit [_] River.Obj.Xkb.Config.Client.t
          method on_xkb_keyboard _ xkb = Handlers.on_xkb_keyboard xkb wm_box
          method on_finished = ignore
        end
