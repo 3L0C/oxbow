@@ -51,6 +51,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
       { obj = river_output
       ; layer_shell
       ; lifecycle = Active
+      ; is_captured = false
       ; name = None
       ; labels = []
       ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
@@ -124,8 +125,9 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
             { x = output.geom.x; y = output.geom.y; w = width; h = height };
           sync_usable ()
 
-        (* TODO capture this data for reporting *)
-        method on_capture_sessions _ ~count:_ = ()
+        method on_capture_sessions _ ~count =
+          Exceptions.guard "on_capture_sessions"
+          @@ fun () -> Output.set_is_captured output (count > 0l)
       end;
     Wm.set_outputs wm (output :: wm.outputs);
     List.iter (Wm.ensure_seat_output wm) wm.seats
@@ -394,8 +396,9 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
         method on_show_window_menu_requested _ ~x:_ ~y:_ = ()
         method on_minimize_requested _ = ()
 
-        (* TODO capture this data and maybe add border color variant for recorded windows? *)
-        method on_capture_sessions _ ~count:_ = ()
+        method on_capture_sessions _ ~count =
+          Exceptions.guard "on_capture_sessions"
+          @@ fun () -> Window.set_is_captured window (count > 0l)
       end;
     Wm.set_windows wm (window :: wm.windows)
 ;;

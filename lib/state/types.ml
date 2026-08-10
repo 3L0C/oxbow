@@ -12,6 +12,7 @@ module Config = struct
       ; mutable unfocused : Oxbow_core.Color.t
       ; mutable urgent : Oxbow_core.Color.t
       ; mutable swallowing : Oxbow_core.Color.t
+      ; mutable captured : Oxbow_core.Color.t
       }
   end
 
@@ -107,6 +108,7 @@ and Output : sig
     { obj : Wire.Obj.Window_management.Output.t
     ; layer_shell : Wire.Obj.Layer_shell.Output.t
     ; mutable lifecycle : Lifecycle.t
+    ; mutable is_captured : bool
     ; mutable name : string option
     ; mutable labels : string list
     ; mutable geom : int32 Oxbow_core.Rect.t
@@ -279,6 +281,7 @@ and Window : sig
     ; mutable labels : string list
     ; mutable is_fixed : bool
     ; mutable is_urgent : bool
+    ; mutable is_captured : bool
     ; mutable is_fake_fullscreen : bool
     ; scrolling : Scrolling_props.t
     ; scratchpad : Scratchpad_props.t

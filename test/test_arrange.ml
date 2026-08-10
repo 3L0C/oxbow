@@ -102,6 +102,7 @@ let make_output root =
     ; layer_shell =
         spawn root (module River.Proto.Layer_shell.River_layer_shell_output_v1)
     ; lifecycle = Active
+    ; is_captured = false
     ; name = None
     ; labels = []
     ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }

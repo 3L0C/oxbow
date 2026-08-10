@@ -176,6 +176,7 @@ let resolve_output_spatial ~from ~dir (current : t) =
 
 let resolve_output_name name = List.find_opt (matches_name name)
 let set_lifecycle o lifecycle = o.lifecycle <- lifecycle
+let set_is_captured o is_captured = o.is_captured <- is_captured
 
 let set_usable o usable =
   o.usable <- usable;

@@ -3,6 +3,7 @@ type t =
   | Unfocused
   | Urgent
   | Swallowing
+  | Captured
 
 (** [all] is every layout, in cycle order. *)
 val all : t list

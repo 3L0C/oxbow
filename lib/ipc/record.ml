@@ -21,6 +21,7 @@ module Window = struct
     ; tags : int list
     ; focused : bool
     ; urgent : bool
+    ; captured : bool
     ; hidden : bool
     ; presentation : string
     ; sticky : string
@@ -34,9 +35,10 @@ end
 
 module Output = struct
   type t =
-    { name : string
+    { name : string option
     ; labels : string list
     ; focused : bool
+    ; captured : bool
     }
   [@@deriving yojson]
 end

@@ -34,6 +34,8 @@ type t =
       (string option * River.Obj.Window_management.v Wm_server.River_window_v1.t) list
   ; mutable seats :
       (string * River.Obj.Window_management.v Wm_server.River_seat_v1.t) list
+  ; mutable outputs :
+      (string * River.Obj.Window_management.v Wm_server.River_output_v1.t) list
   ; mutable owners : (int32 * string) list
   ; phase_done : Eio.Condition.t
   ; wm_ready : Eio.Condition.t
@@ -570,6 +572,7 @@ let start ~sw socket =
     ; dirty = false
     ; windows = []
     ; seats = []
+    ; outputs = []
     ; owners = []
     ; phase_done = Eio.Condition.create ()
     ; wm_ready = Eio.Condition.create ()
@@ -600,6 +603,7 @@ let add_output t ~name =
   Wm_server.River_output_v1.position o ~x:0l ~y:0l;
   Wm_server.River_output_v1.dimensions o ~width:output_width ~height:output_height;
   Wm_server.River_output_v1.wl_output o ~name:global;
+  t.outputs <- (name, o) :: t.outputs;
   tick t
 ;;
 
@@ -639,6 +643,22 @@ let send_dimensions_hint t ~app_id ~min_w ~min_h ~max_w ~max_h =
       ~min_height:min_h
       ~max_width:max_w
       ~max_height:max_h;
+    tick t
+;;
+
+let send_capture_sessions t ~app_id ~count =
+  match List.assoc_opt app_id t.windows with
+  | None -> failwith "send_capture_sessions: no window with this app_id"
+  | Some w ->
+    Wm_server.River_window_v1.capture_sessions w ~count;
+    tick t
+;;
+
+let send_output_capture_sessions t ~name ~count =
+  match List.assoc_opt name t.outputs with
+  | None -> failwith "send_output_capture_sessions: no output with this name"
+  | Some o ->
+    Wm_server.River_output_v1.capture_sessions o ~count;
     tick t
 ;;
 

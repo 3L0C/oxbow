@@ -176,6 +176,12 @@ val resolve_output_name : string -> t list -> t option
     {b Effects:} mutates WM state *)
 val set_lifecycle : t -> Lifecycle.t -> unit
 
+(** [set_is_captured output is_captured] sets [output]'s captured status to
+    [is_captured].
+
+    {b Effects:} mutates WM state *)
+val set_is_captured : t -> bool -> unit
+
 (** [set_usable output usable] sets [output]'s usable geometry to [usable].
 
     {b Effects:} mutates WM state *)

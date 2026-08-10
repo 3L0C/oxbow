@@ -250,9 +250,9 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
 == window list ==
-0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=floating sticky=off scratchpad=calc stashed=true swallowing=false labels=
-1: id=2 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=1 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=floating sticky=off scratchpad=calc stashed=true swallowing=false labels=
+1: id=2 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=1 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, firefox)
 manage:op_end(seat0)
 render:set_position(qalculate, 640, 300)
@@ -311,9 +311,9 @@ render:place_top(firefox)
 render:place_top(qalculate)
 render:set_presentation_mode
 == window list ==
-0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off scratchpad=calc stashed=false swallowing=false labels=
-1: id=2 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=1 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=floating sticky=off scratchpad=calc stashed=false swallowing=false labels=
+1: id=2 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=1 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, qalculate)
 manage:op_end(seat0)
 render:set_position(qalculate, 640, 300)
@@ -353,7 +353,7 @@ render:place_top(firefox)
 render:place_top(qalculate)
 render:set_presentation_mode
 == window list --app-id ^qalculate$ ==
-0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off scratchpad=calc stashed=false swallowing=false labels=
+0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=floating sticky=off scratchpad=calc stashed=false swallowing=false labels=
 manage:focus_window(seat0, qalculate)
 manage:op_end(seat0)
 render:set_position(qalculate, 640, 300)
@@ -392,7 +392,7 @@ render:place_top(firefox)
 render:place_top(qalculate)
 render:set_presentation_mode
 == window list --app-id ^qalculate$ ==
-0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
+0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, qalculate)
 manage:op_end(seat0)
 render:set_position(qalculate, 640, 300)
@@ -431,7 +431,7 @@ render:place_top(firefox)
 render:place_top(qalculate)
 render:set_presentation_mode
 == window list --app-id ^firefox$ ==
-0: id=2 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=notes stashed=false swallowing=false labels=
+0: id=2 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=notes stashed=false swallowing=false labels=
 manage:focus_window(seat0, qalculate)
 manage:op_end(seat0)
 render:set_position(qalculate, 640, 300)

@@ -50,6 +50,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; labels = []
   ; is_fixed = false
   ; is_urgent = false
+  ; is_captured = false
   ; is_fake_fullscreen = false
   ; scrolling = { consumes = false; width = scroll_width }
   ; scratchpad = { name = None; stashed = false }
@@ -466,6 +467,11 @@ let set_presentation w presentation =
 
 let set_is_urgent w is_urgent =
   w.is_urgent <- is_urgent;
+  Schedule.manage ()
+;;
+
+let set_is_captured w is_captured =
+  w.is_captured <- is_captured;
   Schedule.manage ()
 ;;
 

@@ -190,6 +190,8 @@ let borders ctx (seat : Seat.t) =
   let color (w : Window.t) o =
     if w.is_urgent
     then borders.urgent
+    else if w.is_captured
+    then borders.captured
     else if not @@ Phys.opt_holds o seat.output
     then borders.unfocused
     else if Window.swallowing w

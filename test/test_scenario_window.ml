@@ -21,5 +21,15 @@ let () =
       ~min_h:200l
       ~max_w:300l
       ~max_h:200l);
-  oxctl "window list --app-id ^galculator$"
+  oxctl "window list --app-id ^galculator$";
+  oxctl "border color captured 0xFF0000";
+  section "kitty capture starts" (fun () ->
+    Fake_river.send_capture_sessions fake ~app_id:(Some "kitty") ~count:2l);
+  oxctl "window list --app-id ^kitty$";
+  oxctl "output list";
+  section "output capture starts" (fun () ->
+    Fake_river.send_output_capture_sessions fake ~name:"FAKE-1" ~count:1l);
+  oxctl "output list";
+  section "capture stops" (fun () ->
+    Fake_river.send_capture_sessions fake ~app_id:(Some "kitty") ~count:0l)
 ;;

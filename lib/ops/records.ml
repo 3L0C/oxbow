@@ -31,6 +31,7 @@ let to_window (wm : Wm.t) (window : Window.t) =
     ; focused =
         List.exists (Fun.compose (Phys.opt_holds window) Seat.focused_window) wm.seats
     ; urgent = window.is_urgent
+    ; captured = window.is_captured
     ; hidden = not @@ Window.is_rendered window
     ; presentation = Window.presentation_string window
     ; sticky = Sticky.to_string window.sticky
@@ -38,6 +39,15 @@ let to_window (wm : Wm.t) (window : Window.t) =
     ; stashed = window.scratchpad.stashed
     ; swallowing = Window.swallowing window
     ; labels = window.labels
+    }
+;;
+
+let to_output (seat : Seat.t) (output : Output.t) =
+  Record.Output.
+    { name = output.name
+    ; labels = output.labels
+    ; focused = Phys.opt_holds output seat.output
+    ; captured = output.is_captured
     }
 ;;
 

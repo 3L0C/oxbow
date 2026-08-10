@@ -40,6 +40,18 @@ val send_dimensions_hint
   -> max_h:int32
   -> unit
 
+(** [send_capture_sessions t ~app_id ~count] sends capture_sessions on the first
+    window with [app_id], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val send_capture_sessions : t -> app_id:string option -> count:int32 -> unit
+
+(** [send_output_capture_sessions t ~name ~count] sends output_capture_sessions
+    on the first output with [name], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val send_output_capture_sessions : t -> name:string -> count:int32 -> unit
+
 (** [close_window t ~app_id] sends closed on the first window with [app_id],
     then ticks.
 

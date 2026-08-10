@@ -5,6 +5,9 @@ val to_tags : Oxbow_state.Output.t -> Oxbow_ipc.Record.Tags.t option
 (** [to_window wm window] is a window record derived from [wm] and [window]. *)
 val to_window : Oxbow_state.Wm.t -> Oxbow_state.Window.t -> Oxbow_ipc.Record.Window.t
 
+(** [to_output seat output] is an output record derived from [seat] and [output]. *)
+val to_output : Oxbow_state.Seat.t -> Oxbow_state.Output.t -> Oxbow_ipc.Record.Output.t
+
 (** [to_layout output] is a layout record derived from [output]. Is [None] when
     [output] has no name. *)
 val to_layout : Oxbow_state.Output.t -> Oxbow_ipc.Record.Layout.t option

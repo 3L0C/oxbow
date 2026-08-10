@@ -20,6 +20,7 @@ let default_borders =
     ; unfocused = Color.of_string_exn "#727169"
     ; urgent = Color.of_string_exn "#FF5D62"
     ; swallowing = Color.of_string_exn "#98BB6C"
+    ; captured = Color.of_string_exn "#957FB8"
     }
 ;;
 
@@ -83,6 +84,7 @@ let set_border_color (wm : Types.Wm.t) (border : Border_target.t) color =
   | Focused -> wm.config.borders.focused <- color
   | Unfocused -> wm.config.borders.unfocused <- color
   | Swallowing -> wm.config.borders.swallowing <- color
+  | Captured -> wm.config.borders.captured <- color
 ;;
 
 let set_default_width (td : Data.t) ~(delta : float Delta.t) =

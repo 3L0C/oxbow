@@ -410,12 +410,12 @@ render:place_top(brave)
 render:place_top(feishin)
 render:set_presentation_mode
 == window list ==
-0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=4 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-3: id=3 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-4: id=2 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-5: id=1 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=4 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+3: id=3 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+4: id=2 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+5: id=1 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, feishin)
 manage:op_end(seat0)
 render:set_position(feishin, 24, 24)
@@ -728,12 +728,12 @@ render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
 == window list ==
-0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=4 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-3: id=3 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-4: id=2 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-5: id=1 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
+0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=4 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+3: id=3 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+4: id=2 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+5: id=1 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 render:set_position(feishin, -3756, 24)
@@ -837,12 +837,12 @@ render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
 == window list ==
-0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=4 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-3: id=3 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-4: id=2 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-5: id=1 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
+0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=4 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+3: id=3 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+4: id=2 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+5: id=1 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, feishin)
 manage:op_end(seat0)
 render:set_position(feishin, 24, 24)
@@ -946,12 +946,12 @@ render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
 == window list ==
-0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=4 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-3: id=3 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-4: id=2 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-5: id=1 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
+0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=4 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+3: id=3 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+4: id=2 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+5: id=1 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 render:set_position(feishin, 24, 24)

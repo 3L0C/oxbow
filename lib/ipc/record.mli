@@ -21,6 +21,7 @@ module Window : sig
     ; tags : int list
     ; focused : bool
     ; urgent : bool
+    ; captured : bool
     ; hidden : bool
     ; presentation : string
     ; sticky : string
@@ -36,9 +37,10 @@ end
 
 module Output : sig
   type t =
-    { name : string
+    { name : string option
     ; labels : string list
     ; focused : bool
+    ; captured : bool
     }
 
   val t_of_yojson : Yojson.Safe.t -> t

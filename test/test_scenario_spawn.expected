@@ -595,10 +595,10 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
 == window list ==
-0: id=6 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-3: id=1 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+0: id=6 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+3: id=1 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:set_position(kitty, 1063, 724)
@@ -779,10 +779,10 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
 == window list ==
-0: id=7 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-3: id=1 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+0: id=7 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+3: id=1 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:set_position(kitty, 1063, 724)

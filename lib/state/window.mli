@@ -250,6 +250,12 @@ val set_presentation : t -> Presentation.t -> unit
     {b Effects:} mutates WM state *)
 val set_is_urgent : t -> bool -> unit
 
+(** [set_is_captured window is_captured] sets [window]'s captured status to
+    [is_captured].
+
+    {b Effects:} mutates WM state *)
+val set_is_captured : t -> bool -> unit
+
 (** [set_lifecycle window lifecycle] sets [window]'s lifecycle to [lifecycle].
 
     {b Effects:} mutates WM state *)
