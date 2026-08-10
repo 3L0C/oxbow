@@ -54,5 +54,28 @@ let () =
     Fake_river.send_op_delta fake ~seat:"seat0" ~dx:50l ~dy:50l;
     Fake_river.send_pointer_position fake ~seat:"seat0" ~x:200l ~y:700l;
     Fake_river.send_op_release fake ~seat:"seat0");
+  oxctl "window list";
+  section "inkscape arrives with a min hint" (fun () ->
+    Fake_river.add_window fake ~app_id:(Some "inkscape");
+    Fake_river.send_dimensions_hint
+      fake
+      ~app_id:(Some "inkscape")
+      ~min_w:300l
+      ~min_h:200l
+      ~max_w:0l
+      ~max_h:0l);
+  section "grab the top-left corner" (fun () ->
+    Fake_river.send_pointer_enter fake ~seat:"seat0" ~app_id:(Some "inkscape"));
+  oxctl "window resize drag";
+  section "overshoot the min" (fun () ->
+    Fake_river.send_op_delta fake ~seat:"seat0" ~dx:2000l ~dy:2000l;
+    Fake_river.send_op_release fake ~seat:"seat0");
+  oxctl "window list";
+  section "grab the bottom-left corner of mpv, no hints" (fun () ->
+    Fake_river.send_pointer_enter fake ~seat:"seat0" ~app_id:(Some "mpv"));
+  oxctl "window resize drag";
+  section "overshoot the floor" (fun () ->
+    Fake_river.send_op_delta fake ~seat:"seat0" ~dx:2000l ~dy:2000l;
+    Fake_river.send_op_release fake ~seat:"seat0");
   oxctl "window list"
 ;;

@@ -153,9 +153,18 @@ let step (wm : Wm.t) (seat : Seat.t) =
       | true, false -> Int32.sub op_r.start_h op_r.dy
       | false, true -> Int32.add op_r.start_h op_r.dy
     in
+    let hints = op_r.window.size_hints in
+    let wall ~hint_min ~hint_max v =
+      let min_v = if hint_min > 0l then hint_min else 50l in
+      let v = Int32.max min_v v in
+      if hint_max > 0l then Int32.min hint_max v else v
+    in
     Window.set_geom
       op_r.window
-      { op_r.window.geom with w = max 1l width; h = max 1l height }
+      { op_r.window.geom with
+        w = wall ~hint_min:hints.min_w ~hint_max:hints.max_w width
+      ; h = wall ~hint_min:hints.min_h ~hint_max:hints.max_h height
+      }
   | Some (Move _) -> ()
   | None -> ()
 ;;
