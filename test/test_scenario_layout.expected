@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -199,6 +200,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
+
 == layout tiling mfact +0.05 ==
 manage:propose_dimensions(firefox, 1116x1032)
 manage:propose_dimensions(emacs, 738x507)
@@ -239,6 +241,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
+
 == layout tiling scheme monocle ==
 manage:propose_dimensions(firefox, 1872x1032)
 manage:propose_dimensions(emacs, 1872x1032)
@@ -279,6 +282,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
+
 == layout tiling scheme deck ==
 manage:propose_dimensions(firefox, 1116x1032)
 manage:propose_dimensions(emacs, 738x1032)
@@ -319,6 +323,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
+
 == spawn - mpv and feishin ==
 manage:get_node(mpv)
 manage:set_capabilities(mpv)
@@ -444,6 +449,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
 render:set_presentation_mode
+
 == layout floating ==
 manage:focus_window(seat0, feishin)
 manage:op_end(seat0)
@@ -501,6 +507,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
 render:set_presentation_mode
+
 == layout scrolling ==
 manage:propose_dimensions(feishin, 927x1032)
 manage:propose_dimensions(mpv, 927x1032)
@@ -563,6 +570,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
 render:set_presentation_mode
+
 == output overview ==
 manage:propose_dimensions(feishin, 619x517)
 manage:propose_dimensions(mpv, 619x517)
@@ -625,6 +633,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
 render:set_presentation_mode
+
 == layout query ==
 {"available":["tiling","scrolling","floating"]}
 manage:focus_window(seat0, feishin)

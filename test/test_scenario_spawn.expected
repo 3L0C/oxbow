@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -199,6 +200,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window focus match --app-id=emacs ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -220,6 +222,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window spawn position next ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -239,6 +242,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == spawn kitty ==
 manage:get_node(kitty)
 manage:set_capabilities(kitty)
@@ -298,6 +302,7 @@ render:place_top(mpv)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == close kitty ==
 manage:destroy(kitty)
 manage:destroy(kitty)
@@ -340,6 +345,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window focus match --app-id=emacs ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -359,6 +365,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window spawn position prev ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -378,6 +385,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == spawn kitty ==
 manage:get_node(kitty)
 manage:set_capabilities(kitty)
@@ -437,6 +445,7 @@ render:place_top(mpv)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == close kitty ==
 manage:destroy(kitty)
 manage:destroy(kitty)
@@ -479,6 +488,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window focus match --app-id=emacs ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -498,6 +508,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window spawn position end ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -517,6 +528,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window spawn focus disabled ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -536,6 +548,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == spawn kitty ==
 manage:get_node(kitty)
 manage:set_capabilities(kitty)
@@ -594,6 +607,7 @@ render:place_top(mpv)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window list ==
 0: id=6 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -622,6 +636,7 @@ render:place_top(mpv)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == close kitty ==
 manage:destroy(kitty)
 manage:destroy(kitty)
@@ -663,6 +678,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window focus match --app-id=emacs ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -682,6 +698,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window spawn position prev ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -701,6 +718,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window rules add --app-id=kitty --spawn-position=end --spawn-focus=disabled ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -720,6 +738,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == spawn kitty ==
 manage:get_node(kitty)
 manage:set_capabilities(kitty)
@@ -778,6 +797,7 @@ render:place_top(mpv)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window list ==
 0: id=7 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -806,6 +826,7 @@ render:place_top(mpv)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == close kitty ==
 manage:destroy(kitty)
 manage:destroy(kitty)

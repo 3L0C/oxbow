@@ -16,5 +16,5 @@ let of_string = function
   | "visible" -> Ok Visible
   | "left" -> Ok Left
   | "centered" -> Ok Centered
-  | s -> Error (Printf.sprintf "unrecognized scroll policy: %S" s)
+  | s -> Error (Printf.sprintf "unrecognized align: %S" s)
 ;;

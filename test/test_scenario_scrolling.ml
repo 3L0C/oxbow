@@ -10,6 +10,8 @@ let () =
     Fake_river.add_window fake ~app_id:(Some "firefox");
     Fake_river.add_window fake ~app_id:(Some "brave");
     Fake_river.add_window fake ~app_id:(Some "feishin"));
+  oxctl "layout scrolling align centered";
+  oxctl "layout query";
   oxctl "window list";
   oxctl "layout scrolling left";
   oxctl "window focus match --app-id=mpv";

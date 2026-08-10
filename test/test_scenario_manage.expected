@@ -1,3 +1,4 @@
+
 == trace ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -122,6 +123,7 @@ render:set_clip_box(foot, 0, 0, 0x0)
 render:set_content_clip_box(foot, 0, 0, 0x0)
 render:place_top(foot)
 render:set_presentation_mode
+
 == output list ==
 0: name=FAKE-1 labels= focused=true captured=false
 manage:focus_window(seat0, foot)

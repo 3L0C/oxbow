@@ -47,7 +47,7 @@ let arrange (wm : Wm.t) (output : Output.t) =
         match col with
         | Some col ->
           Strip.scroll
-            ~policy:tag_data.scrolling.policy
+            ~align:tag_data.scrolling.align
             ~viewport_w:area.w
             ~max_offset
             ~offset:tag_data.scrolling.offset

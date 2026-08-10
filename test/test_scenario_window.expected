@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -199,6 +200,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
+
 == window focus prev ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -220,6 +222,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window zoom ==
 manage:propose_dimensions(firefox, 833x507)
 manage:propose_dimensions(kitty, 1021x1032)
@@ -259,6 +262,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == close emacs ==
 manage:destroy(emacs)
 manage:destroy(emacs)
@@ -289,6 +293,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(firefox)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window query ==
 {"seat":"seat0","output":"FAKE-1","title":"kitty","app_id":"kitty","tags":[1]}
 manage:focus_window(seat0, kitty)
@@ -304,6 +309,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(firefox)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == galculator arrives without hint ==
 manage:get_node(galculator)
 manage:set_capabilities(galculator)
@@ -353,6 +359,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
+
 == late fixed hint ==
 manage:propose_dimensions(galculator, 300x200)
 manage:set_tiled(galculator)
@@ -394,6 +401,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
+
 == window list --app-id ^galculator$ ==
 0: id=4 identifier=null title=galculator app_id=galculator output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, galculator)
@@ -414,6 +422,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
+
 == border color captured 0xFF0000 ==
 manage:focus_window(seat0, galculator)
 manage:op_end(seat0)
@@ -451,6 +460,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
+
 == kitty capture starts ==
 manage:focus_window(seat0, galculator)
 manage:op_end(seat0)
@@ -489,6 +499,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
+
 == window list --app-id ^kitty$ ==
 0: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=true hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 manage:focus_window(seat0, galculator)
@@ -509,6 +520,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
+
 == output list ==
 0: name=FAKE-1 labels= focused=true captured=false
 manage:focus_window(seat0, galculator)
@@ -529,6 +541,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
+
 == output capture starts ==
 manage:focus_window(seat0, galculator)
 manage:op_end(seat0)
@@ -548,6 +561,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
+
 == output list ==
 0: name=FAKE-1 labels= focused=true captured=true
 manage:focus_window(seat0, galculator)
@@ -568,6 +582,7 @@ render:place_top(firefox)
 render:place_top(kitty)
 render:place_top(galculator)
 render:set_presentation_mode
+
 == capture stops ==
 manage:focus_window(seat0, galculator)
 manage:op_end(seat0)

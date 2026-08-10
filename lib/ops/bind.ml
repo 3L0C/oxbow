@@ -37,15 +37,13 @@ let install_defaults (wm : Wm.t) seat =
       ; ( modkey
         , K_i
         , Command.Layout (Tiling (Select { scheme = Monocle; scope = Focused })) )
-      ; ( modkey
-        , K_z
-        , Command.Layout (Scrolling (Select { policy = Left; scope = Focused })) )
+      ; modkey, K_z, Command.Layout (Scrolling (Select { align = Left; scope = Focused }))
       ; ( modkey
         , K_x
-        , Command.Layout (Scrolling (Select { policy = Centered; scope = Focused })) )
+        , Command.Layout (Scrolling (Select { align = Centered; scope = Focused })) )
       ; ( modkey
         , K_c
-        , Command.Layout (Scrolling (Select { policy = Visible; scope = Focused })) )
+        , Command.Layout (Scrolling (Select { align = Visible; scope = Focused })) )
       ; modkey, K_comma, Command.Window (Column_consume Focused)
       ; modkey, K_period, Command.Window (Column_release Focused)
       ; ( Int32.(logor modkey ctrl)

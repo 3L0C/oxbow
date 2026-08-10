@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -89,29 +90,35 @@ manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode
 render:set_presentation_mode
+
 == input rules mouse --name Logitech.* --natural-scroll enabled --accel-speed 0.5 ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode
+
 == input rules mouse --name .* --left-handed enabled ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode
+
 == input rules list ==
 0: mouse pattern=Logitech.* case=sensitive settings=accel_speed=0.5 natural_scroll=true
 1: mouse pattern=.* case=sensitive settings=left_handed=true
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode
+
 == input rules remove 0 ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode
+
 == input rules list ==
 0: mouse pattern=.* case=sensitive settings=left_handed=true
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode
+
 == input rules remove 5 ==
 err: no input rule at index 5
 manage:clear_focus(seat0)

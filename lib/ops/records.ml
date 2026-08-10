@@ -75,7 +75,7 @@ let to_layout (output : Output.t) =
             Symbol.render
               td.layout
               ~scheme:td.tiling.scheme
-              ~policy:td.scrolling.policy
+              ~align:td.scrolling.align
               ~ctx
         }
 ;;

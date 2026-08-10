@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -199,6 +200,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
+
 == layout scrolling ==
 manage:propose_dimensions(firefox, 927x1032)
 manage:propose_dimensions(emacs, 927x1032)
@@ -239,6 +241,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
+
 == window column consume ==
 manage:propose_dimensions(firefox, 927x507)
 manage:propose_dimensions(emacs, 927x507)
@@ -278,6 +281,7 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
+
 == window focus next ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -317,6 +321,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window zoom ==
 manage:propose_dimensions(firefox, 927x1032)
 manage:propose_dimensions(emacs, 927x1032)

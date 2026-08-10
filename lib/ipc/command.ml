@@ -81,13 +81,13 @@ module Layout = struct
   module Scrolling = struct
     type t =
       | Select of
-          { policy : Scroll_policy.t
+          { align : Align.t
           ; scope : Scope.t
           } [@name "select"]
-      | Policy of
-          { policy : Scroll_policy.t
+      | Align of
+          { align : Align.t
           ; scope : Scope.t
-          } [@name "policy"]
+          } [@name "align"]
       | Default_width of
           { delta : float Delta.t
           ; scope : Scope.t

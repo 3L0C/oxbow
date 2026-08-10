@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -114,6 +115,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == tag view 2 ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
@@ -130,6 +132,7 @@ render:hide(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:set_presentation_mode
+
 == spawn emacs ==
 manage:get_node(emacs)
 manage:set_capabilities(emacs)
@@ -164,6 +167,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == layout scrolling ==
 manage:propose_dimensions(emacs, 927x1032)
 manage:focus_window(seat0, emacs)
@@ -190,6 +194,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == keymap mode declare resize ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -203,6 +208,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == keymap mode enter resize ==
 manage:focus_window(seat0, emacs)
 manage:disable
@@ -256,6 +262,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window focus next ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -269,6 +276,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == events ==
 {"event":"tags","output":"FAKE-1","viewed":[1],"occupied":[1],"urgent":[],"focused":[1]}
 {"event":"window","id":1,"identifier":null,"title":"kitty","app_id":"kitty","output":"FAKE-1","tags":[1],"focused":true,"urgent":false,"captured":false,"hidden":false,"presentation":"tiled","sticky":"off","scratchpad":null,"stashed":false,"swallowing":false,"labels":[]}

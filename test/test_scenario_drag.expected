@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -199,6 +200,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == drag mpv, option off ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -218,6 +220,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window move drag ==
 manage:set_tiled(mpv)
 manage:propose_dimensions(emacs, 1021x1032)
@@ -260,6 +263,7 @@ render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
 render:place_top(mpv)
+
 == release ==
 manage:focus_window(seat0, mpv)
 manage:op_start_pointer(seat0)
@@ -317,6 +321,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list ==
 0: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -339,6 +344,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window toggle floating ==
 manage:set_tiled(mpv)
 manage:propose_dimensions(emacs, 833x507)
@@ -379,6 +385,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window drag retile enabled ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -398,6 +405,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == drag mpv onto the master ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -417,6 +425,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window move drag ==
 manage:set_tiled(mpv)
 manage:propose_dimensions(emacs, 1021x1032)
@@ -459,6 +468,7 @@ render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
 render:place_top(mpv)
+
 == release over firefox ==
 manage:focus_window(seat0, mpv)
 manage:op_start_pointer(seat0)
@@ -537,6 +547,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list ==
 0: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -559,6 +570,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == drag mpv again ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -578,6 +590,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window move drag ==
 manage:set_tiled(mpv)
 manage:propose_dimensions(firefox, 833x1032)
@@ -619,6 +632,7 @@ render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
 render:place_top(mpv)
+
 == release in the lower half of firefox ==
 manage:focus_window(seat0, mpv)
 manage:op_start_pointer(seat0)
@@ -696,6 +710,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list ==
 0: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -718,6 +733,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == layout scrolling left ==
 manage:propose_dimensions(mpv, 927x1032)
 manage:propose_dimensions(emacs, 927x1032)
@@ -758,6 +774,7 @@ render:place_top(firefox)
 render:place_top(emacs)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window focus match --app-id=emacs ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -797,6 +814,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window column consume ==
 manage:propose_dimensions(emacs, 927x507)
 manage:propose_dimensions(firefox, 927x507)
@@ -836,6 +854,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window list ==
 0: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -858,6 +877,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == drag firefox out of the column ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -877,6 +897,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window move drag ==
 manage:propose_dimensions(emacs, 927x1032)
 manage:set_tiled(firefox)
@@ -920,6 +941,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
 render:place_top(firefox)
+
 == release right of mpv ==
 manage:focus_window(seat0, firefox)
 manage:op_start_pointer(seat0)
@@ -997,6 +1019,7 @@ render:place_top(mpv)
 render:place_top(emacs)
 render:place_top(firefox)
 render:set_presentation_mode
+
 == window list ==
 0: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=

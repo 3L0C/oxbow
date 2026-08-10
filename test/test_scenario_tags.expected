@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -151,6 +152,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window tag set 2 ==
 manage:propose_dimensions(kitty, 1872x1032)
 manage:focus_window(seat0, kitty)
@@ -179,6 +181,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == tag view 2 ==
 manage:propose_dimensions(emacs, 1872x1032)
 manage:focus_window(seat0, emacs)
@@ -207,6 +210,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == tag prev ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -234,6 +238,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == tag toggle 2 ==
 manage:propose_dimensions(emacs, 1021x1032)
 manage:propose_dimensions(kitty, 833x1032)
@@ -263,6 +268,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == tag query ==
 [{"output":"FAKE-1","viewed":[1,2],"occupied":[1,2],"urgent":[],"focused":[1]}]
 manage:focus_window(seat0, kitty)

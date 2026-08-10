@@ -53,14 +53,14 @@ val set_gaps_outer
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_scrolling_policy wm seat policy scope] sets the scrolling layout policy
+(** [set_scrolling_alignment wm seat align scope] sets the scrolling layout align
     on the output according to [scope].
 
     {b Effects:} mutates WM state *)
-val set_scrolling_policy
+val set_scrolling_alignment
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Scroll_policy.t
+  -> Oxbow_core.Align.t
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
@@ -145,14 +145,14 @@ val select_tiling_scheme
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [select_scrolling_policy wm seat policy scope] switches to the [Scrolling]
-    layout with the policy on the output applied to [scope].
+(** [select_scrolling_alignment wm seat align scope] switches to the [Scrolling]
+    layout with the align on the output applied to [scope].
 
     {b Effects:} mutates WM state *)
-val select_scrolling_policy
+val select_scrolling_alignment
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
-  -> Oxbow_core.Scroll_policy.t
+  -> Oxbow_core.Align.t
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 

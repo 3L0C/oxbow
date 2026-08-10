@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -409,6 +410,111 @@ render:place_top(firefox)
 render:place_top(brave)
 render:place_top(feishin)
 render:set_presentation_mode
+
+== layout scrolling align centered ==
+manage:focus_window(seat0, feishin)
+manage:op_end(seat0)
+render:set_position(feishin, 24, 24)
+render:show(feishin)
+render:set_clip_box(feishin, 0, 0, 0x0)
+render:set_content_clip_box(feishin, 0, 0, 0x0)
+render:set_position(brave, 1063, 24)
+render:show(brave)
+render:set_clip_box(brave, 0, 0, 0x0)
+render:set_content_clip_box(brave, 0, 0, 0x0)
+render:set_position(firefox, 1063, 234)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 444)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 654)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:set_position(mpv, 1063, 864)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:place_top(mpv)
+render:place_top(kitty)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(brave)
+render:place_top(feishin)
+render:set_presentation_mode
+manage:focus_window(seat0, feishin)
+manage:op_end(seat0)
+render:set_position(feishin, 24, 24)
+render:show(feishin)
+render:set_clip_box(feishin, 0, 0, 0x0)
+render:set_content_clip_box(feishin, 0, 0, 0x0)
+render:set_position(brave, 1063, 24)
+render:show(brave)
+render:set_clip_box(brave, 0, 0, 0x0)
+render:set_content_clip_box(brave, 0, 0, 0x0)
+render:set_position(firefox, 1063, 234)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 444)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 654)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:set_position(mpv, 1063, 864)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:place_top(mpv)
+render:place_top(kitty)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(brave)
+render:place_top(feishin)
+render:set_presentation_mode
+
+== layout query ==
+{"available":["tiling","scrolling","floating"]}
+manage:focus_window(seat0, feishin)
+manage:op_end(seat0)
+render:set_position(feishin, 24, 24)
+render:show(feishin)
+render:set_clip_box(feishin, 0, 0, 0x0)
+render:set_content_clip_box(feishin, 0, 0, 0x0)
+render:set_position(brave, 1063, 24)
+render:show(brave)
+render:set_clip_box(brave, 0, 0, 0x0)
+render:set_content_clip_box(brave, 0, 0, 0x0)
+render:set_position(firefox, 1063, 234)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 444)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 654)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:set_position(mpv, 1063, 864)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:place_top(mpv)
+render:place_top(kitty)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(brave)
+render:place_top(feishin)
+render:set_presentation_mode
+
 == window list ==
 0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -449,6 +555,7 @@ render:place_top(firefox)
 render:place_top(brave)
 render:place_top(feishin)
 render:set_presentation_mode
+
 == layout scrolling left ==
 manage:propose_dimensions(feishin, 927x1032)
 manage:propose_dimensions(brave, 927x1032)
@@ -522,6 +629,7 @@ render:place_top(firefox)
 render:place_top(brave)
 render:place_top(feishin)
 render:set_presentation_mode
+
 == window focus match --app-id=mpv ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -591,6 +699,7 @@ render:place_top(brave)
 render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window resize to 25% 25% ==
 manage:propose_dimensions(mpv, 480x270)
 manage:set_tiled(mpv)
@@ -660,6 +769,7 @@ render:place_top(brave)
 render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window move to 75% 75% ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -727,6 +837,7 @@ render:place_top(brave)
 render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list ==
 0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -767,6 +878,7 @@ render:place_top(brave)
 render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window focus match --app-id=feishin ==
 manage:focus_window(seat0, feishin)
 manage:op_end(seat0)
@@ -836,6 +948,7 @@ render:place_top(brave)
 render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list ==
 0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -876,6 +989,7 @@ render:place_top(brave)
 render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window focus match --app-id=mpv ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -945,6 +1059,7 @@ render:place_top(brave)
 render:place_top(feishin)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list ==
 0: id=6 identifier=null title=feishin app_id=feishin output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=5 identifier=null title=brave app_id=brave output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=

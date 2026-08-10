@@ -30,7 +30,7 @@ let arrange (wm : Wm.t) (output : Output.t) =
          | Some i ->
            let row = i / cols in
            Strip.scroll
-             ~policy:Scroll_policy.Visible
+             ~align:Visible
              ~viewport_w:usable.h
              ~max_offset
              ~offset:output.overview.offset

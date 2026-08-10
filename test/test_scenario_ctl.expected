@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -114,6 +115,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window rules add --app-id ^mpv$ --float --tags 3 ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -123,6 +125,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == mpv arrives floating on tag 3 ==
 manage:get_node(mpv)
 manage:set_capabilities(mpv)
@@ -157,6 +160,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window rules list ==
 0: pattern=app_id=^mpv$ case=sensitive effects=tags=concrete 4 presentation=float
 manage:focus_window(seat0, kitty)
@@ -171,6 +175,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window rules remove 0 ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -184,6 +189,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window rules remove 7 ==
 err: no window rule at index 7
 manage:focus_window(seat0, kitty)
@@ -198,6 +204,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == third window ==
 manage:get_node(emacs)
 manage:set_capabilities(emacs)
@@ -244,6 +251,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == gaps inner 4 ==
 manage:propose_dimensions(emacs, 1024x1032)
 manage:propose_dimensions(kitty, 836x1032)
@@ -281,6 +289,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == gaps inner 6 --output FAKE-1 ==
 manage:propose_dimensions(emacs, 1023x1032)
 manage:propose_dimensions(kitty, 835x1032)
@@ -318,6 +327,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == gaps inner 8 --all ==
 manage:propose_dimensions(emacs, 1022x1032)
 manage:propose_dimensions(kitty, 834x1032)
@@ -355,6 +365,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window list ==
 0: id=3 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=2 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=3 focused=false urgent=false captured=false hidden=true presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -376,6 +387,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window list --json ==
 [{"id":3,"identifier":null,"title":"emacs","app_id":"emacs","output":"FAKE-1","tags":[1],"focused":true,"urgent":false,"captured":false,"hidden":false,"presentation":"tiled","sticky":"off","scratchpad":null,"stashed":false,"swallowing":false,"labels":[]},{"id":2,"identifier":null,"title":"mpv","app_id":"mpv","output":"FAKE-1","tags":[3],"focused":false,"urgent":false,"captured":false,"hidden":true,"presentation":"floating","sticky":"off","scratchpad":null,"stashed":false,"swallowing":false,"labels":[]},{"id":1,"identifier":null,"title":"kitty","app_id":"kitty","output":"FAKE-1","tags":[1],"focused":false,"urgent":false,"captured":false,"hidden":false,"presentation":"tiled","sticky":"off","scratchpad":null,"stashed":false,"swallowing":false,"labels":[]}]
 manage:focus_window(seat0, emacs)

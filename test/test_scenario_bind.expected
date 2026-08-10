@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -151,6 +152,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == bind layout scrolling to Super+s ==
 overwrote existing binding for "Super+s"
 manage:destroy
@@ -169,6 +171,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == bind window focus next to Super+J ==
 overwrote existing binding for "Super+J"
 manage:destroy
@@ -187,6 +190,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == press the bind ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -203,6 +207,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == unbind Super+J ==
 manage:destroy
 manage:focus_window(seat0, kitty)
@@ -218,6 +223,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window query ==
 {"seat":"seat0","output":"FAKE-1","title":"kitty","app_id":"kitty","tags":[1]}
 manage:focus_window(seat0, kitty)

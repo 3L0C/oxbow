@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -151,6 +152,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window focus match --app-id=kitty ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -167,6 +169,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window label add scratch ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -181,6 +184,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window label add term ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -195,6 +199,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window label add scratch ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -209,6 +214,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window list ==
 0: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch term
@@ -225,6 +231,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window label remove scratch ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -239,6 +246,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window list ==
 0: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=term
@@ -255,6 +263,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == output label add main ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -269,6 +278,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == output list ==
 0: name=FAKE-1 labels=main focused=true captured=false
 manage:focus_window(seat0, kitty)
@@ -284,14 +294,17 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window label add  ==
 err: Usage: [01moxctl window label add[m [[01m--help[m] [[04mOPTION[m]… [04mLABEL[m
 err: oxctl: [04mLABEL[m argument: label must not be empty
 exit: 124
+
 == output label add  ==
 err: Usage: [01moxctl output label add[m [[01m--help[m] [[04mOPTION[m]… [04mLABEL[m
 err: oxctl: [04mLABEL[m argument: label must not be empty
 exit: 124
+
 == window focus match --app-id=emacs ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -308,6 +321,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window label add term ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -322,6 +336,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window focus match --label=term ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -336,6 +351,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window focus match --cycle --label=term ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -352,6 +368,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window list --label=te.* ==
 0: id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=term
 1: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=term
@@ -368,6 +385,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window list --label=none ==
 
 manage:focus_window(seat0, kitty)
@@ -383,6 +401,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window rules add --label-as=video_player --app-id=mpv ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -397,6 +416,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window rules add --label-as=browser --app-id=firefox ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -411,6 +431,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == test label-as rule ==
 manage:get_node(firefox)
 manage:set_capabilities(firefox)
@@ -519,6 +540,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list --label=video_player ==
 0: id=4 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=video_player
 manage:focus_window(seat0, mpv)
@@ -544,6 +566,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list --label=browser ==
 0: id=3 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=browser
 manage:focus_window(seat0, mpv)
@@ -569,6 +592,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == test output labels ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -717,6 +741,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == output label add --name=FAKE-1 first ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -743,6 +768,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == output label add --name=FAKE-2 second ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -769,6 +795,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == output label add --name=FAKE-3 third ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -795,6 +822,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == output focus match --label=second ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
@@ -847,6 +875,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == output list ==
 0: name=FAKE-3 labels=third focused=false captured=false
 1: name=FAKE-2 labels=second focused=true captured=false
@@ -876,6 +905,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == output focus match --label=first ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -928,6 +958,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == output list ==
 0: name=FAKE-3 labels=third focused=false captured=false
 1: name=FAKE-2 labels=second focused=false captured=false
@@ -957,6 +988,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == output focus match --label=third ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
@@ -1009,6 +1041,7 @@ render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == output list ==
 0: name=FAKE-3 labels=third focused=true captured=false
 1: name=FAKE-2 labels=second focused=false captured=false

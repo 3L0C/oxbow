@@ -1,3 +1,4 @@
+
 == arrive ==
 render:set_presentation_mode
 render:set_presentation_mode
@@ -258,6 +259,7 @@ render:place_top(foot)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window close --app-id=mpv ==
 manage:close(mpv)
 manage:focus_window(seat0, emacs)
@@ -283,6 +285,7 @@ render:place_top(foot)
 render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window focus match --app-id=kitty ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -309,6 +312,7 @@ render:place_top(mpv)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window label add scratch ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
@@ -333,6 +337,7 @@ render:place_top(mpv)
 render:place_top(emacs)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window focus match --app-id=foot ==
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
@@ -359,6 +364,7 @@ render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(foot)
 render:set_presentation_mode
+
 == window label add scratch ==
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
@@ -383,6 +389,7 @@ render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(foot)
 render:set_presentation_mode
+
 == window tag set --app-id=emacs --follow 3 ==
 manage:propose_dimensions(emacs, 1872x1032)
 manage:focus_window(seat0, emacs)
@@ -427,6 +434,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window list ==
 0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=3 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -452,6 +460,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window tag set --label=scratch --all --follow 2 ==
 manage:propose_dimensions(foot, 1021x1032)
 manage:propose_dimensions(kitty, 833x1032)
@@ -499,6 +508,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(foot)
 render:set_presentation_mode
+
 == window list ==
 0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=3 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -525,6 +535,7 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(foot)
 render:set_presentation_mode
+
 == window tag set --app-id=.* --cycle 5 ==
 manage:propose_dimensions(foot, 1872x1032)
 manage:focus_window(seat0, foot)
@@ -567,6 +578,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(foot)
 render:set_presentation_mode
+
 == window list ==
 0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=3 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -592,6 +604,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(foot)
 render:set_presentation_mode
+
 == window tag set --app-id ^(emacs|mpv)$ --cycle 6 ==
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
@@ -633,6 +646,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(foot)
 render:set_presentation_mode
+
 == window list ==
 0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -658,6 +672,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(foot)
 render:set_presentation_mode
+
 == window focus match --app-id=.* --cycle ==
 manage:propose_dimensions(kitty, 1872x1032)
 manage:focus_window(seat0, kitty)
@@ -702,6 +717,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window list ==
 0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -727,6 +743,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
+
 == window focus match --app-id=.* --cycle ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
@@ -770,6 +787,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window list ==
 0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -795,6 +813,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
+
 == window focus match --app-id=.* --cycle ==
 manage:propose_dimensions(mpv, 1872x1032)
 manage:focus_window(seat0, mpv)
@@ -839,6 +858,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list ==
 0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -864,6 +884,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window toggle floating --app-id=kitty ==
 manage:set_tiled(kitty)
 manage:focus_window(seat0, mpv)
@@ -906,6 +927,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list ==
 0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -931,10 +953,12 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window toggle fullscreen --app-id=kitty --all ==
 err: Usage: [01moxctl window toggle fullscreen[m [[01m--help[m] [[04mOPTION[m]…
 err: oxctl: [31munknown[m option [01m--all[m
 exit: 124
+
 == window label add seen --app-id=emacs ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
@@ -956,6 +980,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window list ==
 0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=seen
 1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
@@ -981,10 +1006,12 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window close --all ==
 err: Usage: [01moxctl window close[m [[01m--help[m] [[04mOPTION[m]…
 err: oxctl: --all needs a pattern
 exit: 124
+
 == window close --app-id=nope ==
 err: no window matching app-id=nope
 manage:focus_window(seat0, mpv)
@@ -1007,6 +1034,7 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(mpv)
 render:set_presentation_mode
+
 == window close ==
 manage:close(mpv)
 manage:focus_window(seat0, mpv)

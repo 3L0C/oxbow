@@ -11,7 +11,7 @@ end
 
 module Scrolling = struct
   type t =
-    { mutable policy : Scroll_policy.t
+    { mutable align : Align.t
     ; mutable default_width : Width_fac.t
     ; mutable offset : int
     }

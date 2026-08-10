@@ -2,8 +2,8 @@ open! Oxbow_ipc
 
 let handle_scrolling wm seat (cmd : Command.Layout.Scrolling.t) =
   match cmd with
-  | Select { policy; scope } -> Arrange.select_scrolling_policy wm seat policy scope
-  | Policy { policy; scope } -> Arrange.set_scrolling_policy wm seat policy scope
+  | Select { align; scope } -> Arrange.select_scrolling_alignment wm seat align scope
+  | Align { align; scope } -> Arrange.set_scrolling_alignment wm seat align scope
   | Default_width { delta; scope } -> Arrange.set_default_width wm seat delta scope
 ;;
 

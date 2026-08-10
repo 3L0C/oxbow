@@ -5,11 +5,11 @@ module Ctx : sig
     }
 end
 
-(** [render layout ~scheme ~policy ~ctx] is the status symbol for [layout].
+(** [render layout ~scheme ~align ~ctx] is the status symbol for [layout].
     [ctx] feeds the monocle index. *)
 val render
   :  Oxbow_core.Layout.t
   -> scheme:Oxbow_core.Scheme.t
-  -> policy:Oxbow_core.Scroll_policy.t
+  -> align:Oxbow_core.Align.t
   -> ctx:Ctx.t
   -> string

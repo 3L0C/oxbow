@@ -49,8 +49,8 @@ let set_gaps_overview wm seat delta scope =
     Ok None)
 ;;
 
-let set_scrolling_policy wm seat policy scope =
-  apply_scoped wm seat scope ~f:(Output.apply_scroll_policy ~policy)
+let set_scrolling_alignment wm seat align scope =
+  apply_scoped wm seat scope ~f:(Output.apply_scroll_align ~align)
 ;;
 
 let set_default_width wm seat delta scope =
@@ -160,10 +160,10 @@ let select_tiling_scheme wm seat scheme scope =
   |> Result.join
 ;;
 
-let select_scrolling_policy wm seat policy scope =
+let select_scrolling_alignment wm seat align scope =
   set_layout wm seat Scrolling scope
   |> Result.map (fun _ ->
-    apply_scoped wm seat scope ~f:(Output.apply_scroll_policy ~policy))
+    apply_scoped wm seat scope ~f:(Output.apply_scroll_align ~align))
   |> Result.join
 ;;
 

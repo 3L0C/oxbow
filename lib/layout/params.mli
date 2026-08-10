@@ -9,7 +9,7 @@ end
 
 module Scrolling : sig
   type t =
-    { mutable policy : Oxbow_core.Scroll_policy.t
+    { mutable align : Oxbow_core.Align.t
     ; mutable default_width : Oxbow_core.Width_fac.t
     ; mutable offset : int
     }

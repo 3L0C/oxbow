@@ -111,11 +111,10 @@ val apply_gaps_inner : Types.Config.Data.t -> delta:int Oxbow_core.Delta.t -> un
     {b Effects:} mutates WM state *)
 val apply_gaps_outer : Types.Config.Data.t -> delta:int Oxbow_core.Delta.t -> unit
 
-(** [apply_scroll_policy td ~policy] applies [policy] to the scroll policy of
-    [td].
+(** [apply_scroll_align td ~align] applies [align] to the scroll layout of [td].
 
     {b Effects:} mutates WM state *)
-val apply_scroll_policy : Types.Config.Data.t -> policy:Oxbow_core.Scroll_policy.t -> unit
+val apply_scroll_align : Types.Config.Data.t -> align:Oxbow_core.Align.t -> unit
 
 (** [apply_orientation td ~dir] applies [dir] to the orientation of [td].
 

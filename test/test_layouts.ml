@@ -265,7 +265,7 @@ let test_scrolling () =
       check "first x" (r0.x = ua.x - offset)
     | _ -> fail "rect count"
   in
-  let run_scroll ~(policy : Scroll_policy.t) ~viewport_w ~max_offset ~offset ~col:(x, w) =
+  let run_scroll ~(align : Align.t) ~viewport_w ~max_offset ~offset ~col:(x, w) =
     incr cases;
     let fail name =
       incr failures;
@@ -274,7 +274,7 @@ let test_scrolling () =
         Printf.printf
           "FAIL %s: policy=%s viewport=%d total=%d offset=%d col=(%d,%d)\n"
           name
-          (match policy with
+          (match align with
            | Visible -> "visible"
            | Left -> "left"
            | Centered -> "centered")
@@ -285,11 +285,11 @@ let test_scrolling () =
           w
     in
     let check name cond = if not cond then fail name in
-    let res = Strip.scroll ~policy ~viewport_w ~max_offset ~offset ~col:(x, w) in
+    let res = Strip.scroll ~align ~viewport_w ~max_offset ~offset ~col:(x, w) in
     let hi = max 0 max_offset in
     let clamp v = min v hi |> max 0 in
-    if policy <> Centered then check "in bounds" (0 <= res && res <= hi);
-    match policy with
+    if align <> Centered then check "in bounds" (0 <= res && res <= hi);
+    match align with
     | Left -> check "left pins" (res = clamp x)
     | Centered -> check "centered" (res = x - ((viewport_w - w) / 2))
     | Visible ->
@@ -299,9 +299,9 @@ let test_scrolling () =
       if x >= offset && x + w <= offset + viewport_w && 0 <= offset && offset <= hi
       then check "in view stays" (res = offset)
   in
-  let expect name ~policy ~viewport_w ~max_offset ~offset ~col v =
+  let expect name ~align ~viewport_w ~max_offset ~offset ~col v =
     incr cases;
-    let res = Strip.scroll ~policy ~viewport_w ~max_offset ~offset ~col in
+    let res = Strip.scroll ~align ~viewport_w ~max_offset ~offset ~col in
     if res <> v
     then (
       incr failures;
@@ -331,7 +331,7 @@ let test_scrolling () =
          [ 0; 1; 300; 5000 ])
     uas;
   List.iter
-    (fun policy ->
+    (fun align ->
        List.iter
          (fun viewport_w ->
             List.iter
@@ -343,7 +343,7 @@ let test_scrolling () =
                            List.iter
                              (fun w ->
                                 run_scroll
-                                  ~policy
+                                  ~align
                                   ~viewport_w
                                   ~max_offset
                                   ~offset
@@ -353,8 +353,8 @@ let test_scrolling () =
                    [ 0; 1; 450; 5000 ])
               [ 200; 1000; 2000; 5000 ])
          [ 500; 1000 ])
-    Scroll_policy.[ Visible; Left; Centered ];
-  let vis = expect ~policy:Visible ~viewport_w:1000 ~max_offset:2000 in
+    Align.[ Visible; Left; Centered ];
+  let vis = expect ~align:Visible ~viewport_w:1000 ~max_offset:2000 in
   vis "fully visible stays" ~offset:0 ~col:(0, 500) 0;
   vis "edge flush stays" ~offset:0 ~col:(500, 500) 0;
   vis "right slides minimally" ~offset:0 ~col:(1000, 500) 500;
@@ -364,7 +364,7 @@ let test_scrolling () =
   vis "stale offset heals" ~offset:5000 ~col:(1500, 500) 1500;
   expect
     "short strip zeroes"
-    ~policy:Visible
+    ~align:Visible
     ~viewport_w:1000
     ~max_offset:600
     ~offset:400
@@ -372,16 +372,16 @@ let test_scrolling () =
     0;
   expect
     "wide column pins left"
-    ~policy:Visible
+    ~align:Visible
     ~viewport_w:1000
     ~max_offset:3000
     ~offset:0
     ~col:(300, 1500)
     300;
-  let left = expect ~policy:Left ~viewport_w:1000 ~max_offset:2000 ~offset:0 in
+  let left = expect ~align:Left ~viewport_w:1000 ~max_offset:2000 ~offset:0 in
   left "left pins" ~col:(700, 500) 700;
   left "tail anchors left" ~col:(1500, 500) 1500;
-  let ctr = expect ~policy:Centered ~viewport_w:1000 ~max_offset:2000 ~offset:0 in
+  let ctr = expect ~align:Centered ~viewport_w:1000 ~max_offset:2000 ~offset:0 in
   ctr "centers" ~col:(700, 500) 450;
   ctr "center clamps low" ~col:(100, 500) (-150);
   ctr "center clamps high" ~col:(1500, 500) 1250;

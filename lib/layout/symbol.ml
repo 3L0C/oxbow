@@ -7,16 +7,11 @@ module Ctx = struct
     }
 end
 
-let render
-      (layout : Layout.t)
-      ~(scheme : Scheme.t)
-      ~(policy : Scroll_policy.t)
-      ~(ctx : Ctx.t)
-  =
+let render (layout : Layout.t) ~(scheme : Scheme.t) ~(align : Align.t) ~(ctx : Ctx.t) =
   match layout with
   | Floating -> "∘∘∘"
   | Scrolling ->
-    (match policy with
+    (match align with
      | Left -> "=>>"
      | Centered -> ">=>"
      | Visible -> ">>=")

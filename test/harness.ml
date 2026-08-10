@@ -12,7 +12,7 @@ let rec wait_for ?(tries = 100) p =
     wait_for ~tries:(tries - 1) p)
 ;;
 
-let section name = Printf.printf "== %s ==\n" name
+let section name = Printf.printf "\n== %s ==\n" name
 let dump_trace fake = List.iter print_endline (Fake_river.trace fake)
 let seen = ref 0
 
