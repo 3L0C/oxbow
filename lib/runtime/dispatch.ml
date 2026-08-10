@@ -120,6 +120,9 @@ let handle_window wm seat (cmd : Command.Window.t) =
   | Spawn_focus b ->
     Config.set_spawn_focus wm b;
     Ok None
+  | Drag_retile b ->
+    Config.set_drag_retile wm b;
+    Ok None
 ;;
 
 let handle_wm ctx _seat (cmd : Command.Wm.t) =

@@ -35,6 +35,17 @@ let consume wm seat target =
       Ok (fun () -> Window.set_consumes last true)))
 ;;
 
+let expel w (o : Output.t) col =
+  match col with
+  | [ _ ] -> ()
+  | _ ->
+    let head = List.hd col in
+    let remaining = List.filter (( != ) w) col in
+    Ring.hop_left (( == ) w) (( == ) head) o.wm_stack |> Output.set_wm_stack o;
+    Window.set_consumes w false;
+    List.rev remaining |> List.hd |> fun w -> Window.set_consumes w false
+;;
+
 let release wm seat target =
   Result.map (fun _ -> None)
   @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
@@ -42,15 +53,11 @@ let release wm seat target =
     @@ fun o _cols col ->
     match col with
     | [ _ ] -> Error "target window is alone in its column"
-    | _ ->
-      let head = List.hd col in
-      let remaining = List.filter (( != ) w) col in
-      let stack' = Ring.hop_left (( == ) w) (( == ) head) o.wm_stack in
-      Ok
-        (fun () ->
-          Output.set_wm_stack o stack';
-          Window.set_consumes w false;
-          List.rev remaining |> List.hd |> fun w -> Window.set_consumes w false))
+    | _ -> Ok (fun () -> expel w o col))
+;;
+
+let detach (w : Window.t) =
+  with_column_of w (fun o _cols col -> Ok (expel w o col)) |> ignore
 ;;
 
 let move wm seat target (dir : Direction.Logical.t) =

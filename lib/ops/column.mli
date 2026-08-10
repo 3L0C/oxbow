@@ -20,6 +20,13 @@ val release
   -> Oxbow_core.Target.Window.One.t
   -> (Yojson.Safe.t option, string) result
 
+(** [detach window] expels [window] into its own column and clears the consume
+    bits, with the same logic as [release]. No-op when the layout is not
+    scrolling, [window] is not in the strip, or [window] is alone in its column.
+
+    {b Effects:} mutates WM state *)
+val detach : Oxbow_state.Window.t -> unit
+
 (** [move wm seat target dir] hops the column of the [target] window over the
     adjacent column in [dir]. The hop wraps at the strip ends. Is [Error msg]
     when the [target] window has no output, or no other column exists.

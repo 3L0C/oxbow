@@ -14,8 +14,14 @@ let float_then (window : Window.t) f =
   | Floating -> f ()
 ;;
 
-let handle_move wm seat window =
-  float_then window @@ fun () -> Drag.begin_move wm seat window
+let handle_move wm seat (window : Window.t) =
+  let from_tiled =
+    match window.presentation with
+    | Tiled -> not @@ Output.is_floating window.output
+    | Floating | Maximized _ | Fullscreen _ -> false
+  in
+  Column.detach window;
+  float_then window @@ fun () -> Drag.begin_move wm seat window ~from_tiled
 ;;
 
 let handle_resize wm seat window edges =

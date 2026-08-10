@@ -18,6 +18,11 @@ val set_focus_follows_pointer : Types.Wm.t -> Oxbow_core.Focus_follows_policy.t 
     {b Effects:} mutates WM state *)
 val set_warp_on_focus : Types.Wm.t -> bool -> unit
 
+(** [set_drag_retile wm b] sets [wm]'s drag retile flag to [b].
+
+    {b Effects:} mutates WM state *)
+val set_drag_retile : Types.Wm.t -> bool -> unit
+
 (** [set_border_width wm width] sets [wm]'s border width to [width].
     Is [Error msg] when [width] is negative.
 

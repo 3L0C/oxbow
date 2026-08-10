@@ -48,6 +48,7 @@ module Config = struct
     ; spawn : Spawn.t
     ; mutable focus_follows_pointer : Oxbow_core.Focus_follows_policy.t
     ; mutable warp_on_focus : bool
+    ; mutable drag_retile : bool
     ; mutable repeat_rate : int
     ; mutable repeat_delay : int
     }
@@ -312,6 +313,7 @@ and Seat : sig
     type t =
       | Move of
           { window : Window.t
+          ; from_tiled : bool
           ; start_x : int32
           ; start_y : int32
           ; mutable dx : int32

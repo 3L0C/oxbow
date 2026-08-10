@@ -8,6 +8,7 @@ let cmd, bind_cmd =
     ~extra:[ Cmd_window_list.cmd; Cmd_window_query.cmd ]
     [ Cmd_window_close.(cmd, bind_cmd)
     ; Cmd_window_column.(cmd, bind_cmd)
+    ; Cmd_window_drag.(cmd, bind_cmd)
     ; Cmd_window_focus.(cmd, bind_cmd)
     ; Cmd_window_label.(cmd, bind_cmd)
     ; Cmd_window_move.(cmd, bind_cmd)

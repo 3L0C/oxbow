@@ -42,6 +42,7 @@ let default () =
   ; modes = [ Mode.normal; Mode.locked ]
   ; focus_follows_pointer = Not_scrolling
   ; warp_on_focus = false
+  ; drag_retile = false
   ; repeat_rate = 50
   ; repeat_delay = 250
   }
@@ -54,6 +55,8 @@ let set_focus_follows_pointer (wm : Types.Wm.t) policy =
 let set_warp_on_focus (wm : Types.Wm.t) warp_on_focus =
   wm.config.warp_on_focus <- warp_on_focus
 ;;
+
+let set_drag_retile (wm : Types.Wm.t) b = wm.config.drag_retile <- b
 
 let set_border_width (wm : Types.Wm.t) width =
   if width < 0l

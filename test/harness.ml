@@ -111,7 +111,12 @@ let run script =
               ~net:(Eio.Stdenv.net env)
               ~clock:(Eio.Stdenv.clock env)
               ())
-      (fun () -> script env fake ~section:section_helper ~oxctl:oxctl_helper);
+      (fun () ->
+         (* Run.loop registers the socket unlink hook before the bind
+            creates the file (eio_linux listen). Wait for the file, so
+            a fast script cannot cancel Run.loop inside that window. *)
+         wait_for ~tries:10_000 (fun () -> Sys.file_exists socket_path);
+         script env fake ~section:section_helper ~oxctl:oxctl_helper);
     raise Script_done
   with
   | Script_done -> ()

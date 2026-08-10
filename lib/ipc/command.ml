@@ -332,6 +332,7 @@ module Window = struct
         } [@name "label_remove"]
     | Spawn_position of Spawn_position.t [@name "spawn_position"]
     | Spawn_focus of bool [@name "spawn_focus"]
+    | Drag_retile of bool [@name "drag_retile"]
   [@@deriving yojson]
 end
 

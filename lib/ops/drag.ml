@@ -1,11 +1,13 @@
 open! Oxbow_core
 open! Oxbow_state
+open! Oxbow_layout
 
-let begin_move wm seat window =
+let begin_move wm seat window ~from_tiled =
   Focus.focus_window wm seat window;
   Seat.set_op seat
   @@ Move
        { window
+       ; from_tiled
        ; start_x = window.geom.x
        ; start_y = window.geom.y
        ; dx = 0l
@@ -37,6 +39,69 @@ let begin_resize wm seat window edges =
        }
 ;;
 
+let widen_to_column (cursor : Vector.t) tiled = function
+  | Some ((w : Window.t), _) ->
+    let cols =
+      Strip.columns ~consumes:(fun (w : Window.t) -> w.scrolling.consumes) tiled
+    in
+    let col = List.find (List.memq w) cols in
+    let head = List.hd col in
+    if cursor.x < (Vector.center (Rect.to_int w.geom)).x
+    then Some (head, `Before)
+    else Some (List.rev col |> List.hd, `After)
+  | None -> None
+;;
+
+let retile ~(window : Window.t) ~x ~y (o : Output.t) =
+  let tiled = Output.tiled_windows o in
+  let cursor : Vector.t = Int32.{ x = to_int x; y = to_int y } in
+  let center (w : Window.t) = Vector.center (Rect.to_int w.geom) in
+  let side w =
+    match Vector.diff (center w) cursor |> Vector.direction with
+    | Some (Left | Up) -> `Before
+    | _ -> `After
+  in
+  let nearest () =
+    List.fold_left
+      (fun acc w ->
+         let length = Vector.diff (center w) cursor |> Vector.length_squared in
+         match acc with
+         | None -> Some (length, w)
+         | Some (length', _) when length < length' -> Some (length, w)
+         | Some _ -> acc)
+      None
+      tiled
+  in
+  let target =
+    let target' =
+      match List.find_opt (fun (w : Window.t) -> Rect.contains ~x ~y w.geom) tiled with
+      | Some w -> Some (w, side w)
+      | None ->
+        (match nearest () with
+         | None -> None
+         | Some (_, w) -> Some (w, side w))
+    in
+    if Output.current_layout o = Scrolling
+    then widen_to_column cursor tiled target'
+    else target'
+  in
+  let stack = List.filter (( != ) window) o.wm_stack in
+  let placed =
+    match target with
+    | None -> window :: stack
+    | Some (t, side) ->
+      let after =
+        match side with
+        | `Before -> false
+        | `After -> true
+      in
+      Ring.insert_relative ~after ~point:t ~e:window stack
+  in
+  Output.set_wm_stack o placed;
+  Window.set_presentation window Tiled;
+  Schedule.manage ()
+;;
+
 let step (wm : Wm.t) (seat : Seat.t) =
   match seat.op with
   | Some (Move op_m) when op_m.release ->
@@ -48,6 +113,13 @@ let step (wm : Wm.t) (seat : Seat.t) =
        Placement.move_window w o ~policy:Tag.Policy.Take;
        Focus.focus_window wm seat w;
        Schedule.manage ()
+     | _ -> ());
+    (match w.output with
+     | Some o
+       when wm.config.drag_retile
+            && op_m.from_tiled
+            && (not @@ Output.is_floating (Some o)) ->
+       retile ~window:w ~x:seat.position.x ~y:seat.position.y o
      | _ -> ());
     if op_m.window.presentation = Floating && (not @@ Output.is_floating w.output)
     then Window.remember_float op_m.window;

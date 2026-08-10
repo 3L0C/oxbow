@@ -52,6 +52,29 @@ val close_window : t -> app_id:string option -> unit
     {b Effects:} sends Wayland events *)
 val press_binding : t -> index:int -> unit
 
+(** [send_pointer_enter t ~seat ~app_id] sends pointer_enter on the first window
+    with [app_id], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val send_pointer_enter : t -> seat:string -> app_id:string option -> unit
+
+(** [send_pointer_position t ~seat ~x ~y] sends pointer_position ([x], [y]) on
+    [seat], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val send_pointer_position : t -> seat:string -> x:int32 -> y:int32 -> unit
+
+(** [send_op_delta t ~seat ~dx ~dy] sends op_delta ([dx], [dy]) on [seat], then
+    ticks.
+
+    {b Effects:} sends Wayland events *)
+val send_op_delta : t -> seat:string -> dx:int32 -> dy:int32 -> unit
+
+(** [send_op_release t ~seat] sends op_release on [seat], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val send_op_release : t -> seat:string -> unit
+
 (** [trace t] returns the recorded requests, oldest first. *)
 val trace : t -> string list
 

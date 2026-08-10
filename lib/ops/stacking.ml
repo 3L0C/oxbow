@@ -56,22 +56,13 @@ let apply (intent : Focus_intent.t) (output : Output.t) =
 let push windows output = apply (Push windows) output
 
 let spawn ~(position : Spawn_position.t) ~focus ~window (output : Output.t) =
-  let insert_rel ~after focused stack =
-    let rec aux = function
-      | [] -> [ window ]
-      | w :: rest when w == focused ->
-        if after then w :: window :: rest else window :: w :: rest
-      | w :: rest -> w :: aux rest
-    in
-    aux stack
-  in
   let stack = List.filter (( != ) window) output.wm_stack in
   let placed =
     match position, Output.focused_window output with
     | Master, _ | (Prev | Next), None -> window :: stack
     | End, _ -> stack @ [ window ]
-    | Prev, Some f -> insert_rel ~after:false f stack
-    | Next, Some f -> insert_rel ~after:true f stack
+    | Prev, Some f -> Ring.insert_relative ~after:false ~point:f ~e:window stack
+    | Next, Some f -> Ring.insert_relative ~after:true ~point:f ~e:window stack
   in
   Output.set_wm_stack output placed;
   if focus

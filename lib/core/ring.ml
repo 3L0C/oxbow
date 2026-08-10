@@ -1,4 +1,4 @@
-let move_to_top x xs = x :: List.filter (fun y -> y != x) xs
+let move_to_top x xs = x :: List.filter (( != ) x) xs
 
 let wrapped_search p l lst =
   let rec aux (wrapped : bool) = function
@@ -69,4 +69,13 @@ let rearrange vis order l =
     order
     l
   |> snd
+;;
+
+let insert_relative ~after ~point ~e stack =
+  let rec aux = function
+    | [] -> [ e ]
+    | x :: xs when x == point -> if after then x :: e :: xs else e :: x :: xs
+    | x :: xs -> x :: aux xs
+  in
+  List.filter (( != ) e) stack |> aux
 ;;

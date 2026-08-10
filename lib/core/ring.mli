@@ -43,3 +43,10 @@ val hop_left : ('a -> bool) -> ('a -> bool) -> 'a list -> 'a list
     their positions. [order] holds exactly the [vis]-satisfying elements of [l],
     in any order. *)
 val rearrange : ('a -> bool) -> 'a list -> 'a list -> 'a list
+
+(** [insert_relative ~after ~point ~e l] is [l] with the element [e] inserted
+    relative to the member [point] in [l]. When [after] is [true], [e] comes
+    after [point]. When [after] is [false], [e] is inserted before [point]. If
+    [point] is not a member of [l], [e] is inserted at the end. If [e] is a
+    member of [l], it is removed and reinserted accordingly. *)
+val insert_relative : after:bool -> point:'a -> e:'a -> 'a list -> 'a list

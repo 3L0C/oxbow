@@ -32,6 +32,8 @@ type t =
   ; mutable dirty : bool
   ; mutable windows :
       (string option * River.Obj.Window_management.v Wm_server.River_window_v1.t) list
+  ; mutable seats :
+      (string * River.Obj.Window_management.v Wm_server.River_seat_v1.t) list
   ; mutable owners : (int32 * string) list
   ; phase_done : Eio.Condition.t
   ; wm_ready : Eio.Condition.t
@@ -567,6 +569,7 @@ let start ~sw socket =
     ; wl_seats = []
     ; dirty = false
     ; windows = []
+    ; seats = []
     ; owners = []
     ; phase_done = Eio.Condition.create ()
     ; wm_ready = Eio.Condition.create ()
@@ -608,6 +611,7 @@ let add_seat t ~name =
   let s = Wm_server.River_window_manager_v1.seat wm (seat_handlers t) in
   adopt t s ~owner:name;
   Wm_server.River_seat_v1.wl_seat s ~name:global;
+  t.seats <- (name, s) :: t.seats;
   tick t
 ;;
 
@@ -645,6 +649,35 @@ let close_window t ~app_id =
     t.windows <- List.remove_assoc app_id t.windows;
     Wm_server.River_window_v1.closed w;
     tick t
+;;
+
+let seat_named t ~seat =
+  match List.assoc_opt seat t.seats with
+  | None -> failwith "fake_river: no seat with this name"
+  | Some s -> s
+;;
+
+let send_pointer_enter t ~seat ~app_id =
+  match List.assoc_opt app_id t.windows with
+  | None -> failwith "send_pointer_enter: no window with this app_id"
+  | Some w ->
+    Wm_server.River_seat_v1.pointer_enter (seat_named t ~seat) ~window:w;
+    tick t
+;;
+
+let send_pointer_position t ~seat ~x ~y =
+  Wm_server.River_seat_v1.pointer_position (seat_named t ~seat) ~x ~y;
+  tick t
+;;
+
+let send_op_delta t ~seat ~dx ~dy =
+  Wm_server.River_seat_v1.op_delta (seat_named t ~seat) ~dx ~dy;
+  tick t
+;;
+
+let send_op_release t ~seat =
+  Wm_server.River_seat_v1.op_release (seat_named t ~seat);
+  tick t
 ;;
 
 let press_binding t ~index =
