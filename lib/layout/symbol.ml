@@ -26,5 +26,6 @@ let render
      | Diminish -> "[]>"
      | Dwindle -> "[\\]"
      | Spiral -> "[@]"
+     | Deck -> "[D]"
      | Monocle -> Printf.sprintf "[%d]" ctx.focused_index)
 ;;

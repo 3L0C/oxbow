@@ -82,6 +82,7 @@ let compute ~(params : Params.Tiling.t) ~(usable_area : int Rect.t) ~(count : in
     in
     (match params.scheme with
      | Monocle -> List.init n (fun _ -> usable_area)
+     | Deck -> tiled @@ fun ~c_area ~cw:_ ~c_count -> List.init c_count (fun _ -> c_area)
      | Even ->
        tiled
        @@ fun ~c_area ~cw ~c_count ->

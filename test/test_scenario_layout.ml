@@ -9,6 +9,10 @@ let () =
     Fake_river.add_window fake ~app_id:(Some "firefox"));
   oxctl "layout tiling mfact +0.05";
   oxctl "layout tiling scheme monocle";
+  oxctl "layout tiling scheme deck";
+  section "spawn - mpv and feishin" (fun () ->
+    Fake_river.add_window fake ~app_id:(Some "mpv");
+    Fake_river.add_window fake ~app_id:(Some "feishin"));
   oxctl "layout floating";
   oxctl "layout scrolling";
   oxctl "output overview";

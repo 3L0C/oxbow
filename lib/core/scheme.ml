@@ -3,16 +3,18 @@ type t =
   | Diminish [@name "diminish"]
   | Dwindle [@name "dwindle"]
   | Spiral [@name "spiral"]
+  | Deck [@name "deck"]
   | Monocle [@name "monocle"]
 [@@deriving yojson]
 
-let all = [ Even; Diminish; Dwindle; Spiral; Monocle ]
+let all = [ Even; Diminish; Dwindle; Spiral; Deck; Monocle ]
 
 let to_string = function
   | Even -> "even"
   | Diminish -> "diminish"
   | Dwindle -> "dwindle"
   | Spiral -> "spiral"
+  | Deck -> "deck"
   | Monocle -> "monocle"
 ;;
 
@@ -22,6 +24,7 @@ let of_string s =
   | "diminish" -> Some Diminish
   | "dwindle" -> Some Dwindle
   | "spiral" -> Some Spiral
+  | "deck" -> Some Deck
   | "monocle" -> Some Monocle
   | _ -> None
 ;;

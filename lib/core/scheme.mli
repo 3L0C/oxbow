@@ -3,6 +3,7 @@ type t =
   | Diminish
   | Dwindle
   | Spiral
+  | Deck
   | Monocle
 
 (** [all] is every scheme, in cycle order. *)

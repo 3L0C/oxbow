@@ -131,6 +131,29 @@ let test_tiling () =
   if !failures > 0 then exit 1
 ;;
 
+let test_deck () =
+  let open Oxbow_core in
+  let open Oxbow_layout in
+  let ua = Rect.{ x = 0; y = 0; w = 1920; h = 1080 } in
+  let compute scheme count =
+    let params = Params.Tiling.{ mfact = 0.55; nmaster = 1; dir = Left; scheme } in
+    Schemes.compute ~params ~usable_area:ua ~count
+  in
+  List.iter
+    (fun count ->
+       let deck = compute Deck count in
+       let even = compute Even count in
+       assert (List.length deck = count);
+       let nmaster = 1 in
+       let take n l = List.filteri (fun i _ -> i < n) l in
+       let drop n l = List.filteri (fun i _ -> i >= n) l in
+       assert (take nmaster deck = take nmaster even);
+       match drop nmaster deck with
+       | [] -> ()
+       | c :: cs -> List.iter (fun c' -> assert (c' = c)) cs)
+    [ 0; 1; 2; 3; 5 ]
+;;
+
 (* Property checks for [Strip.layout] and [Strip.scroll]. Singleton items make
    one full-height column each: the head factor sets the width, and the x
    positions advance by exactly one column width. A consumes chain puts its
@@ -368,5 +391,6 @@ let test_scrolling () =
 
 let () =
   test_tiling ();
+  test_deck ();
   test_scrolling ()
 ;;
