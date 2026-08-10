@@ -14,6 +14,7 @@ module Scrolling = struct
     { mutable align : Align.t
     ; mutable default_width : Width_fac.t
     ; mutable offset : int
+    ; mutable dir : Direction.Spatial.t
     }
 end
 

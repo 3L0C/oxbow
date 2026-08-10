@@ -92,6 +92,10 @@ module Layout = struct
           { delta : float Delta.t
           ; scope : Scope.t
           } [@name "default_width"]
+      | Orientation of
+          { dir : Direction.Spatial.t
+          ; scope : Scope.t
+          } [@name "orientation"]
     [@@deriving yojson]
   end
 

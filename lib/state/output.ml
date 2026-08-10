@@ -137,8 +137,9 @@ let apply_gaps_outer (td : Types.Config.Data.t) ~(delta : int Delta.t) =
   params.outer <- max 0 outer
 ;;
 
-let apply_scroll_align (td : Types.Config.Data.t) ~align = td.scrolling.align <- align
-let apply_orientation (td : Types.Config.Data.t) ~dir = td.tiling.dir <- dir
+let apply_scrolling_align (td : Types.Config.Data.t) ~align = td.scrolling.align <- align
+let apply_scrolling_orientation (td : Types.Config.Data.t) ~dir = td.scrolling.dir <- dir
+let apply_tiling_orientation (td : Types.Config.Data.t) ~dir = td.tiling.dir <- dir
 
 let set_gaps_overview o ~(delta : int Delta.t) =
   let gaps = Delta.resolve ~add:( + ) ~current:o.overview.gaps delta in

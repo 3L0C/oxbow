@@ -5,6 +5,7 @@ let handle_scrolling wm seat (cmd : Command.Layout.Scrolling.t) =
   | Select { align; scope } -> Arrange.select_scrolling_alignment wm seat align scope
   | Align { align; scope } -> Arrange.set_scrolling_alignment wm seat align scope
   | Default_width { delta; scope } -> Arrange.set_default_width wm seat delta scope
+  | Orientation { dir; scope } -> Arrange.set_scrolling_orientation wm seat dir scope
 ;;
 
 let handle_tiling wm seat (cmd : Command.Layout.Tiling.t) =
@@ -12,7 +13,7 @@ let handle_tiling wm seat (cmd : Command.Layout.Tiling.t) =
   | Cycle dir -> Arrange.cycle_scheme wm seat dir
   | Mfact { delta; scope } -> Arrange.set_mfact wm seat delta scope
   | Nmaster { delta; scope } -> Arrange.set_nmaster wm seat delta scope
-  | Orientation { dir; scope } -> Arrange.set_orientation wm seat dir scope
+  | Orientation { dir; scope } -> Arrange.set_tiling_orientation wm seat dir scope
   | Select { scheme; scope } -> Arrange.select_tiling_scheme wm seat scheme scope
   | Scheme { scheme; scope } -> Arrange.set_tiling_scheme wm seat scheme scope
 ;;

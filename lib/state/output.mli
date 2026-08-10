@@ -111,15 +111,29 @@ val apply_gaps_inner : Types.Config.Data.t -> delta:int Oxbow_core.Delta.t -> un
     {b Effects:} mutates WM state *)
 val apply_gaps_outer : Types.Config.Data.t -> delta:int Oxbow_core.Delta.t -> unit
 
-(** [apply_scroll_align td ~align] applies [align] to the scroll layout of [td].
+(** [apply_scrolling_align td ~align] applies [align] to the scroll layout of
+    [td].
 
     {b Effects:} mutates WM state *)
-val apply_scroll_align : Types.Config.Data.t -> align:Oxbow_core.Align.t -> unit
+val apply_scrolling_align : Types.Config.Data.t -> align:Oxbow_core.Align.t -> unit
 
-(** [apply_orientation td ~dir] applies [dir] to the orientation of [td].
+(** [apply_scrolling_orientation td ~dir] applies [dir] to the tiling
+    orientation of [td].
 
     {b Effects:} mutates WM state *)
-val apply_orientation : Types.Config.Data.t -> dir:Oxbow_core.Direction.Spatial.t -> unit
+val apply_scrolling_orientation
+  :  Types.Config.Data.t
+  -> dir:Oxbow_core.Direction.Spatial.t
+  -> unit
+
+(** [apply_tiling_orientation td ~dir] applies [dir] to the tiling orientation
+    of [td].
+
+    {b Effects:} mutates WM state *)
+val apply_tiling_orientation
+  :  Types.Config.Data.t
+  -> dir:Oxbow_core.Direction.Spatial.t
+  -> unit
 
 (** [set_gaps_overview output ~delta] sets the overview gaps for [output]
     according to [delta].

@@ -21,5 +21,11 @@ let () =
   oxctl "window focus match --app-id=feishin";
   oxctl "window list";
   oxctl "window focus match --app-id=mpv";
+  oxctl "window list";
+  oxctl "layout scrolling orientation down";
+  oxctl "window list";
+  oxctl "layout scrolling orientation right";
+  oxctl "window list";
+  oxctl "layout scrolling orientation up";
   oxctl "window list"
 ;;

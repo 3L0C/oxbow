@@ -44,5 +44,15 @@ let () =
     Fake_river.send_op_delta fake ~seat:"seat0" ~dx:50l ~dy:50l;
     Fake_river.send_pointer_position fake ~seat:"seat0" ~x:1900l ~y:500l;
     Fake_river.send_op_release fake ~seat:"seat0");
+  oxctl "window list";
+  oxctl "layout scrolling orientation down";
+  oxctl "window list";
+  section "drag mpv in the vertical strip" (fun () ->
+    Fake_river.send_pointer_enter fake ~seat:"seat0" ~app_id:(Some "mpv"));
+  oxctl "window move drag";
+  section "release in the upper half of firefox" (fun () ->
+    Fake_river.send_op_delta fake ~seat:"seat0" ~dx:50l ~dy:50l;
+    Fake_river.send_pointer_position fake ~seat:"seat0" ~x:200l ~y:700l;
+    Fake_river.send_op_release fake ~seat:"seat0");
   oxctl "window list"
 ;;

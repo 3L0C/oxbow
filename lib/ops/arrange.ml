@@ -50,15 +50,19 @@ let set_gaps_overview wm seat delta scope =
 ;;
 
 let set_scrolling_alignment wm seat align scope =
-  apply_scoped wm seat scope ~f:(Output.apply_scroll_align ~align)
+  apply_scoped wm seat scope ~f:(Output.apply_scrolling_align ~align)
 ;;
 
 let set_default_width wm seat delta scope =
   apply_scoped wm seat scope ~f:(Output.apply_default_width ~delta)
 ;;
 
-let set_orientation wm seat dir scope =
-  apply_scoped wm seat scope ~f:(Output.apply_orientation ~dir)
+let set_scrolling_orientation wm seat dir scope =
+  apply_scoped wm seat scope ~f:(Output.apply_scrolling_orientation ~dir)
+;;
+
+let set_tiling_orientation wm seat dir scope =
+  apply_scoped wm seat scope ~f:(Output.apply_tiling_orientation ~dir)
 ;;
 
 let enter_overview wm (output : Output.t) =
@@ -163,7 +167,7 @@ let select_tiling_scheme wm seat scheme scope =
 let select_scrolling_alignment wm seat align scope =
   set_layout wm seat Scrolling scope
   |> Result.map (fun _ ->
-    apply_scoped wm seat scope ~f:(Output.apply_scroll_align ~align))
+    apply_scoped wm seat scope ~f:(Output.apply_scrolling_align ~align))
   |> Result.join
 ;;
 

@@ -12,6 +12,7 @@ module Scrolling : sig
     { mutable align : Oxbow_core.Align.t
     ; mutable default_width : Oxbow_core.Width_fac.t
     ; mutable offset : int
+    ; mutable dir : Oxbow_core.Direction.Spatial.t
     }
 end
 

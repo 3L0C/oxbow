@@ -39,16 +39,22 @@ let begin_resize wm seat window edges =
        }
 ;;
 
-let widen_to_column (cursor : Vector.t) tiled = function
+let widen_to_column ~(dir : Direction.Spatial.t) (cursor : Vector.t) tiled = function
   | Some ((w : Window.t), _) ->
     let cols =
       Strip.columns ~consumes:(fun (w : Window.t) -> w.scrolling.consumes) tiled
     in
     let col = List.find (List.memq w) cols in
+    let center = Rect.to_int w.geom |> Vector.center in
     let head = List.hd col in
-    if cursor.x < (Vector.center (Rect.to_int w.geom)).x
-    then Some (head, `Before)
-    else Some (List.rev col |> List.hd, `After)
+    let toward_head =
+      match dir with
+      | Left -> cursor.x < center.x
+      | Right -> cursor.x > center.x
+      | Up -> cursor.y < center.y
+      | Down -> cursor.y > center.y
+    in
+    if toward_head then Some (head, `Before) else Some (List.rev col |> List.hd, `After)
   | None -> None
 ;;
 
@@ -82,7 +88,7 @@ let retile ~(window : Window.t) ~x ~y (o : Output.t) =
          | Some (_, w) -> Some (w, side w))
     in
     if Output.current_layout o = Scrolling
-    then widen_to_column cursor tiled target'
+    then widen_to_column ~dir:(Output.to_tag_data o).scrolling.dir cursor tiled target'
     else target'
   in
   let stack = List.filter (( != ) window) o.wm_stack in

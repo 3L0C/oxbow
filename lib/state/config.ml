@@ -7,7 +7,8 @@ let default_tiling () =
 ;;
 
 let default_scrolling () =
-  Params.Scrolling.{ align = Visible; default_width = Width_fac.of_float 0.5; offset = 0 }
+  Params.Scrolling.
+    { align = Visible; default_width = Width_fac.of_float 0.5; offset = 0; dir = Left }
 ;;
 
 let default_gaps () = Params.Gaps.{ inner = 10; outer = 20 }
@@ -112,6 +113,7 @@ let copy_tag_data (td : Data.t) =
         { align = td.scrolling.align
         ; default_width = td.scrolling.default_width
         ; offset = td.scrolling.offset
+        ; dir = td.scrolling.dir
         }
     ; gaps = { inner = td.gaps.inner; outer = td.gaps.outer }
     }

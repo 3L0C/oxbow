@@ -86,11 +86,22 @@ val set_default_width
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
-(** [set_orientation wm seat dir scope] sets the stack direction on the output
-    according to [scope].
+(** [set_scrolling_orientation wm seat dir scope] sets the scrolling direction
+    on the output according to [scope].
 
     {b Effects:} mutates WM state *)
-val set_orientation
+val set_scrolling_orientation
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Direction.Spatial.t
+  -> Oxbow_core.Scope.t
+  -> (Yojson.Safe.t option, string) result
+
+(** [set_tiling_orientation wm seat dir scope] sets the stack direction on the
+    output according to [scope].
+
+    {b Effects:} mutates WM state *)
+val set_tiling_orientation
   :  Oxbow_state.Wm.t
   -> Oxbow_state.Seat.t
   -> Oxbow_core.Direction.Spatial.t
