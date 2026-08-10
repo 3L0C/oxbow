@@ -13,6 +13,7 @@ let command_term =
      and+ resize_to = Ctl_cli.resize_to_flag
      and+ move_to = Ctl_cli.move_to_flag
      and+ sticky = Ctl_cli.sticky_flag
+     and+ scratchpad = Ctl_cli.scratchpad_flag
      and+ swallow = Ctl_cli.swallow_flag
      and+ label_as = Ctl_cli.label_as_flag
      and+ spawn_position = Ctl_cli.spawn_position_flag
@@ -29,6 +30,7 @@ let command_term =
        ; resize_to
        ; move_to
        ; sticky
+       ; scratchpad
        ; swallow
        ; label_as
        ; spawn_position

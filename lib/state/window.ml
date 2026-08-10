@@ -52,6 +52,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; is_urgent = false
   ; is_fake_fullscreen = false
   ; scrolling = { consumes = false; width = scroll_width }
+  ; scratchpad = { name = None; stashed = false }
   ; committed =
       { proposed = None
       ; fullscreen_on = None
@@ -124,17 +125,20 @@ let occupied_tags ?except windows =
 ;;
 
 let tag_visible w =
-  match w.output, w.swallow with
-  | None, _ | _, Swallowed_by _ -> false
-  | Some o, _ ->
-    if o.overview.enabled
-    then true
-    else (
-      match w.sticky with
-      | Off -> on_tags ~tags:o.tags.selected w
-      | All -> true
-      | Occupied ->
-        occupied_tags ~except:w o.wm_stack |> Tag.Set.intersects o.tags.selected)
+  if w.scratchpad.stashed
+  then false
+  else (
+    match w.output, w.swallow with
+    | None, _ | _, Swallowed_by _ -> false
+    | Some o, _ ->
+      if o.overview.enabled
+      then true
+      else (
+        match w.sticky with
+        | Off -> on_tags ~tags:o.tags.selected w
+        | All -> true
+        | Occupied ->
+          occupied_tags ~except:w o.wm_stack |> Tag.Set.intersects o.tags.selected))
 ;;
 
 let is_tiled w = w.presentation = Tiled
@@ -512,6 +516,8 @@ let swallow ~host ~child =
 ;;
 
 let set_is_fixed w is_fixed = w.is_fixed <- is_fixed
+let set_scratchpad w name = w.scratchpad.name <- name
+let set_stashed w b = w.scratchpad.stashed <- b
 
 let rehome w name =
   match w.output_before_evac with

@@ -1,0 +1,452 @@
+== arrive ==
+render:set_presentation_mode
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_seat
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_pointer_binding(seat0)
+manage:get_pointer_binding(seat0)
+manage:clear_focus(seat0)
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_node(emacs)
+manage:set_capabilities(emacs)
+manage:propose_dimensions(emacs, 1872x1032)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:set_presentation_mode
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:set_presentation_mode
+manage:get_node(firefox)
+manage:set_capabilities(firefox)
+manage:propose_dimensions(firefox, 1021x1032)
+manage:set_tiled(firefox)
+manage:use_ssd(firefox)
+manage:inform_unmaximized(firefox)
+manage:inform_not_fullscreen(firefox)
+manage:inform_resize_end(firefox)
+manage:propose_dimensions(emacs, 833x1032)
+manage:focus_window(seat0, firefox)
+manage:op_end(seat0)
+manage:focus_window(seat0, firefox)
+manage:op_end(seat0)
+render:set_borders(firefox, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:set_presentation_mode
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:set_presentation_mode
+== window rules add --app-id=qalculate --scratchpad=calc --float ==
+manage:focus_window(seat0, firefox)
+manage:op_end(seat0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:set_presentation_mode
+== qalculate arrives ==
+manage:get_node(qalculate)
+manage:set_capabilities(qalculate)
+manage:propose_dimensions(qalculate, 0x0)
+manage:set_tiled(qalculate)
+manage:use_ssd(qalculate)
+manage:inform_unmaximized(qalculate)
+manage:inform_not_fullscreen(qalculate)
+manage:inform_resize_end(qalculate)
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_borders(qalculate, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(firefox, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+== scratchpad toggle calc ==
+manage:focus_window(seat0, firefox)
+manage:op_end(seat0)
+render:set_borders(qalculate, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(firefox, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(qalculate, 640, 300)
+render:hide(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:set_presentation_mode
+manage:focus_window(seat0, firefox)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:hide(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:set_presentation_mode
+== window list ==
+0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=false urgent=false hidden=true presentation=floating sticky=off scratchpad=calc stashed=true swallowing=false labels=
+1: id=2 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=1 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+manage:focus_window(seat0, firefox)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:hide(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:set_presentation_mode
+== scratchpad toggle calc ==
+manage:propose_dimensions(qalculate, 640x480)
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_borders(qalculate, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(firefox, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+== window list ==
+0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off scratchpad=calc stashed=false swallowing=false labels=
+1: id=2 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+2: id=1 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+== scratchpad toggle ==
+err: no scratchpad named "scratch"
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+== window list --app-id ^qalculate$ ==
+0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off scratchpad=calc stashed=false swallowing=false labels=
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+== window scratchpad clear --app-id ^qalculate$ ==
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+== window list --app-id ^qalculate$ ==
+0: id=3 identifier=null title=qalculate app_id=qalculate output=FAKE-1 tags=1 focused=true urgent=false hidden=false presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+== window scratchpad add notes --app-id ^firefox$ ==
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode
+== window list --app-id ^firefox$ ==
+0: id=2 identifier=null title=firefox app_id=firefox output=FAKE-1 tags=1 focused=false urgent=false hidden=false presentation=tiled sticky=off scratchpad=notes stashed=false swallowing=false labels=
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_position(qalculate, 640, 300)
+render:show(qalculate)
+render:set_clip_box(qalculate, 0, 0, 0x0)
+render:set_content_clip_box(qalculate, 0, 0, 0x0)
+render:set_position(firefox, 24, 24)
+render:show(firefox)
+render:set_clip_box(firefox, 0, 0, 0x0)
+render:set_content_clip_box(firefox, 0, 0, 0x0)
+render:set_position(emacs, 1063, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:place_top(emacs)
+render:place_top(firefox)
+render:place_top(qalculate)
+render:set_presentation_mode

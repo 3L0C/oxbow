@@ -24,6 +24,8 @@ module Window = struct
     ; hidden : bool
     ; presentation : string
     ; sticky : string
+    ; scratchpad : string option
+    ; stashed : bool
     ; swallowing : bool
     ; labels : string list
     }

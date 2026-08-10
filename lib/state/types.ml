@@ -214,6 +214,13 @@ and Window : sig
       }
   end
 
+  module Scratchpad_props : sig
+    type t =
+      { mutable name : string option
+      ; mutable stashed : bool
+      }
+  end
+
   module Defense : sig
     type t =
       | Idle
@@ -273,7 +280,8 @@ and Window : sig
     ; mutable is_fixed : bool
     ; mutable is_urgent : bool
     ; mutable is_fake_fullscreen : bool
-    ; mutable scrolling : Scrolling_props.t
+    ; scrolling : Scrolling_props.t
+    ; scratchpad : Scratchpad_props.t
     ; committed : Committed.t
     ; mutable presentation : Presentation.t
     ; mutable requests : Request.t list

@@ -14,6 +14,7 @@ let cmd, bind_cmd =
     ; Cmd_window_move.(cmd, bind_cmd)
     ; Cmd_window_resize.(cmd, bind_cmd)
     ; Cmd_window_rule.(cmd, bind_cmd)
+    ; Cmd_window_scratchpad.(cmd, bind_cmd)
     ; Cmd_window_send.(cmd, bind_cmd)
     ; Cmd_window_shift.(cmd, bind_cmd)
     ; Cmd_window_spawn.(cmd, bind_cmd)

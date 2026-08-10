@@ -72,7 +72,8 @@ val on_tags : t -> tags:Oxbow_core.Tag.Set.t -> bool
 val occupied_tags : ?except:t -> t list -> Oxbow_core.Tag.Set.t
 
 (** [tag_visible window] is [true] if [window]'s output is in overview mode or
-    [window]'s tags intersect its output's selected tags. Is [false] otherwise. *)
+    [window]'s tags intersect its output's selected tags. Is [false] otherwise.
+    A stashed scratchpad is never tag-visible. *)
 val tag_visible : t -> bool
 
 (** [is_tiled window] is [true] when [window] is tiled. *)
@@ -342,6 +343,16 @@ val swallow : host:t -> child:t -> unit
 
     {b Effects:} mutates WM state *)
 val set_is_fixed : t -> bool -> unit
+
+(** [set_scratchpad window name] sets [window]'s scratchpad to [name].
+
+    {b Effects:} mutates WM state *)
+val set_scratchpad : t -> string option -> unit
+
+(** [set_stashed window b] sets [window]'s scratchpad stashed status to [b].
+
+    {b Effects:} mutates WM state *)
+val set_stashed : t -> bool -> unit
 
 (** [rehome window name] queues a request to send [window] to the output
     matching [name], when [window]'s home output matches [name]. No-op

@@ -197,6 +197,10 @@ module Output = struct
   [@@deriving yojson]
 end
 
+module Scratchpad = struct
+  type t = Toggle of string [@name "toggle"] [@@deriving yojson]
+end
+
 module Session = struct
   type t = Exit [@name "exit"] [@@deriving yojson]
 end
@@ -333,6 +337,11 @@ module Window = struct
     | Spawn_position of Spawn_position.t [@name "spawn_position"]
     | Spawn_focus of bool [@name "spawn_focus"]
     | Drag_retile of bool [@name "drag_retile"]
+    | Scratchpad_set of
+        { name : string
+        ; target : Target.Window.Any.t
+        } [@name "scratchpad_set"]
+    | Scratchpad_clear of { target : Target.Window.Any.t } [@name "scratchpad_clear"]
   [@@deriving yojson]
 end
 
@@ -348,6 +357,7 @@ type t =
   | Keymap of Keymap.t [@name "keymap"]
   | Layout of Layout.t [@name "layout"]
   | Output of Output.t [@name "output"]
+  | Scratchpad of Scratchpad.t [@name "scratchpad"]
   | Session of Session.t [@name "session"]
   | Spawn of string [@name "spawn"]
   | Tag of Tag.t [@name "tag"]

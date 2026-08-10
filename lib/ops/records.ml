@@ -34,6 +34,8 @@ let to_window (wm : Wm.t) (window : Window.t) =
     ; hidden = not @@ Window.is_rendered window
     ; presentation = Window.presentation_string window
     ; sticky = Sticky.to_string window.sticky
+    ; scratchpad = window.scratchpad.name
+    ; stashed = window.scratchpad.stashed
     ; swallowing = Window.swallowing window
     ; labels = window.labels
     }

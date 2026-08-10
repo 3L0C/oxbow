@@ -739,6 +739,14 @@ let label_as_flag =
     & info [ "label-as" ] ~doc:"Add LABEL to matching windows.")
 ;;
 
+let scratchpad_flag =
+  let open Cmdliner in
+  Arg.(
+    value
+    & opt (some string) None
+    & info [ "scratchpad" ] ~doc:"Set the scratchpad group to NAME." ~docv:"NAME")
+;;
+
 let spawn_position_flag =
   mk_enum "spawn-position" ~doc:"Set the stack position of the window." ~docv:"POSITION"
   @@ enum_of Spawn_position.to_string Spawn_position.all

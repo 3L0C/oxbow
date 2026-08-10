@@ -54,6 +54,12 @@ let handle_output wm seat (cmd : Command.Output.t) =
   | Label_remove { label; target } -> Labels.output_remove wm seat target label
 ;;
 
+let handle_scratchpad ctx seat (cmd : Command.Scratchpad.t) =
+  let wm = Ctx.wm ctx in
+  match cmd with
+  | Toggle name -> Scratchpad.toggle wm seat name
+;;
+
 let handle_session ctx _seat (cmd : Command.Session.t) =
   let wm = Ctx.wm ctx in
   let () =
@@ -123,6 +129,8 @@ let handle_window wm seat (cmd : Command.Window.t) =
   | Drag_retile b ->
     Config.set_drag_retile wm b;
     Ok None
+  | Scratchpad_set { name; target } -> Scratchpad.set wm seat target (Some name)
+  | Scratchpad_clear { target } -> Scratchpad.clear wm seat target
 ;;
 
 let handle_wm ctx _seat (cmd : Command.Wm.t) =
@@ -144,6 +152,7 @@ let handle_command ctx seat (cmd : Command.t) =
   | Keymap c -> handle_keymap wm seat c
   | Layout c -> handle_layout wm seat c
   | Output c -> handle_output wm seat c
+  | Scratchpad c -> handle_scratchpad ctx seat c
   | Session c -> handle_session ctx seat c
   | Spawn cmd -> Execute.spawn cmd
   | Tag c -> handle_tag seat c
@@ -161,7 +170,7 @@ let handle ctx seat ({ body; reply } : Pending_request.t) =
       match body with
       | Command c -> handle_command ctx seat c
       | Keymap keymap -> handle_keymap wm seat keymap
-      | Query query -> handle_query (Ctx.wm ctx) seat query
+      | Query query -> handle_query wm seat query
       | Subscribe _ -> Error "subscribe handled at the connection layer"
     with
     | exn ->

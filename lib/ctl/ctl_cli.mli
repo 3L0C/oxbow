@@ -231,6 +231,9 @@ val swallow_flag : Oxbow_core.Swallow_role.t option Cmdliner.Term.t
 (** [label_as_flag] is the [--label-as] flag accepting a valid label. *)
 val label_as_flag : string option Cmdliner.Term.t
 
+(** [scratchpad_flag] is the [--scratchpad] flag accepting a group name. *)
+val scratchpad_flag : string option Cmdliner.Term.t
+
 (** [spawn_position_flag] is the [--spawn-position] flag accepting a valid position. *)
 val spawn_position_flag : Oxbow_core.Spawn_position.t option Cmdliner.Term.t
 

@@ -23,6 +23,7 @@ let apply_effects
   (e.resize_to |>? fun { w; h } -> queue (Resize_to { w; h }));
   (e.move_to |>? fun { x; y } -> queue (Move_to { x; y }));
   (e.sticky |>? fun s -> queue (Set_sticky s));
+  (e.scratchpad |>? fun name -> Window.set_scratchpad window (Some name));
   (e.swallow
    |>? fun r ->
    Window.set_swallow_role

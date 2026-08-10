@@ -64,6 +64,11 @@
  (libraries harness fake_river oxbow.ipc yojson))
 
 (test
+ (name test_scenario_scratchpad)
+ (modules test_scenario_scratchpad)
+ (libraries harness fake_river oxbow.core oxbow.ipc yojson))
+
+(test
  (name test_scenario_sticky)
  (modules test_scenario_sticky)
  (libraries harness fake_river oxbow.core oxbow.ipc yojson))
