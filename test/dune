@@ -1,151 +1,43 @@
-(test
- (name test_core)
- (modules test_core)
- (libraries oxbow.core oxbow.ipc yojson))
-
-(test
- (name test_layouts)
- (modules test_layouts)
- (libraries oxbow.core oxbow.layout))
-
-(test
- (name test_events)
- (modules test_events)
- (libraries oxbow.ipc yojson))
-
-(test
- (name test_scenario_manage)
- (modules test_scenario_manage)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_window)
- (modules test_scenario_window)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_tags)
- (modules test_scenario_tags)
- (libraries harness fake_river oxbow.core oxbow.ipc yojson))
-
-(test
- (name test_scenario_layout)
- (modules test_scenario_layout)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_scrolling)
- (modules test_scenario_scrolling)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_ctl)
- (modules test_scenario_ctl)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_subscribe)
- (modules test_scenario_subscribe)
+(tests
+ (names
+  test_core
+  test_layouts
+  test_events
+  test_scenario_manage
+  test_scenario_window
+  test_scenario_tags
+  test_scenario_layout
+  test_scenario_scrolling
+  test_scenario_ctl
+  test_scenario_subscribe
+  test_scenario_bind
+  test_scenario_input
+  test_scenario_warp
+  test_scenario_scratchpad
+  test_scenario_sticky
+  test_scenario_swallow
+  test_scenario_column
+  test_scenario_label
+  test_scenario_target
+  test_scenario_spawn
+  test_scenario_drag)
+ (modules :standard \ fake_river harness)
  (libraries
   harness
   fake_river
-  oxbow.ipc
   oxbow.core
+  oxbow.layout
+  oxbow.ops
+  oxbow.ipc
   oxbow.ctl
   eio
   eio.unix
   yojson))
 
-(test
- (name test_scenario_bind)
- (modules test_scenario_bind)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_input)
- (modules test_scenario_input)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_warp)
- (modules test_scenario_warp)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_scratchpad)
- (modules test_scenario_scratchpad)
- (libraries harness fake_river oxbow.core oxbow.ipc yojson))
-
-(test
- (name test_scenario_sticky)
- (modules test_scenario_sticky)
- (libraries harness fake_river oxbow.core oxbow.ipc yojson))
-
-(test
- (name test_scenario_swallow)
- (modules test_scenario_swallow)
- (libraries harness fake_river oxbow.ops oxbow.ipc yojson))
-
-(test
- (name test_scenario_column)
- (modules test_scenario_column)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_label)
- (modules test_scenario_label)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_target)
- (modules test_scenario_target)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_spawn)
- (modules test_scenario_spawn)
- (libraries harness fake_river oxbow.ipc yojson))
-
-(test
- (name test_scenario_drag)
- (modules test_scenario_drag)
- (libraries harness fake_river oxbow.ipc yojson))
-
 (library
  (name fake_river)
  (modules fake_river)
  (libraries oxbow.river wayland eio eio.unix logs unix))
-
-(test
- (name test_fake_river)
- (modules test_fake_river)
- (libraries
-  fake_river
-  harness
-  oxbow.runtime
-  wayland
-  eio
-  eio_main
-  eio.unix
-  unix
-  logs
-  logs.fmt))
-
-(test
- (name test_arrange)
- (modules test_arrange)
- (libraries
-  oxbow.core
-  oxbow.state
-  oxbow.ops
-  oxbow.runtime
-  oxbow.wire
-  oxbow.river
-  wayland
-  cstruct
-  eio
-  eio_main
-  eio.unix))
 
 (library
  (name harness)

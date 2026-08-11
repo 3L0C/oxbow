@@ -633,42 +633,16 @@ let add_window ?pid t ~app_id =
   tick t
 ;;
 
-let send_dimensions_hint t ~app_id ~min_w ~min_h ~max_w ~max_h =
+let window_named t ~app_id =
   match List.assoc_opt app_id t.windows with
-  | None -> failwith "send_dimensions_hint: no window with this app_id"
-  | Some w ->
-    Wm_server.River_window_v1.dimensions_hint
-      w
-      ~min_width:min_w
-      ~min_height:min_h
-      ~max_width:max_w
-      ~max_height:max_h;
-    tick t
+  | None -> failwith "fake_river: no window with this app_id"
+  | Some w -> w
 ;;
 
-let send_capture_sessions t ~app_id ~count =
-  match List.assoc_opt app_id t.windows with
-  | None -> failwith "send_capture_sessions: no window with this app_id"
-  | Some w ->
-    Wm_server.River_window_v1.capture_sessions w ~count;
-    tick t
-;;
-
-let send_output_capture_sessions t ~name ~count =
+let output_named t ~name =
   match List.assoc_opt name t.outputs with
-  | None -> failwith "send_output_capture_sessions: no output with this name"
-  | Some o ->
-    Wm_server.River_output_v1.capture_sessions o ~count;
-    tick t
-;;
-
-let close_window t ~app_id =
-  match List.assoc_opt app_id t.windows with
-  | None -> failwith "close_window: no window with this app_id"
-  | Some w ->
-    t.windows <- List.remove_assoc app_id t.windows;
-    Wm_server.River_window_v1.closed w;
-    tick t
+  | None -> failwith "fake_river: no output with this name"
+  | Some o -> o
 ;;
 
 let seat_named t ~seat =
@@ -677,12 +651,38 @@ let seat_named t ~seat =
   | Some s -> s
 ;;
 
+let send_dimensions_hint t ~app_id ~min_w ~min_h ~max_w ~max_h =
+  Wm_server.River_window_v1.dimensions_hint
+    (window_named t ~app_id)
+    ~min_width:min_w
+    ~min_height:min_h
+    ~max_width:max_w
+    ~max_height:max_h;
+  tick t
+;;
+
+let send_capture_sessions t ~app_id ~count =
+  Wm_server.River_window_v1.capture_sessions (window_named t ~app_id) ~count;
+  tick t
+;;
+
+let send_output_capture_sessions t ~name ~count =
+  Wm_server.River_output_v1.capture_sessions (output_named t ~name) ~count;
+  tick t
+;;
+
+let close_window t ~app_id =
+  let w = window_named t ~app_id in
+  t.windows <- List.remove_assoc app_id t.windows;
+  Wm_server.River_window_v1.closed w;
+  tick t
+;;
+
 let send_pointer_enter t ~seat ~app_id =
-  match List.assoc_opt app_id t.windows with
-  | None -> failwith "send_pointer_enter: no window with this app_id"
-  | Some w ->
-    Wm_server.River_seat_v1.pointer_enter (seat_named t ~seat) ~window:w;
-    tick t
+  Wm_server.River_seat_v1.pointer_enter
+    (seat_named t ~seat)
+    ~window:(window_named t ~app_id);
+  tick t
 ;;
 
 let send_pointer_position t ~seat ~x ~y =

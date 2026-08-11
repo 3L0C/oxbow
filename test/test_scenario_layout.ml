@@ -16,5 +16,6 @@ let () =
   oxctl "layout floating";
   oxctl "layout scrolling";
   oxctl "output overview";
+  oxctl "window focus prev";
   oxctl "layout query"
 ;;

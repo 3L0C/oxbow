@@ -1,89 +1,70 @@
-let check ~expect got =
-  if String.equal expect got
-  then Printf.printf "ok: %s\n" got
-  else (
-    Printf.printf "FAIL\n  expect: %s\n  got:    %s\n" expect got;
-    exit 1)
-;;
-
 let () =
   let open Oxbow_ipc in
   List.iter
     (fun k ->
-       let j = Record.yojson_of_t k in
-       let k' = Record.t_of_yojson j in
-       assert (Record.equal k k');
-       Printf.printf "ok: %s\n" (Yojson.Safe.to_string j))
+       Record.yojson_of_t k
+       |> Record.t_of_yojson
+       |> Record.yojson_of_t
+       |> Yojson.Safe.to_string
+       |> Printf.printf "kind: %s\n")
     Record.all;
-  List.iter (fun k -> assert (Record.of_string (Record.to_string k) = Ok k)) Record.all;
+  List.iter
+    (fun k ->
+       match Record.of_string (Record.to_string k) with
+       | Ok k' -> Printf.printf "kind round trip: %s\n" (Record.to_string k')
+       | Error e -> Printf.printf "kind round trip err: %s\n" e)
+    Record.all;
   (match Record.of_string "bogus" with
-   | Error _ -> print_endline "ok: bogus kind rejected"
-   | Ok _ -> assert false);
+   | Error e -> Printf.printf "bogus kind: %s\n" e
+   | Ok k -> Printf.printf "bogus kind accepted: %s\n" (Record.to_string k));
   let subs : Event.Subscribe.t list =
     [ { kinds = []; output = None }; { kinds = [ Tags; Mode ]; output = Some "DP-1" } ]
   in
   List.iter
     (fun (s : Event.Subscribe.t) ->
-       let j = Event.Subscribe.yojson_of_t s in
-       let s' = Event.Subscribe.t_of_yojson j in
-       assert (s = s');
-       Printf.printf "ok: %s\n" (Yojson.Safe.to_string j))
+       Event.Subscribe.yojson_of_t s
+       |> Event.Subscribe.t_of_yojson
+       |> Event.Subscribe.yojson_of_t
+       |> Yojson.Safe.to_string
+       |> Printf.printf "subscribe: %s\n")
     subs;
-  check
-    ~expect:{|{"kinds":["tags","mode"],"output":"DP-1"}|}
-    (Yojson.Safe.to_string
-       (Event.Subscribe.yojson_of_t { kinds = [ Tags; Mode ]; output = Some "DP-1" }));
-  check
-    ~expect:
-      {|{"event":"tags","output":"DP-1","viewed":[1],"occupied":[1,3],"urgent":[],"focused":[1]}|}
-    (Event.to_line
-       (Tags
-          { output = "DP-1"
-          ; viewed = [ 1 ]
-          ; occupied = [ 1; 3 ]
-          ; urgent = []
-          ; focused = [ 1 ]
-          }));
-  check
-    ~expect:
-      {|{"event":"window","id":1,"identifier":null,"title":null,"app_id":"foot","output":"DP-1","tags":[1,2],"focused":false,"urgent":false,"captured":false,"hidden":true,"presentation":"tiled","sticky":"off","scratchpad":null,"stashed":false,"swallowing":false,"labels":[]}|}
-    (Event.to_line
-       (Window
-          { id = 1
-          ; identifier = None
-          ; title = None
-          ; app_id = Some "foot"
-          ; output = Some "DP-1"
-          ; tags = [ 1; 2 ]
-          ; focused = false
-          ; urgent = false
-          ; captured = false
-          ; hidden = true
-          ; presentation = "tiled"
-          ; sticky = "off"
-          ; scratchpad = None
-          ; stashed = false
-          ; swallowing = false
-          ; labels = []
-          }));
-  check
-    ~expect:
-      {|{"event":"layout","output":"DP-1","layout":"tiling","scheme":"even","symbol":"[]="}|}
-    (Event.to_line
-       (Layout
-          { output = "DP-1"; layout = "tiling"; symbol = "[]="; scheme = Some "even" }));
-  check
-    ~expect:{|{"event":"mode","seat":"default","mode":"normal"}|}
-    (Event.to_line (Mode { seat = "default"; mode = "normal" }));
-  check
-    ~expect:
-      {|{"event":"focus","seat":"default","output":"DP-1","title":null,"app_id":"foot","tags":[1,3]}|}
-    (Event.to_line
-       (Focus
-          { seat = "default"
-          ; output = Some "DP-1"
-          ; title = None
-          ; app_id = Some "foot"
-          ; tags = Some [ 1; 3 ]
-          }))
+  let events : Event.t list =
+    [ Tags
+        { output = "DP-1"
+        ; viewed = [ 1 ]
+        ; occupied = [ 1; 3 ]
+        ; urgent = []
+        ; focused = [ 1 ]
+        }
+    ; Window
+        { id = 1
+        ; identifier = None
+        ; title = None
+        ; app_id = Some "foot"
+        ; output = Some "DP-1"
+        ; tags = [ 1; 2 ]
+        ; focused = false
+        ; urgent = false
+        ; captured = false
+        ; hidden = true
+        ; presentation = "tiled"
+        ; sticky = "off"
+        ; scratchpad = None
+        ; stashed = false
+        ; swallowing = false
+        ; labels = []
+        }
+    ; Layout { output = "DP-1"; layout = "tiling"; symbol = "[]="; scheme = Some "even" }
+    ; Mode { seat = "default"; mode = "normal" }
+    ; Focus
+        { seat = "default"
+        ; output = Some "DP-1"
+        ; title = None
+        ; app_id = Some "foot"
+        ; tags = Some [ 1; 3 ]
+        }
+    ; Output { name = Some "DP-1"; labels = []; focused = true; captured = false }
+    ]
+  in
+  List.iter (fun e -> Printf.printf "line: %s\n" (Event.to_line e)) events
 ;;

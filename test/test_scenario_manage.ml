@@ -6,5 +6,9 @@ let () =
     Fake_river.add_seat fake ~name:"seat0";
     Fake_river.add_window fake ~app_id:(Some "foot");
     Fake_river.tick fake);
-  oxctl "output list"
+  oxctl "output list";
+  section "idle quiet" (fun () ->
+    for _ = 1 to 100 do
+      Eio.Fiber.yield ()
+    done)
 ;;

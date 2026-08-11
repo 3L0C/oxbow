@@ -1,0 +1,29 @@
+command: ["window",["zoom",{"target":["focused"]}]]
+command: ["spawn","foot"]
+command: ["window",["focus_logical",{"dir":["next"],"target":["focused"]}]]
+command: ["layout",["tiling",["mfact",{"delta":["rel",0.05],"scope":["focused"]}]]]
+command: ["layout",["tiling",["mfact",{"delta":["abs",0.55],"scope":["focused"]}]]]
+command: ["tag",["view",["concrete",4]]]
+response: {"ok":true}
+response: {"ok":false,"err":"Had an error"}
+color ok: #FFFFFF
+color ok: 0x01234567
+color ok: 0X89AbCdEf
+color err: bogus: invalid color "bogus": expected "#RRGGBB", "0xRRGGBBAA", etc.
+ring hop right, all visible: [2;1;3]
+ring hop right, over hidden: [2;3;1]
+ring hop right, wrap: [3;1;2]
+ring hop right, wrap pins hidden prefix: [1;4;2;3]
+ring hop left, all visible: [2;3;1]
+ring hop left, over hidden: [3;1;2]
+ring hop left, wrap: [2;3;1]
+ring hop no other visible: [1;2;3]
+ring hop sel absent: [1;2;3]
+ring rearrange odd: [5;2;1;4;3]
+ring rearrange even: [1;4;3;2;5]
+ring rearrange none: [1;2;3;4;5]
+ring rearrange all: [2;4;1;5;3]
+ring rearrange identity: [1;2;3;4;5]
+width fac cycle 1/3: 0.5000
+width fac cycle 1/2: 0.6667
+width fac cycle 2/3: 0.3333

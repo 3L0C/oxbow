@@ -1,0 +1,21 @@
+kind: "tags"
+kind: "window"
+kind: "layout"
+kind: "mode"
+kind: "focus"
+kind: "output"
+kind round trip: tags
+kind round trip: window
+kind round trip: layout
+kind round trip: mode
+kind round trip: focus
+kind round trip: output
+bogus kind: unrecognized event kind: bogus
+subscribe: {"kinds":[],"output":null}
+subscribe: {"kinds":["tags","mode"],"output":"DP-1"}
+line: {"event":"tags","output":"DP-1","viewed":[1],"occupied":[1,3],"urgent":[],"focused":[1]}
+line: {"event":"window","id":1,"identifier":null,"title":null,"app_id":"foot","output":"DP-1","tags":[1,2],"focused":false,"urgent":false,"captured":false,"hidden":true,"presentation":"tiled","sticky":"off","scratchpad":null,"stashed":false,"swallowing":false,"labels":[]}
+line: {"event":"layout","output":"DP-1","layout":"tiling","scheme":"even","symbol":"[]="}
+line: {"event":"mode","seat":"default","mode":"normal"}
+line: {"event":"focus","seat":"default","output":"DP-1","title":null,"app_id":"foot","tags":[1,3]}
+line: {"event":"output","name":"DP-1","labels":[],"focused":true,"captured":false}
