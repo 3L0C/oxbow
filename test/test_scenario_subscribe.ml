@@ -30,8 +30,13 @@ let () =
        oxctl "keymap mode declare resize";
        oxctl "keymap mode enter resize";
        oxctl "window focus next";
+       section "capture output" (fun () ->
+         Fake_river.send_output_capture_sessions fake ~name:"FAKE-1" ~count:1l);
        Harness.settle fake;
        wait_stable lines;
        Harness.section "events";
-       List.rev !lines |> List.iter print_endline)
+       List.rev !lines |> List.iter print_endline;
+       Harness.section "events human";
+       List.rev !lines
+       |> List.iter (fun l -> print_endline (Oxbow_ctl.Ctl_cli.render_event l)))
 ;;

@@ -436,10 +436,11 @@ render:place_top(emacs)
 render:set_presentation_mode
 
 == window list ==
-0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=3 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
-3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+4   null        emacs  emacs   FAKE-1  3     true     false   false     false   tiled         off     null        false    false
+3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+2   null        foot   foot    FAKE-1  1     false    false   false     true    tiled         off     null        false    false       scratch
+1   null        kitty  kitty   FAKE-1  1     false    false   false     true    tiled         off     null        false    false       scratch
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -510,10 +511,11 @@ render:place_top(foot)
 render:set_presentation_mode
 
 == window list ==
-0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=3 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=2 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
-3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=2 focused=false urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+4   null        emacs  emacs   FAKE-1  3     false    false   false     true    tiled         off     null        false    false
+3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+2   null        foot   foot    FAKE-1  2     true     false   false     false   tiled         off     null        false    false       scratch
+1   null        kitty  kitty   FAKE-1  2     false    false   false     false   tiled         off     null        false    false       scratch
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -580,10 +582,11 @@ render:place_top(foot)
 render:set_presentation_mode
 
 == window list ==
-0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=3 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=2 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
-3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=5 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+4   null        emacs  emacs   FAKE-1  3     false    false   false     true    tiled         off     null        false    false
+3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+2   null        foot   foot    FAKE-1  2     true     false   false     false   tiled         off     null        false    false       scratch
+1   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -648,10 +651,11 @@ render:place_top(foot)
 render:set_presentation_mode
 
 == window list ==
-0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=2 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
-3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=5 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false
+3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+2   null        foot   foot    FAKE-1  2     true     false   false     false   tiled         off     null        false    false       scratch
+1   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -719,10 +723,11 @@ render:place_top(kitty)
 render:set_presentation_mode
 
 == window list ==
-0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=2 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
-3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=5 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false
+3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
+1   null        kitty  kitty   FAKE-1  5     true     false   false     false   tiled         off     null        false    false       scratch
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -789,10 +794,11 @@ render:place_top(emacs)
 render:set_presentation_mode
 
 == window list ==
-0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=2 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
-3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=5 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+4   null        emacs  emacs   FAKE-1  6     true     false   false     false   tiled         off     null        false    false
+3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
+1   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -860,10 +866,11 @@ render:place_top(mpv)
 render:set_presentation_mode
 
 == window list ==
-0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=2 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
-3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=5 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false
+3   null        mpv    mpv     FAKE-1  1     true     false   false     false   tiled         off     null        false    false
+2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
+1   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -929,10 +936,11 @@ render:place_top(mpv)
 render:set_presentation_mode
 
 == window list ==
-0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=2 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
-3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=5 focused=false urgent=false captured=false hidden=true presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false
+3   null        mpv    mpv     FAKE-1  1     true     false   false     false   tiled         off     null        false    false
+2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
+1   null        kitty  kitty   FAKE-1  5     false    false   false     true    floating      off     null        false    false       scratch
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)
@@ -982,10 +990,11 @@ render:place_top(mpv)
 render:set_presentation_mode
 
 == window list ==
-0: id=4 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=6 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=seen
-1: id=3 identifier=null title=mpv app_id=mpv output=FAKE-1 tags=1 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=
-2: id=2 identifier=null title=foot app_id=foot output=FAKE-1 tags=2 focused=false urgent=false captured=false hidden=true presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
-3: id=1 identifier=null title=kitty app_id=kitty output=FAKE-1 tags=5 focused=false urgent=false captured=false hidden=true presentation=floating sticky=off scratchpad=null stashed=false swallowing=false labels=scratch
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false       seen
+3   null        mpv    mpv     FAKE-1  1     true     false   false     false   tiled         off     null        false    false
+2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
+1   null        kitty  kitty   FAKE-1  5     false    false   false     true    floating      off     null        false    false       scratch
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 render:set_position(emacs, 24, 24)

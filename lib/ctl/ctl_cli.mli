@@ -240,12 +240,6 @@ val spawn_position_flag : Oxbow_core.Spawn_position.t option Cmdliner.Term.t
 (** [spawn_focus_flag] is the [--spawn-focus] flag changes focus on spawn. *)
 val spawn_focus_flag : bool option Cmdliner.Term.t
 
-(** [render_lines json] formats a JSON list reply for display: one line per
-    item, with the leading list index. The index is the remove index of the
-    item. Nested objects flatten into key=value pairs with the wire names. A
-    reply that is not a list prints as raw JSON. *)
-val render_lines : Yojson.Safe.t -> string
-
 (** [dispatch_command_ref] is the function behind every command leaf. *)
 val dispatch_command_ref
   : (?render:(Yojson.Safe.t -> string)
@@ -257,7 +251,13 @@ val dispatch_command_ref
 
 (** [dispatch_stream_ref] is the function behind every subscribe leaf. *)
 val dispatch_stream_ref
-  : (?socket:string -> ?output:string -> kinds:Oxbow_ipc.Record.t list -> unit -> int) ref
+  : (?socket:string
+     -> ?output:string
+     -> human:bool
+     -> kinds:Oxbow_ipc.Record.t list
+     -> unit
+     -> int)
+      ref
 
 (** [group ?exits ?man ?man_xrefs ?version ?default ~name ~doc cmds] is a
     command that groups the subcommands [cmds]. Cmdliner evaluates [default]
@@ -329,11 +329,21 @@ val group_pair
   -> (int Cmdliner.Cmd.t * int Cmdliner.Cmd.t) list
   -> int Cmdliner.Cmd.t * int Cmdliner.Cmd.t
 
+(** [render_event line] renders [line] as key=value pairs. Is [line] unchanged
+    if not valid JSON. *)
+val render_event : string -> string
+
+(** [render_lines ?fields ~expand json] formats a record reply as an aligned
+    table. One column per key, one row per item. [fields] selects and orders the
+    columns. Without [expand], scalar cells cap at 15 characters. A reply with
+    no rows prints as raw JSON. *)
+val render_lines : ?fields:string list -> expand:bool -> Yojson.Safe.t -> string
+
 (** [query_term ?render query] maps the query into a [Query] body. [render]
     formats the JSON reply for display. The term adds a [--json] flag. With
     [--json], or without [render], oxctl prints the raw JSON reply. *)
 val query_term
-  :  ?render:(Yojson.Safe.t -> string)
+  :  ?render:(?fields:string list -> expand:bool -> Yojson.Safe.t -> string)
   -> Oxbow_ipc.Query.t Cmdliner.Term.t
   -> (Oxbow_ipc.Request.Body.t * (Yojson.Safe.t -> string) option) Cmdliner.Term.t
 

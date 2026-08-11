@@ -14,6 +14,7 @@ type t =
   | Layout of Record.Layout.t
   | Mode of Record.Mode.t
   | Focus of Record.Focus.t
+  | Output of Record.Output.t
 
 let kind = function
   | Tags _ -> Record.Tags
@@ -21,6 +22,7 @@ let kind = function
   | Layout _ -> Record.Layout
   | Mode _ -> Record.Mode
   | Focus _ -> Record.Focus
+  | Output _ -> Record.Output
 ;;
 
 let source = function
@@ -28,8 +30,10 @@ let source = function
   | Window { output = Some s; _ }
   | Layout { output = s; _ }
   | Mode { seat = s; _ }
-  | Focus { seat = s; _ } -> Ok s
+  | Focus { seat = s; _ }
+  | Output { name = Some s; _ } -> Ok s
   | Window { output = None; _ } -> Error "window without any output"
+  | Output { name = None; _ } -> Error "output without a name"
 ;;
 
 let to_line t =
@@ -43,4 +47,5 @@ let to_line t =
   | Layout p -> json (Record.to_string Record.Layout) (Record.Layout.yojson_of_t p)
   | Mode p -> json (Record.to_string Record.Mode) (Record.Mode.yojson_of_t p)
   | Focus p -> json (Record.to_string Record.Focus) (Record.Focus.yojson_of_t p)
+  | Output p -> json (Record.to_string Record.Output) (Record.Output.yojson_of_t p)
 ;;

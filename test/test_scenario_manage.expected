@@ -125,7 +125,8 @@ render:place_top(foot)
 render:set_presentation_mode
 
 == output list ==
-0: name=FAKE-1 labels= focused=true captured=false
+NAME    LABELS  FOCUSED  CAPTURED
+FAKE-1          true     false
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
 render:set_position(foot, 24, 24)

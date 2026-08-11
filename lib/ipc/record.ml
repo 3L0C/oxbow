@@ -78,8 +78,9 @@ type t =
   | Layout
   | Mode
   | Focus
+  | Output
 
-let all = [ Tags; Window; Layout; Mode; Focus ]
+let all = [ Tags; Window; Layout; Mode; Focus; Output ]
 let equal (a : t) (b : t) = a = b
 
 let of_string = function
@@ -88,6 +89,7 @@ let of_string = function
   | "layout" -> Ok Layout
   | "mode" -> Ok Mode
   | "focus" -> Ok Focus
+  | "output" -> Ok Output
   | s -> Error (Printf.sprintf "unrecognized event kind: %s" s)
 ;;
 
@@ -97,6 +99,7 @@ let to_string = function
   | Layout -> "layout"
   | Mode -> "mode"
   | Focus -> "focus"
+  | Output -> "output"
 ;;
 
 let t_of_yojson = function

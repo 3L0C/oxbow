@@ -88,6 +88,7 @@ type t =
   | Layout
   | Mode
   | Focus
+  | Output
 
 val all : t list
 val equal : t -> t -> bool

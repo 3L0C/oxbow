@@ -774,21 +774,92 @@ let exit_conn_failed =
 let exits = [ exit_success; exit_protocol_err; exit_conn_failed ]
 let json_flag = Arg.(value & flag & info [ "json" ] ~doc:"Print the raw JSON reply.")
 
-let render_lines (json : Yojson.Safe.t) =
-  let rec flat (j : Yojson.Safe.t) =
-    match j with
-    | `Assoc fields ->
-      List.map (fun (key, value) -> Printf.sprintf "%s=%s" key (flat value)) fields
-      |> String.concat " "
-    | `List [ `String tag; payload ] -> tag ^ " " ^ flat payload
-    | `List [ `String tag ] | `String tag -> tag
-    | `List items -> List.map flat items |> String.concat ","
-    | `Bool _ | `Int _ | `Intlit _ | `Float _ | `Null -> Yojson.Safe.to_string j
+let rec flat (j : Yojson.Safe.t) =
+  match j with
+  | `Assoc fields ->
+    List.map (fun (key, value) -> Printf.sprintf "%s=%s" key (flat value)) fields
+    |> String.concat " "
+  | `List [ `String tag; payload ] -> tag ^ " " ^ flat payload
+  | `List [ `String tag ] | `String tag -> tag
+  | `List items -> List.map flat items |> String.concat ","
+  | `Bool _ | `Int _ | `Intlit _ | `Float _ | `Null -> Yojson.Safe.to_string j
+;;
+
+let render_event line =
+  try Yojson.Safe.from_string line |> flat with
+  | Yojson.Json_error _ -> line
+;;
+
+let render_lines ?(fields = []) ~expand (json : Yojson.Safe.t) =
+  let cap s =
+    if expand then s else if String.length s <= 15 then s else String.sub s 0 12 ^ "..."
+  in
+  let header key =
+    String.uppercase_ascii key |> String.map (fun c -> if c = '_' then '-' else c)
+  in
+  let columns rows =
+    if fields <> []
+    then fields
+    else
+      List.fold_left
+        (fun acc row ->
+           List.fold_left
+             (fun acc (key, _) -> if List.mem key acc then acc else key :: acc)
+             acc
+             row)
+        []
+        rows
+      |> List.rev
+  in
+  let cells cols rows =
+    List.map
+      (fun row ->
+         List.map
+           (fun col ->
+              match List.assoc_opt col row |> Option.value ~default:(`String "") with
+              | `Assoc _ as record -> flat record
+              | scalar -> flat scalar |> cap)
+           cols)
+      rows
+  in
+  let widths cols cells =
+    List.mapi
+      (fun i col ->
+         List.fold_left
+           (fun acc row -> List.nth row i |> String.length |> max acc)
+           (header col |> String.length)
+           cells)
+      cols
+  in
+  let to_row = function
+    | `Assoc row -> Some row
+    | `List [ `String tag; `Assoc row ] -> Some (("kind", `String tag) :: row)
+    | _ -> None
+  in
+  let rtrim s =
+    let n = ref (String.length s) in
+    while !n > 0 && s.[!n - 1] = ' ' do
+      decr n
+    done;
+    String.sub s 0 !n
+  in
+  let render_table rows =
+    let cols = columns rows in
+    let cs = cells cols rows in
+    let ws = widths cols cs in
+    let line entries =
+      List.map2 (fun w e -> Printf.sprintf "%-*s" w e) ws entries
+      |> String.concat "  "
+      |> rtrim
+    in
+    (List.map header cols |> line) :: List.map line cs |> String.concat "\n"
   in
   match json with
-  | `List items ->
-    List.mapi (fun i item -> Printf.sprintf "%d: %s" i (flat item)) items
-    |> String.concat "\n"
+  | `List (_ :: _ as items) ->
+    (match List.filter_map to_row items with
+     | [] -> Yojson.Safe.to_string json
+     | rows -> render_table rows)
+  | `Assoc row -> render_table [ row ]
   | _ -> Yojson.Safe.to_string json
 ;;
 
@@ -818,13 +889,14 @@ let dispatch_command ?render ?seat ?socket body =
 
 let dispatch_command_ref = ref dispatch_command
 
-let dispatch_stream ?socket ?output ~kinds () =
+let dispatch_stream ?socket ?output ~human ~kinds () =
   Eio_posix.run
   @@ fun env ->
   Sys.set_signal Sys.sigpipe Sys.Signal_default;
+  let emit line = print_endline (if human then render_event line else line) in
   match
     Client.subscribe ~env ?socket ?output ~kinds (fun line ->
-      print_endline line;
+      emit line;
       flush stdout)
   with
   | Ok () -> Cmd.Exit.ok
@@ -849,13 +921,21 @@ let run_term term =
 
 let cmd ~name ~doc term = Cli.cmd ~exits ~name ~doc (run_term term)
 
+let human_flag =
+  Arg.(
+    value
+    & flag
+    & info [ "h"; "human" ] ~doc:"Render each event as one flat key=value line.")
+;;
+
 let stream_cmd ~name ~doc term =
   let open Cmdliner.Term.Syntax in
   Cli.cmd ~exits ~name ~doc
   @@
   let+ socket = socket
+  and+ human = human_flag
   and+ kinds, output = term in
-  !dispatch_stream_ref ?socket ?output ~kinds ()
+  !dispatch_stream_ref ?socket ?output ~human ~kinds ()
 ;;
 
 let command_term term =
@@ -920,11 +1000,25 @@ let group_pair ?(extra = []) ?default ~name ~doc pairs =
   mk command_term (cmds @ extra), mk bind_term (binds @ to_child)
 ;;
 
+let expand_flag =
+  Arg.(value & flag & info [ "expand" ] ~doc:"Do not truncate cell values.")
+;;
+
+let fields_flag =
+  Arg.(
+    value
+    & opt (list string) []
+    & info [ "fields" ] ~doc:"Comma-separated list of columns to show." ~docv:"FIELDS")
+;;
+
 let query_term ?render term =
   let open Cmdliner.Term.Syntax in
   let+ json = json_flag
+  and+ expand = expand_flag
+  and+ fields = fields_flag
   and+ query = term in
-  Request.Body.Query query, if json then None else render
+  ( Request.Body.Query query
+  , if json then None else Option.map (fun r -> r ?fields:(Some fields) ~expand) render )
 ;;
 
 let const_leaves l =

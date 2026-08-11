@@ -46,7 +46,15 @@
 (test
  (name test_scenario_subscribe)
  (modules test_scenario_subscribe)
- (libraries harness fake_river oxbow.ipc oxbow.core eio eio.unix yojson))
+ (libraries
+  harness
+  fake_river
+  oxbow.ipc
+  oxbow.core
+  oxbow.ctl
+  eio
+  eio.unix
+  yojson))
 
 (test
  (name test_scenario_bind)

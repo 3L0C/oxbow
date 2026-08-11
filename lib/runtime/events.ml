@@ -35,6 +35,13 @@ let snapshot_focus (seat : Seat.t) =
   | Some name, Some record -> Some ((Record.Focus, name), Event.Focus record)
 ;;
 
+let snapshot_output (wm : Wm.t) (output : Output.t) =
+  match output.name, wm.seats with
+  | None, _ | _, [] -> None
+  | Some name, seat :: _ ->
+    Some ((Record.Output, name), Event.Output (Records.to_output seat output))
+;;
+
 let snapshots (wm : Wm.t) =
   let seat_snaps =
     List.map
@@ -47,7 +54,13 @@ let snapshots (wm : Wm.t) =
   let out_snaps =
     List.map
       (fun (o : Output.t) ->
-         let snaps = [ snapshot_tags o; snapshot_windows wm o; snapshot_layout o ] in
+         let snaps =
+           [ snapshot_tags o
+           ; snapshot_windows wm o
+           ; snapshot_layout o
+           ; snapshot_output wm o
+           ]
+         in
          List.filter_map Fun.id snaps)
       wm.outputs
     |> List.flatten
@@ -63,7 +76,7 @@ let matches (sub : Wm.Ipc.Subscriber.t) (k, source) =
   | Some o ->
     (match k with
      | Mode | Focus -> true
-     | Tags | Window | Layout -> String.equal o source)
+     | Tags | Window | Layout | Output -> String.equal o source)
 ;;
 
 let offer (sub : Wm.Ipc.Subscriber.t) key line =

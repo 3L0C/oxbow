@@ -14,6 +14,7 @@ type t =
   | Layout of Record.Layout.t
   | Mode of Record.Mode.t
   | Focus of Record.Focus.t
+  | Output of Record.Output.t
 
 val kind : t -> Record.t
 val source : t -> (string, string) result

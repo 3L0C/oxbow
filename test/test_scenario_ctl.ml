@@ -17,5 +17,6 @@ let () =
   oxctl "gaps inner 6 --output FAKE-1";
   oxctl "gaps inner 8 --all";
   oxctl "window list";
+  oxctl "window list --fields id,app_id";
   oxctl "window list --json"
 ;;
