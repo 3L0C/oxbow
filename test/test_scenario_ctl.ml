@@ -8,6 +8,7 @@ let () =
   oxctl "window rules add --app-id ^mpv$ --float --tags 3";
   section "mpv arrives floating on tag 3" (fun () ->
     Fake_river.add_window fake ~app_id:(Some "mpv"));
+  oxctl "window rules add --app-id=[ --float";
   oxctl "window rules list";
   oxctl "window rules remove 0";
   oxctl "window rules remove 7";

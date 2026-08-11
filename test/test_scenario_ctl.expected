@@ -161,6 +161,21 @@ render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
 
+== window rules add --app-id=[ --float ==
+err: invalid regex: [
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_position(mpv, 640, 300)
+render:hide(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode
+
 == window rules list ==
 0: pattern=app_id=^mpv$ case=sensitive effects=tags=concrete 4 presentation=float
 manage:focus_window(seat0, kitty)

@@ -5,7 +5,9 @@ module Case = struct
   [@@deriving yojson]
 end
 
-let re_compile ~(case : Case.t) s =
+let cache : (Case.t * string, (Re.re, string) result) Hashtbl.t = Hashtbl.create 64
+
+let re_compile_uncached ~(case : Case.t) s =
   let flags =
     match case with
     | Sensitive -> []
@@ -13,6 +15,16 @@ let re_compile ~(case : Case.t) s =
   in
   try Ok Re.(compile (Pcre.re ~flags s)) with
   | Re.Pcre.(Parse_error | Not_supported) -> Error (Printf.sprintf "invalid regex: %s" s)
+;;
+
+let re_compile ~case s =
+  match Hashtbl.find_opt cache (case, s) with
+  | Some r -> r
+  | None ->
+    let r = re_compile_uncached ~case s in
+    if Hashtbl.length cache > 1024 then Hashtbl.reset cache;
+    Hashtbl.add cache (case, s) r;
+    r
 ;;
 
 let matches ~case ~pattern str =

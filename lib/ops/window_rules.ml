@@ -54,6 +54,8 @@ let apply_for (wm : Wm.t) window = List.iter (apply window) wm.config.rules.wind
 let same (p : Window_pattern.t) (r : Window_rule.t) = Window_pattern.equal p r.pattern
 
 let add (wm : Wm.t) (rule : Window_rule.t) =
+  Result.bind (Window_pattern.compile rule.pattern)
+  @@ fun _ ->
   match List.find_opt (same rule.pattern) wm.config.rules.window with
   | Some old ->
     let merged =
