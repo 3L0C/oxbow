@@ -109,10 +109,6 @@ render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
-render:set_position(kitty, 24, 24)
-render:show(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode
 
@@ -120,17 +116,10 @@ render:set_presentation_mode
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:set_position(kitty, 24, 24)
 render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:set_presentation_mode
 manage:clear_focus(seat0)
 manage:op_end(seat0)
-render:set_position(kitty, 24, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:set_presentation_mode
 
 == spawn emacs ==
@@ -151,20 +140,8 @@ render:set_position(emacs, 24, 24)
 render:show(emacs)
 render:set_clip_box(emacs, 0, 0, 0x0)
 render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 24, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
-render:set_position(emacs, 24, 24)
-render:show(emacs)
-render:set_clip_box(emacs, 0, 0, 0x0)
-render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 24, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
 
@@ -172,40 +149,16 @@ render:set_presentation_mode
 manage:propose_dimensions(emacs, 927x1032)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_position(emacs, 24, 24)
-render:show(emacs)
-render:set_clip_box(emacs, 0, 0, 0x0)
-render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 24, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_position(emacs, 24, 24)
-render:show(emacs)
-render:set_clip_box(emacs, 0, 0, 0x0)
-render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 24, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
 
 == keymap mode declare resize ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_position(emacs, 24, 24)
-render:show(emacs)
-render:set_clip_box(emacs, 0, 0, 0x0)
-render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 24, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
 
@@ -252,42 +205,18 @@ manage:disable
 manage:disable
 manage:disable
 manage:op_end(seat0)
-render:set_position(emacs, 24, 24)
-render:show(emacs)
-render:set_clip_box(emacs, 0, 0, 0x0)
-render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 24, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
 
 == window focus next ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_position(emacs, 24, 24)
-render:show(emacs)
-render:set_clip_box(emacs, 0, 0, 0x0)
-render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 24, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
 
 == capture output ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_position(emacs, 24, 24)
-render:show(emacs)
-render:set_clip_box(emacs, 0, 0, 0x0)
-render:set_content_clip_box(emacs, 0, 0, 0x0)
-render:set_position(kitty, 24, 24)
-render:hide(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(emacs)
 render:set_presentation_mode
 

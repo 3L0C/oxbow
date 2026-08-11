@@ -187,6 +187,7 @@ let seat_op (seat : Seat.t) =
 let borders ctx (seat : Seat.t) =
   let wm = Ctx.wm ctx in
   let borders = wm.config.borders in
+  let focused = List.map (fun o -> o, Output.focused_window o) wm.outputs in
   let color (w : Window.t) o =
     if w.is_urgent
     then borders.urgent
@@ -196,7 +197,7 @@ let borders ctx (seat : Seat.t) =
     then borders.unfocused
     else if Window.swallowing w
     then borders.swallowing
-    else if Phys.opt_holds w (Output.focused_window o)
+    else if Phys.opt_holds w (List.assq_opt o focused |> Option.join)
     then borders.focused
     else borders.unfocused
   in
@@ -220,7 +221,7 @@ let borders ctx (seat : Seat.t) =
     wm.windows
 ;;
 
-let node ctx (w : Window.t) =
+let node ctx covered (w : Window.t) =
   let wm = Ctx.wm ctx in
   (match w.presentation with
    | Fullscreen _ -> ()
@@ -232,7 +233,12 @@ let node ctx (w : Window.t) =
       | Some (Move { window; _ }) -> window == w
       | _ -> false)
   in
-  let rendered = Window.is_rendered w in
+  let fullscreen =
+    match w.output with
+    | Some o -> List.assq_opt o covered |> Option.value ~default:false
+    | None -> false
+  in
+  let rendered = Window.is_rendered ~fullscreen w in
   if rendered then Send.show ctx w else if not moving then Send.hide ctx w;
   let want_clip =
     match w.output with
@@ -290,7 +296,11 @@ let render_seats ctx seats =
     seats
 ;;
 
-let render_windows ctx windows = List.iter (node ctx) windows
+let render_windows ctx windows =
+  let wm = Ctx.wm ctx in
+  let covered = List.map (fun o -> o, Output.has_visible_fullscreen o) wm.outputs in
+  List.iter (node ctx covered) windows
+;;
 
 let render_outputs ctx outputs =
   List.iter

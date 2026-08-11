@@ -1,14 +1,6 @@
 (library
  (name oxbow_core)
  (public_name oxbow.core)
- (libraries
-  cmdliner
-  re
-  logs
-  logs.fmt
-  fmt
-  fmt.tty
-  yojson
-  ppx_yojson_conv_lib)
+ (libraries cmdliner re logs logs.fmt yojson ppx_yojson_conv_lib)
  (preprocess
   (pps ppx_yojson_conv)))

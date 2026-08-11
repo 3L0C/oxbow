@@ -2,7 +2,14 @@
  (name main)
  (public_name oxctl)
  (package oxbow)
- (libraries oxbow.core oxbow.ctl dune-build-info cmdliner logs.fmt))
+ (libraries
+  oxbow.core
+  oxbow.ctl
+  dune-build-info
+  cmdliner
+  logs.fmt
+  fmt
+  fmt.tty))
 
 (rule
  (with-stdout-to

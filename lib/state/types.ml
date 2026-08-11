@@ -250,6 +250,10 @@ and Window : sig
       ; mutable informed_fullscreen : bool option
       ; mutable informed_resizing : bool option
       ; mutable borders : (int32 * int32 * int32 * int32 * int32 * int32) option
+      ; mutable shown : bool option
+      ; mutable position : (int32 * int32) option
+      ; mutable clip_box : (int32 * int32 * int32 * int32) option
+      ; mutable content_clip_box : (int32 * int32 * int32 * int32) option
       }
   end
 

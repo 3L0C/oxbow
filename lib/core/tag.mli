@@ -29,7 +29,7 @@ module Set : sig
   val is_empty : t -> bool
 
   (** [mem i s] is [true] when tag [i] is in [s].
-      Raises [Invalid_argument] if [i] is outside [min_tag..max_tag]. *)
+      Returns [false] when [i] is outside [min_tag..max_tag]. *)
   val mem : int -> t -> bool
 
   (** [equal a b] is [true] when [a] and [b] contain the same tags. *)

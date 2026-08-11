@@ -9,11 +9,11 @@ let exec argv =
       | 0 ->
         (try Unix.setsid () |> ignore with
          | Unix.Unix_error _ ->
-           Printf.eprintf "Spawn.cmd: setsid failed while trying to spawn %S\n"
+           Printf.eprintf "Exec.exec: setsid failed: %S\n"
            @@ String.concat " " (Array.to_list argv));
-        (try Unix.execv argv.(0) argv with
+        (try Unix.execvp argv.(0) argv with
          | _ ->
-           Printf.eprintf "Spawn.cmd: failed to spawn %S\n"
+           Printf.eprintf "Exec.exec: failed to execute: %S\n"
            @@ String.concat " " (Array.to_list argv));
         Stdlib.exit Exit.unavailable
       | _ -> ()

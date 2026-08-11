@@ -11,6 +11,7 @@ let version =
 ;;
 
 let setup ~log_level =
+  Fmt_tty.setup_std_outputs ();
   Logs.set_reporter @@ Logs_fmt.reporter ();
   Logs.(set_level (Some log_level));
   Sys.set_signal Sys.sigchld Sys.Signal_ignore;

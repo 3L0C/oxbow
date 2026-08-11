@@ -136,13 +136,18 @@ val fullscreen : ?force:bool -> t -> unit
     {b Effects:} mutates WM state *)
 val exit_fullscreen : t -> unit
 
-(** [is_rendered window] is [true] when all of the following are true:
+(** [is_rendered ?fullscreen window] is [true] when all of the following are
+    true:
+
     - [tag_visible window] is [true]
     - [window] is not covered by a fullscreen window ([window] may be occluded
       by a non-fullscreen window.)
     - [window]'s output is in the [Scrolling] layout and [window] is within
-      output's scrolling viewport *)
-val is_rendered : t -> bool
+      output's scrolling viewport
+
+    [fullscreen] states that the output holds a visible fullscreen window. When
+    absent, [is_rendered] scans the focus stack. *)
+val is_rendered : ?fullscreen:bool -> t -> bool
 
 (** [queue_request window request] adds [request] to [window]'s request
     queue.
@@ -411,3 +416,26 @@ val set_ssd : t -> bool option -> unit
 
     {b Effects:} mutates WM state *)
 val set_borders : t -> (int32 * int32 * int32 * int32 * int32 * int32) option -> unit
+
+(** [set_shown window shown] sets [window]'s last sent shown state to [shown].
+
+    {b Effects:} mutates WM state *)
+val set_shown : t -> bool option -> unit
+
+(** [set_committed_position window position] sets [window]'s last sent position
+    values to [position].
+
+    {b Effects:} mutates WM state *)
+val set_committed_position : t -> (int32 * int32) option -> unit
+
+(** [set_clip_box window clip_box] sets [window]'s last sent clip box values to
+    [clip_box].
+
+    {b Effects:} mutates WM state *)
+val set_clip_box : t -> (int32 * int32 * int32 * int32) option -> unit
+
+(** [set_content_clip_box window clip_box] sets [window]'s last sent content
+    clip box values to [content_clip_box].
+
+    {b Effects:} mutates WM state *)
+val set_content_clip_box : t -> (int32 * int32 * int32 * int32) option -> unit

@@ -38,7 +38,7 @@ let apply (intent : Focus_intent.t) (output : Output.t) =
         | hd :: _ -> hd != window
         | [] -> true
       in
-      splice_focus_stack [ window ] output;
+      if changed then splice_focus_stack [ window ] output;
       if not @@ Window.tag_visible window then Output.switch_tags ~tags:window.tags output;
       if Output.current_layout output = Scrolling && changed then Schedule.manage ())
   | Push windows ->

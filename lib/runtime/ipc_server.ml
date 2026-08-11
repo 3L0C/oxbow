@@ -119,6 +119,8 @@ module Handler = struct
   let run ~wm flow =
     let buf = Eio.Buf_read.of_flow flow ~max_size:65536 in
     match Eio.Buf_read.line buf with
+    | exception (Eio.Cancel.Cancelled _ as e) -> raise e
+    | exception End_of_file -> ()
     | exception _ -> respond_err flow "read failed"
     | line -> handle_line ~wm ~flow ~buf line
   ;;

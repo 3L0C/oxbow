@@ -109,18 +109,10 @@ render:set_clip_box(foot, 0, 0, 0x0)
 render:set_content_clip_box(foot, 0, 0, 0x0)
 render:place_top(foot)
 render:set_presentation_mode
-render:set_position(foot, 24, 24)
-render:show(foot)
-render:set_clip_box(foot, 0, 0, 0x0)
-render:set_content_clip_box(foot, 0, 0, 0x0)
 render:place_top(foot)
 render:set_presentation_mode
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
-render:set_position(foot, 24, 24)
-render:show(foot)
-render:set_clip_box(foot, 0, 0, 0x0)
-render:set_content_clip_box(foot, 0, 0, 0x0)
 render:place_top(foot)
 render:set_presentation_mode
 
@@ -129,10 +121,6 @@ NAME    LABELS  FOCUSED  CAPTURED
 FAKE-1          true     false
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
-render:set_position(foot, 24, 24)
-render:show(foot)
-render:set_clip_box(foot, 0, 0, 0x0)
-render:set_content_clip_box(foot, 0, 0, 0x0)
 render:place_top(foot)
 render:set_presentation_mode
 

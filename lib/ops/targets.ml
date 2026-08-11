@@ -112,8 +112,11 @@ let transact windows plan =
           @@ fun actions -> Result.bind (plan w) @@ fun action -> Ok (action :: actions))
        (Ok [])
        windows)
-  @@ fun actions ->
-  List.iter (fun action -> action ()) actions;
+  @@ fun rev_actions ->
+  (* The actions run reversed of the window order. This is depended on by
+     [Stacking.push], which puts the first window on top. If the actions were in
+     window order, the last window would be the head. *)
+  List.iter (fun action -> action ()) rev_actions;
   Ok windows
 ;;
 

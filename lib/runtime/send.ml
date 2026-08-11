@@ -1,11 +1,17 @@
 open! Oxbow_state
 
 let show (_ : Ctx.render Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.show w.obj
+  if w.committed.shown <> Some true
+  then (
+    River.Window_management.River_window_v1.show w.obj;
+    Window.set_shown w (Some true))
 ;;
 
 let hide (_ : Ctx.render Ctx.t) (w : Window.t) =
-  River.Window_management.River_window_v1.hide w.obj
+  if w.committed.shown <> Some false
+  then (
+    River.Window_management.River_window_v1.hide w.obj;
+    Window.set_shown w (Some false))
 ;;
 
 let close (_ : Ctx.manage Ctx.t) (w : Window.t) =
@@ -127,15 +133,29 @@ let pointer_warp (_ : Ctx.manage Ctx.t) (s : Seat.t) ~x ~y =
 ;;
 
 let set_position (_ : Ctx.render Ctx.t) (w : Window.t) ~x ~y =
-  River.Window_management.River_node_v1.set_position w.node ~x ~y
+  if w.committed.position <> Some (x, y)
+  then (
+    River.Window_management.River_node_v1.set_position w.node ~x ~y;
+    Window.set_committed_position w (Some (x, y)))
 ;;
 
 let set_clip_box (_ : Ctx.render Ctx.t) (w : Window.t) ~x ~y ~width ~height =
-  River.Window_management.River_window_v1.set_clip_box w.obj ~x ~y ~width ~height
+  if w.committed.clip_box <> Some (x, y, width, height)
+  then (
+    River.Window_management.River_window_v1.set_clip_box w.obj ~x ~y ~width ~height;
+    Window.set_clip_box w (Some (x, y, width, height)))
 ;;
 
 let set_content_clip_box (_ : Ctx.render Ctx.t) (w : Window.t) ~x ~y ~width ~height =
-  River.Window_management.River_window_v1.set_content_clip_box w.obj ~x ~y ~width ~height
+  if w.committed.content_clip_box <> Some (x, y, width, height)
+  then (
+    River.Window_management.River_window_v1.set_content_clip_box
+      w.obj
+      ~x
+      ~y
+      ~width
+      ~height;
+    Window.set_content_clip_box w (Some (x, y, width, height)))
 ;;
 
 let set_borders (_ : Ctx.render Ctx.t) (w : Window.t) ~edges ~width ~r ~g ~b ~a =

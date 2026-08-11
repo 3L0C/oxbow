@@ -64,6 +64,10 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
       ; informed_fullscreen = None
       ; informed_resizing = None
       ; borders = None
+      ; shown = None
+      ; position = None
+      ; clip_box = None
+      ; content_clip_box = None
       }
   ; presentation = Presentation.Tiled
   ; requests = []
@@ -304,16 +308,20 @@ let exit_fullscreen w =
   | _, (Tiled | Floating | Maximized _ | Fullscreen _) -> ()
 ;;
 
-let is_rendered w =
+let is_rendered ?fullscreen w =
   tag_visible w
   && (match w.output with
       | None -> false
       | Some o ->
         (not (o.overview.enabled && w.offscreen))
-        && (not
-            @@ List.exists
-                 (fun w' -> w' != w && is_fullscreen w' && tag_visible w')
-                 o.focus_stack))
+        &&
+        let covered =
+          match fullscreen with
+          | Some b -> b
+          | None ->
+            List.exists (fun w' -> is_fullscreen w' && tag_visible w') o.focus_stack
+        in
+        not (covered && not (is_fullscreen w)))
   &&
   match w.output with
   | Some o when (tag_layout o).layout = Scrolling && is_tiled w ->
@@ -548,3 +556,7 @@ let set_caps w o = w.committed.caps <- o
 let set_tiled_edges w o = w.committed.tiled_edges <- o
 let set_ssd w o = w.committed.ssd <- o
 let set_borders w o = w.committed.borders <- o
+let set_shown w o = w.committed.shown <- o
+let set_committed_position w o = w.committed.position <- o
+let set_clip_box w o = w.committed.clip_box <- o
+let set_content_clip_box w o = w.committed.content_clip_box <- o

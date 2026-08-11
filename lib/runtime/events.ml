@@ -89,28 +89,32 @@ let offer (sub : Wm.Ipc.Subscriber.t) key line =
 ;;
 
 let seed (wm : Wm.t) (sub : Wm.Ipc.Subscriber.t) =
+  wm.ipc.last <- snapshots wm;
   List.iter
     (fun (key, ev) -> if matches sub key then offer sub key (Event.to_line ev))
     wm.ipc.last
 ;;
 
 let publish (wm : Wm.t) =
-  let snaps = snapshots wm in
-  let changed =
-    List.filter_map
+  match wm.ipc.subscribers with
+  | [] -> ()
+  | _ :: _ ->
+    let snaps = snapshots wm in
+    let changed =
+      List.filter_map
+        (fun (key, ev) ->
+           match List.assoc_opt key wm.ipc.last with
+           | None -> Some (key, ev)
+           | Some ev' when ev <> ev' -> Some (key, ev)
+           | _ -> None)
+        snaps
+    in
+    List.iter
       (fun (key, ev) ->
-         match List.assoc_opt key wm.ipc.last with
-         | None -> Some (key, ev)
-         | Some ev' when ev <> ev' -> Some (key, ev)
-         | _ -> None)
-      snaps
-  in
-  List.iter
-    (fun (key, ev) ->
-       let line = Event.to_line ev in
-       List.iter
-         (fun sub -> if matches sub key then offer sub key line)
-         wm.ipc.subscribers)
-    changed;
-  wm.ipc.last <- snaps
+         let line = Event.to_line ev in
+         List.iter
+           (fun sub -> if matches sub key then offer sub key line)
+           wm.ipc.subscribers)
+      changed;
+    wm.ipc.last <- snaps
 ;;

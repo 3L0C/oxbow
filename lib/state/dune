@@ -11,6 +11,7 @@
   unix
   logs
   xkbcommon
+  landmarks
   yojson
   ppx_yojson_conv_lib)
  (preprocess
