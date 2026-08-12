@@ -1,99 +1,99 @@
 
 == arrive ==
-render:set_presentation_mode
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
 manage:get_seat
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_pointer_binding(seat0)
-manage:get_pointer_binding(seat0)
+manage:get_xkb_binding(key=0x31, mods=0x40)
+manage:get_xkb_binding(key=0x32, mods=0x40)
+manage:get_xkb_binding(key=0x33, mods=0x40)
+manage:get_xkb_binding(key=0x34, mods=0x40)
+manage:get_xkb_binding(key=0x35, mods=0x40)
+manage:get_xkb_binding(key=0x36, mods=0x40)
+manage:get_xkb_binding(key=0x37, mods=0x40)
+manage:get_xkb_binding(key=0x38, mods=0x40)
+manage:get_xkb_binding(key=0x39, mods=0x40)
+manage:get_xkb_binding(key=0xff0d, mods=0x40)
+manage:get_xkb_binding(key=0x71, mods=0x40)
+manage:get_xkb_binding(key=0x51, mods=0x40)
+manage:get_xkb_binding(key=0x6a, mods=0x40)
+manage:get_xkb_binding(key=0x6b, mods=0x40)
+manage:get_xkb_binding(key=0x6c, mods=0x40)
+manage:get_xkb_binding(key=0x68, mods=0x40)
+manage:get_xkb_binding(key=0xff09, mods=0x40)
+manage:get_xkb_binding(key=0xfe20, mods=0x40)
+manage:get_xkb_binding(key=0x74, mods=0x40)
+manage:get_xkb_binding(key=0x73, mods=0x40)
+manage:get_xkb_binding(key=0x66, mods=0x40)
+manage:get_xkb_binding(key=0x76, mods=0x40)
+manage:get_xkb_binding(key=0x20, mods=0x40)
+manage:get_xkb_binding(key=0x4a, mods=0x40)
+manage:get_xkb_binding(key=0x4b, mods=0x40)
+manage:get_xkb_binding(key=0x79, mods=0x40)
+manage:get_xkb_binding(key=0x69, mods=0x40)
+manage:get_xkb_binding(key=0x7a, mods=0x40)
+manage:get_xkb_binding(key=0x78, mods=0x40)
+manage:get_xkb_binding(key=0x63, mods=0x40)
+manage:get_xkb_binding(key=0x2c, mods=0x40)
+manage:get_xkb_binding(key=0x2e, mods=0x40)
+manage:get_xkb_binding(key=0x6c, mods=0x44)
+manage:get_xkb_binding(key=0x68, mods=0x44)
+manage:get_xkb_binding(key=0x2d, mods=0x40)
+manage:get_xkb_binding(key=0x3d, mods=0x40)
+manage:get_xkb_binding(key=0x72, mods=0x40)
+manage:get_xkb_binding(key=0x52, mods=0x40)
+manage:get_pointer_binding(seat0, btn=272, mods=0x40)
+manage:get_pointer_binding(seat0, btn=273, mods=0x40)
 manage:clear_focus(seat0)
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
+manage:enable(key=0x52, mods=0x40)
+manage:enable(key=0x72, mods=0x40)
+manage:enable(key=0x3d, mods=0x40)
+manage:enable(key=0x2d, mods=0x40)
+manage:enable(key=0x68, mods=0x44)
+manage:enable(key=0x6c, mods=0x44)
+manage:enable(key=0x2e, mods=0x40)
+manage:enable(key=0x2c, mods=0x40)
+manage:enable(key=0x63, mods=0x40)
+manage:enable(key=0x78, mods=0x40)
+manage:enable(key=0x7a, mods=0x40)
+manage:enable(key=0x69, mods=0x40)
+manage:enable(key=0x79, mods=0x40)
+manage:enable(key=0x4b, mods=0x40)
+manage:enable(key=0x4a, mods=0x40)
+manage:enable(key=0x20, mods=0x40)
+manage:enable(key=0x76, mods=0x40)
+manage:enable(key=0x66, mods=0x40)
+manage:enable(key=0x73, mods=0x40)
+manage:enable(key=0x74, mods=0x40)
+manage:enable(key=0xfe20, mods=0x40)
+manage:enable(key=0xff09, mods=0x40)
+manage:enable(key=0x68, mods=0x40)
+manage:enable(key=0x6c, mods=0x40)
+manage:enable(key=0x6b, mods=0x40)
+manage:enable(key=0x6a, mods=0x40)
+manage:enable(key=0x51, mods=0x40)
+manage:enable(key=0x71, mods=0x40)
+manage:enable(key=0xff0d, mods=0x40)
+manage:enable(key=0x39, mods=0x40)
+manage:enable(key=0x38, mods=0x40)
+manage:enable(key=0x37, mods=0x40)
+manage:enable(key=0x36, mods=0x40)
+manage:enable(key=0x35, mods=0x40)
+manage:enable(key=0x34, mods=0x40)
+manage:enable(key=0x33, mods=0x40)
+manage:enable(key=0x32, mods=0x40)
+manage:enable(key=0x31, mods=0x40)
+manage:enable(btn=273, mods=0x40)
+manage:enable(btn=272, mods=0x40)
 manage:op_end(seat0)
 manage:clear_focus(seat0)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
 manage:get_node(kitty)
-manage:set_capabilities(kitty)
+manage:set_capabilities(kitty, caps=0x4)
 manage:propose_dimensions(kitty, 1872x1032)
-manage:set_tiled(kitty)
+manage:set_tiled(kitty, edges=0xf)
 manage:use_ssd(kitty)
 manage:inform_unmaximized(kitty)
 manage:inform_not_fullscreen(kitty)
@@ -102,19 +102,19 @@ manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
 render:set_position(kitty, 24, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:get_node(emacs)
-manage:set_capabilities(emacs)
+manage:set_capabilities(emacs, caps=0x4)
 manage:propose_dimensions(emacs, 1021x1032)
-manage:set_tiled(emacs)
+manage:set_tiled(emacs, edges=0xf)
 manage:use_ssd(emacs)
 manage:inform_unmaximized(emacs)
 manage:inform_not_fullscreen(emacs)
@@ -124,8 +124,8 @@ manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(emacs, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:set_position(emacs, 24, 24)
 render:show(emacs)
 render:set_clip_box(emacs, 0, 0, 0x0)
@@ -133,40 +133,40 @@ render:set_content_clip_box(emacs, 0, 0, 0x0)
 render:set_position(kitty, 1063, 24)
 render:place_top(kitty)
 render:place_top(emacs)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(kitty)
 render:place_top(emacs)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window focus match --app-id=kitty ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(emacs, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window label add scratch ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window label add term ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window label add scratch ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window list ==
 ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
@@ -176,14 +176,14 @@ manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window label remove scratch ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window list ==
 ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
@@ -193,14 +193,14 @@ manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output label add main ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output list ==
 NAME    LABELS  FOCUSED  CAPTURED
@@ -209,7 +209,7 @@ manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window label add  ==
 err: Usage: [01moxctl window label add[m [[01m--help[m] [[04mOPTION[m]… [04mLABEL[m
@@ -224,34 +224,34 @@ exit: 124
 == window focus match --app-id=emacs ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(emacs, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:place_top(kitty)
 render:place_top(emacs)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window label add term ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(kitty)
 render:place_top(emacs)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window focus match --label=term ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(kitty)
 render:place_top(emacs)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window focus match --cycle --label=term ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(emacs, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window list --label=te.* ==
 ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
@@ -261,7 +261,7 @@ manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window list --label=none ==
 []
@@ -269,27 +269,27 @@ manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window rules add --label-as=video_player --app-id=mpv ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window rules add --label-as=browser --app-id=firefox ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == test label-as rule ==
 manage:get_node(firefox)
-manage:set_capabilities(firefox)
+manage:set_capabilities(firefox, caps=0x4)
 manage:propose_dimensions(firefox, 1021x1032)
-manage:set_tiled(firefox)
+manage:set_tiled(firefox, edges=0xf)
 manage:use_ssd(firefox)
 manage:inform_unmaximized(firefox)
 manage:inform_not_fullscreen(firefox)
@@ -300,8 +300,8 @@ manage:focus_window(seat0, firefox)
 manage:op_end(seat0)
 manage:focus_window(seat0, firefox)
 manage:op_end(seat0)
-render:set_borders(firefox, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(firefox, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:set_position(firefox, 24, 24)
 render:show(firefox)
 render:set_clip_box(firefox, 0, 0, 0x0)
@@ -311,15 +311,15 @@ render:set_position(kitty, 1063, 549)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:get_node(mpv)
-manage:set_capabilities(mpv)
+manage:set_capabilities(mpv, caps=0x4)
 manage:propose_dimensions(mpv, 1021x1032)
-manage:set_tiled(mpv)
+manage:set_tiled(mpv, edges=0xf)
 manage:use_ssd(mpv)
 manage:inform_unmaximized(mpv)
 manage:inform_not_fullscreen(mpv)
@@ -331,8 +331,8 @@ manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_borders(mpv, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(firefox, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(mpv, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(firefox, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:set_position(mpv, 24, 24)
 render:show(mpv)
 render:set_clip_box(mpv, 0, 0, 0x0)
@@ -344,12 +344,12 @@ render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window list --label=video_player ==
 ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
@@ -360,7 +360,7 @@ render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window list --label=browser ==
 ID  IDENTIFIER  TITLE    APP-ID   OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
@@ -371,114 +371,114 @@ render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == test output labels ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output label add --name=FAKE-1 first ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output label add --name=FAKE-2 second ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output label add --name=FAKE-3 third ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output focus match --label=second ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
-render:set_borders(mpv, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_borders(mpv, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:clear_focus(seat0)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output list ==
 NAME    LABELS      FOCUSED  CAPTURED
@@ -487,34 +487,34 @@ FAKE-2  second      true     false
 FAKE-1  first main  false    false
 manage:clear_focus(seat0)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output focus match --label=first ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_borders(mpv, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_borders(mpv, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output list ==
 NAME    LABELS      FOCUSED  CAPTURED
@@ -523,34 +523,34 @@ FAKE-2  second      false    false
 FAKE-1  first main  true     false
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output focus match --label=third ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
-render:set_borders(mpv, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_borders(mpv, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:clear_focus(seat0)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output list ==
 NAME    LABELS      FOCUSED  CAPTURED
@@ -559,10 +559,10 @@ FAKE-2  second      false    false
 FAKE-1  first main  false    false
 manage:clear_focus(seat0)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-3, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:place_top(emacs)
 render:place_top(kitty)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)

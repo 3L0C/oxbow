@@ -1,99 +1,99 @@
 
 == arrive ==
-render:set_presentation_mode
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
 manage:get_seat
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_xkb_binding
-manage:get_pointer_binding(seat0)
-manage:get_pointer_binding(seat0)
+manage:get_xkb_binding(key=0x31, mods=0x40)
+manage:get_xkb_binding(key=0x32, mods=0x40)
+manage:get_xkb_binding(key=0x33, mods=0x40)
+manage:get_xkb_binding(key=0x34, mods=0x40)
+manage:get_xkb_binding(key=0x35, mods=0x40)
+manage:get_xkb_binding(key=0x36, mods=0x40)
+manage:get_xkb_binding(key=0x37, mods=0x40)
+manage:get_xkb_binding(key=0x38, mods=0x40)
+manage:get_xkb_binding(key=0x39, mods=0x40)
+manage:get_xkb_binding(key=0xff0d, mods=0x40)
+manage:get_xkb_binding(key=0x71, mods=0x40)
+manage:get_xkb_binding(key=0x51, mods=0x40)
+manage:get_xkb_binding(key=0x6a, mods=0x40)
+manage:get_xkb_binding(key=0x6b, mods=0x40)
+manage:get_xkb_binding(key=0x6c, mods=0x40)
+manage:get_xkb_binding(key=0x68, mods=0x40)
+manage:get_xkb_binding(key=0xff09, mods=0x40)
+manage:get_xkb_binding(key=0xfe20, mods=0x40)
+manage:get_xkb_binding(key=0x74, mods=0x40)
+manage:get_xkb_binding(key=0x73, mods=0x40)
+manage:get_xkb_binding(key=0x66, mods=0x40)
+manage:get_xkb_binding(key=0x76, mods=0x40)
+manage:get_xkb_binding(key=0x20, mods=0x40)
+manage:get_xkb_binding(key=0x4a, mods=0x40)
+manage:get_xkb_binding(key=0x4b, mods=0x40)
+manage:get_xkb_binding(key=0x79, mods=0x40)
+manage:get_xkb_binding(key=0x69, mods=0x40)
+manage:get_xkb_binding(key=0x7a, mods=0x40)
+manage:get_xkb_binding(key=0x78, mods=0x40)
+manage:get_xkb_binding(key=0x63, mods=0x40)
+manage:get_xkb_binding(key=0x2c, mods=0x40)
+manage:get_xkb_binding(key=0x2e, mods=0x40)
+manage:get_xkb_binding(key=0x6c, mods=0x44)
+manage:get_xkb_binding(key=0x68, mods=0x44)
+manage:get_xkb_binding(key=0x2d, mods=0x40)
+manage:get_xkb_binding(key=0x3d, mods=0x40)
+manage:get_xkb_binding(key=0x72, mods=0x40)
+manage:get_xkb_binding(key=0x52, mods=0x40)
+manage:get_pointer_binding(seat0, btn=272, mods=0x40)
+manage:get_pointer_binding(seat0, btn=273, mods=0x40)
 manage:clear_focus(seat0)
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
-manage:enable
+manage:enable(key=0x52, mods=0x40)
+manage:enable(key=0x72, mods=0x40)
+manage:enable(key=0x3d, mods=0x40)
+manage:enable(key=0x2d, mods=0x40)
+manage:enable(key=0x68, mods=0x44)
+manage:enable(key=0x6c, mods=0x44)
+manage:enable(key=0x2e, mods=0x40)
+manage:enable(key=0x2c, mods=0x40)
+manage:enable(key=0x63, mods=0x40)
+manage:enable(key=0x78, mods=0x40)
+manage:enable(key=0x7a, mods=0x40)
+manage:enable(key=0x69, mods=0x40)
+manage:enable(key=0x79, mods=0x40)
+manage:enable(key=0x4b, mods=0x40)
+manage:enable(key=0x4a, mods=0x40)
+manage:enable(key=0x20, mods=0x40)
+manage:enable(key=0x76, mods=0x40)
+manage:enable(key=0x66, mods=0x40)
+manage:enable(key=0x73, mods=0x40)
+manage:enable(key=0x74, mods=0x40)
+manage:enable(key=0xfe20, mods=0x40)
+manage:enable(key=0xff09, mods=0x40)
+manage:enable(key=0x68, mods=0x40)
+manage:enable(key=0x6c, mods=0x40)
+manage:enable(key=0x6b, mods=0x40)
+manage:enable(key=0x6a, mods=0x40)
+manage:enable(key=0x51, mods=0x40)
+manage:enable(key=0x71, mods=0x40)
+manage:enable(key=0xff0d, mods=0x40)
+manage:enable(key=0x39, mods=0x40)
+manage:enable(key=0x38, mods=0x40)
+manage:enable(key=0x37, mods=0x40)
+manage:enable(key=0x36, mods=0x40)
+manage:enable(key=0x35, mods=0x40)
+manage:enable(key=0x34, mods=0x40)
+manage:enable(key=0x33, mods=0x40)
+manage:enable(key=0x32, mods=0x40)
+manage:enable(key=0x31, mods=0x40)
+manage:enable(btn=273, mods=0x40)
+manage:enable(btn=272, mods=0x40)
 manage:op_end(seat0)
 manage:clear_focus(seat0)
 manage:op_end(seat0)
-render:set_presentation_mode
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
 manage:get_node(kitty)
-manage:set_capabilities(kitty)
+manage:set_capabilities(kitty, caps=0x4)
 manage:propose_dimensions(kitty, 1872x1032)
-manage:set_tiled(kitty)
+manage:set_tiled(kitty, edges=0xf)
 manage:use_ssd(kitty)
 manage:inform_unmaximized(kitty)
 manage:inform_not_fullscreen(kitty)
@@ -102,19 +102,19 @@ manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
 render:set_position(kitty, 24, 24)
 render:show(kitty)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:get_node(emacs)
-manage:set_capabilities(emacs)
+manage:set_capabilities(emacs, caps=0x4)
 manage:propose_dimensions(emacs, 1021x1032)
-manage:set_tiled(emacs)
+manage:set_tiled(emacs, edges=0xf)
 manage:use_ssd(emacs)
 manage:inform_unmaximized(emacs)
 manage:inform_not_fullscreen(emacs)
@@ -124,8 +124,8 @@ manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(emacs, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:set_position(emacs, 24, 24)
 render:show(emacs)
 render:set_clip_box(emacs, 0, 0, 0x0)
@@ -133,14 +133,14 @@ render:set_content_clip_box(emacs, 0, 0, 0x0)
 render:set_position(kitty, 1063, 24)
 render:place_top(kitty)
 render:place_top(emacs)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(kitty)
 render:place_top(emacs)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:get_node(firefox)
-manage:set_capabilities(firefox)
+manage:set_capabilities(firefox, caps=0x4)
 manage:propose_dimensions(firefox, 1021x1032)
-manage:set_tiled(firefox)
+manage:set_tiled(firefox, edges=0xf)
 manage:use_ssd(firefox)
 manage:inform_unmaximized(firefox)
 manage:inform_not_fullscreen(firefox)
@@ -151,8 +151,8 @@ manage:focus_window(seat0, firefox)
 manage:op_end(seat0)
 manage:focus_window(seat0, firefox)
 manage:op_end(seat0)
-render:set_borders(firefox, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(firefox, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(emacs, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:set_position(firefox, 24, 24)
 render:show(firefox)
 render:set_clip_box(firefox, 0, 0, 0x0)
@@ -162,11 +162,11 @@ render:set_position(kitty, 1063, 549)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == layout tiling mfact +0.05 ==
 manage:propose_dimensions(firefox, 1116x1032)
@@ -179,13 +179,13 @@ render:set_position(kitty, 1158, 549)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, firefox)
 manage:op_end(seat0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == layout tiling scheme monocle ==
 manage:propose_dimensions(firefox, 1872x1032)
@@ -198,13 +198,13 @@ render:set_position(kitty, 24, 24)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, firefox)
 manage:op_end(seat0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == layout tiling scheme deck ==
 manage:propose_dimensions(firefox, 1116x1032)
@@ -217,19 +217,19 @@ render:set_position(kitty, 1158, 24)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, firefox)
 manage:op_end(seat0)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == spawn - mpv and feishin ==
 manage:get_node(mpv)
-manage:set_capabilities(mpv)
+manage:set_capabilities(mpv, caps=0x4)
 manage:propose_dimensions(mpv, 1116x1032)
-manage:set_tiled(mpv)
+manage:set_tiled(mpv, edges=0xf)
 manage:use_ssd(mpv)
 manage:inform_unmaximized(mpv)
 manage:inform_not_fullscreen(mpv)
@@ -239,8 +239,8 @@ manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_borders(mpv, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(firefox, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(mpv, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(firefox, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:set_position(mpv, 24, 24)
 render:show(mpv)
 render:set_clip_box(mpv, 0, 0, 0x0)
@@ -250,16 +250,16 @@ render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:get_node(feishin)
-manage:set_capabilities(feishin)
+manage:set_capabilities(feishin, caps=0x4)
 manage:propose_dimensions(feishin, 1116x1032)
-manage:set_tiled(feishin)
+manage:set_tiled(feishin, edges=0xf)
 manage:use_ssd(feishin)
 manage:inform_unmaximized(feishin)
 manage:inform_not_fullscreen(feishin)
@@ -269,8 +269,8 @@ manage:focus_window(seat0, feishin)
 manage:op_end(seat0)
 manage:focus_window(seat0, feishin)
 manage:op_end(seat0)
-render:set_borders(feishin, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(mpv, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(feishin, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(mpv, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:set_position(feishin, 24, 24)
 render:show(feishin)
 render:set_clip_box(feishin, 0, 0, 0x0)
@@ -281,13 +281,13 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == layout floating ==
 manage:focus_window(seat0, feishin)
@@ -297,7 +297,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, feishin)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -305,7 +305,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == layout scrolling ==
 manage:propose_dimensions(feishin, 927x1032)
@@ -327,7 +327,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, feishin)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -335,7 +335,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output overview ==
 manage:propose_dimensions(feishin, 619x517)
@@ -358,7 +358,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, feishin)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -366,19 +366,19 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window focus prev ==
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_borders(feishin, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(feishin, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -386,7 +386,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == layout query ==
 {"available":["tiling","scrolling","floating"]}
@@ -397,7 +397,7 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == output overview ==
 manage:propose_dimensions(feishin, 927x1032)
@@ -420,7 +420,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
@@ -428,7 +428,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == layout floating seed 25% ==
 manage:focus_window(seat0, kitty)
@@ -438,7 +438,7 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(emacs)
@@ -446,13 +446,13 @@ render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
 render:place_top(kitty)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == chromium arrives - no float memory ==
 manage:get_node(chromium)
-manage:set_capabilities(chromium)
+manage:set_capabilities(chromium, caps=0x4)
 manage:propose_dimensions(chromium, 927x1032)
-manage:set_tiled(chromium)
+manage:set_tiled(chromium, edges=0xf)
 manage:use_ssd(chromium)
 manage:inform_unmaximized(chromium)
 manage:inform_not_fullscreen(chromium)
@@ -461,8 +461,8 @@ manage:focus_window(seat0, chromium)
 manage:op_end(seat0)
 manage:focus_window(seat0, chromium)
 manage:op_end(seat0)
-render:set_borders(chromium, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(chromium, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:set_position(chromium, 24, 24)
 render:show(chromium)
 render:set_clip_box(chromium, 0, 0, 0x0)
@@ -485,18 +485,18 @@ render:place_top(mpv)
 render:place_top(feishin)
 render:place_top(kitty)
 render:place_top(chromium)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(mpv)
 render:place_top(feishin)
 render:place_top(kitty)
 render:place_top(chromium)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 
 == window toggle floating --app-id ^chromium$ ==
 manage:propose_dimensions(chromium, 480x270)
-manage:set_tiled(chromium)
+manage:set_tiled(chromium, edges=0x0)
 manage:focus_window(seat0, chromium)
 manage:op_end(seat0)
 render:set_position(chromium, 720, 405)
@@ -514,7 +514,7 @@ render:place_top(mpv)
 render:place_top(feishin)
 render:place_top(kitty)
 render:place_top(chromium)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, chromium)
 manage:op_end(seat0)
 render:place_top(emacs)
@@ -523,4 +523,4 @@ render:place_top(mpv)
 render:place_top(feishin)
 render:place_top(kitty)
 render:place_top(chromium)
-render:set_presentation_mode
+render:set_presentation_mode(FAKE-1, vsync)

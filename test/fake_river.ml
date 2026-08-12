@@ -38,6 +38,7 @@ type t =
       (string * River.Obj.Window_management.v Wm_server.River_output_v1.t) list
   ; mutable output_positions : (int32 * (int32 * int32)) list
   ; mutable owners : (int32 * string) list
+  ; mutable app_counts : (string * int) list
   ; phase_done : Eio.Condition.t
   ; wm_ready : Eio.Condition.t
   }
@@ -94,17 +95,22 @@ let render_only =
 ;;
 
 let record t name =
+  let base =
+    match String.index_opt name '(' with
+    | Some i -> String.sub name 0 i
+    | None -> name
+  in
   match t.phase with
   | Idle ->
-    if List.mem name manage_only || List.mem name render_only
+    if List.mem base manage_only || List.mem base render_only
     then failwith ("request outside a sequence: " ^ name);
     t.trace <- ("idle:" ^ name) :: t.trace
   | In_manage ->
-    if List.mem name render_only
+    if List.mem base render_only
     then failwith ("render request in a manage sequence: " ^ name);
     t.trace <- ("manage:" ^ name) :: t.trace
   | In_render ->
-    if List.mem name manage_only
+    if List.mem base manage_only
     then failwith ("manage request in a render sequence: " ^ name);
     t.trace <- ("render:" ^ name) :: t.trace
 ;;
@@ -116,10 +122,12 @@ let finish_phase t =
 
 let label t p =
   let id = Proxy.id p in
-  match List.find_opt (fun (_, w) -> Proxy.id w = id) t.windows with
-  | Some (Some app_id, _) -> app_id
-  | Some (None, _) -> "?"
-  | None -> Option.value ~default:"?" (List.assoc_opt id t.owners)
+  match List.assoc_opt id t.owners with
+  | Some owner -> owner
+  | None ->
+    (match List.find_opt (fun (_, w) -> Proxy.id w = id) t.windows with
+     | Some (Some app_id, _) -> app_id
+     | _ -> "?")
 ;;
 
 let adopt t p ~owner = t.owners <- (Proxy.id p, owner) :: t.owners
@@ -155,7 +163,15 @@ let decoration_handlers t =
 let output_handlers t =
   object
     inherit [_] River.Obj.Window_management.Server.output
-    method on_set_presentation_mode _ ~mode:_ = record t "set_presentation_mode"
+
+    method on_set_presentation_mode o ~mode =
+      let mode_name =
+        match mode with
+        | Vsync -> "vsync"
+        | Async -> "async"
+      in
+      recordf t o "set_presentation_mode" "%s" mode_name
+
     method on_destroy _ = record t "destroy"
   end
 ;;
@@ -163,9 +179,9 @@ let output_handlers t =
 let pointer_binding_handlers t =
   object
     inherit [_] River.Obj.Window_management.Server.pointer_binding
-    method on_enable _ = record t "enable"
-    method on_disable _ = record t "disable"
-    method on_destroy _ = record t "destroy"
+    method on_enable b = recordl t b "enable"
+    method on_disable b = recordl t b "disable"
+    method on_destroy b = recordl t b "destroy"
   end
 ;;
 
@@ -180,13 +196,17 @@ let seat_handlers t =
     method on_op_start_pointer s = recordl t s "op_start_pointer"
     method on_op_end s = recordl t s "op_end"
     method on_focus_window s ~window = recordf t s "focus_window" "%s" (label t window)
-    method on_focus_shell_surface s ~shell_surface:_ = recordl t s "focus_shell_surface"
+
+    method on_focus_shell_surface s ~shell_surface =
+      recordf t s "focus_shell_surface" "%s" (label t shell_surface)
+
     method on_destroy s = recordl t s "destroy"
     method on_clear_focus s = recordl t s "clear_focus"
 
-    method on_get_pointer_binding s binding ~button:_ ~modifiers:_ =
+    method on_get_pointer_binding s binding ~button ~modifiers =
       Proxy.Handler.attach binding (pointer_binding_handlers t);
-      recordl t s "get_pointer_binding"
+      adopt t binding ~owner:(Printf.sprintf "btn=%ld, mods=0x%lx" button modifiers);
+      recordf t s "get_pointer_binding" "btn=%ld, mods=0x%lx" button modifiers
   end
 ;;
 
@@ -200,10 +220,10 @@ let window_handlers t =
     method on_use_ssd w = recordl t w "use_ssd"
     method on_use_csd w = recordl t w "use_csd"
     method on_show w = recordl t w "show"
-    method on_set_tiled w ~edges:_ = recordl t w "set_tiled"
+    method on_set_tiled w ~edges = recordf t w "set_tiled" "edges=0x%lx" edges
 
-    method on_set_dimension_bounds w ~max_width:_ ~max_height:_ =
-      recordl t w "set_dimension_bounds"
+    method on_set_dimension_bounds w ~max_width ~max_height =
+      recordf t w "set_dimension_bounds" "%ldx%ld" max_width max_height
 
     method on_set_content_clip_box w ~x ~y ~width ~height =
       recordf t w "set_content_clip_box" "%ld, %ld, %ldx%ld" x y width height
@@ -211,10 +231,20 @@ let window_handlers t =
     method on_set_clip_box w ~x ~y ~width ~height =
       recordf t w "set_clip_box" "%ld, %ld, %ldx%ld" x y width height
 
-    method on_set_capabilities w ~caps:_ = recordl t w "set_capabilities"
+    method on_set_capabilities w ~caps = recordf t w "set_capabilities" "caps=0x%lx" caps
 
-    method on_set_borders w ~edges:_ ~width ~r ~g ~b ~a =
-      recordf t w "set_borders" "w=%ld, rgba=%lx %lx %lx %lx" width r g b a
+    method on_set_borders w ~edges ~width ~r ~g ~b ~a =
+      recordf
+        t
+        w
+        "set_borders"
+        "edges=0x%lx, w=%ld, rgba=%lx %lx %lx %lx"
+        edges
+        width
+        r
+        g
+        b
+        a
 
     method on_inform_unmaximized w = recordl t w "inform_unmaximized"
     method on_inform_resize_start w = recordl t w "inform_resize_start"
@@ -274,7 +304,8 @@ let wm_handlers t =
      method on_exit_session _ = ()
 
      method on_get_shell_surface _ ss ~surface:_ =
-       Proxy.Handler.attach ss (shell_surface_handlers t)
+       Proxy.Handler.attach ss (shell_surface_handlers t);
+       adopt t ss ~owner:"shell"
    end
     :> ( [ `River_window_manager_v1 ]
          , River.Obj.Window_management.v
@@ -285,10 +316,10 @@ let wm_handlers t =
 let binding_handlers t =
   object
     inherit [_] River.Obj.Xkb.Bindings.Server.binding
-    method on_enable _ = record t "enable"
-    method on_disable _ = record t "disable"
-    method on_set_layout_override _ ~layout:_ = record t "set_layout_override"
-    method on_destroy _ = record t "destroy"
+    method on_enable b = recordl t b "enable"
+    method on_disable b = recordl t b "disable"
+    method on_set_layout_override b ~layout:_ = recordl t b "set_layout_override"
+    method on_destroy b = recordl t b "destroy"
   end
 ;;
 
@@ -311,10 +342,11 @@ let xkb_bindings_handlers t =
        Proxy.Handler.attach s (bindings_seat_handlers t);
        record t "get_seat"
 
-     method on_get_xkb_binding _ ~seat:_ binding ~keysym:_ ~modifiers:_ =
+     method on_get_xkb_binding _ ~seat:_ binding ~keysym ~modifiers =
        Proxy.Handler.attach binding (binding_handlers t);
+       adopt t binding ~owner:(Printf.sprintf "key=0x%lx, mods=0x%lx" keysym modifiers);
        t.bindings <- t.bindings @ [ Proxy.cast_version binding ];
-       record t "get_xkb_binding"
+       recordl t binding "get_xkb_binding"
    end
     :> ( [ `River_xkb_bindings_v1 ]
          , River.Obj.Xkb.Bindings.v
@@ -580,6 +612,7 @@ let start ~sw socket =
     ; outputs = []
     ; output_positions = []
     ; owners = []
+    ; app_counts = []
     ; phase_done = Eio.Condition.create ()
     ; wm_ready = Eio.Condition.create ()
     }
@@ -606,6 +639,7 @@ let add_output ?(x = 0l) ?(y = 0l) t ~name =
   t.wl_outputs <- (global, name) :: t.wl_outputs;
   announce t ~name:global ~interface:Wl_proto.Wl_output.interface ~version:4l;
   let o = Wm_server.River_window_manager_v1.output wm (output_handlers t) in
+  adopt t o ~owner:name;
   Wm_server.River_output_v1.position o ~x ~y;
   t.output_positions <- (Proxy.id o, (x, y)) :: t.output_positions;
   Wm_server.River_output_v1.dimensions o ~width:output_width ~height:output_height;
@@ -629,7 +663,14 @@ let add_seat t ~name =
 let add_window ?pid t ~app_id =
   let wm = await_wm t in
   let w = Wm_server.River_window_manager_v1.window wm (window_handlers t) in
-  adopt t w ~owner:(Option.value ~default:"?" app_id);
+  let base = Option.value ~default:"?" app_id in
+  let live = List.length (List.filter (fun (a, _) -> a = app_id) t.windows) in
+  let count =
+    if live = 0 then 1 else 1 + Option.value ~default:1 (List.assoc_opt base t.app_counts)
+  in
+  t.app_counts <- (base, count) :: List.remove_assoc base t.app_counts;
+  let owner = if count = 1 then base else base ^ "#" ^ string_of_int count in
+  adopt t w ~owner;
   t.windows <- (app_id, w) :: t.windows;
   Wm_server.River_window_v1.app_id w ~app_id;
   Option.iter
