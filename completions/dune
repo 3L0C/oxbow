@@ -1,0 +1,32 @@
+(rule
+ (action
+  (with-stdout-to
+   oxbow.bash
+   (run cmdliner tool-completion --standalone-completion bash oxbow))))
+
+(rule
+ (action
+  (with-stdout-to
+   oxctl.bash
+   (run cmdliner tool-completion --standalone-completion bash oxctl))))
+
+(rule
+ (action
+  (with-stdout-to
+   _oxbow
+   (run cmdliner tool-completion --standalone-completion zsh oxbow))))
+
+(rule
+ (action
+  (with-stdout-to
+   _oxctl
+   (run cmdliner tool-completion --standalone-completion zsh oxctl))))
+
+(install
+ (package oxbow)
+ (section share_root)
+ (files
+  (oxbow.bash as bash-completion/completions/oxbow)
+  (oxctl.bash as bash-completion/completions/oxctl)
+  (_oxbow as zsh/site-functions/_oxbow)
+  (_oxctl as zsh/site-functions/_oxctl)))

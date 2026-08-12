@@ -102,6 +102,11 @@
           shellHook = ''
             ${pre-commit-check.shellHook}
 
+            if [ -n "$BASH_VERSION" ] && shopt -q progcomp 2>/dev/null && command -v cmdliner >/dev/null 2>&1; then
+              source <(cmdliner tool-completion --standalone-completion bash oxbow)
+              source <(cmdliner tool-completion --standalone-completion bash oxctl)
+            fi
+
             echo ""
             echo "oxbow development environment"
             echo "============================="
