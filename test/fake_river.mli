@@ -11,10 +11,11 @@ val start : sw:Eio.Switch.t -> _ Eio_unix.Net.stream_socket -> t
     {b Effects:} sends Wayland events *)
 val tick : t -> unit
 
-(** [add_output t ~name] announces one output, then ticks.
+(** [add_output ?x ?y t ~name] announces one output at ([x], [y]),
+    default (0, 0), then ticks.
 
     {b Effects:} sends Wayland events *)
-val add_output : t -> name:string -> unit
+val add_output : ?x:int32 -> ?y:int32 -> t -> name:string -> unit
 
 (** [add_seat t ~name] announces one seat, then ticks.
 

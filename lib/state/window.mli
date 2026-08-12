@@ -83,6 +83,11 @@ val is_tiled : t -> bool
     the layout of [w]'s output is [Scrolling]. *)
 val scroll_clipped : t -> bool
 
+(** [floats w o] is [true] when [w] renders as a floating window on [o]. A
+    window renders as floating when its presentation is [Floating], or it is
+    tiled and the layout of [o] is [Floating]. *)
+val floats : t -> Types.Output.t -> bool
+
 (** [is_tiled_on_tag window] is [tag_visible window && is_tiled window] *)
 val is_tiled_on_tag : t -> bool
 
@@ -92,11 +97,30 @@ val swallowing : t -> bool
 (** [can_swallow window] is [true] when window is able to swallow its child. *)
 val can_swallow : t -> bool
 
+(** [fit_to_output window] repositions and resizes [window] to fit on the output
+    it is displayed on.
+
+    {b Effects:} mutates WM state *)
+val fit_to_output : t -> unit
+
 (** [remember_float window] saves [window]'s current geometry to restore when
     [window] transitions to the floating state.
 
     {b Effects:} mutates WM state *)
 val remember_float : t -> unit
+
+(** [restore_float window] places [window] at its remembered float on its
+    current output. If [window] has no remembered float, it seeds at half the
+    usable area, centered.  The seed is then the remembered float.
+
+    {b Effects:} mutates WM state *)
+val restore_float : t -> unit
+
+(** [center_float window] centers [window]'s current dimensions in the usable
+    area and records the result.
+
+    {b Effects:} mutates WM state *)
+val center_float : t -> unit
 
 (** [tile window] puts [window] into the tiled state.
 
@@ -112,14 +136,6 @@ val clamp : t -> int Oxbow_core.Rect.t -> int32 Oxbow_core.Rect.t
 
     {b Effects:} mutates WM state *)
 val set_float_seed_pending : t -> bool -> unit
-
-(** [restore_or_seed_float window] positions and resizes [window] according
-    to its last remembered float value. If no such value is stored, [window] is
-    centered and sized to 50% of the usable height and width of its output.
-    Clamps to [window]'s size hints.
-
-    {b Effects:} mutates WM state *)
-val restore_or_seed_float : t -> unit
 
 (** [float window] puts [window] in the floating state.
 
@@ -163,12 +179,6 @@ val queue_request : t -> Request.t -> unit
 
     {b Effects:} mutates WM state *)
 val clear_requests : t -> unit
-
-(** [fit_to_output window] repositions and resizes [window] to fit on the output
-    it is displayed on.
-
-    {b Effects:} mutates WM state *)
-val fit_to_output : t -> unit
 
 (** [at_point ~x ~y lst] returns the first window in [lst] that is
     visible (per {!tag_visible}) and whose [geom] rectangle contains

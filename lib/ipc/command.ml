@@ -125,6 +125,15 @@ module Layout = struct
     [@@deriving yojson]
   end
 
+  module Floating = struct
+    type t =
+      | Seed of
+          { seed : Extent.t
+          ; scope : Scope.t
+          } [@name "seed"]
+    [@@deriving yojson]
+  end
+
   type t =
     | Cycle of Direction.Logical.t [@name "cycle"]
     | Select of
@@ -133,6 +142,7 @@ module Layout = struct
         } [@name "select"]
     | Scrolling of Scrolling.t [@name "scrolling"]
     | Tiling of Tiling.t [@name "tiling"]
+    | Floating of Floating.t [@name "floating"]
   [@@deriving yojson]
 end
 

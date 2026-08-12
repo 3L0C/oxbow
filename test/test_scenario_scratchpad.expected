@@ -160,7 +160,7 @@ manage:focus_window(seat0, qalculate)
 manage:op_end(seat0)
 render:set_borders(qalculate, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
 render:set_borders(firefox, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:set_position(qalculate, 640, 300)
+render:set_position(qalculate, 480, 270)
 render:show(qalculate)
 render:set_clip_box(qalculate, 0, 0, 0x0)
 render:set_content_clip_box(qalculate, 0, 0, 0x0)
@@ -200,7 +200,7 @@ render:place_top(firefox)
 render:set_presentation_mode
 
 == scratchpad toggle calc ==
-manage:propose_dimensions(qalculate, 640x480)
+manage:propose_dimensions(qalculate, 960x540)
 manage:focus_window(seat0, qalculate)
 manage:op_end(seat0)
 render:set_borders(qalculate, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)

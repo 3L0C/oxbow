@@ -1,0 +1,416 @@
+
+== arrive ==
+render:set_presentation_mode
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_seat
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_xkb_binding
+manage:get_pointer_binding(seat0)
+manage:get_pointer_binding(seat0)
+manage:clear_focus(seat0)
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:enable
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode
+render:set_presentation_mode
+manage:get_node(kitty)
+manage:set_capabilities(kitty)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:set_tiled(kitty)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+manage:get_node(emacs)
+manage:set_capabilities(emacs)
+manage:propose_dimensions(emacs, 1021x1032)
+manage:set_tiled(emacs)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:propose_dimensions(kitty, 833x1032)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+
+== second output at x=1920 ==
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_presentation_mode
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_presentation_mode
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+render:set_presentation_mode
+render:place_top(kitty)
+render:place_top(emacs)
+render:set_presentation_mode
+
+== window send to FAKE-2 ==
+manage:propose_dimensions(emacs, 1872x1032)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 1944, 24)
+render:set_position(kitty, 24, 24)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+
+== output focus next ==
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+
+== layout floating ==
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+
+== output focus next ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+
+== layout floating ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+
+== output swap tags ==
+manage:propose_dimensions(emacs, 1872x1032)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:set_position(kitty, 1944, 24)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+2   null        emacs  emacs   FAKE-1  1     true     false   false     false   tiled         off     null        false    false
+1   null        kitty  kitty   FAKE-2  1     false    false   false     false   tiled         off     null        false    false
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+
+== window resize to 800 600 --app-id ^kitty$ ==
+manage:propose_dimensions(kitty, 800x600)
+manage:set_tiled(kitty)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+
+== window move to 100 100 --app-id ^kitty$ ==
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_position(kitty, 2020, 100)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+
+== output swap tags ==
+manage:propose_dimensions(emacs, 1872x1032)
+manage:propose_dimensions(kitty, 800x600)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(emacs, 1944, 24)
+render:set_position(kitty, 100, 100)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode
+render:place_top(kitty)
+render:set_presentation_mode
+
+== output swap tags ==
+manage:propose_dimensions(emacs, 1872x1032)
+manage:propose_dimensions(kitty, 800x600)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:set_position(kitty, 2020, 100)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+
+== output focus next ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+
+== layout tiling ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+
+== window toggle floating --app-id ^kitty$ ==
+manage:propose_dimensions(kitty, 1872x1032)
+manage:set_tiled(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_position(kitty, 1944, 24)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+
+== window toggle floating --app-id ^kitty$ ==
+manage:propose_dimensions(kitty, 800x600)
+manage:set_tiled(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_position(kitty, 2020, 100)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+2   null        emacs  emacs   FAKE-1  1     false    false   false     false   tiled         off     null        false    false
+1   null        kitty  kitty   FAKE-2  1     true     false   false     false   floating      off     null        false    false
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:set_presentation_mode
+render:place_top(emacs)
+render:set_presentation_mode

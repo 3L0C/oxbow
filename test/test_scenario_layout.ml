@@ -17,5 +17,10 @@ let () =
   oxctl "layout scrolling";
   oxctl "output overview";
   oxctl "window focus prev";
-  oxctl "layout query"
+  oxctl "layout query";
+  oxctl "output overview";
+  oxctl "layout floating seed 25%";
+  section "chromium arrives - no float memory" (fun () ->
+    Fake_river.add_window fake ~app_id:(Some "chromium"));
+  oxctl "window toggle floating --app-id ^chromium$"
 ;;

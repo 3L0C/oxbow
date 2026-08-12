@@ -33,26 +33,18 @@ let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
     take ()
 ;;
 
-let send_to ~(src : Output.t) ~(dst : Output.t) window policy =
+let send_to ~(dst : Output.t) window policy =
   move_window ~policy window dst;
   (match window.presentation with
-   | Tiled -> ()
-   | Floating ->
-     let dx = Int32.sub dst.geom.x src.geom.x in
-     let dy = Int32.sub dst.geom.y src.geom.y in
-     Window.set_position
-       window
-       ~x:(Int32.add window.geom.x dx)
-       ~y:(Int32.add window.geom.y dy);
-     Window.fit_to_output window;
-     Window.remember_float window
+   | Tiled when not @@ Window.floats window dst -> ()
+   | Tiled | Floating -> Window.restore_float window
    | Maximized { restore } -> Window.maximize ~restore window
    | Fullscreen _ -> Window.fullscreen ~force:true window);
   Schedule.manage ()
 ;;
 
 let send_result ~src window policy ~err = function
-  | Some o when o != src -> Ok (fun () -> send_to ~src ~dst:o window policy)
+  | Some o when o != src -> Ok (fun () -> send_to ~dst:o window policy)
   | _ -> Error err
 ;;
 
@@ -333,8 +325,8 @@ let swap_outputs
     and b_focus = b.focus_stack
     and a_ws = in_scope a |> List.rev
     and b_ws = in_scope b |> List.rev in
-    List.iter (fun w -> send_to ~src:a ~dst:b w policy) a_ws;
-    List.iter (fun w -> send_to ~src:b ~dst:a w policy) b_ws;
+    List.iter (fun w -> send_to ~dst:b w policy) a_ws;
+    List.iter (fun w -> send_to ~dst:a w policy) b_ws;
     Stacking.restore_focus_order ~like:a_focus b;
     Stacking.restore_focus_order ~like:b_focus a;
     if follow

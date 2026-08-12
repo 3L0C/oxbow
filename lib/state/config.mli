@@ -55,6 +55,11 @@ val set_border_color
     {b Effects:} mutates WM state *)
 val set_default_width : Data.t -> delta:float Oxbow_core.Delta.t -> unit
 
+(** [set_float_seed td ~seed] sets the float seed of [td] to [seed].
+
+    {b Effects:} mutates WM state *)
+val set_float_seed : Data.t -> seed:Oxbow_core.Extent.t -> unit
+
 (** [set_spawn_position wm position] sets [position] as the spawn position of
     new windows for [wm].
 

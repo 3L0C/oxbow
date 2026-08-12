@@ -65,6 +65,10 @@ let set_tiling_orientation wm seat dir scope =
   apply_scoped wm seat scope ~f:(Output.apply_tiling_orientation ~dir)
 ;;
 
+let set_float_seed wm seat seed scope =
+  apply_scoped wm seat scope ~f:(Output.apply_float_seed ~seed)
+;;
+
 let enter_overview wm (output : Output.t) =
   if not output.overview.enabled
   then (
@@ -83,9 +87,13 @@ let exit_overview (output : Output.t) =
     List.iter
       (fun (w : Window.t) ->
          match w.presentation with
-         | Fullscreen _ | Tiled -> ()
-         | Floating -> Window.restore_or_seed_float w
-         | Maximized { restore } -> Window.maximize ~restore w)
+         | (Tiled | Floating) when Window.floats w output ->
+           (match w.float_rel with
+            | Some _ -> Window.restore_float w
+            | None -> Window.set_float_seed_pending w true)
+         | Maximized { restore } -> Window.maximize ~restore w
+         | Fullscreen _ -> ()
+         | Tiled | Floating -> ())
       output.wm_stack;
     Schedule.manage ())
 ;;
@@ -139,10 +147,17 @@ let set_layout wm seat (layout : Layout.t) scope =
            Window.is_tiled w && List.exists (fun s -> Window.on_tags w ~tags:s) crossed)
         o.wm_stack
     in
-    let fix =
-      if target_floats then Window.restore_or_seed_float else Window.remember_float
+    let fix w =
+      if not target_floats
+      then Window.remember_float w
+      else (
+        match w.float_rel with
+        | None ->
+          Window.fit_to_output w;
+          Window.remember_float w
+        | Some _ -> Window.restore_float w)
     in
-    List.iter fix windows
+    if not o.overview.enabled then List.iter fix windows
   in
   List.iter fixup outputs;
   apply_scoped wm seat scope ~f:(Output.apply_layout ~layout)

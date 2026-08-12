@@ -108,6 +108,17 @@ val set_tiling_orientation
   -> Oxbow_core.Scope.t
   -> (Yojson.Safe.t option, string) result
 
+(** [set_float_seed wm seat seed scope] sets the float seed on the output
+    according to [scope].
+
+    {b Effects:} mutates WM state *)
+val set_float_seed
+  :  Oxbow_state.Wm.t
+  -> Oxbow_state.Seat.t
+  -> Oxbow_core.Extent.t
+  -> Oxbow_core.Scope.t
+  -> (Yojson.Safe.t option, string) result
+
 (** [exit_overview output] handles the transition from [Overview] to any other
     layout. No-op when [output] is not in [Overview].
 

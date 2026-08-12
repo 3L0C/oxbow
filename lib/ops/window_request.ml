@@ -38,7 +38,7 @@ let handle_set_dimensions (wm : Wm.t) window w h =
     Window.reject_dimensions window ~width:w ~height:h)
   else (
     Window.set_geom window { window.geom with w; h };
-    if window.float_seed_pending then Window.restore_or_seed_float window;
+    if window.float_seed_pending then Window.center_float window;
     let in_resize =
       List.exists
         (fun (s : Seat.t) ->

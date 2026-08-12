@@ -3,6 +3,8 @@
   test_core
   test_layouts
   test_events
+  test_scenario_swap
+  test_scenario_overview
   test_scenario_follow
   test_scenario_manage
   test_scenario_window

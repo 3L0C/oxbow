@@ -18,10 +18,16 @@ let handle_tiling wm seat (cmd : Command.Layout.Tiling.t) =
   | Scheme { scheme; scope } -> Arrange.set_tiling_scheme wm seat scheme scope
 ;;
 
+let handle_floating wm seat (cmd : Command.Layout.Floating.t) =
+  match cmd with
+  | Seed { seed; scope } -> Arrange.set_float_seed wm seat seed scope
+;;
+
 let handle wm seat (cmd : Command.Layout.t) =
   match cmd with
   | Cycle dir -> Arrange.cycle_layout wm seat dir
   | Select { layout; scope } -> Arrange.set_layout wm seat layout scope
   | Scrolling c -> handle_scrolling wm seat c
   | Tiling c -> handle_tiling wm seat c
+  | Floating c -> handle_floating wm seat c
 ;;

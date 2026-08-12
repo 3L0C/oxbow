@@ -18,6 +18,10 @@ module Scrolling = struct
     }
 end
 
+module Floating = struct
+  type t = { mutable seed : Oxbow_core.Extent.t }
+end
+
 module Gaps = struct
   type t =
     { mutable inner : int

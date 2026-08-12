@@ -189,6 +189,7 @@ let remove_label o label = o.labels <- List.filter (( <> ) label) o.labels
 let set_geom o geom = o.geom <- geom
 let set_scroll_offset o offset = (to_tag_data o).scrolling.offset <- offset
 let apply_default_width td ~delta = Config.set_default_width ~delta td
+let apply_float_seed td ~seed = Config.set_float_seed ~seed td
 
 let arranges (window : Types.Window.t) =
   match window.output with

@@ -436,9 +436,11 @@ render:place_top(mpv)
 render:set_presentation_mode
 
 == window toggle floating --app-id=kitty ==
+manage:propose_dimensions(kitty, 960x540)
 manage:set_tiled(kitty)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
+render:set_position(kitty, 480, 270)
 render:place_top(mpv)
 render:set_presentation_mode
 manage:focus_window(seat0, mpv)

@@ -103,11 +103,7 @@ let manage_new_window ctx (window : Window.t) =
   Swallow.try_swallow wm window;
   Window.set_lifecycle window Active;
   match window.output with
-  | Some o ->
-    if
-      window.presentation = Floating
-      || (window.presentation = Tiled && Output.current_layout o = Floating)
-    then Window.set_float_seed_pending window true
+  | Some o -> if Window.floats window o then Window.set_float_seed_pending window true
   | _ -> ()
 ;;
 

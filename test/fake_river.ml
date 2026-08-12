@@ -36,6 +36,7 @@ type t =
       (string * River.Obj.Window_management.v Wm_server.River_seat_v1.t) list
   ; mutable outputs :
       (string * River.Obj.Window_management.v Wm_server.River_output_v1.t) list
+  ; mutable output_positions : (int32 * (int32 * int32)) list
   ; mutable owners : (int32 * string) list
   ; phase_done : Eio.Condition.t
   ; wm_ready : Eio.Condition.t
@@ -341,12 +342,16 @@ let layer_shell_handlers t =
      inherit [_] River.Obj.Layer_shell.Server.t
      method on_destroy _ = ()
 
-     method on_get_output _ o ~output:_ =
+     method on_get_output _ o ~output =
        Proxy.Handler.attach o (layer_shell_output_handlers t);
+       let x, y =
+         List.assoc_opt (Proxy.id output) t.output_positions
+         |> Option.value ~default:(0l, 0l)
+       in
        Lsh_server.River_layer_shell_output_v1.non_exclusive_area
          o
-         ~x:0l
-         ~y:0l
+         ~x
+         ~y
          ~width:output_width
          ~height:output_height
 
@@ -573,6 +578,7 @@ let start ~sw socket =
     ; windows = []
     ; seats = []
     ; outputs = []
+    ; output_positions = []
     ; owners = []
     ; phase_done = Eio.Condition.create ()
     ; wm_ready = Eio.Condition.create ()
@@ -594,13 +600,14 @@ let start ~sw socket =
   t
 ;;
 
-let add_output t ~name =
+let add_output ?(x = 0l) ?(y = 0l) t ~name =
   let wm = await_wm t in
   let global = fresh_global t in
   t.wl_outputs <- (global, name) :: t.wl_outputs;
   announce t ~name:global ~interface:Wl_proto.Wl_output.interface ~version:4l;
   let o = Wm_server.River_window_manager_v1.output wm (output_handlers t) in
-  Wm_server.River_output_v1.position o ~x:0l ~y:0l;
+  Wm_server.River_output_v1.position o ~x ~y;
+  t.output_positions <- (Proxy.id o, (x, y)) :: t.output_positions;
   Wm_server.River_output_v1.dimensions o ~width:output_width ~height:output_height;
   Wm_server.River_output_v1.wl_output o ~name:global;
   t.outputs <- (name, o) :: t.outputs;

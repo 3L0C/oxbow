@@ -35,7 +35,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; presentation_hint = None
   ; defense = Idle
   ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
-  ; float_geom = None
+  ; float_rel = None
   ; clip = None
   ; offscreen = false
   ; size_hints = { min_w = None; max_w = None; min_h = None; max_h = None }
@@ -149,6 +149,13 @@ let scroll_clipped w =
   | _ -> false
 ;;
 
+let floats w (o : Types.Output.t) =
+  match w.presentation with
+  | Floating -> true
+  | Tiled -> (tag_layout o).layout = Floating
+  | Maximized _ | Fullscreen _ -> false
+;;
+
 let is_tiled_on_tag w = tag_visible w && is_tiled w
 
 let swallowing w =
@@ -164,7 +171,52 @@ let can_swallow w =
   | (Auto | Terminal | Disabled), Some (Swallowing _ | Swallowed_by _) -> false
 ;;
 
-let remember_float w = w.float_geom <- Some w.geom
+let fit_to_output w =
+  match w.output with
+  | None -> ()
+  | Some o ->
+    let new_x =
+      if w.geom.w > o.geom.w
+      then o.geom.x
+      else (
+        let max_x = Int32.(sub o.geom.w w.geom.w |> add o.geom.x) in
+        Int32.(w.geom.x |> max o.geom.x |> min max_x))
+    in
+    let new_y =
+      if w.geom.h > o.geom.h
+      then o.geom.y
+      else (
+        let max_y = Int32.(sub o.geom.h w.geom.h |> add o.geom.y) in
+        Int32.(w.geom.y |> max o.geom.y |> min max_y))
+    in
+    if new_x <> w.geom.x || new_y <> w.geom.y then set_position w ~x:new_x ~y:new_y
+;;
+
+let remember_float w =
+  match w.output with
+  | Some o when o.overview.enabled -> ()
+  | None -> ()
+  | Some o ->
+    let rel_x = Int32.sub w.geom.x o.geom.x in
+    let rel_y = Int32.sub w.geom.y o.geom.y in
+    w.float_rel <- Some { w.geom with x = rel_x; y = rel_y }
+;;
+
+let place_centered w ~(usable : int32 Rect.t) ~(sized : int32 Rect.t) =
+  let spare_w = Int32.(sub usable.w sized.w |> max 0l) in
+  let spare_h = Int32.(sub usable.h sized.h |> max 0l) in
+  let g =
+    Rect.(
+      Int32.
+        { x = div spare_w 2l |> add usable.x
+        ; y = div spare_h 2l |> add usable.y
+        ; w = sized.w
+        ; h = sized.h
+        })
+  in
+  set_geom w g;
+  remember_float w
+;;
 
 let tile w =
   if w.presentation = Floating then remember_float w;
@@ -200,43 +252,43 @@ let clamp32 w (g : int32 Rect.t) =
 
 let set_float_seed_pending w v = w.float_seed_pending <- v
 
-let restore_or_seed_float w =
+let restore_float w =
+  set_float_seed_pending w false;
+  match w.output, w.float_rel with
+  | None, _ -> ()
+  | Some o, Some r ->
+    let abs_x = Int32.add o.geom.x r.x in
+    let abs_y = Int32.add o.geom.y r.y in
+    set_geom w { r with x = abs_x; y = abs_y };
+    fit_to_output w
+  | Some o, None ->
+    let seed = (tag_layout o).floating.seed in
+    let sized =
+      clamp32
+        w
+        { x = 0l
+        ; y = 0l
+        ; w = Extent.resolve seed ~ref:o.usable.w |> Int32.of_int
+        ; h = Extent.resolve seed ~ref:o.usable.h |> Int32.of_int
+        }
+    in
+    place_centered w ~usable:(Rect.to_int32 o.usable) ~sized
+;;
+
+let center_float w =
   set_float_seed_pending w false;
   match w.output with
   | None -> ()
   | Some o ->
-    let g =
-      match w.float_geom with
-      | Some g -> g
-      | None ->
-        let usable =
-          Rect.(
-            Int32.
-              { x = of_int o.usable.x
-              ; y = of_int o.usable.y
-              ; w = of_int o.usable.w
-              ; h = of_int o.usable.h
-              })
-        in
-        let sized = clamp32 w { w.geom with x = 0l; y = 0l } in
-        let spare_w = Int32.(sub usable.w sized.w |> max 0l) in
-        let spare_h = Int32.(sub usable.h sized.h |> max 0l) in
-        Rect.(
-          Int32.
-            { x = div spare_w 2l |> add usable.x
-            ; y = div spare_h 2l |> add usable.y
-            ; w = sized.w
-            ; h = sized.h
-            })
-    in
-    w.float_geom <- Some g;
-    set_geom w g
+    let usable = Rect.to_int32 o.usable in
+    let sized = clamp32 w { w.geom with x = 0l; y = 0l } in
+    place_centered w ~usable ~sized
 ;;
 
 let float w =
   w.presentation <- Floating;
   w.defense <- Idle;
-  restore_or_seed_float w
+  restore_float w
 ;;
 
 let is_fullscreen w =
@@ -338,28 +390,6 @@ let queue_request w request =
 ;;
 
 let clear_requests w = w.requests <- []
-
-let fit_to_output w =
-  match w.output with
-  | None -> ()
-  | Some o ->
-    let new_x =
-      if w.geom.w > o.geom.w
-      then o.geom.x
-      else (
-        let max_x = Int32.(sub o.geom.w w.geom.w |> add o.geom.x) in
-        Int32.(w.geom.x |> max o.geom.x |> min max_x))
-    in
-    let new_y =
-      if w.geom.h > o.geom.h
-      then o.geom.y
-      else (
-        let max_y = Int32.(sub o.geom.h w.geom.h |> add o.geom.y) in
-        Int32.(w.geom.y |> max o.geom.y |> min max_y))
-    in
-    if new_x <> w.geom.x || new_y <> w.geom.y then set_position w ~x:new_x ~y:new_y
-;;
-
 let at_point ~x ~y = List.find_opt (fun w -> tag_visible w && Rect.contains ~x ~y w.geom)
 let fake_fullscreen w = if not w.is_fake_fullscreen then w.is_fake_fullscreen <- true
 let exit_fake_fullscreen w = if w.is_fake_fullscreen then w.is_fake_fullscreen <- false

@@ -185,8 +185,7 @@ render:set_presentation_mode
 == layout floating ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_position(emacs, 213, 24)
-render:set_position(kitty, 496, 24)
+render:set_position(kitty, 993, 24)
 render:set_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:place_top(emacs)

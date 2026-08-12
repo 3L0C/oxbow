@@ -8,4 +8,11 @@ let command_term =
 
 let name = "floating"
 let doc = "Switch to the floating layout"
-let cmd, bind_cmd = Ctl_cli.cmd_pair ~name ~doc command_term
+
+let cmd, bind_cmd =
+  Ctl_cli.group_pair
+    ~name
+    ~doc
+    ~default:command_term
+    [ Cmd_layout_floating_seed.(cmd, bind_cmd) ]
+;;

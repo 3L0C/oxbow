@@ -21,6 +21,7 @@ module Config = struct
       { mutable layout : Oxbow_core.Layout.t
       ; tiling : Oxbow_layout.Params.Tiling.t
       ; scrolling : Oxbow_layout.Params.Scrolling.t
+      ; floating : Oxbow_layout.Params.Floating.t
       ; gaps : Oxbow_layout.Params.Gaps.t
       }
   end
@@ -283,7 +284,7 @@ and Window : sig
     ; mutable presentation_hint : Wire.Presentation_mode.t option
     ; mutable defense : Defense.t
     ; mutable geom : int32 Oxbow_core.Rect.t
-    ; mutable float_geom : int32 Oxbow_core.Rect.t option
+    ; mutable float_rel : int32 Oxbow_core.Rect.t option
     ; mutable clip : ([ `Scrolling | `Overview ] * int Oxbow_core.Rect.t) option
     ; mutable offscreen : bool
     ; mutable size_hints : int32 option Size_hints.t

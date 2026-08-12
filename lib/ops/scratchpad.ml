@@ -33,8 +33,7 @@ let toggle (wm : Wm.t) (seat : Seat.t) name =
       (fun w ->
          Window.set_stashed w false;
          Placement.move_window w o ~policy:Take;
-         Window.float w;
-         Window.restore_or_seed_float w)
+         Window.float w)
       members;
     Focus.focus_window wm seat head;
     Schedule.manage ();

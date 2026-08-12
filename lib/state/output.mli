@@ -233,6 +233,11 @@ val set_scroll_offset : t -> int -> unit
     {b Effects:} mutates WM state *)
 val apply_default_width : Types.Config.Data.t -> delta:float Oxbow_core.Delta.t -> unit
 
+(** [apply_float_seed td ~seed] sets the float seed of [td] to [seed].
+
+    {b Effects:} mutates WM state *)
+val apply_float_seed : Types.Config.Data.t -> seed:Oxbow_core.Extent.t -> unit
+
 (** [arranges window] is true when [window]'s output owns its dimensions and a
     proposal exists to defend. *)
 val arranges : Types.Window.t -> bool

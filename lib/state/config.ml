@@ -11,6 +11,7 @@ let default_scrolling () =
     { align = Visible; default_width = Width_fac.of_float 0.5; offset = 0; dir = Left }
 ;;
 
+let default_floating () = Params.Floating.{ seed = Pct 50. }
 let default_gaps () = Params.Gaps.{ inner = 10; outer = 20 }
 
 let default_borders =
@@ -29,6 +30,7 @@ let create_tag_data () =
     { layout = Tiling
     ; tiling = default_tiling ()
     ; scrolling = default_scrolling ()
+    ; floating = default_floating ()
     ; gaps = default_gaps ()
     }
 ;;
@@ -87,7 +89,7 @@ let set_border_color (wm : Types.Wm.t) (border : Border_target.t) color =
   | Captured -> wm.config.borders.captured <- color
 ;;
 
-let set_default_width (td : Data.t) ~(delta : float Delta.t) =
+let set_default_width (td : Data.t) ~delta =
   let f =
     Delta.resolve
       ~add:( +. )
@@ -97,6 +99,7 @@ let set_default_width (td : Data.t) ~(delta : float Delta.t) =
   td.scrolling.default_width <- Width_fac.of_float f
 ;;
 
+let set_float_seed (td : Data.t) ~seed = td.floating.seed <- seed
 let set_spawn_position (wm : Types.Wm.t) position = wm.config.spawn.position <- position
 let set_spawn_focus (wm : Types.Wm.t) b = wm.config.spawn.focus <- b
 
@@ -115,6 +118,7 @@ let copy_tag_data (td : Data.t) =
         ; offset = td.scrolling.offset
         ; dir = td.scrolling.dir
         }
+    ; floating = { seed = td.floating.seed }
     ; gaps = { inner = td.gaps.inner; outer = td.gaps.outer }
     }
 ;;
