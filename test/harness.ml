@@ -1,7 +1,13 @@
-let socket_path = Printf.sprintf "./oxbow-test-%d.sock" (Unix.getpid ())
-
 exception Script_done
 
+type h_env =
+  { env : Eio_unix.Stdenv.base
+  ; fake : Fake_river.t
+  ; section : string -> (unit -> unit) -> unit
+  ; oxctl : string -> unit
+  }
+
+let socket_path = Printf.sprintf "./oxbow-test-%d.sock" (Unix.getpid ())
 let display = ref None
 let barrier () = Wayland.Client.sync (Option.get !display)
 
@@ -35,8 +41,8 @@ let dump_new fake =
   seen := List.length all
 ;;
 
-(* Run.loop binds the ipc socket late in its setup. Retry with yields
-   until the bind wins the race with the script fiber. *)
+(* Run.loop binds the ipc socket late in its setup. Retry with yields until the
+   bind wins the race with the script fiber. *)
 let rec send ?seat ?(tries = 1000) env body =
   match Oxbow_ipc.Client.send ~env ?seat ~socket:socket_path body with
   | Error (Connection_failed _) when tries > 0 ->
@@ -80,6 +86,48 @@ let oxctl env args =
      | Error (Connection_failed msg | Protocol msg) -> Printf.printf "err: %s\n" msg)
 ;;
 
+let raw_oxctl h args = oxctl h.env args
+
+let with_windows name h spec body =
+  let spawned = ref [] in
+  h.section (name ^ ": setup") (fun () ->
+    let tag = ref 1 in
+    List.iter
+      (fun (app_id, target) ->
+         if target <> !tag
+         then (
+           raw_oxctl h [ "tag"; "view"; string_of_int target ];
+           tag := target);
+         spawned := Fake_river.spawn_window h.fake ~app_id:(Some app_id) :: !spawned)
+      spec;
+    if !tag <> 1 then raw_oxctl h [ "tag"; "view"; "1" ]);
+  body ();
+  h.section (name ^ ": teardown") (fun () ->
+    List.iter (Fake_river.close h.fake) !spawned;
+    raw_oxctl h [ "tag"; "view"; "1" ])
+;;
+
+let with_outputs name h spec body =
+  let spawned = ref [] in
+  h.section (name ^ ": setup") (fun () ->
+    List.iter
+      (fun (n, x, y) ->
+         spawned := Fake_river.spawn_output h.fake ~x ~y ~name:n :: !spawned)
+      spec);
+  body ();
+  h.section (name ^ ": teardown") (fun () ->
+    List.iter (Fake_river.remove_output h.fake) !spawned)
+;;
+
+let with_seats name h spec body =
+  let spawned = ref [] in
+  h.section (name ^ ": setup") (fun () ->
+    List.iter (fun n -> spawned := Fake_river.spawn_seat h.fake ~name:n :: !spawned) spec);
+  body ();
+  h.section (name ^ ": teardown") (fun () ->
+    List.iter (Fake_river.remove_seat h.fake) !spawned)
+;;
+
 let run script =
   Eio_main.run
   @@ fun env ->
@@ -113,7 +161,7 @@ let run script =
             creates the file (eio_linux listen). Wait for the file, so
             a fast script cannot cancel Run.loop inside that window. *)
          wait_for ~tries:10_000 (fun () -> Sys.file_exists socket_path);
-         script env fake ~section:section_helper ~oxctl:oxctl_helper);
+         script { env; fake; section = section_helper; oxctl = oxctl_helper });
     raise Script_done
   with
   | Script_done -> ()

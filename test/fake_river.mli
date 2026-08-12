@@ -1,3 +1,6 @@
+type window
+type output
+type seat
 type t
 
 (** [start ~sw socket] serves the river globals on [socket].
@@ -11,22 +14,52 @@ val start : sw:Eio.Switch.t -> _ Eio_unix.Net.stream_socket -> t
     {b Effects:} sends Wayland events *)
 val tick : t -> unit
 
-(** [add_output ?x ?y t ~name] announces one output at ([x], [y]),
-    default (0, 0), then ticks.
+(** [spawn_output ?x ?y t ~name] is [add_output] with the output as the result.
+
+    {b Effects:} sends Wayland events *)
+val spawn_output : ?x:int32 -> ?y:int32 -> t -> name:string -> output
+
+(** [add_output ?x ?y t ~name] announces one output at ([x], [y]), default
+    (0, 0), then ticks.
 
     {b Effects:} sends Wayland events *)
 val add_output : ?x:int32 -> ?y:int32 -> t -> name:string -> unit
+
+(** [remove_output t o] sends removed on [o], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val remove_output : t -> output -> unit
+
+(** [spawn_seat t ~name] is [add_seat] with the seat as the result.
+
+    {b Effects:} sends Wayland events *)
+val spawn_seat : t -> name:string -> seat
 
 (** [add_seat t ~name] announces one seat, then ticks.
 
     {b Effects:} sends Wayland events *)
 val add_seat : t -> name:string -> unit
 
-(** [add_window ?pid t ~app_id] announces one window, then ticks. When [pid]
-    is present, the unreliable_pid event follows the app_id event.
+(** [remove_seat t s] sends removed on [s], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val remove_seat : t -> seat -> unit
+
+(** [spawn_window ?pid t ~app_id] is [add_window] with the window as the result.
+
+    {b Effects:} sends Wayland events *)
+val spawn_window : ?pid:int -> t -> app_id:string option -> window
+
+(** [add_window ?pid t ~app_id] announces one window, then ticks. When [pid] is
+    present, the unreliable_pid event follows the app_id event.
 
     {b Effects:} sends Wayland events *)
 val add_window : ?pid:int -> t -> app_id:string option -> unit
+
+(** [close t w] sends closed on [w], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val close : t -> window -> unit
 
 (** [send_dimensions_hint t ~app_id ~min_w ~min_h ~max_w ~max_h] sends
     dimensions_hint on the first window with [app_id], then ticks.

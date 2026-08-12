@@ -1,3 +1,10 @@
+type h_env =
+  { env : Eio_unix.Stdenv.base
+  ; fake : Fake_river.t
+  ; section : string -> (unit -> unit) -> unit
+  ; oxctl : string -> unit
+  }
+
 (** [socket_path] is the IPC socket path that [run] serves. *)
 val socket_path : string
 
@@ -29,14 +36,33 @@ val ipc : Eio_unix.Stdenv.base -> Oxbow_ipc.Request.Body.t -> Yojson.Safe.t opti
     {b Effects:} I/O *)
 val oxctl : Eio_unix.Stdenv.base -> string list -> unit
 
+(** [with_windows name h spec body] spawns one window per [(app_id, tag)] pair
+    in [spec], runs [body], then closes the spawned windows. Setup views each
+    target tag before the spawn, then views tag 1.  Teardown views tag 1. Setup
+    and teardown print as sections "[name]: setup" and "[name]: teardown".
+
+    {b Effects:} I/O *)
+val with_windows : string -> h_env -> (string * int) list -> (unit -> unit) -> unit
+
+(** [with_outputs name h spec body] adds one output per [(name, x, y)] triple
+    in [spec], runs [body], then removes the added outputs.
+
+    {b Effects:} I/O *)
+val with_outputs
+  :  string
+  -> h_env
+  -> (string * int32 * int32) list
+  -> (unit -> unit)
+  -> unit
+
+(** [with_seats name h spec body] adds one seat per name in [spec], runs [body],
+    then removes the added seats.
+
+    {b Effects:} I/O *)
+val with_seats : string -> h_env -> string list -> (unit -> unit) -> unit
+
 (** [run script] starts the runtime loop against a fake river over a socketpair,
     then runs [script]. It returns when [script] returns.
 
     {b Effects:} I/O *)
-val run
-  :  (Eio_unix.Stdenv.base
-      -> Fake_river.t
-      -> section:(string -> (unit -> unit) -> unit)
-      -> oxctl:(string -> unit)
-      -> unit)
-  -> unit
+val run : (h_env -> unit) -> unit

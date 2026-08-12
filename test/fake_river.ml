@@ -11,6 +11,10 @@ module Input_proto = River.Proto.Input
 module Cfg_server = River.Server.Xkb.Config
 module Cfg_proto = River.Proto.Xkb.Config
 
+type window = River.Obj.Window_management.v Wm_server.River_window_v1.t
+type output = River.Obj.Window_management.v Wm_server.River_output_v1.t
+type seat = River.Obj.Window_management.v Wm_server.River_seat_v1.t
+
 let output_width = 1920l
 let output_height = 1080l
 
@@ -633,7 +637,7 @@ let start ~sw socket =
   t
 ;;
 
-let add_output ?(x = 0l) ?(y = 0l) t ~name =
+let spawn_output ?(x = 0l) ?(y = 0l) t ~name =
   let wm = await_wm t in
   let global = fresh_global t in
   t.wl_outputs <- (global, name) :: t.wl_outputs;
@@ -645,10 +649,20 @@ let add_output ?(x = 0l) ?(y = 0l) t ~name =
   Wm_server.River_output_v1.dimensions o ~width:output_width ~height:output_height;
   Wm_server.River_output_v1.wl_output o ~name:global;
   t.outputs <- (name, o) :: t.outputs;
+  tick t;
+  o
+;;
+
+let add_output ?x ?y t ~name = spawn_output ?x ?y t ~name |> ignore
+
+let remove_output t o =
+  t.outputs <- List.filter (fun (_, o') -> Proxy.id o' <> Proxy.id o) t.outputs;
+  t.output_positions <- List.remove_assoc (Proxy.id o) t.output_positions;
+  Wm_server.River_output_v1.removed o;
   tick t
 ;;
 
-let add_seat t ~name =
+let spawn_seat t ~name =
   let wm = await_wm t in
   let global = fresh_global t in
   t.wl_seats <- (global, name) :: t.wl_seats;
@@ -657,10 +671,19 @@ let add_seat t ~name =
   adopt t s ~owner:name;
   Wm_server.River_seat_v1.wl_seat s ~name:global;
   t.seats <- (name, s) :: t.seats;
+  tick t;
+  s
+;;
+
+let add_seat t ~name = spawn_seat t ~name |> ignore
+
+let remove_seat t s =
+  t.seats <- List.filter (fun (_, s') -> Proxy.id s' <> Proxy.id s) t.seats;
+  Wm_server.River_seat_v1.removed s;
   tick t
 ;;
 
-let add_window ?pid t ~app_id =
+let spawn_window ?pid t ~app_id =
   let wm = await_wm t in
   let w = Wm_server.River_window_manager_v1.window wm (window_handlers t) in
   let base = Option.value ~default:"?" app_id in
@@ -678,6 +701,15 @@ let add_window ?pid t ~app_id =
     pid;
   Wm_server.River_window_v1.title w ~title:app_id;
   Wm_server.River_window_v1.dimensions w ~width:640l ~height:480l;
+  tick t;
+  w
+;;
+
+let add_window ?pid t ~app_id = spawn_window ?pid t ~app_id |> ignore
+
+let close t w =
+  t.windows <- List.filter (fun (_, w') -> Proxy.id w' <> Proxy.id w) t.windows;
+  Wm_server.River_window_v1.closed w;
   tick t
 ;;
 
@@ -719,12 +751,7 @@ let send_output_capture_sessions t ~name ~count =
   tick t
 ;;
 
-let close_window t ~app_id =
-  let w = window_named t ~app_id in
-  t.windows <- List.remove_assoc app_id t.windows;
-  Wm_server.River_window_v1.closed w;
-  tick t
-;;
+let close_window t ~app_id = window_named t ~app_id |> close t
 
 let send_pointer_enter t ~seat ~app_id =
   Wm_server.River_seat_v1.pointer_enter

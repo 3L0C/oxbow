@@ -12,7 +12,7 @@ let wait_stable lines =
 
 let () =
   Harness.run
-  @@ fun env fake ~section ~oxctl ->
+  @@ fun { Harness.env; fake; section; oxctl } ->
   section "arrive" (fun () ->
     Fake_river.add_output fake ~name:"FAKE-1";
     Fake_river.add_seat fake ~name:"seat0";

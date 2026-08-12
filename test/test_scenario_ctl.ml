@@ -1,6 +1,6 @@
 let () =
   Harness.run
-  @@ fun _env fake ~section ~oxctl ->
+  @@ fun { Harness.fake; section; oxctl; _ } ->
   section "arrive" (fun () ->
     Fake_river.add_output fake ~name:"FAKE-1";
     Fake_river.add_seat fake ~name:"seat0";

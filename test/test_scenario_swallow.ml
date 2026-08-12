@@ -3,7 +3,7 @@ let () =
   let table = [ 100, 42; 42, 7; 7, 1 ] in
   (Oxbow_ops.Swallow.parent_pid := fun pid -> List.assoc_opt pid table);
   Harness.run
-  @@ fun _env fake ~section ~oxctl ->
+  @@ fun { Harness.fake; section; oxctl; _ } ->
   section "arrive" (fun () ->
     Fake_river.add_output fake ~name:"FAKE-1";
     Fake_river.add_seat fake ~name:"seat0");
