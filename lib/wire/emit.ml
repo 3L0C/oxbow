@@ -1,3 +1,7 @@
+let src = Logs.Src.create "oxbow.wire" ~doc:"oxbow wire library"
+
+module Log = (val Logs.src_log src)
+
 let manage_dirty river_wm_v1 =
   River.Window_management.River_window_manager_v1.manage_dirty river_wm_v1
 ;;
@@ -106,9 +110,9 @@ let libinput_result ~device ~setting =
       method on_success = ()
 
       method on_unsupported =
-        Logs.warn @@ fun m -> m "%s: libinput %s unsupported" device setting
+        Log.warn @@ fun m -> m "%s: libinput %s unsupported" device setting
 
-      method on_invalid = Logs.err @@ fun m -> m "%s: libinput %s invalid" device setting
+      method on_invalid = Log.err @@ fun m -> m "%s: libinput %s invalid" device setting
     end
 ;;
 

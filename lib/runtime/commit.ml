@@ -77,7 +77,7 @@ let bindings ctx (s : Seat.t) =
   let active = if (Ctx.wm ctx).session_locked then Mode.locked else s.mode in
   List.iter
     (fun (b : Seat.Xkb_binding.t) ->
-       let desired = String.equal b.mode active in
+       let desired = Mode.equal b.mode active in
        match desired, b.enabled with
        | true, true | false, false -> ()
        | true, false ->
@@ -89,7 +89,7 @@ let bindings ctx (s : Seat.t) =
     s.xkb_bindings;
   List.iter
     (fun (p : Seat.Pointer_binding.t) ->
-       let desired = String.equal p.mode active in
+       let desired = Mode.equal p.mode active in
        match desired, p.enabled with
        | true, true | false, false -> ()
        | true, false ->
@@ -216,8 +216,7 @@ let borders ctx (seat : Seat.t) =
            | Maximized _ | Fullscreen _ -> 0l
            | Tiled | Floating -> width
          in
-         let r, g, b, a = color w o |> Color.channels in
-         Send.set_borders ctx w ~edges ~width:w_width ~r ~g ~b ~a)
+         Send.set_borders ctx w ~edges ~width:w_width ~color:(color w o))
     wm.windows
 ;;
 

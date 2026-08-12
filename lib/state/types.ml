@@ -43,7 +43,7 @@ module Config = struct
     { default_tag_config : Data.t
     ; borders : Border.t
     ; mutable cursor_theme : (string * int32) option
-    ; mutable modes : string list
+    ; mutable modes : Oxbow_core.Mode.t list
     ; mutable modkey : Wire.Modifiers.t
     ; rules : Rules.t
     ; spawn : Spawn.t
@@ -115,7 +115,7 @@ and Output : sig
     ; mutable usable : int Oxbow_core.Rect.t
     ; tags : Tags.t
     ; overview : Overview.t
-    ; tag_data : Config.Data.t array
+    ; tag_data : Config.Data.t Oxbow_core.Tag.Table.t
     ; (* Focus stack; most recently focused first *)
       mutable focus_stack : Window.t list
     ; (* All windows on this output. Ordered in tiling order when filtered by
@@ -231,15 +231,25 @@ and Window : sig
   end
 
   module Swallow : sig
+    module Relation : sig
+      type t =
+        | Swallowing of Window.t
+        | Swallowed_by of Window.t
+    end
+
     type t =
-      | Auto
-      | Terminal
-      | Disabled
-      | Swallowing of Window.t
-      | Swallowed_by of Window.t
+      { mutable role : Oxbow_core.Swallow_role.t
+      ; mutable relation : Relation.t option
+      }
   end
 
   module Committed : sig
+    type borders =
+      { edges : int32
+      ; width : int32
+      ; color : Oxbow_core.Color.t
+      }
+
     type t =
       { mutable proposed : (int32 * int32) option
       ; mutable fullscreen_on : int32 option
@@ -249,7 +259,7 @@ and Window : sig
       ; mutable informed_maximized : bool option
       ; mutable informed_fullscreen : bool option
       ; mutable informed_resizing : bool option
-      ; mutable borders : (int32 * int32 * int32 * int32 * int32 * int32) option
+      ; mutable borders : borders option
       ; mutable shown : bool option
       ; mutable position : (int32 * int32) option
       ; mutable clip_box : (int32 * int32 * int32 * int32) option
@@ -276,12 +286,12 @@ and Window : sig
     ; mutable float_geom : int32 Oxbow_core.Rect.t option
     ; mutable clip : ([ `Scrolling | `Overview ] * int Oxbow_core.Rect.t) option
     ; mutable offscreen : bool
-    ; mutable size_hints : int32 Size_hints.t
+    ; mutable size_hints : int32 option Size_hints.t
     ; mutable tags : Oxbow_core.Tag.Set.t
     ; mutable output : Output.t option
     ; mutable output_before_evac : string option
     ; mutable sticky : Oxbow_core.Sticky.t
-    ; mutable swallow : Swallow.t
+    ; swallow : Swallow.t
     ; mutable labels : string list
     ; mutable is_fixed : bool
     ; mutable is_urgent : bool
@@ -352,7 +362,7 @@ and Seat : sig
     type t =
       { obj : Wire.Obj.Xkb.Bindings.Binding.t
       ; seat : Seat.t
-      ; mode : string
+      ; mode : Oxbow_core.Mode.t
       ; mutable enabled : bool
       ; command : Oxbow_ipc.Command.t
       ; mods : int32
@@ -364,7 +374,7 @@ and Seat : sig
     type t =
       { obj : Wire.Obj.Window_management.Pointer_binding.t
       ; seat : Seat.t
-      ; mode : string
+      ; mode : Oxbow_core.Mode.t
       ; mutable enabled : bool
       ; command : Oxbow_ipc.Command.t
       ; mods : int32
@@ -394,7 +404,7 @@ and Seat : sig
     ; mutable focus_cleared : bool
     ; mutable position : Position.t
     ; mutable layer_focus : Layer_focus.t option
-    ; mutable mode : string
+    ; mutable mode : Oxbow_core.Mode.t
     ; mutable xkb_bindings : Xkb_binding.t list
     ; mutable pointer_bindings : Pointer_binding.t list
     ; mutable pending_requests : Pending_request.t Queue.t
@@ -460,3 +470,10 @@ and Wm : sig
     }
 end =
   Wm
+
+module User_data = struct
+  type ('a, 'role) Wire.S.user_data +=
+    | Window of Window.t
+    | Output of Output.t
+    | Seat of Seat.t
+end

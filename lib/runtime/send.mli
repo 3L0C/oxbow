@@ -148,8 +148,7 @@ val set_content_clip_box
   -> height:int32
   -> unit
 
-(** [set_borders ctx window ~edges ~width ~r ~g ~b ~a] draws borders on
-    [window].
+(** [set_borders ctx window ~edges ~width ~color] draws borders on [window].
 
     {b Effects:} sends River request *)
 val set_borders
@@ -157,10 +156,7 @@ val set_borders
   -> Oxbow_state.Window.t
   -> edges:int32
   -> width:int32
-  -> r:int32
-  -> g:int32
-  -> b:int32
-  -> a:int32
+  -> color:Oxbow_core.Color.t
   -> unit
 
 (** [place_top ctx window] raises the node of [window].

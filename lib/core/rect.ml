@@ -1,9 +1,15 @@
-type 'a t =
+type screen
+type canon
+
+type ('a, 'space) tagged =
   { x : 'a
   ; y : 'a
   ; w : 'a
   ; h : 'a
   }
+
+type 'a t = ('a, screen) tagged
+type 'a canonical = ('a, canon) tagged
 
 let to_int r = Int32.{ x = to_int r.x; y = to_int r.y; w = to_int r.w; h = to_int r.h }
 let to_int32 r = Int32.{ x = of_int r.x; y = of_int r.y; w = of_int r.w; h = of_int r.h }

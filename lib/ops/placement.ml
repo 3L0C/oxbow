@@ -1,16 +1,17 @@
 open! Oxbow_core
 open! Oxbow_state
 open! Oxbow_ipc
+open! Result.Syntax
 
 let zoom ?warp wm seat target =
-  Result.bind (Targets.resolve_one_window wm seat target) (fun w ->
-    With.output w
-    @@ fun o ->
-    match Output.current_layout o with
-    | _ when o.overview.enabled -> Error "cannot zoom from overview"
-    | Floating -> Error "cannot zoom in the floating layout"
-    | Scrolling -> Column.zoom ?warp wm seat w
-    | Tiling -> Tiling.zoom ?warp wm seat w)
+  let* w = Targets.resolve_one_window wm seat target in
+  With.output w
+  @@ fun o ->
+  match Output.current_layout o with
+  | _ when o.overview.enabled -> Error "cannot zoom from overview"
+  | Floating -> Error "cannot zoom in the floating layout"
+  | Scrolling -> Column.zoom ?warp wm seat w
+  | Tiling -> Tiling.zoom ?warp wm seat w
 ;;
 
 let move_window ?(policy = Tag.Policy.Keep) window (target : Output.t) =
@@ -55,6 +56,12 @@ let send_result ~src window policy ~err = function
   | _ -> Error err
 ;;
 
+let run_plan plan =
+  let+ commit = plan in
+  commit ();
+  None
+;;
+
 let plan_send_window_to_logical (wm : Wm.t) window dir policy =
   With.output window
   @@ fun current ->
@@ -63,10 +70,7 @@ let plan_send_window_to_logical (wm : Wm.t) window dir policy =
 ;;
 
 let send_window_to_logical wm window dir policy =
-  Result.map (fun commit ->
-    commit ();
-    None)
-  @@ plan_send_window_to_logical wm window dir policy
+  plan_send_window_to_logical wm window dir policy |> run_plan
 ;;
 
 let plan_send_window_to_spatial (wm : Wm.t) window dir policy =
@@ -82,10 +86,7 @@ let plan_send_window_to_spatial (wm : Wm.t) window dir policy =
 ;;
 
 let send_window_to_spatial wm window dir policy =
-  Result.map (fun commit ->
-    commit ();
-    None)
-  @@ plan_send_window_to_spatial wm window dir policy
+  plan_send_window_to_spatial wm window dir policy |> run_plan
 ;;
 
 let plan_send_window_to_name (wm : Wm.t) window name policy =
@@ -103,18 +104,16 @@ let plan_send_window_to_name (wm : Wm.t) window name policy =
 ;;
 
 let send_window_to_name wm window name policy =
-  Result.map (fun commit ->
-    commit ();
-    None)
-  @@ plan_send_window_to_name wm window name policy
+  plan_send_window_to_name wm window name policy |> run_plan
 ;;
 
 let follow_focus wm seat ~follow ~send =
-  Result.bind (send ()) (function
-    | w :: _ when follow ->
-      Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
-      Ok None
-    | _ -> Ok None)
+  let+ l = send () in
+  match l with
+  | w :: _ when follow ->
+    Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w;
+    None
+  | _ -> None
 ;;
 
 let send_to_logical wm seat target dir policy ~follow =
@@ -136,30 +135,32 @@ let send_to_name wm seat target name policy ~follow =
 ;;
 
 let toggle_floating wm seat target =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
-    match w.output with
-    | None -> Error Messages.window_missing_output
-    | Some o ->
-      if Output.current_layout o = Floating
-      then Error "cannot toggle floating from the floating layout"
-      else if o.overview.enabled
-      then Error "cannot toggle floating from overview"
-      else (
-        match w.presentation with
-        | Fullscreen _ -> Error "cannot toggle float while window is fullscreen"
-        | Maximized _ -> Error "cannot toggle float while window is maximized"
-        | Floating when w.is_fixed -> Error "cannot tile a fixed window"
-        | Tiled ->
-          Ok
-            (fun () ->
-              Window.float w;
-              Schedule.manage ())
-        | Floating ->
-          Ok
-            (fun () ->
-              Window.tile w;
-              Schedule.manage ())))
+  let+ _ =
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      match w.output with
+      | None -> Error Messages.window_missing_output
+      | Some o ->
+        if Output.current_layout o = Floating
+        then Error "cannot toggle floating from the floating layout"
+        else if o.overview.enabled
+        then Error "cannot toggle floating from overview"
+        else (
+          match w.presentation with
+          | Fullscreen _ -> Error "cannot toggle float while window is fullscreen"
+          | Maximized _ -> Error "cannot toggle float while window is maximized"
+          | Floating when w.is_fixed -> Error "cannot tile a fixed window"
+          | Tiled ->
+            Ok
+              (fun () ->
+                Window.float w;
+                Schedule.manage ())
+          | Floating ->
+            Ok
+              (fun () ->
+                Window.tile w;
+                Schedule.manage ())))
+  in
+  None
 ;;
 
 let maximize (wm : Wm.t) window =
@@ -208,9 +209,11 @@ let exit_fullscreen (window : Window.t) =
 ;;
 
 let close wm seat target =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
-    Ok (fun () -> Window.set_close_pending w true))
+  let+ _ =
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      Ok (fun () -> Window.set_close_pending w true))
+  in
+  None
 ;;
 
 let unless_fullscreen ~verb w f =
@@ -227,23 +230,22 @@ let plan_move_window_to ~x ~y w =
   unless_fullscreen ~verb:"move" w @@ fun () -> Window.move_to w ~x ~y
 ;;
 
-let move_window_to ~x ~y w =
-  Result.map (fun commit ->
-    commit ();
-    None)
-  @@ plan_move_window_to ~x ~y w
-;;
+let move_window_to ~x ~y w = plan_move_window_to ~x ~y w |> run_plan
 
 let move_to ~x ~y wm seat target =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
-    plan_move_window_to ~x ~y w)
+  let+ _ =
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      plan_move_window_to ~x ~y w)
+  in
+  None
 ;;
 
 let move_spatial wm seat target dir by =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
-    unless_fullscreen ~verb:"move" w @@ fun () -> Window.move_spatial w dir by)
+  let+ _ =
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      unless_fullscreen ~verb:"move" w @@ fun () -> Window.move_spatial w dir by)
+  in
+  None
 ;;
 
 let plan_resize_window_to ~width ~height window =
@@ -252,22 +254,23 @@ let plan_resize_window_to ~width ~height window =
 ;;
 
 let resize_window_to ~width ~height window =
-  Result.map (fun commit ->
-    commit ();
-    None)
-  @@ plan_resize_window_to ~width ~height window
+  plan_resize_window_to ~width ~height window |> run_plan
 ;;
 
 let resize_to ~width ~height wm seat target =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
-    plan_resize_window_to ~width ~height w)
+  let+ _ =
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      plan_resize_window_to ~width ~height w)
+  in
+  None
 ;;
 
 let resize_spatial wm seat target dir by =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
-    unless_fullscreen ~verb:"resize" w @@ fun () -> Window.resize_spatial w dir by)
+  let+ _ =
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      unless_fullscreen ~verb:"resize" w @@ fun () -> Window.resize_spatial w dir by)
+  in
+  None
 ;;
 
 let swap_outputs
@@ -285,7 +288,7 @@ let swap_outputs
     | None -> Error (Printf.sprintf "no output name matching %S" name)
     | Some o -> f o
   in
-  let pair =
+  let* a, b =
     match target with
     | Pair { first; second } ->
       (match first, second with
@@ -313,10 +316,9 @@ let swap_outputs
         in
         Ok (current, dest))
   in
-  match pair with
-  | Error _ as e -> e
-  | Ok (a, b) when a == b -> Error "cannot swap an output with itself"
-  | Ok (a, b) ->
+  if a == b
+  then Error "cannot swap an output with itself"
+  else (
     let in_scope =
       match scope with
       | `Tags ->
@@ -342,22 +344,26 @@ let swap_outputs
       | Some w ->
         Focus.focus_window ~force:true ~warp:Seat.Warp_request.Follow_config wm seat w
       | None -> Focus.focus_output wm seat b);
-    Ok None
+    Ok None)
 ;;
 
 let set_sticky wm seat target scope =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
-    Ok (fun () -> Window.set_sticky w scope))
+  let+ _ =
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      Ok (fun () -> Window.set_sticky w scope))
+  in
+  None
 ;;
 
 let toggle_sticky wm seat target toggle =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
-    let scope =
-      match w.sticky with
-      | Off -> Sticky.of_toggle toggle
-      | Occupied | All -> Off
-    in
-    Ok (fun () -> Window.set_sticky w scope))
+  let+ _ =
+    Targets.transact_all_windows wm seat target ~plan:(fun w ->
+      let scope =
+        match w.sticky with
+        | Off -> Sticky.of_toggle toggle
+        | Occupied | All -> Off
+      in
+      Ok (fun () -> Window.set_sticky w scope))
+  in
+  None
 ;;

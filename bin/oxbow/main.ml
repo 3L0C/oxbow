@@ -10,16 +10,29 @@ let version =
   | None -> "dev"
 ;;
 
-let setup ~log_level =
+let apply_log_levels = function
+  | [] -> Logs.set_level (Some Logs.Info)
+  | levels ->
+    List.iter
+      (function
+        | None, l -> Logs.set_level (Some l)
+        | Some name, l ->
+          (match List.find_opt (fun s -> Logs.Src.name s = name) (Logs.Src.list ()) with
+           | Some src -> Logs.Src.set_level src (Some l)
+           | None -> Logs.warn @@ fun m -> m "unknown log source: %S" name))
+      levels
+;;
+
+let setup ~log_levels =
   Fmt_tty.setup_std_outputs ();
   Logs.set_reporter @@ Logs_fmt.reporter ();
-  Logs.(set_level (Some log_level));
+  apply_log_levels log_levels;
   Sys.set_signal Sys.sigchld Sys.Signal_ignore;
   Printexc.record_backtrace true
 ;;
 
-let run ~init_command ~log_level ?socket_path () =
-  setup ~log_level;
+let run ~init_command ~log_levels ?socket_path () =
+  setup ~log_levels;
   try
     Eio_main.run
     @@ fun env -> Run.loop ?socket_path ~init_command ~net:env#net ~clock:env#clock ()
@@ -89,10 +102,10 @@ let cmd =
             "Override the default search paths for an init executable: instead \
              $(i,SHELL_COMMAND) will be run with /bin/sh -c. See the $(b,CONFIGURATION) \
              section for more details.")
-  and+ log_level = Cli.log_level_arg
+  and+ log_levels = Cli.log_level_arg
   and+ socket_path = Cli.socket_arg in
   let init_command = Init_script.resolve ?override_path () in
-  run ~init_command ~log_level ?socket_path ()
+  run ~init_command ~log_levels ?socket_path ()
 ;;
 
 let main () = Cmdliner.Cmd.eval' cmd

@@ -17,13 +17,7 @@ let clear wm seat target =
 
 let toggle (wm : Wm.t) (seat : Seat.t) name =
   let members =
-    List.fold_left
-      (fun acc (w : Window.t) ->
-         match w.scratchpad.name with
-         | Some name' when name' = name -> w :: acc
-         | _ -> acc)
-      []
-      wm.windows
+    List.filter (fun (w : Window.t) -> w.scratchpad.name = Some name) wm.windows
   in
   let shown = List.exists Window.tag_visible members in
   With.focused_output seat

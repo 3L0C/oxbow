@@ -41,7 +41,7 @@ let neighbor ~rev o =
       | w :: xs when w == f -> tiled ~rev xs
       | _ :: xs -> after xs
       | [] ->
-        (Logs.err @@ fun m -> m "focused window isn't in output window list");
+        (Log.err @@ fun m -> m "focused window isn't in output window list");
         None
     in
     stack ~rev o |> after
@@ -49,13 +49,7 @@ let neighbor ~rev o =
 
 let next_window o = neighbor ~rev:false o
 let prev_window o = neighbor ~rev:true o
-
-let tag_data o tag =
-  match Tag.Set.first_index tag with
-  | Some i -> o.tag_data.(i - 1)
-  | None -> invalid_arg "no tag data for the empty set"
-;;
-
+let tag_data o tag = Tag.Table.find o.tag_data tag
 let to_tag_data o = tag_data o o.tags.selected
 let windows_on_tags o ~tags = List.filter (Window.on_tags ~tags) o.wm_stack
 let visible_windows o = List.filter Window.tag_visible o.wm_stack

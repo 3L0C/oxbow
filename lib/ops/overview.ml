@@ -16,12 +16,7 @@ let arrange (wm : Wm.t) (output : Output.t) =
     let cols = min 3 n in
     let row_h = usable.h / 2 in
     let widths = Strip.split ~total:usable.w ~count:cols |> Array.of_list in
-    let xs =
-      Array.fold_left (fun (acc, x) w -> x :: acc, x + w) ([], usable.x) widths
-      |> fst
-      |> List.rev
-      |> Array.of_list
-    in
+    let _, xs = Array.fold_left_map (fun x w -> x + w, x) usable.x widths in
     let max_offset = (n - 1) / cols * row_h in
     let offset =
       match Output.focused_window output with

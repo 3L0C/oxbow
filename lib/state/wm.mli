@@ -90,18 +90,6 @@ val add_input_device : t -> Types.Input_device.t -> unit
     {b Effects:} mutates WM state *)
 val remove_input_device : t -> Types.Input_device.t -> unit
 
-(** [find_window_opt wm id] is the window of [wm] whose river object is [id].
-    Is [None] when no window matches. *)
-val find_window_opt : t -> int32 -> Types.Window.t option
-
-(** [find_seat_opt wm id] is the seat of [wm] whose river object is [id]. Is
-    [None] when no seat matches. *)
-val find_seat_opt : t -> int32 -> Types.Seat.t option
-
-(** [find_output_opt wm id] is the output of [wm] whose river object is [id].
-    Is [None] when no output matches. *)
-val find_output_opt : t -> int32 -> Types.Output.t option
-
 (** [find_input_device_opt wm id] is the input device matching [id]. Is [None]
     when no input device matches. *)
 val find_input_device_opt : t -> int32 -> Types.Input_device.t option

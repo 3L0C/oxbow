@@ -258,3 +258,15 @@ module Policy = struct
     | Take [@name "take"]
   [@@deriving yojson]
 end
+
+module Table = struct
+  type 'a t = 'a array
+
+  let make fresh = Array.init Set.max_tag (fun _ -> fresh ())
+
+  let find table tags =
+    match Set.first_index tags with
+    | Some i -> table.(i - 1)
+    | None -> invalid_arg "Tag.Table.find: empty tag set"
+  ;;
+end

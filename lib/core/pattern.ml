@@ -1,3 +1,7 @@
+let src = Logs.Src.create "oxbow.core" ~doc:"oxbow core library"
+
+module Log = (val Logs.src_log src)
+
 module Case = struct
   type t =
     | Sensitive [@name "sensitive"]
@@ -33,7 +37,7 @@ let matches ~case ~pattern str =
   | Some s ->
     (match re_compile ~case s with
      | Error msg ->
-       Logs.err (fun m -> m "%s" msg);
+       Log.err (fun m -> m "%s" msg);
        false
      | Ok re -> Re.execp re str)
 ;;

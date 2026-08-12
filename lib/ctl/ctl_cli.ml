@@ -868,7 +868,7 @@ let dispatch_command ?render ?seat ?socket body =
   @@ fun env ->
   match Client.send ~env ?seat ?socket body with
   | Ok (Some (`String s)) ->
-    (Logs.app @@ fun m -> m "%s" s);
+    print_endline s;
     Cmd.Exit.ok
   | Ok (Some data) ->
     let text =
@@ -876,7 +876,7 @@ let dispatch_command ?render ?seat ?socket body =
       | None -> Yojson.Safe.to_string data
       | Some render -> render data
     in
-    (Logs.app @@ fun m -> m "%s" text);
+    print_endline text;
     Cmd.Exit.ok
   | Ok None -> Cmd.Exit.ok
   | Error (Connection_failed msg) ->

@@ -2,13 +2,16 @@ let socket_path = Printf.sprintf "./oxbow-test-%d.sock" (Unix.getpid ())
 
 exception Script_done
 
+let display = ref None
+let barrier () = Wayland.Client.sync (Option.get !display)
+
 let rec wait_for ?(tries = 100) p =
   if p ()
   then ()
   else if tries = 0
   then failwith "condition not reached"
   else (
-    Eio.Fiber.yield ();
+    barrier ();
     wait_for ~tries:(tries - 1) p)
 ;;
 
@@ -17,18 +20,11 @@ let dump_trace fake = List.iter print_endline (Fake_river.trace fake)
 let seen = ref 0
 
 let settle fake =
-  let rec go stable =
-    if stable >= 10
-    then ()
-    else if Fake_river.idle fake
-    then (
-      Eio.Fiber.yield ();
-      go (stable + 1))
-    else (
-      Eio.Fiber.yield ();
-      go 0)
-  in
-  go 0
+  barrier ();
+  while not @@ Fake_river.idle fake do
+    barrier ()
+  done;
+  barrier ()
 ;;
 
 let dump_new fake =
@@ -108,6 +104,7 @@ let run script =
               ~socket_path
               ~init_command:None
               ~transport:(Wayland.Unix_transport.of_socket client_sock)
+              ~on_display:(fun d -> display := Some d)
               ~net:(Eio.Stdenv.net env)
               ~clock:(Eio.Stdenv.clock env)
               ())

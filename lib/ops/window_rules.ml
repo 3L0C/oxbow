@@ -24,20 +24,13 @@ let apply_effects
   (e.move_to |>? fun { x; y } -> queue (Move_to { x; y }));
   (e.sticky |>? fun s -> queue (Set_sticky s));
   (e.scratchpad |>? fun name -> Window.set_scratchpad window (Some name));
-  (e.swallow
-   |>? fun r ->
-   Window.set_swallow_role
-     window
-     (match r with
-      | Auto -> Auto
-      | Terminal -> Terminal
-      | Disabled -> Disabled));
+  e.swallow |>? Window.set_swallow_role window;
   e.label_as |>? fun l -> Window.add_label window l
 ;;
 
 let apply (window : Window.t) ({ pattern; effects } : Window_rule.t) =
   match Window_pattern.compile pattern with
-  | Error e -> Logs.debug @@ fun m -> m "%s" e
+  | Error e -> Log.debug @@ fun m -> m "%s" e
   | Ok matches ->
     if
       matches

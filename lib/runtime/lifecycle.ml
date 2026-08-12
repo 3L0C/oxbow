@@ -6,7 +6,7 @@ let request_exit ?(origin = `Local) (wm : Wm.t) =
     Wm.set_lifecycle wm @@ Pending_exit origin;
     Schedule.manage ()
   | Pending_exit _ | Exited | Close_requested ->
-    Logs.warn
+    Log.warn
     @@ fun m ->
     m
       "ignoring exit request for non-running state: %s"
@@ -24,7 +24,7 @@ let stop ~on_ignored (wm : Wm.t) =
 
 let request_close (wm : Wm.t) =
   stop wm ~on_ignored:(fun () ->
-    Logs.warn
+    Log.warn
     @@ fun m ->
     m
       "ignoring close request for non-running state: %s"
@@ -39,7 +39,7 @@ let dispatch_pending (wm : Wm.t) =
     Emit.exit_session wm.river_wm_v1;
     Eio.Condition.broadcast wm.shutdown
   | Running | Exited | Close_requested ->
-    Logs.err
+    Log.err
     @@ fun m ->
     m
       "got dispatch_pending request for unhandled state: %s"
@@ -48,7 +48,7 @@ let dispatch_pending (wm : Wm.t) =
 
 let notify_finished (wm : Wm.t) =
   stop wm ~on_ignored:(fun () ->
-    Logs.err
+    Log.err
     @@ fun m ->
     m "got notify_finished for unhandled state: %s" (Wm.Lifecycle.to_string wm.lifecycle))
 ;;
@@ -76,11 +76,10 @@ let teardown ~clock (wm : Wm.t) =
          wait ())
      with
      | Eio.Time.Timeout ->
-       Logs.warn
-       @@ fun m -> m "teardown: river did not close after exit_session within 1s")
+       Log.warn @@ fun m -> m "teardown: river did not close after exit_session within 1s")
   | Close_requested -> ()
   | Running | Pending_exit _ ->
-    Logs.err
+    Log.err
     @@ fun m ->
     m "teardown triggered in unexpected state: %s" (Wm.Lifecycle.to_string wm.lifecycle)
 ;;

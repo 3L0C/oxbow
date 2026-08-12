@@ -1,6 +1,6 @@
 (** [log_level_arg] is the [--log-level] option: one of error, warning, info, or
     debug. Default is info. *)
-val log_level_arg : Logs.level Cmdliner.Term.t
+val log_level_arg : (string option * Logs.level) list Cmdliner.Term.t
 
 (** [socket] is the [--socket PATH] common option: [PATH] overrides the resolved
     oxbow socket path. *)

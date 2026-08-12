@@ -86,13 +86,15 @@ module Handler = struct
            try ignore @@ Eio.Buf_read.line buf with
            | End_of_file -> ())
         (fun () ->
+           Eio.Buf_write.with_flow flow
+           @@ fun w ->
            while true do
              while sub.pending = [] do
                Eio.Condition.await_no_mutex sub.wake
              done;
              let batch = sub.pending in
              sub.pending <- [];
-             List.iter (fun (_, line) -> Eio.Flow.copy_string (line ^ "\n") flow) batch
+             List.iter (fun (_, line) -> Eio.Buf_write.string w (line ^ "\n")) batch
            done)
     with
     | Eio.Io _ -> ()
@@ -138,7 +140,7 @@ let accept_loop ~sw ~wm socket =
              ~sw
              socket
              ~on_error:(fun exn ->
-               Logs.warn @@ fun m -> m "ipc handler crashed: %s" (Printexc.to_string exn))
+               Log.warn @@ fun m -> m "ipc handler crashed: %s" (Printexc.to_string exn))
              (fun flow _addr ->
                 Eio.Fiber.first
                   (fun () -> Lifecycle.await_shutdown wm)
@@ -157,5 +159,5 @@ let start ?socket_path ~sw ~net ~wm () =
   Unix.putenv "OXBOW_SOCKET" path;
   let socket = Eio.Net.listen ~sw ~backlog:128 ~reuse_addr:true net (`Unix path) in
   Eio.Fiber.fork ~sw (fun () -> accept_loop ~sw ~wm socket);
-  Logs.info @@ fun m -> m "ipc: listening on %s" path
+  Log.info @@ fun m -> m "ipc: listening on %s" path
 ;;

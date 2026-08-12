@@ -47,7 +47,7 @@ let set_layout_file wm ~path =
             | _ -> River.Xkb.Config.River_xkb_keymap_v1.destroy self
 
           method on_failure self ~error_msg =
-            (Logs.warn @@ fun m -> m "keymap %s rejected: %s" request_path error_msg);
+            (Log.warn @@ fun m -> m "keymap %s rejected: %s" request_path error_msg);
             River.Xkb.Config.River_xkb_keymap_v1.destroy self
         end
         ~fd

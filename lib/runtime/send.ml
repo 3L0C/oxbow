@@ -1,3 +1,4 @@
+open! Oxbow_core
 open! Oxbow_state
 
 let show (_ : Ctx.render Ctx.t) (w : Window.t) =
@@ -158,11 +159,12 @@ let set_content_clip_box (_ : Ctx.render Ctx.t) (w : Window.t) ~x ~y ~width ~hei
     Window.set_content_clip_box w (Some (x, y, width, height)))
 ;;
 
-let set_borders (_ : Ctx.render Ctx.t) (w : Window.t) ~edges ~width ~r ~g ~b ~a =
-  if w.committed.borders <> Some (edges, width, r, g, b, a)
+let set_borders (_ : Ctx.render Ctx.t) (w : Window.t) ~edges ~width ~color =
+  if w.committed.borders <> Some { Window.Committed.edges; width; color }
   then (
+    let r, g, b, a = Color.channels color in
     River.Window_management.River_window_v1.set_borders w.obj ~edges ~width ~r ~g ~b ~a;
-    Window.set_borders w (Some (edges, width, r, g, b, a)))
+    Window.set_borders w (Some { Window.Committed.edges; width; color }))
 ;;
 
 let place_top (_ : Ctx.render Ctx.t) (w : Window.t) =

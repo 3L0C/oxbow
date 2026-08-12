@@ -83,7 +83,7 @@ let to_layout (output : Output.t) =
 let to_mode (seat : Seat.t) =
   match seat.name with
   | None -> None
-  | Some name -> Some Record.Mode.{ seat = name; mode = seat.mode }
+  | Some name -> Some Record.Mode.{ seat = name; mode = Mode.to_string seat.mode }
 ;;
 
 let to_focus (seat : Seat.t) =

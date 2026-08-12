@@ -38,7 +38,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; float_geom = None
   ; clip = None
   ; offscreen = false
-  ; size_hints = { min_w = 0l; max_w = 0l; min_h = 0l; max_h = 0l }
+  ; size_hints = { min_w = None; max_w = None; min_h = None; max_h = None }
   ; tags =
       (match output with
        | None -> Tag.Set.singleton 1
@@ -46,7 +46,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; output
   ; output_before_evac = None
   ; sticky = Off
-  ; swallow = Auto
+  ; swallow = { role = Auto; relation = None }
   ; labels = []
   ; is_fixed = false
   ; is_urgent = false
@@ -78,7 +78,7 @@ let destroy w =
   match w.lifecycle with
   | Closing -> Emit.destroy_window ~window:w.obj ~node:w.node
   | _ ->
-    Logs.warn
+    Log.warn
     @@ fun m ->
     m "destroy refused: Window is %s not closing" (Lifecycle.to_string w.lifecycle)
 ;;
@@ -111,12 +111,7 @@ let reject_dimensions w ~width ~height =
     Schedule.manage ()
 ;;
 
-let tag_layout (o : Types.Output.t) =
-  match Tag.Set.first_index o.tags.selected with
-  | Some i -> o.tag_data.(i - 1)
-  | None -> invalid_arg "Got an output with no selected tags."
-;;
-
+let tag_layout (o : Types.Output.t) = Tag.Table.find o.tag_data o.tags.selected
 let on_tags w ~tags = Tag.Set.intersects tags w.tags
 
 let occupied_tags ?except windows =
@@ -133,8 +128,8 @@ let tag_visible w =
   if w.scratchpad.stashed
   then false
   else (
-    match w.output, w.swallow with
-    | None, _ | _, Swallowed_by _ -> false
+    match w.output, w.swallow.relation with
+    | None, _ | _, Some (Swallowed_by _) -> false
     | Some o, _ ->
       if o.overview.enabled
       then true
@@ -150,15 +145,16 @@ let is_tiled w = w.presentation = Tiled
 let is_tiled_on_tag w = tag_visible w && is_tiled w
 
 let swallowing w =
-  match w.swallow with
-  | Swallowing _ -> true
-  | Auto | Terminal | Disabled | Swallowed_by _ -> false
+  match w.swallow.relation with
+  | Some (Swallowing _) -> true
+  | None | Some (Swallowed_by _) -> false
 ;;
 
 let can_swallow w =
-  match w.swallow with
-  | Terminal -> true
-  | Auto | Disabled | Swallowing _ | Swallowed_by _ -> false
+  match w.swallow.role, w.swallow.relation with
+  | Terminal, None -> true
+  | (Auto | Disabled), None
+  | (Auto | Terminal | Disabled), Some (Swallowing _ | Swallowed_by _) -> false
 ;;
 
 let remember_float w = w.float_geom <- Some w.geom
@@ -170,8 +166,8 @@ let tile w =
 
 let clamp_dim ~min_v ~max_v v =
   v
-  |> (if min_v > 0l then Int32.max min_v else Fun.id)
-  |> if max_v > 0l then Int32.min max_v else Fun.id
+  |> Option.fold ~none:Fun.id ~some:Int32.max min_v
+  |> Option.fold ~none:Fun.id ~some:Int32.min max_v
 ;;
 
 let clamp w (g : int Rect.t) =
@@ -364,7 +360,7 @@ let exit_fake_fullscreen w = if w.is_fake_fullscreen then w.is_fake_fullscreen <
 let float_in_place w =
   match w.presentation with
   | Floating -> ()
-  | Fullscreen _ -> Logs.err @@ fun m -> m "unable to float fullscreen window"
+  | Fullscreen _ -> Log.err @@ fun m -> m "unable to float fullscreen window"
   | Tiled | Maximized _ ->
     remember_float w;
     w.presentation <- Floating
@@ -377,7 +373,7 @@ let apply_float_geom w g =
 
 let with_float_edit w f =
   if is_fullscreen w
-  then Logs.err @@ fun m -> m "unable to move fullscreen window"
+  then Log.err @@ fun m -> m "unable to move fullscreen window"
   else (
     match w.output with
     | None -> ()
@@ -513,20 +509,19 @@ let add_label w label =
 
 let remove_label w label = w.labels <- List.filter (( <> ) label) w.labels
 
-let set_swallow w v =
-  w.swallow <- v;
+let set_swallow_role w v =
+  w.swallow.role <- v;
   Schedule.manage ()
 ;;
 
-let set_swallow_role w v =
-  match w.swallow with
-  | Swallowing _ | Swallowed_by _ -> ()
-  | Auto | Terminal | Disabled -> set_swallow w v
+let set_swallow_relation w o =
+  w.swallow.relation <- o;
+  Schedule.manage ()
 ;;
 
 let swallow ~host ~child =
-  set_swallow child (Swallowing host);
-  set_swallow host (Swallowed_by child)
+  set_swallow_relation child (Some (Swallowing host));
+  set_swallow_relation host (Some (Swallowed_by child))
 ;;
 
 let set_is_fixed w is_fixed = w.is_fixed <- is_fixed

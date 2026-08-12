@@ -109,4 +109,4 @@ val replace_input_rule : Types.Wm.t -> Oxbow_core.Input_rule.t -> unit
 (** [declare_mode wm name] appends [name] to the declared modes.
 
     {b Effects:} mutates WM state *)
-val declare_mode : Types.Wm.t -> string -> unit
+val declare_mode : Types.Wm.t -> Oxbow_core.Mode.t -> unit

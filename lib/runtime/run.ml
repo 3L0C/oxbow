@@ -1,7 +1,7 @@
 open! Oxbow_core
 open! Oxbow_state
 
-let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
+let loop ?socket_path ?transport:trans ?on_display ~init_command ~net ~clock () =
   Eio.Switch.run
   @@ fun sw ->
   let transport =
@@ -10,6 +10,7 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
     | None -> Wayland.Unix_transport.connect ~sw ~net ()
   in
   let display = Wayland.Client.connect ~sw transport in
+  Option.iter (fun f -> f display) on_display;
   let registry = Wayland.Registry.of_display display in
   Handlers.registry := Some registry;
   let wm_box : Wm.t Box.t = { body = None } in
@@ -98,19 +99,10 @@ let loop ?socket_path ?transport:trans ~init_command ~net ~clock () =
   let on_signal _ = Eio.Condition.broadcast signaled in
   Box.fill wm_box wm;
   Schedule.install (fun () -> Emit.manage_dirty wm.river_wm_v1);
-  Eio.Fiber.fork ~sw (fun () ->
-    let outcome =
-      Eio.Fiber.first
-        (fun () ->
-           Eio.Condition.await_no_mutex signaled;
-           `Signal)
-        (fun () ->
-           Lifecycle.await_shutdown wm;
-           `Shutdown)
-    in
-    match outcome with
-    | `Signal -> Lifecycle.request_close wm
-    | `Shutdown -> ());
+  Eio.Fiber.fork_daemon ~sw (fun () ->
+    Eio.Condition.await_no_mutex signaled;
+    Lifecycle.request_close wm;
+    `Stop_daemon);
   Sys.set_signal Sys.sigint @@ Sys.Signal_handle on_signal;
   Sys.set_signal Sys.sigterm @@ Sys.Signal_handle on_signal;
   Ipc_server.start ?socket_path ~sw ~net ~wm ();

@@ -24,7 +24,7 @@ let rec columns ~consumes = function
      | cols, _ -> [ x ] :: cols)
 ;;
 
-let layout ~(usable : int Rect.t) ~offset (items : ('a * Item.t) list) =
+let layout ~(usable : int Rect.canonical) ~offset (items : ('a * Item.t) list) =
   let column_width (col : ('a * Item.t) list) =
     let fac = (List.hd col |> snd).width_fac in
     float_of_int usable.w *. fac |> int_of_float |> max 1

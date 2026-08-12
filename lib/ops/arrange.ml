@@ -1,5 +1,6 @@
 open! Oxbow_core
 open! Oxbow_state
+open! Result.Syntax
 
 let outputs_of_scope wm seat (scope : Scope.t) =
   match scope with
@@ -9,8 +10,7 @@ let outputs_of_scope wm seat (scope : Scope.t) =
 ;;
 
 let apply_scoped wm seat scope ~f =
-  Result.bind (outputs_of_scope wm seat scope)
-  @@ fun outputs ->
+  let+ outputs = outputs_of_scope wm seat scope in
   let apply o =
     match scope with
     | Focused -> f (Output.to_tag_data o)
@@ -19,7 +19,7 @@ let apply_scoped wm seat scope ~f =
   List.iter apply outputs;
   if scope = All then f wm.config.default_tag_config;
   Schedule.manage ();
-  Ok None
+  None
 ;;
 
 let set_tiling_scheme wm seat scheme scope =
@@ -43,10 +43,10 @@ let set_gaps_outer wm seat delta scope =
 ;;
 
 let set_gaps_overview wm seat delta scope =
-  Result.bind (outputs_of_scope wm seat scope) (fun outputs ->
-    List.iter (Output.set_gaps_overview ~delta) outputs;
-    Schedule.manage ();
-    Ok None)
+  let+ outputs = outputs_of_scope wm seat scope in
+  List.iter (Output.set_gaps_overview ~delta) outputs;
+  Schedule.manage ();
+  None
 ;;
 
 let set_scrolling_alignment wm seat align scope =
@@ -98,64 +98,53 @@ let toggle_overview wm seat =
 ;;
 
 let cycle_overview wm (seat : Seat.t) (dir : Direction.Logical.t) ~until_release =
-  let mods =
+  let* b =
     match until_release with
     | None -> Ok None
-    | Some s ->
-      String.split_on_char '+' s
-      |> List.map Bind.parse_modifier
-      |> List.fold_left
-           (fun acc b -> Result.bind acc (fun a -> Result.map (Int32.logor a) b))
-           (Ok 0l)
-      |> Result.map Option.some
+    | Some s -> Bind.parse_modifiers s |> Result.map Option.some
   in
-  match mods with
-  | Error _ as e -> e
-  | Ok b ->
-    With.focused_window seat
-    @@ fun o head ->
-    let target =
-      match dir with
-      | Next -> Ring.next_or_first head o.focus_stack
-      | Prev -> Ring.prev_or_last head o.focus_stack
-    in
-    if not o.overview.enabled then enter_overview wm o;
-    Option.iter Stacking.focus_window target;
-    Option.iter (fun m -> Seat.set_overview_watch seat m) b;
-    Ok None
+  With.focused_window seat
+  @@ fun o head ->
+  let target =
+    match dir with
+    | Next -> Ring.next_or_first head o.focus_stack
+    | Prev -> Ring.prev_or_last head o.focus_stack
+  in
+  if not o.overview.enabled then enter_overview wm o;
+  Option.iter Stacking.focus_window target;
+  Option.iter (fun m -> Seat.set_overview_watch seat m) b;
+  Ok None
 ;;
 
 let set_layout wm seat (layout : Layout.t) scope =
-  match outputs_of_scope wm seat scope with
-  | Error _ as e -> e
-  | Ok outputs ->
-    let target_floats = layout = Floating in
-    let fixup (o : Output.t) =
-      let tags_written =
-        match scope with
-        | Focused ->
-          Tag.Set.first o.tags.selected |> Option.value ~default:(Tag.Set.singleton 1)
-        | Output _ | All -> Tag.Set.all
-      in
-      let crossed =
-        Tag.Set.to_list tags_written
-        |> List.filter (fun s ->
-          let td = Output.tag_data o s in
-          td.layout = Floating <> target_floats)
-      in
-      let windows =
-        List.filter
-          (fun w ->
-             Window.is_tiled w && List.exists (fun s -> Window.on_tags w ~tags:s) crossed)
-          o.wm_stack
-      in
-      let fix =
-        if target_floats then Window.restore_or_seed_float else Window.remember_float
-      in
-      List.iter fix windows
+  let* outputs = outputs_of_scope wm seat scope in
+  let target_floats = layout = Floating in
+  let fixup (o : Output.t) =
+    let tags_written =
+      match scope with
+      | Focused ->
+        Tag.Set.first o.tags.selected |> Option.value ~default:(Tag.Set.singleton 1)
+      | Output _ | All -> Tag.Set.all
     in
-    List.iter fixup outputs;
-    apply_scoped wm seat scope ~f:(Output.apply_layout ~layout)
+    let crossed =
+      Tag.Set.to_list tags_written
+      |> List.filter (fun s ->
+        let td = Output.tag_data o s in
+        td.layout = Floating <> target_floats)
+    in
+    let windows =
+      List.filter
+        (fun w ->
+           Window.is_tiled w && List.exists (fun s -> Window.on_tags w ~tags:s) crossed)
+        o.wm_stack
+    in
+    let fix =
+      if target_floats then Window.restore_or_seed_float else Window.remember_float
+    in
+    List.iter fix windows
+  in
+  List.iter fixup outputs;
+  apply_scoped wm seat scope ~f:(Output.apply_layout ~layout)
 ;;
 
 let select_tiling_scheme wm seat scheme scope =

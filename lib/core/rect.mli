@@ -1,9 +1,21 @@
-type 'a t =
+(** A [screen] rect is in output coordinates. *)
+type screen
+
+(** A [canon] rect is in the axis-swapped canonical space of [Xform]. *)
+type canon
+
+type ('a, 'space) tagged =
   { x : 'a
   ; y : 'a
   ; w : 'a
   ; h : 'a
   }
+
+type 'a t = ('a, screen) tagged
+
+(** [canonical] is the rect type of the canonical (left-master) layout space.
+    [Xform.pre] and [Xform.post] are the only crossings. *)
+type 'a canonical = ('a, canon) tagged
 
 (** [to_int r] is [r] with each field converted by [Int32.to_int]. *)
 val to_int : int32 t -> int t

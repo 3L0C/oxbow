@@ -57,18 +57,6 @@ let remove_input_device (wm : t) device =
   Input_device.remove_device device
 ;;
 
-let find_window_opt (wm : t) id =
-  List.find_opt (fun (w : Types.Window.t) -> Wire.id w.obj = id) wm.windows
-;;
-
-let find_seat_opt (wm : t) id =
-  List.find_opt (fun (s : Types.Seat.t) -> Wire.id s.obj = id) wm.seats
-;;
-
-let find_output_opt (wm : t) id =
-  List.find_opt (fun (o : Types.Output.t) -> Wire.id o.obj = id) wm.outputs
-;;
-
 let find_input_device_opt (wm : t) id =
   List.find_opt
     (fun (d : Types.Input_device.t) -> Input_device.id d.obj = id)

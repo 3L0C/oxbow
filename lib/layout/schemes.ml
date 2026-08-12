@@ -1,6 +1,6 @@
 open! Oxbow_core
 
-let rec subdivide ~pick (area : int Rect.t) k n =
+let rec subdivide ~pick (area : int Rect.canonical) k n =
   if n <= 1
   then [ area ]
   else (
@@ -51,7 +51,8 @@ let column ~x ~w ~y heights =
   List.fold_left_map (fun y h -> y + h, Rect.{ x; y; w; h }) y heights |> snd
 ;;
 
-let compute ~(params : Params.Tiling.t) ~(usable_area : int Rect.t) ~(count : int) =
+let compute ~(params : Params.Tiling.t) ~(usable_area : int Rect.canonical) ~(count : int)
+  =
   match count with
   | 0 -> []
   | n ->

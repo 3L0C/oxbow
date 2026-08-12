@@ -122,7 +122,7 @@ let manage_new_seat ctx (seat : Seat.t) =
      | None, Some cmd when Phys.opt_holds seat wm.primary_seat ->
        let init_handle = Init_script.fork ~cmd in
        Wm.set_init_handle wm @@ Some init_handle;
-       Logs.debug @@ fun m -> m "init script forked: pid=%d" init_handle.pid
+       Log.debug @@ fun m -> m "init script forked: pid=%d" init_handle.pid
      | _ -> ())
 ;;
 
@@ -185,7 +185,7 @@ let manage (wm : Wm.t) proxy =
   match wm.lifecycle with
   | Pending_exit _ -> Lifecycle.dispatch_pending wm
   | Close_requested -> River.Window_management.River_window_manager_v1.manage_finish proxy
-  | Exited -> Logs.err @@ fun m -> m "wayland session should have exited..."
+  | Exited -> Log.err @@ fun m -> m "wayland session should have exited..."
   | Running ->
     Fun.protect
       ~finally:(fun () ->

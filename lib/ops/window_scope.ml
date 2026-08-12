@@ -1,5 +1,6 @@
 open! Oxbow_core
 open! Oxbow_state
+open! Result.Syntax
 
 let filter (wm : Wm.t) (seat : Seat.t) (scope : Scope.t) =
   let on_output o =
@@ -19,8 +20,7 @@ let holds matches (w : Window.t) =
 ;;
 
 let matching wm seat (m : Window_match.t) =
-  Result.bind (Window_pattern.compile m.pattern)
-  @@ fun matches ->
-  Result.bind (filter wm seat m.scope)
-  @@ fun windows -> Ok (holds matches, List.find_all (holds matches) windows)
+  let* matches = Window_pattern.compile m.pattern in
+  let+ windows = filter wm seat m.scope in
+  holds matches, List.find_all (holds matches) windows
 ;;

@@ -31,7 +31,7 @@ let handle_resize wm seat window edges =
 let handle_set_dimensions (wm : Wm.t) window w h =
   if Output.arranges window
   then (
-    Logs.warn (fun m ->
+    Log.warn (fun m ->
       m
         "%s requested dimensions changed while tiling"
         (Option.value ~default:"?" window.app_id));
@@ -63,11 +63,11 @@ let rec handle wm window (request : Window.Request.t) =
   | Move r -> handle_move wm r.seat window
   | Move_to { x; y } ->
     Placement.move_window_to ~x ~y window
-    |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e
+    |> Result.iter_error @@ fun e -> Log.warn @@ fun m -> m "%s" e
   | Resize r -> handle_resize wm r.seat window r.edges
   | Resize_to { w; h } ->
     Placement.resize_window_to ~width:w ~height:h window
-    |> Result.iter_error @@ fun e -> Logs.warn @@ fun m -> m "%s" e
+    |> Result.iter_error @@ fun e -> Log.warn @@ fun m -> m "%s" e
   | Maximize -> Placement.maximize wm window
   | Unmaximize -> Placement.unmaximize window
   | Fake_fullscreen -> Window.fake_fullscreen window
@@ -78,7 +78,7 @@ let rec handle wm window (request : Window.Request.t) =
   | Set_tags arg -> handle_set_tags wm window arg
   | Set_sticky scope -> Window.set_sticky window scope
   | Send_to_output_name { name; policy } ->
-    Result.iter_error (fun e -> Logs.warn @@ fun m -> m "%s" e)
+    Result.iter_error (fun e -> Log.warn @@ fun m -> m "%s" e)
     @@ Placement.send_window_to_name wm window name policy
   | Float -> Window.float window
   | Tile -> Window.tile window

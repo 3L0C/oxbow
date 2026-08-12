@@ -1,18 +1,18 @@
+open! Oxbow_core
 open! Oxbow_state
 open! Oxbow_ipc
+open! Result.Syntax
 
 let declare (wm : Wm.t) name =
-  if List.mem name wm.config.modes
-  then Error (Printf.sprintf "mode already declared: %S" name)
-  else (
-    Config.declare_mode wm name;
-    Ok None)
+  let+ mode = Mode.declare name ~declared:wm.config.modes in
+  Config.declare_mode wm mode;
+  None
 ;;
 
-let enter wm seat name =
-  match Seat.set_mode wm seat name with
-  | Error _ as e -> e
-  | Ok () -> Ok None
+let enter (wm : Wm.t) seat name =
+  let* mode = Mode.resolve name ~declared:wm.config.modes in
+  let+ () = Seat.set_mode seat mode in
+  None
 ;;
 
 let handle wm seat (cmd : Command.Keymap.Mode.t) =

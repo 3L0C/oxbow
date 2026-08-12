@@ -23,12 +23,8 @@ let consume wm seat target =
   @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
     with_column_of w
     @@ fun _o cols col ->
-    let rec next_exists = function
-      | c :: _ :: _ when c == col -> true
-      | _ :: rest -> next_exists rest
-      | [] -> false
-    in
-    if not @@ next_exists cols
+    let last = List.rev cols |> List.hd in
+    if last == col
     then Error "no next column to consume"
     else (
       let last = List.rev col |> List.hd in
@@ -127,17 +123,9 @@ let zoom ?warp wm seat w =
   let warp = Seat.Warp_request.of_override warp in
   match col with
   | _ :: _ :: _ ->
-    let rec prev_of = function
-      | p :: x :: _ when x == w -> Some p
-      | _ :: rest -> prev_of rest
-      | [] -> None
-    in
     let last = List.rev col |> List.hd in
     if last == w
-    then (
-      match prev_of col with
-      | Some x -> Window.set_consumes x false
-      | None -> assert false);
+    then Ring.prev_or_last w col |> Option.iter (fun x -> Window.set_consumes x false);
     Window.set_consumes w false;
     Stacking.push [ w ] o;
     Focus.focus_window ~force:true ~warp wm seat w;

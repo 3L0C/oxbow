@@ -1,11 +1,11 @@
 open! Oxbow_core
 
 let log_of_out = function
-  | Some `Debug -> Logs.debug
-  | Some `Error -> Logs.err
-  | Some `Warn -> Logs.warn
-  | Some `Info -> Logs.info
-  | None -> Logs.debug
+  | Some `Debug -> Log.debug
+  | Some `Error -> Log.err
+  | Some `Warn -> Log.warn
+  | Some `Info -> Log.info
+  | None -> Log.debug
 ;;
 
 let logged ?out r = r |> Result.iter_error @@ fun e -> log_of_out out @@ fun m -> m "%s" e

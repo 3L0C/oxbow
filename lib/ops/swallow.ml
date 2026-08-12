@@ -59,9 +59,8 @@ let try_swallow (wm : Wm.t) (child : Window.t) =
     (match child.unreliable_pid with
      | Some pid -> Int32.to_int pid > 0
      | None -> false)
-    && (match child.swallow with
-        | Auto -> true
-        | Terminal | Disabled | Swallowing _ | Swallowed_by _ -> false)
+    && child.swallow.role = Auto
+    && Option.is_none child.swallow.relation
     && Window.is_tiled child
     && Option.is_none child.parent
     && child.sticky = Off
@@ -75,33 +74,33 @@ let try_swallow (wm : Wm.t) (child : Window.t) =
 ;;
 
 let unswallow (child : Window.t) =
-  match child.swallow with
-  | Auto | Terminal | Disabled | Swallowed_by _ -> ()
-  | Swallowing host ->
+  match child.swallow.relation with
+  | None | Some (Swallowed_by _) -> ()
+  | Some (Swallowing host) ->
     Window.set_tags host child.tags;
     (match child.output with
      | None -> ()
      | Some o ->
        Stacking.replace ~old_w:child ~new_w:host o;
        Stacking.push [ child ] o);
-    Window.set_swallow host Terminal;
-    Window.set_swallow child Auto
+    Window.set_swallow_relation host None;
+    Window.set_swallow_relation child None
 ;;
 
 let on_close (w : Window.t) =
-  match w.swallow with
-  | Auto | Terminal | Disabled -> ()
-  | Swallowing _ -> unswallow w
-  | Swallowed_by child ->
-    Window.set_swallow child Auto;
-    Window.set_swallow w Terminal
+  match w.swallow.relation with
+  | None -> ()
+  | Some (Swallowing _) -> unswallow w
+  | Some (Swallowed_by child) ->
+    Window.set_swallow_relation child None;
+    Window.set_swallow_relation w None
 ;;
 
 let toggle wm seat target =
   Result.map (fun _ -> None)
   @@ Targets.transact_all_windows wm seat target ~plan:(fun w ->
-    match w.swallow with
-    | Terminal | Disabled | Swallowed_by _ -> Ok ignore
-    | Swallowing _ -> Ok (fun () -> unswallow w)
-    | Auto -> Ok (fun () -> try_swallow wm w))
+    match w.swallow.relation, w.swallow.role with
+    | Some (Swallowing _), _ -> Ok (fun () -> unswallow w)
+    | Some (Swallowed_by _), _ | None, (Terminal | Disabled) -> Ok ignore
+    | None, Auto -> Ok (fun () -> try_swallow wm w))
 ;;

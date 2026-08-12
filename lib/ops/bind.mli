@@ -16,6 +16,10 @@ val install_defaults : Oxbow_state.Wm.t -> Oxbow_state.Seat.t -> unit
     Any other string returns [Error "unrecognized"]. *)
 val parse_modifier : string -> (int32, string) result
 
+(** [parse_modifiers s] is the modifier mask for the [+]-joined modifier names
+    in [s]. Whitespace around each name is ignored. *)
+val parse_modifiers : string -> (int32, string) result
+
 (** [list wm seat ~all] is the JSON keybinding listing for [seat]; its name,
     stored mode, and bindings grouped by declared mode, or for every seat in
     [wm] when [all] is [true]. *)

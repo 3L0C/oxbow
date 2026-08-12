@@ -17,7 +17,7 @@ let set_keyboard (wm : Types.Wm.t) device keyboard =
      | Some keymap -> Emit.set_keymap keyboard ~keymap
      | None -> ())
   | Pointer _ | Touch | Tablet ->
-    Logs.warn
+    Log.warn
     @@ fun m ->
     m "cannot set 'xkb' attribute for '%s' input device" @@ role_to_string device.role
 ;;

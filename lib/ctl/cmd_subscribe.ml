@@ -1,11 +1,6 @@
 open! Oxbow_ipc
 
-let kind_conv =
-  let open Cmdliner in
-  let parser = Record.of_string in
-  let pp ppf k = Format.fprintf ppf "%s" (Record.to_string k) in
-  Arg.Conv.make ~docv:"KIND" ~parser ~pp ()
-;;
+let kind_conv = Cmdliner.Arg.enum @@ Ctl_cli.enum_of Record.to_string Record.all
 
 let term =
   let open Cmdliner in

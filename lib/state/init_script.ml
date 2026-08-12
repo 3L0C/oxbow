@@ -8,7 +8,7 @@ let init_path path =
     Some path
   with
   | Unix.Unix_error (e, _, _) ->
-    (Logs.err @@ fun m -> m "invalid init path %S: %s" path (Unix.error_message e));
+    (Log.err @@ fun m -> m "invalid init path %S: %s" path (Unix.error_message e));
     None
 ;;
 
@@ -26,7 +26,7 @@ let resolve ?override_path () =
     in
     (match config_dir with
      | None ->
-       (Logs.err
+       (Log.err
         @@ fun m ->
         m "unable to locate $XDG_CONFIG_HOME or $HOME. Please check your environment");
        None
@@ -50,6 +50,6 @@ let shutdown { pid } =
   try Unix.kill pid Sys.sigterm with
   | Unix.Unix_error (Unix.ESRCH, _, _) -> ()
   | Unix.Unix_error (e, _, _) ->
-    Logs.warn
+    Log.warn
     @@ fun m -> m "init_script.shutdown: kill -%d failed: %s" pid (Unix.error_message e)
 ;;

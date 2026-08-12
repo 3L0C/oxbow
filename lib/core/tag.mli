@@ -140,3 +140,17 @@ module Policy : sig
   val t_of_yojson : Yojson.Safe.t -> t
   val yojson_of_t : t -> Yojson.Safe.t
 end
+
+module Table : sig
+  (** A per-tag store with one slot for each tag in [Set.all]. *)
+  type 'a t
+
+  (** [make fresh] is a table with an independent [fresh ()] value
+      per slot. *)
+  val make : (unit -> 'a) -> 'a t
+
+  (** [find table tags] is the slot for the first tag of [tags].
+
+      @raise Invalid_argument when [tags] is empty. *)
+  val find : 'a t -> Set.t -> 'a
+end

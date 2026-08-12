@@ -15,16 +15,16 @@ val split : total:int -> count:int -> int list
     result is [items]. *)
 val columns : consumes:('a -> bool) -> 'a list -> 'a list list
 
-(** [layout ~usable ~offset items] is the screen-space geometry of [items]
+(** [layout ~usable ~offset items] is the canonical-space geometry of [items]
     arranged as full-height columns on a horizontal strip, in order. Column
     width is the head item's [width_fac] * [usable] width (min 1); windows
     within a column split the height evenly. Strip x [offset] is subtracted, so
     rects may lie outside [usable]. Callers apply [Gaps.post]. *)
 val layout
-  :  usable:int Oxbow_core.Rect.t
+  :  usable:int Oxbow_core.Rect.canonical
   -> offset:int
   -> ('a * Item.t) list
-  -> ('a * int Oxbow_core.Rect.t) list
+  -> ('a * int Oxbow_core.Rect.canonical) list
 
 (** [scroll ~align ~viewport_w ~max_offset ~offset ~col:(x, w)] is the strip
     offset after applying [align] to the focused column [col], where [x] is its

@@ -1,6 +1,7 @@
 open! Oxbow_core
 open! Oxbow_ipc
 open! Oxbow_state
+open! Result.Syntax
 
 type t =
   { mods : int32
@@ -94,6 +95,17 @@ let parse_modifier = function
   | s -> Error (Printf.sprintf "unrecognized modifier: %S" s)
 ;;
 
+let parse_modifiers s =
+  String.split_on_char '+' s
+  |> List.map String.trim
+  |> List.fold_left
+       (fun acc part ->
+          let* mods = acc in
+          let+ m = parse_modifier part in
+          Int32.logor mods m)
+       (Ok 0l)
+;;
+
 (** [parse_keysym name] is the keysym represented by [name]. See:
     - https://github.com/xkbcommon/libxkbcommon/blob/master/include/xkbcommon/xkbcommon-keysyms.h
     - https://github.com/xkbcommon/libxkbcommon/blob/master/include/xkbcommon/xkbcommon.h
@@ -145,14 +157,12 @@ let parse s =
     | [ x ] ->
       (match parse_button x with
        | Error _ ->
-         (match parse_keysym x with
-          | Error _ as e -> e
-          | Ok keysym -> Ok { mods; key = Keysym keysym })
+         let+ keysym = parse_keysym x in
+         { mods; key = Keysym keysym }
        | Ok button -> Ok { mods; key = Pointer button })
     | x :: xs ->
-      (match parse_modifier x with
-       | Error _ as e -> e
-       | Ok m -> aux (Int32.logor mods m) xs)
+      let* m = parse_modifier x in
+      aux (Int32.logor mods m) xs
     | [] -> Error (Printf.sprintf "internal error, got no parts: %S" s)
   in
   aux 0l parts
@@ -163,9 +173,8 @@ let parse s =
     [0l]. *)
 let format_modifiers mods =
   let open Wire in
-  List.fold_left
-    (fun acc (m, r) -> if Int32.logand m mods <> 0l then acc @ [ r ] else acc)
-    []
+  List.filter_map
+    (fun (m, r) -> if Int32.logand m mods <> 0l then Some r else None)
     [ Modifiers.mod4, "Super"
     ; Modifiers.mod1, "Alt"
     ; Modifiers.ctrl, "Control"
@@ -189,7 +198,7 @@ let format_keybind mods (key : Types.Key.t) =
 let list (wm : Wm.t) (seat : Seat.t) ~all =
   let entry mode keybind command =
     `Assoc
-      [ "mode", `String mode
+      [ "mode", `String (Mode.to_string mode)
       ; "keybind", `String keybind
       ; "command", Command.yojson_of_t command
       ]
@@ -198,22 +207,20 @@ let list (wm : Wm.t) (seat : Seat.t) ~all =
     let bindings =
       List.concat_map
         (fun mode ->
-           List.fold_left
-             (fun acc (xkb : Seat.Xkb_binding.t) ->
-                if String.equal mode xkb.mode
+           List.filter_map
+             (fun (xkb : Seat.Xkb_binding.t) ->
+                if Mode.equal mode xkb.mode
                 then
-                  entry mode (format_keybind xkb.mods (Keysym xkb.keysym)) xkb.command
-                  :: acc
-                else acc)
-             []
+                  Some
+                    (entry mode (format_keybind xkb.mods (Keysym xkb.keysym)) xkb.command)
+                else None)
              s.xkb_bindings
-           @ List.fold_left
-               (fun acc (p : Seat.Pointer_binding.t) ->
-                  if String.equal mode p.mode
+           @ List.filter_map
+               (fun (p : Seat.Pointer_binding.t) ->
+                  if Mode.equal mode p.mode
                   then
-                    entry mode (format_keybind p.mods (Pointer p.button)) p.command :: acc
-                  else acc)
-               []
+                    Some (entry mode (format_keybind p.mods (Pointer p.button)) p.command)
+                  else None)
                s.pointer_bindings)
         wm.config.modes
     in
@@ -222,32 +229,31 @@ let list (wm : Wm.t) (seat : Seat.t) ~all =
         , match s.name with
           | Some n -> `String n
           | None -> `Null )
-      ; "mode", `String s.mode
+      ; "mode", `String (Mode.to_string s.mode)
       ; "bindings", `List bindings
       ]
   in
   if all then `List (List.map seat_json wm.seats) else seat_json seat
 ;;
 
-let handle wm seat (keymap : Keymap.t) =
+let handle (wm : Wm.t) seat (keymap : Keymap.t) =
+  let resolve_mode = function
+    | None -> Ok None
+    | Some m ->
+      let+ mode = Mode.resolve m ~declared:wm.config.modes in
+      Some mode
+  in
   match keymap with
   | Bind bind ->
-    (match parse bind.keybind with
-     | Error _ as e -> e
-     | Ok { mods; key } ->
-       (match Seat.bind wm seat ?mode:bind.mode mods key bind.command with
-        | Error _ as e -> e
-        | Ok true ->
-          Ok
-            (Some
-               (`String (Printf.sprintf "overwrote existing binding for %S" bind.keybind)))
-        | Ok false -> Ok None))
+    let* { mods; key } = parse bind.keybind in
+    let+ mode = resolve_mode bind.mode in
+    if Seat.bind wm seat ?mode mods key bind.command
+    then Some (`String (Printf.sprintf "overwrote existing binding for %S" bind.keybind))
+    else None
   | Unbind bind ->
-    (match parse bind.keybind with
-     | Error msg -> Error msg
-     | Ok { mods; key } ->
-       (match Seat.unbind wm seat ?mode:bind.mode mods key with
-        | Error _ as e -> e
-        | Ok true -> Ok None
-        | Ok false -> Error (Printf.sprintf "no binding for %S" bind.keybind)))
+    let* { mods; key } = parse bind.keybind in
+    let* mode = resolve_mode bind.mode in
+    if Seat.unbind seat ?mode mods key
+    then Ok None
+    else Error (Printf.sprintf "no binding for %S" bind.keybind)
 ;;

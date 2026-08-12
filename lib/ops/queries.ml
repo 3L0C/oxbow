@@ -2,6 +2,7 @@ open! Ppx_yojson_conv_lib.Yojson_conv
 open! Oxbow_core
 open! Oxbow_state
 open! Oxbow_ipc
+open! Result.Syntax
 
 let handle_window_rules (wm : Wm.t) =
   Ok (Some ([%yojson_of: Window_rule.t list] wm.config.rules.window))
@@ -22,23 +23,15 @@ let handle_focused seat =
 ;;
 
 let handle_windows wm seat m =
-  match Window_scope.matching wm seat m with
-  | Error _ as e -> e
-  | Ok (_, matching) ->
-    Ok
-      (Some
-         ([%yojson_of: Record.Window.t list] (List.map (Records.to_window wm) matching)))
+  let+ _, matching = Window_scope.matching wm seat m in
+  Some ([%yojson_of: Record.Window.t list] (List.map (Records.to_window wm) matching))
 ;;
 
 let handle_tags (wm : Wm.t) output =
   let outs =
     match output with
     | None -> wm.outputs
-    | Some o ->
-      List.filter
-        (fun (o' : Output.t) ->
-           Option.fold ~none:false ~some:(fun name -> name = o) o'.name)
-        wm.outputs
+    | Some o -> List.filter (Output.matches_name o) wm.outputs
   in
   let records = List.filter_map Records.to_tags outs in
   Ok (Some ([%yojson_of: Record.Tags.t list] records))
@@ -61,7 +54,10 @@ let handle_seats (wm : Wm.t) =
          Option.map
            (fun name ->
               Query.Reply.Seats.
-                { name; mode = s.mode; output = Option.bind s.output (fun o -> o.name) })
+                { name
+                ; mode = Mode.to_string s.mode
+                ; output = Option.bind s.output (fun o -> o.name)
+                })
            s.name)
       wm.seats
   in

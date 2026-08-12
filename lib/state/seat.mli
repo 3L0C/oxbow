@@ -44,11 +44,11 @@ val focus_output : t -> Types.Output.t option -> unit
     {b Effects:} mutates WM state *)
 val set_layer_focus : t -> Layer_focus.t option -> unit
 
-(** [set_mode wm seat mode] sets [seat]'s current mode to [mode]. Is
-    [Error msg] when [mode] is not declared or is [Mode.locked].
+(** [set_mode seat mode] sets [seat]'s current mode to [mode]. Is [Error msg]
+    when [mode] is [Mode.locked].
 
     {b Effects:} mutates WM state *)
-val set_mode : Types.Wm.t -> t -> string -> (unit, string) result
+val set_mode : t -> Oxbow_core.Mode.t -> (unit, string) result
 
 (** [set_position seat (x, y)] positions [seat] at [(x, y)].
 
@@ -127,31 +127,24 @@ val set_watch_sent : t -> int32 -> unit
 
 (** [bind wm seat ?mode mods key command] binds the [mods] and [key] to
     [command] in [mode] (default [Mode.normal]). Replaces any existing binding
-    for [mods] and [key]. Is [Ok true] when a binding was replaced. Is
-    [Error msg] when [mode] is not declared.
+    for [mods] and [key]. Is [true] when an existing binding for [mods] and
+    [key] was replaced.
 
     {b Effects:} mutates WM state *)
 val bind
   :  Types.Wm.t
   -> t
-  -> ?mode:string
+  -> ?mode:Oxbow_core.Mode.t
   -> int32
   -> Types.Key.t
   -> Oxbow_ipc.Command.t
-  -> (bool, string) result
+  -> bool
 
-(** [unbind wm seat ?mode mods key] unbinds the command bound to [mods] and
-    [key] in [mode] (default [Mode.normal]). Is [Ok true] when a binding was
-    destroyed. Is [Error msg] when [mode] is not declared.
+(** [unbind seat ?mode mods key] unbinds the command bound to [mods] and [key]
+    in [mode] (default [Mode.normal]). Is [true] when a binding was destroyed.
 
     {b Effects:} mutates WM state *)
-val unbind
-  :  Types.Wm.t
-  -> t
-  -> ?mode:string
-  -> int32
-  -> Types.Key.t
-  -> (bool, string) result
+val unbind : t -> ?mode:Oxbow_core.Mode.t -> int32 -> Types.Key.t -> bool
 
 (** [focused_window seat] is the focused window on [seat]'s output; [None] when
     the seat has no output. *)

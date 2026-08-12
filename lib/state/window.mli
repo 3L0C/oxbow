@@ -314,7 +314,7 @@ val set_presentation_hint : t -> Wire.Presentation_mode.t option -> unit
     [size_hints].
 
     {b Effects:} mutates WM state *)
-val set_size_hints : t -> int32 Size_hints.t -> unit
+val set_size_hints : t -> int32 option Size_hints.t -> unit
 
 (** [set_sticky window scope] sets [window]'s sticky scope to [scope].
 
@@ -333,16 +333,15 @@ val add_label : t -> string -> unit
     {b Effects:} mutates WM state *)
 val remove_label : t -> string -> unit
 
-(** [set_swallow window v] updates [window]'s swallow value to [v].
+(** [set_swallow_role window v] updates [window]'s swallow value to [v].
 
     {b Effects:} mutates WM state *)
-val set_swallow : t -> Swallow.t -> unit
+val set_swallow_role : t -> Oxbow_core.Swallow_role.t -> unit
 
-(** [set_swallow_role window v] updates [window]'s swallow value to [v]. No-op
-    when [window] is already swallowing or swallowed.
+(** [set_swallow_relation window o] updates [window]'s swallow relation to [o].
 
     {b Effects:} mutates WM state *)
-val set_swallow_role : t -> Swallow.t -> unit
+val set_swallow_relation : t -> Swallow.Relation.t option -> unit
 
 (** [swallow ~host ~child] sets [Swallowing host] on [child] and
     [Swallowed_by child] on [host].
@@ -415,7 +414,7 @@ val set_ssd : t -> bool option -> unit
     [borders].
 
     {b Effects:} mutates WM state *)
-val set_borders : t -> (int32 * int32 * int32 * int32 * int32 * int32) option -> unit
+val set_borders : t -> Committed.borders option -> unit
 
 (** [set_shown window shown] sets [window]'s last sent shown state to [shown].
 

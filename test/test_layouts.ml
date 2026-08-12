@@ -1,11 +1,11 @@
 open Oxbow_core
 open Oxbow_layout
 
-let pp (r : int Rect.t) = Printf.sprintf "(%d,%d) %dx%d" r.x r.y r.w r.h
+let pp (r : int Rect.canonical) = Printf.sprintf "(%d,%d) %dx%d" r.x r.y r.w r.h
 let pps rects = String.concat " | " (List.map pp rects)
 
 let () =
-  let tile ~(ua : int Rect.t) ~scheme ~count ~nmaster ~mfact =
+  let tile ~(ua : int Rect.canonical) ~scheme ~count ~nmaster ~mfact =
     let params = Params.Tiling.{ mfact; nmaster; dir = Left; scheme } in
     let rects = Schemes.compute ~params ~usable_area:ua ~count in
     Printf.printf
@@ -43,7 +43,7 @@ let () =
   List.iter
     (fun count -> tile ~ua:full ~scheme:Scheme.Deck ~count ~nmaster:1 ~mfact:0.55)
     [ 0; 1; 2; 3; 5 ];
-  let strip ~(ua : int Rect.t) ~offset items =
+  let strip ~(ua : int Rect.canonical) ~offset items =
     let placed = Strip.layout ~usable:ua ~offset items in
     Printf.printf
       "strip ua=(%d,%d,%dx%d) offset=%d:%s%s\n"

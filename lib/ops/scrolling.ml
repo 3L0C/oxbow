@@ -27,7 +27,7 @@ let arrange (wm : Wm.t) (output : Output.t) =
       let nearest_col () =
         let view_center = td.scrolling.offset + (c_area.w / 2) in
         List.fold_left
-          (fun best (_, (g : int Rect.t)) ->
+          (fun best (_, (g : int Rect.canonical)) ->
              let x = g.x - c_area.x in
              let d = abs (x + (g.w / 2) - view_center) in
              match best with

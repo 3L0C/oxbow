@@ -1,5 +1,6 @@
 open! Oxbow_core
 open! Oxbow_state
+open! Result.Syntax
 
 let ( |>? ) o f = Option.iter f o
 
@@ -143,25 +144,23 @@ let apply (wm : Wm.t) (device : Input_device.t) =
 
 let apply_all wm = List.iter (apply wm) wm.input_devices
 
+let validate_pattern ~case = function
+  | Some s -> Result.map ignore (Pattern.re_compile ~case s)
+  | None -> Ok ()
+;;
+
 let add_touchpad_rule
       wm
       ({ settings = old; pattern; case } : Input_rule.(Touchpad.t rule))
       ({ settings = new_; _ } : Input_rule.(Touchpad.t rule))
   =
-  let replace_and_apply () =
-    let merged_rule =
-      Input_rule.Touchpad
-        { pattern; case; settings = Input_rule.Touchpad.merge ~old ~new_ }
-    in
-    Config.replace_input_rule wm merged_rule;
-    apply_all wm;
-    Ok None
+  let+ () = validate_pattern ~case pattern in
+  let merged_rule =
+    Input_rule.Touchpad { pattern; case; settings = Input_rule.Touchpad.merge ~old ~new_ }
   in
-  Result.bind
-    (match pattern with
-     | Some s -> Result.bind (Pattern.re_compile ~case s) (fun _ -> Ok ())
-     | None -> Ok ())
-    replace_and_apply
+  Config.replace_input_rule wm merged_rule;
+  apply_all wm;
+  None
 ;;
 
 let add_mouse_rule
@@ -169,27 +168,16 @@ let add_mouse_rule
       ({ settings = old; pattern; case } : Input_rule.(Mouse.t rule))
       ({ settings = new_; _ } : Input_rule.(Mouse.t rule))
   =
-  let replace_and_apply () =
-    let merged_rule =
-      Input_rule.Mouse { pattern; case; settings = Input_rule.Mouse.merge ~old ~new_ }
-    in
-    Config.replace_input_rule wm merged_rule;
-    apply_all wm;
-    Ok None
+  let+ () = validate_pattern ~case pattern in
+  let merged_rule =
+    Input_rule.Mouse { pattern; case; settings = Input_rule.Mouse.merge ~old ~new_ }
   in
-  Result.bind
-    (match pattern with
-     | Some s -> Result.bind (Pattern.re_compile ~case s) (fun _ -> Ok ())
-     | None -> Ok ())
-    replace_and_apply
+  Config.replace_input_rule wm merged_rule;
+  apply_all wm;
+  None
 ;;
 
 let add (wm : Wm.t) (rule : Input_rule.t) =
-  let add_and_apply () =
-    Config.add_input_rule wm rule;
-    apply_all wm;
-    Ok None
-  in
   let rule' = List.find_opt (Input_rule.equal rule) wm.config.rules.input in
   match rule', rule with
   | Some (Touchpad old), Touchpad new_ -> add_touchpad_rule wm old new_
@@ -197,11 +185,10 @@ let add (wm : Wm.t) (rule : Input_rule.t) =
   | Some (Touchpad _), Mouse _ | Some (Mouse _), Touchpad _ ->
     Error "mismatched rules returned as equal; please open an issue"
   | None, (Touchpad { pattern; case; _ } | Mouse { pattern; case; _ }) ->
-    Result.bind
-      (match pattern with
-       | Some s -> Result.bind (Pattern.re_compile ~case s) (fun _ -> Ok ())
-       | None -> Ok ())
-      add_and_apply
+    let+ () = validate_pattern ~case pattern in
+    Config.add_input_rule wm rule;
+    apply_all wm;
+    None
 ;;
 
 let remove (wm : Wm.t) index =

@@ -1,5 +1,6 @@
 open! Oxbow_core
 open! Oxbow_state
+open! Result.Syntax
 
 let layer_shell_sync (wm : Wm.t) =
   match Wm.focused_output wm with
@@ -45,61 +46,67 @@ let refresh_layer_shell wm (seat : Seat.t) =
 ;;
 
 let window_logical ?warp wm seat target (dir : Direction.Logical.t) =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_one_window wm seat target ~plan:(fun w ->
-    if Window.is_fullscreen w
-    then Error Messages.window_is_fullscreen
-    else (
-      match w.output with
-      | None -> Error Messages.seat_missing_output
-      | Some o ->
-        let target =
-          match dir with
-          | Next -> Output.next_window o
-          | Prev -> Output.prev_window o
-        in
-        (match target with
-         | None -> Error "no window to focus"
-         | Some w ->
-           Ok
-             (fun () -> focus_window ~warp:(Seat.Warp_request.of_override warp) wm seat w))))
+  let+ _ =
+    Targets.transact_one_window wm seat target ~plan:(fun w ->
+      if Window.is_fullscreen w
+      then Error Messages.window_is_fullscreen
+      else (
+        match w.output with
+        | None -> Error Messages.seat_missing_output
+        | Some o ->
+          let target =
+            match dir with
+            | Next -> Output.next_window o
+            | Prev -> Output.prev_window o
+          in
+          (match target with
+           | None -> Error "no window to focus"
+           | Some w ->
+             Ok
+               (fun () ->
+                 focus_window ~warp:(Seat.Warp_request.of_override warp) wm seat w))))
+  in
+  None
 ;;
 
 let window_spatial ?warp wm seat target (dir : Direction.Spatial.t) =
-  Result.map (fun _ -> None)
-  @@ Targets.transact_one_window wm seat target ~plan:(fun current ->
-    if Window.is_fullscreen current
-    then Error Messages.window_is_fullscreen
-    else (
-      match current.output with
-      | None -> Error Messages.seat_missing_output
-      | Some o ->
-        let from = Vector.center (Rect.to_int current.geom) in
-        let target =
-          Vector.nearest_in_direction
-            ~from
-            ~dir
-            (fun w ->
-               if
-                 w == current
-                 || (not @@ Window.is_tiled w)
-                 || (not @@ Window.tag_visible w)
-               then None
-               else Some (Rect.to_int w.geom |> Vector.center))
-            o.wm_stack
-        in
-        (match target with
-         | None -> Error (Printf.sprintf "no window %s" (Direction.Spatial.to_string dir))
-         | Some w ->
-           Ok
-             (fun () -> focus_window ~warp:(Seat.Warp_request.of_override warp) wm seat w))))
+  let+ _ =
+    Targets.transact_one_window wm seat target ~plan:(fun current ->
+      if Window.is_fullscreen current
+      then Error Messages.window_is_fullscreen
+      else (
+        match current.output with
+        | None -> Error Messages.seat_missing_output
+        | Some o ->
+          let from = Vector.center (Rect.to_int current.geom) in
+          let target =
+            Vector.nearest_in_direction
+              ~from
+              ~dir
+              (fun w ->
+                 if
+                   w == current
+                   || (not @@ Window.is_tiled w)
+                   || (not @@ Window.tag_visible w)
+                 then None
+                 else Some (Rect.to_int w.geom |> Vector.center))
+              o.wm_stack
+          in
+          (match target with
+           | None ->
+             Error (Printf.sprintf "no window %s" (Direction.Spatial.to_string dir))
+           | Some w ->
+             Ok
+               (fun () ->
+                 focus_window ~warp:(Seat.Warp_request.of_override warp) wm seat w))))
+  in
+  None
 ;;
 
 let window_match ?warp wm seat target =
-  Result.bind (Targets.resolve_one_window wm seat target)
-  @@ fun window ->
+  let+ window = Targets.resolve_one_window wm seat target in
   focus_window ~force:true ~warp:(Seat.Warp_request.of_override warp) wm seat window;
-  Ok None
+  None
 ;;
 
 let focus_output ?warp wm seat output =
@@ -111,10 +118,9 @@ let focus_output ?warp wm seat output =
 ;;
 
 let output_match ?warp wm seat target =
-  Result.bind (Targets.resolve_one_output wm seat target)
-  @@ fun output ->
+  let+ output = Targets.resolve_one_output wm seat target in
   focus_output ?warp wm seat output;
-  Ok None
+  None
 ;;
 
 let output_logical ?warp (wm : Wm.t) (seat : Seat.t) (dir : Direction.Logical.t) =

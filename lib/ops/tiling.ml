@@ -18,7 +18,7 @@ let arrange (wm : Wm.t) output =
     match windows, dimensions with
     | _, d_xs when List.length d_xs <> count ->
       let layout_name = Layout.to_string tag_data.layout in
-      Logs.warn
+      Log.warn
       @@ fun m ->
       m
         "retile skipped: layout %S returned unexpected geometry count. Expected %d, got \

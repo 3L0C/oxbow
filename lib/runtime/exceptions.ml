@@ -7,7 +7,7 @@ let guard name f =
   | Unavailable as e -> raise e
   | Eio.Cancel.Cancelled _ as e -> raise e
   | exn ->
-    Logs.err
+    Log.err
     @@ fun m ->
     m "%s raised: %s@.%s" name (Printexc.to_string exn) (Printexc.get_backtrace ())
 ;;

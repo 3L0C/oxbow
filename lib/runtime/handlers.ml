@@ -6,8 +6,26 @@ let registry : Wayland.Registry.t option ref = ref None
 
 let with_registry f =
   match !registry with
-  | None -> Logs.err @@ fun m -> m "no registry defined!!!"
+  | None -> Log.err @@ fun m -> m "no registry defined!!!"
   | Some r -> f r
+;;
+
+let window_of proxy =
+  match Wayland.Proxy.user_data proxy with
+  | Types.User_data.Window w -> Some w
+  | _ -> None
+;;
+
+let output_of proxy =
+  match Wayland.Proxy.user_data proxy with
+  | Types.User_data.Output o -> Some o
+  | _ -> None
+;;
+
+let seat_of proxy =
+  match Wayland.Proxy.user_data proxy with
+  | Types.User_data.Seat s -> Some s
+  | _ -> None
 ;;
 
 let on_finished (wm_box : Wm.t Box.t) =
@@ -59,7 +77,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
       ; tags = { selected = Tag.Set.singleton 1; previous = Tag.Set.singleton 1 }
       ; overview = { offset = 0; enabled = false; gaps = 10; head = None }
       ; tag_data =
-          Array.init 32 (fun _ -> Config.copy_tag_data wm.config.default_tag_config)
+          Tag.Table.make (fun () -> Config.copy_tag_data wm.config.default_tag_config)
       ; focus_stack = []
       ; wm_stack = []
       }
@@ -73,6 +91,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
       river_output
       object
         inherit [_] River.Obj.Window_management.Client.output
+        method! user_data = Types.User_data.Output output
         method on_removed _ = Output.set_lifecycle output Removed
 
         method on_wl_output _ ~name =
@@ -208,12 +227,13 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
       river_seat
       object
         inherit [_] River.Obj.Window_management.Client.seat
+        method! user_data = Types.User_data.Seat seat
         method on_removed _ = Seat.set_lifecycle seat Closing
 
         method on_pointer_enter _ ~window =
           Exceptions.guard "on_pointer_enter"
           @@ fun () ->
-          match Wm.find_window_opt wm @@ Wayland.Proxy.id window with
+          match window_of window with
           | Some w -> Seat.set_hovered seat @@ Some w
           | None -> ()
 
@@ -222,7 +242,7 @@ let on_seat _ river_seat (wm_box : Wm.t Box.t) =
         method on_window_interaction _ ~window =
           Exceptions.guard "on_window_interaction"
           @@ fun () ->
-          match Wm.find_window_opt wm @@ Wayland.Proxy.id window with
+          match window_of window with
           | Some w -> Seat.set_interacted seat @@ Some w
           | None -> ()
 
@@ -292,6 +312,7 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
       river_window
       object
         inherit [_] River.Obj.Window_management.Client.window
+        method! user_data = Types.User_data.Window window
         method on_closed _ = Window.set_lifecycle window Closing
 
         method on_dimensions _ ~width ~height =
@@ -301,7 +322,7 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
           then
             if Output.arranges window
             then (
-              Logs.warn (fun m ->
+              Log.warn (fun m ->
                 m
                   "%s client changed size while tiled"
                   (Option.value ~default:"?" window.app_id));
@@ -316,8 +337,7 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
           Exceptions.guard "on_parent"
           @@ fun () ->
           let set_parent p = Window.set_parent window ~parent:p in
-          Option.bind parent (fun p -> Wm.find_window_opt wm @@ Wayland.Proxy.id p)
-          |> set_parent
+          Option.bind parent window_of |> set_parent
 
         method on_title _ ~title = Window.set_title window title
 
@@ -327,20 +347,22 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
         method on_dimensions_hint _ ~min_width ~min_height ~max_width ~max_height =
           Exceptions.guard "on_dimensions_hint"
           @@ fun () ->
+          let hint v = if v > 0l then Some v else None in
+          let hints : _ Window.Size_hints.t =
+            { min_w = hint min_width
+            ; max_w = hint max_width
+            ; min_h = hint min_height
+            ; max_h = hint max_height
+            }
+          in
           let is_fixed =
-            min_width > 0l
-            && min_height > 0l
-            && min_width = max_width
-            && min_height = max_height
+            match hints with
+            | { min_w = Some a; max_w = Some b; min_h = Some c; max_h = Some d } ->
+              a = b && c = d
+            | _ -> false
           in
           Window.set_is_fixed window is_fixed;
-          Window.set_size_hints
-            window
-            { min_w = min_width
-            ; max_w = max_width
-            ; min_h = min_height
-            ; max_h = max_height
-            };
+          Window.set_size_hints window hints;
           if is_fixed && window.presentation = Tiled && window.lifecycle = Active
           then (
             Window.float window;
@@ -363,14 +385,14 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
         method on_pointer_move_requested _ ~seat =
           Exceptions.guard "on_pointer_move_requested"
           @@ fun () ->
-          match Wm.find_seat_opt wm @@ Wayland.Proxy.id seat with
+          match seat_of seat with
           | Some s -> Window.queue_request window @@ Move { seat = s }
           | None -> ()
 
         method on_pointer_resize_requested _ ~seat ~edges =
           Exceptions.guard "on_pointer_resize_requested"
           @@ fun () ->
-          match Wm.find_seat_opt wm @@ Wayland.Proxy.id seat with
+          match seat_of seat with
           | Some s -> Window.queue_request window @@ Resize { seat = s; edges }
           | None -> ()
 
@@ -383,8 +405,7 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
           let queue_request o =
             Window.queue_request window @@ Fullscreen { output = o }
           in
-          Option.bind output (fun o -> Wm.find_output_opt wm @@ Wayland.Proxy.id o)
-          |> queue_request
+          Option.bind output output_of |> queue_request
 
         method on_exit_fullscreen_requested _ =
           Window.queue_request window Exit_fullscreen
@@ -448,7 +469,7 @@ let on_input_device proxy (wm_box : Wm.t Box.t) =
              | Some Pointer -> ignore @@ make (Pointer { class_ = Mouse })
              | Some Touch -> ignore @@ make Touch
              | Some Tablet -> ignore @@ make Tablet
-             | None -> Logs.err @@ fun m -> m "input device sent 'done' without a type")
+             | None -> Log.err @@ fun m -> m "input device sent 'done' without a type")
 
          method on_removed _ =
            Exceptions.guard "on_removed"
@@ -472,7 +493,7 @@ let on_libinput_device device (wm_box : Wm.t Box.t) =
            Exceptions.guard "on_input_device"
            @@ fun () ->
            match Wm.find_input_device_opt wm (Wayland.Proxy.id paired) with
-           | None -> Logs.warn @@ fun m -> m "input device unknown"
+           | None -> Log.warn @@ fun m -> m "input device unknown"
            | Some d ->
              Box.fill device_box d;
              d.libinput <- Some device
@@ -487,7 +508,7 @@ let on_libinput_device device (wm_box : Wm.t Box.t) =
                   match d.role with
                   | Pointer p -> p.class_ <- Touchpad
                   | r ->
-                    Logs.err
+                    Log.err
                     @@ fun m ->
                     m
                       "got tap support on a non-pointer device: %s"
@@ -586,7 +607,7 @@ let on_xkb_keyboard keyboard (wm_box : Wm.t Box.t) =
            match Wm.find_input_device_opt wm d with
            | None ->
              Wm.add_xkb_stash wm d keyboard;
-             Logs.warn @@ fun m -> m "xkb keyboard for unknown device"
+             Log.warn @@ fun m -> m "xkb keyboard for unknown device"
            | Some entry -> Input_device.set_keyboard wm entry keyboard
 
          method on_removed _ =

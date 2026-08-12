@@ -175,11 +175,11 @@ let handle ctx seat ({ body; reply } : Pending_request.t) =
     with
     | exn ->
       let estr = Printexc.to_string exn in
-      Logs.err (fun m -> m "dispatch raised: %s@.%s" estr (Printexc.get_backtrace ()));
+      Log.err (fun m -> m "dispatch raised: %s@.%s" estr (Printexc.get_backtrace ()));
       Error estr
   in
   match result, reply with
   | Ok _, None -> ()
-  | Error msg, None -> Logs.debug @@ fun m -> m "%s" msg
+  | Error msg, None -> Log.debug @@ fun m -> m "%s" msg
   | _, Some u -> Eio.Promise.resolve u result
 ;;

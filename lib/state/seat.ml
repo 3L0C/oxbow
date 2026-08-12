@@ -13,7 +13,7 @@ end
 
 let unbind_xkb_binding s mode mods keysym =
   let matches (b : Xkb_binding.t) =
-    String.equal b.mode mode && b.mods = mods && b.keysym = keysym
+    Mode.equal b.mode mode && b.mods = mods && b.keysym = keysym
   in
   let to_destroy, to_keep = List.partition matches s.xkb_bindings in
   List.iter (fun (k : Xkb_binding.t) -> Emit.destroy_xkb_binding k.obj) to_destroy;
@@ -56,7 +56,7 @@ let replace_xkb_binding wm s mode mods keysym command =
 
 let unbind_pointer_binding s mode mods button =
   let matches (p : Pointer_binding.t) =
-    String.equal p.mode mode && p.mods = mods && p.button = button
+    Mode.equal p.mode mode && p.mods = mods && p.button = button
   in
   let to_destroy, to_keep = List.partition matches s.pointer_bindings in
   List.iter (fun (p : Pointer_binding.t) -> Emit.destroy_pointer_binding p.obj) to_destroy;
@@ -124,10 +124,8 @@ let set_layer_focus s layer =
   Schedule.manage ()
 ;;
 
-let set_mode (wm : Types.Wm.t) s mode =
-  if not @@ List.mem mode wm.config.modes
-  then Error (Printf.sprintf "mode not declared: %S" mode)
-  else if String.equal mode Mode.locked
+let set_mode s mode =
+  if Mode.(equal mode locked)
   then Error "cannot enter 'locked' mode manually"
   else Ok (s.mode <- mode)
 ;;
@@ -170,23 +168,15 @@ let set_overview_watch s v = s.overview_watch <- v
 let set_watch_sent s sent = s.watch_sent <- sent
 
 let bind (wm : Types.Wm.t) s ?(mode = Mode.normal) mods (key : Types.Key.t) command =
-  if not @@ List.mem mode wm.config.modes
-  then Error (Printf.sprintf "mode not declared: %S" mode)
-  else
-    Ok
-      (match key with
-       | Keysym keysym -> replace_xkb_binding wm s mode mods keysym command
-       | Pointer button -> replace_pointer_binding s mode mods button command)
+  match key with
+  | Keysym keysym -> replace_xkb_binding wm s mode mods keysym command
+  | Pointer button -> replace_pointer_binding s mode mods button command
 ;;
 
-let unbind (wm : Types.Wm.t) s ?(mode = Mode.normal) mods (key : Types.Key.t) =
-  if not @@ List.mem mode wm.config.modes
-  then Error (Printf.sprintf "mode not declared: %S" mode)
-  else
-    Ok
-      (match key with
-       | Keysym keysym -> unbind_xkb_binding s mode mods keysym
-       | Pointer button -> unbind_pointer_binding s mode mods button)
+let unbind s ?(mode = Mode.normal) mods (key : Types.Key.t) =
+  match key with
+  | Keysym keysym -> unbind_xkb_binding s mode mods keysym
+  | Pointer button -> unbind_pointer_binding s mode mods button
 ;;
 
 let focused_window s =

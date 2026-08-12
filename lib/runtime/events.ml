@@ -44,15 +44,14 @@ let snapshot_output (wm : Wm.t) (output : Output.t) =
 
 let snapshots (wm : Wm.t) =
   let seat_snaps =
-    List.map
+    List.concat_map
       (fun (s : Seat.t) ->
          let snaps = [ snapshot_mode s; snapshot_focus s ] in
          List.filter_map Fun.id snaps)
       wm.seats
-    |> List.flatten
   in
   let out_snaps =
-    List.map
+    List.concat_map
       (fun (o : Output.t) ->
          let snaps =
            [ snapshot_tags o
@@ -63,7 +62,6 @@ let snapshots (wm : Wm.t) =
          in
          List.filter_map Fun.id snaps)
       wm.outputs
-    |> List.flatten
   in
   out_snaps @ seat_snaps
 ;;
