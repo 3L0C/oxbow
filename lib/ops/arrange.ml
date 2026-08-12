@@ -106,9 +106,10 @@ let cycle_overview wm (seat : Seat.t) (dir : Direction.Logical.t) ~until_release
   With.focused_window seat
   @@ fun o head ->
   let target =
+    let visible = List.filter Window.tag_visible o.focus_stack in
     match dir with
-    | Next -> Ring.next_or_first head o.focus_stack
-    | Prev -> Ring.prev_or_last head o.focus_stack
+    | Next -> Ring.next_or_first head visible
+    | Prev -> Ring.prev_or_last head visible
   in
   if not o.overview.enabled then enter_overview wm o;
   Option.iter Stacking.focus_window target;

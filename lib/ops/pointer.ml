@@ -6,10 +6,7 @@ let follow_allowed (policy : Focus_follows_policy.t) (w : Window.t) =
   match policy with
   | Always -> true
   | Never -> false
-  | Not_scrolling ->
-    (match w.clip with
-     | Some (`Scrolling, _) -> false
-     | _ -> true)
+  | Not_scrolling -> not @@ Window.scroll_clipped w
 ;;
 
 let handle_position (wm : Wm.t) (seat : Seat.t) (x, y) =

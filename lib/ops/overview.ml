@@ -3,7 +3,7 @@ open! Oxbow_state
 open! Oxbow_layout
 
 let arrange (wm : Wm.t) (output : Output.t) =
-  let windows = output.focus_stack in
+  let windows = List.filter Window.tag_visible output.focus_stack in
   let n = List.length windows in
   if n = 0
   then ()

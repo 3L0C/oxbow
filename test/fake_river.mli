@@ -76,6 +76,18 @@ val send_pointer_enter : t -> seat:string -> app_id:string option -> unit
     {b Effects:} sends Wayland events *)
 val send_pointer_position : t -> seat:string -> x:int32 -> y:int32 -> unit
 
+(** [send_pointer_hover t ~seat ~app_id ~x ~y] sends pointer_enter on the first
+    window with [app_id], then pointer_position ([x], [y]), then ticks once.
+
+    {b Effects:} sends Wayland events *)
+val send_pointer_hover
+  :  t
+  -> seat:string
+  -> app_id:string option
+  -> x:int32
+  -> y:int32
+  -> unit
+
 (** [send_op_delta t ~seat ~dx ~dy] sends op_delta ([dx], [dy]) on [seat], then
     ticks.
 

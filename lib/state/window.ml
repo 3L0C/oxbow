@@ -142,6 +142,13 @@ let tag_visible w =
 ;;
 
 let is_tiled w = w.presentation = Tiled
+
+let scroll_clipped w =
+  match w.clip, w.output with
+  | Some (`Scrolling, _), Some o -> (tag_layout o).layout = Scrolling && is_tiled w
+  | _ -> false
+;;
+
 let is_tiled_on_tag w = tag_visible w && is_tiled w
 
 let swallowing w =

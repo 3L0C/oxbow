@@ -18,5 +18,8 @@ let () =
   oxctl "window scratchpad clear --app-id ^qalculate$";
   oxctl "window list --app-id ^qalculate$";
   oxctl "window scratchpad add notes --app-id ^firefox$";
-  oxctl "window list --app-id ^firefox$"
+  oxctl "window list --app-id ^firefox$";
+  oxctl "scratchpad toggle notes";
+  oxctl "output overview";
+  oxctl "window list"
 ;;

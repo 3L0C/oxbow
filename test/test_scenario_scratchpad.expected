@@ -283,3 +283,45 @@ render:place_top(emacs)
 render:place_top(firefox)
 render:place_top(qalculate)
 render:set_presentation_mode
+
+== scratchpad toggle notes ==
+manage:propose_dimensions(emacs, 1872x1032)
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:hide(firefox)
+render:set_position(emacs, 24, 24)
+render:place_top(emacs)
+render:place_top(qalculate)
+render:set_presentation_mode
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:place_top(qalculate)
+render:set_presentation_mode
+
+== output overview ==
+manage:propose_dimensions(qalculate, 937x517)
+manage:propose_dimensions(emacs, 937x517)
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:set_position(qalculate, 14, 14)
+render:set_position(emacs, 969, 14)
+render:place_top(emacs)
+render:place_top(qalculate)
+render:set_presentation_mode
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:place_top(qalculate)
+render:set_presentation_mode
+
+== window list ==
+ID  IDENTIFIER  TITLE      APP-ID     OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+3   null        qalculate  qalculate  FAKE-1  1     true     false   false     false   floating      off     null        false    false
+2   null        firefox    firefox    FAKE-1  1     false    false   false     true    tiled         off     notes       true     false
+1   null        emacs      emacs      FAKE-1  1     false    false   false     false   tiled         off     null        false    false
+manage:focus_window(seat0, qalculate)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:place_top(qalculate)
+render:set_presentation_mode

@@ -690,6 +690,14 @@ let send_pointer_position t ~seat ~x ~y =
   tick t
 ;;
 
+let send_pointer_hover t ~seat ~app_id ~x ~y =
+  Wm_server.River_seat_v1.pointer_enter
+    (seat_named t ~seat)
+    ~window:(window_named t ~app_id);
+  Wm_server.River_seat_v1.pointer_position (seat_named t ~seat) ~x ~y;
+  tick t
+;;
+
 let send_op_delta t ~seat ~dx ~dy =
   Wm_server.River_seat_v1.op_delta (seat_named t ~seat) ~dx ~dy;
   tick t

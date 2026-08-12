@@ -79,6 +79,10 @@ val tag_visible : t -> bool
 (** [is_tiled window] is [true] when [window] is tiled. *)
 val is_tiled : t -> bool
 
+(** [scroll_clipped w] is [true] when [w] has a [`Scrolling] clip, is tiled and
+    the layout of [w]'s output is [Scrolling]. *)
+val scroll_clipped : t -> bool
+
 (** [is_tiled_on_tag window] is [tag_visible window && is_tiled window] *)
 val is_tiled_on_tag : t -> bool
 
