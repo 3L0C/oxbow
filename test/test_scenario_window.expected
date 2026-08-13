@@ -351,3 +351,50 @@ FAKE-1          true     false
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
+
+== check floating rules ==
+
+== window rules add --app-id=.* --move-to=25%,25% --resize-to=50%,50% ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules list ==
+PATTERN                   EFFECTS
+app_id=.* case=sensitive  resize_to=w=pct 50.0 h=pct 50.0 move_to=x=pct 25.0 y=pct 25.0
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== spawn kitty ==
+manage:get_node(kitty)
+manage:set_capabilities(kitty, caps=0x4)
+manage:propose_dimensions(kitty, 960x540)
+manage:set_tiled(kitty, edges=0x0)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 480, 270)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== close kitty ==
+manage:destroy(kitty)
+manage:destroy(kitty)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)

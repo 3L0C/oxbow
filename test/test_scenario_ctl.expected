@@ -102,7 +102,7 @@ render:set_presentation_mode(FAKE-1, vsync)
 == mpv arrives floating on tag 3 ==
 manage:get_node(mpv)
 manage:set_capabilities(mpv, caps=0x4)
-manage:propose_dimensions(mpv, 0x0)
+manage:propose_dimensions(mpv, 960x540)
 manage:set_tiled(mpv, edges=0x0)
 manage:use_ssd(mpv)
 manage:inform_unmaximized(mpv)

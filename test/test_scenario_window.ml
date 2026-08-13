@@ -59,6 +59,14 @@ let check_output_capture_sessions ({ Harness.fake; section; oxctl; _ } as h) =
   oxctl "output list"
 ;;
 
+let check_floating_rules ({ Harness.oxctl; _ } as h) =
+  Harness.with_windows "check floating rules" h []
+  @@ fun () ->
+  oxctl "window rules add --app-id=.* --move-to=25%,25% --resize-to=50%,50%";
+  oxctl "window rules list";
+  Harness.spawn ~section:"spawn kitty" h "kitty" |> Harness.close h
+;;
+
 let () =
   Harness.run
   @@ fun ({ Harness.fake; section; _ } as h) ->
@@ -69,5 +77,6 @@ let () =
   check_window_close h;
   check_late_fixed_hint h;
   check_captured_border h;
-  check_output_capture_sessions h
+  check_output_capture_sessions h;
+  check_floating_rules h
 ;;

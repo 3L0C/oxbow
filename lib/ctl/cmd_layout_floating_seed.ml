@@ -7,9 +7,9 @@ let command_term =
       0
       ~docv:"SEED"
       ~doc:
-        "The seed size used when a window floats for the first time. A pixel value \
-         (e.g., $(b,800)) or a percentage of the usable area (e.g., $(b,50%)). The value \
-         applies to both dimensions. The window is centered."
+        "The size used when a window becomes floating and has no remembered placement. A \
+         pixel value (e.g., $(b,800)) or a percentage of the usable area (e.g., \
+         $(b,50%)). The value applies to both dimensions. The window is centered. "
   and+ scope = Ctl_cli.setting_scope_term in
   Command.Layout (Floating (Seed { seed; scope }))
 ;;

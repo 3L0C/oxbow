@@ -103,7 +103,9 @@ let manage_new_window ctx (window : Window.t) =
   Swallow.try_swallow wm window;
   Window.set_lifecycle window Active;
   match window.output with
-  | Some o -> if Window.floats window o then Window.set_float_seed_pending window true
+  | Some o ->
+    if Window.floats window o && Option.is_none window.float_rel
+    then Window.set_float_seed_pending window true
   | _ -> ()
 ;;
 

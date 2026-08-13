@@ -103,7 +103,7 @@ render:set_presentation_mode(FAKE-1, vsync)
 == qalculate arrives ==
 manage:get_node(qalculate)
 manage:set_capabilities(qalculate, caps=0x4)
-manage:propose_dimensions(qalculate, 0x0)
+manage:propose_dimensions(qalculate, 960x540)
 manage:set_tiled(qalculate, edges=0x0)
 manage:use_ssd(qalculate)
 manage:inform_unmaximized(qalculate)
@@ -155,7 +155,6 @@ render:place_top(firefox)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == scratchpad toggle calc ==
-manage:propose_dimensions(qalculate, 960x540)
 manage:focus_window(seat0, qalculate)
 manage:op_end(seat0)
 render:set_borders(qalculate, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
