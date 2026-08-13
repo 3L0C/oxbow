@@ -3,19 +3,16 @@ let () =
   Oxbow_ops.Swallow.parent_pid := fun pid -> List.assoc_opt pid table
 ;;
 
-let check_swallow_lifecycle ({ Harness.fake; section; oxctl; _ } as h) =
+let check_swallow_lifecycle ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check swallow lifecycle" h []
   @@ fun () ->
   oxctl "window rules add --app-id=^foot$ --swallow=terminal";
-  section "foot arrives" (fun () ->
-    Fake_river.add_window ~pid:42 fake ~app_id:(Some "foot"));
-  section "mpv arrives - swallows foot" (fun () ->
-    Fake_river.add_window ~pid:100 fake ~app_id:(Some "mpv"));
+  let foot = Harness.spawn ~pid:42 h "foot" in
+  let mpv = Harness.spawn ~section:"mpv arrives - swallows foot" ~pid:100 h "mpv" in
   oxctl "window toggle swallow";
   oxctl "window toggle swallow";
-  section "mpv closes - foot returns" (fun () ->
-    Fake_river.close_window fake ~app_id:(Some "mpv"));
-  section "foot closes" (fun () -> Fake_river.close_window fake ~app_id:(Some "foot"))
+  Harness.close ~section:"mpv closes - foot returns" h mpv;
+  Harness.close ~section:"foot closes" h foot
 ;;
 
 let () =

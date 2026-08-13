@@ -21,7 +21,7 @@ let check_subscribe ({ Harness.env; fake; section; oxctl } as h) =
          lines := l :: !lines))
     (fun () ->
        oxctl "tag view 2";
-       section "spawn emacs" (fun () -> Fake_river.add_window fake ~app_id:(Some "emacs"));
+       let emacs = Harness.spawn ~section:"spawn emacs" h "emacs" in
        oxctl "layout scrolling";
        oxctl "keymap mode declare resize";
        oxctl "keymap mode enter resize";
@@ -34,8 +34,8 @@ let check_subscribe ({ Harness.env; fake; section; oxctl } as h) =
        List.rev !lines |> List.iter print_endline;
        Harness.section "events human";
        List.rev !lines
-       |> List.iter (fun l -> print_endline (Oxbow_ctl.Ctl_cli.render_event l)));
-  Fake_river.close_window fake ~app_id:(Some "emacs")
+       |> List.iter (fun l -> print_endline (Oxbow_ctl.Ctl_cli.render_event l));
+       Harness.close h emacs)
 ;;
 
 let () =

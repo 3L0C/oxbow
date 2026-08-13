@@ -136,16 +136,11 @@ manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== check output list: setup ==
+== check output list ==
 
 == output list ==
 NAME    LABELS  FOCUSED  CAPTURED
 FAKE-1          true     false
-manage:clear_focus(seat0)
-manage:op_end(seat0)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== check output list: teardown ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)

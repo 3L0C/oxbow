@@ -1,19 +1,15 @@
-let check_scratchpad_rule ({ Harness.fake; section; oxctl; _ } as h) =
+let check_scratchpad_rule ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check scratchpad rule" h [ "emacs", 1; "firefox", 1 ]
   @@ fun () ->
   oxctl "window rules add --app-id=qalculate --scratchpad=calc --float";
-  section "qalculate arrives" (fun () ->
-    Fake_river.add_window fake ~app_id:(Some "qalculate"));
+  let qalculate = Harness.spawn h "qalculate" in
   oxctl "scratchpad toggle calc";
   oxctl "window list";
   oxctl "scratchpad toggle calc";
   oxctl "window list";
   oxctl "window scratchpad clear --app-id ^qalculate$";
   oxctl "window list --app-id ^qalculate$";
-  oxctl "window rules list";
-  oxctl "window rules remove 0";
-  section "qalculate closes" (fun () ->
-    Fake_river.close_window fake ~app_id:(Some "qalculate"))
+  Harness.close ~section:"qalculate closes" h qalculate
 ;;
 
 let check_scratchpad_add_toggle ({ Harness.oxctl; _ } as h) =

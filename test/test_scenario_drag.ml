@@ -41,6 +41,7 @@ let check_move_drag_scrolling_column ({ Harness.fake; section; oxctl; _ } as h) 
     h
     [ "firefox", 1; "emacs", 1; "mpv", 1 ]
   @@ fun () ->
+  oxctl "window drag retile enabled";
   oxctl "layout scrolling left";
   oxctl "window focus match --app-id=emacs";
   oxctl "window column consume";
@@ -61,6 +62,7 @@ let check_move_drag_scrolling_vertical ({ Harness.fake; section; oxctl; _ } as h
     h
     [ "firefox", 1; "emacs", 1; "mpv", 1 ]
   @@ fun () ->
+  oxctl "window drag retile enabled";
   oxctl "layout scrolling left";
   oxctl "layout scrolling orientation down";
   oxctl "window list";

@@ -33,14 +33,17 @@ let check_floating_move_resize ({ Harness.oxctl; _ } as h) =
   oxctl "window move to 100 100 --app-id ^kitty$";
   oxctl "output swap tags";
   oxctl "window list";
-  oxctl "layout tiling";
-  oxctl "output focus next";
   oxctl "layout tiling"
 ;;
 
 let check_window_toggle_floating ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check window toggle floating" h [ "kitty", 1; "emacs", 1 ]
   @@ fun () ->
+  oxctl "window toggle floating --app-id ^kitty$";
+  oxctl "window list";
+  oxctl "window resize to 800 600 --app-id ^kitty$";
+  oxctl "window move to 100 100 --app-id ^kitty$";
+  oxctl "window list";
   oxctl "window toggle floating --app-id ^kitty$";
   oxctl "window list";
   oxctl "window toggle floating --app-id ^kitty$";

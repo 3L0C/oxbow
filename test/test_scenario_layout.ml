@@ -2,25 +2,19 @@ let check_tiling_mfact ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check tiling mfact" h [ "kitty", 1; "emacs", 1; "firefox", 1 ]
   @@ fun () ->
   oxctl "layout tiling mfact +0.05";
-  oxctl "layout tiling query";
-  oxctl "layout tiling mfact 0.55"
+  oxctl "layout tiling query"
 ;;
 
-let check_tiling_scheme ({ Harness.fake; section; oxctl; _ } as h) =
+let check_tiling_scheme ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check tiling scheme" h [ "kitty", 1; "emacs", 1; "firefox", 1 ]
   @@ fun () ->
   oxctl "layout tiling scheme monocle";
   oxctl "layout tiling scheme deck";
-  let mpv = ref None in
-  let feishin = ref None in
-  section "check tiling scheme spawn under deck" (fun () ->
-    mpv := Some (Fake_river.spawn_window fake ~app_id:(Some "mpv"));
-    feishin := Some (Fake_river.spawn_window fake ~app_id:(Some "feishin")));
+  let mpv = Harness.spawn ~section:"mpv arrives under deck" h "mpv" in
+  let feishin = Harness.spawn ~section:"feishin arrives under deck" h "feishin" in
   oxctl "window list";
-  section "check tiling scheme spawn teardown" (fun () ->
-    Option.iter (Fake_river.close fake) !feishin;
-    Option.iter (Fake_river.close fake) !mpv);
-  oxctl "layout tiling scheme even"
+  Harness.close h feishin;
+  Harness.close h mpv
 ;;
 
 let check_layout_select ({ Harness.oxctl; _ } as h) =
@@ -28,8 +22,7 @@ let check_layout_select ({ Harness.oxctl; _ } as h) =
   @@ fun () ->
   oxctl "layout floating";
   oxctl "layout scrolling";
-  oxctl "layout query";
-  oxctl "layout tiling"
+  oxctl "layout query"
 ;;
 
 let check_overview_toggle ({ Harness.oxctl; _ } as h) =
@@ -38,22 +31,19 @@ let check_overview_toggle ({ Harness.oxctl; _ } as h) =
   oxctl "layout scrolling";
   oxctl "output overview";
   oxctl "window focus prev";
-  oxctl "output overview";
-  oxctl "layout tiling"
+  oxctl "output overview"
 ;;
 
-let check_floating_seed ({ Harness.fake; section; oxctl; _ } as h) =
+let check_floating_seed ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check floating seed" h [ "kitty", 1 ]
   @@ fun () ->
   oxctl "layout floating seed 25%";
-  let chromium = ref None in
-  section "check floating seed spawn - no float memory" (fun () ->
-    chromium := Some (Fake_river.spawn_window fake ~app_id:(Some "chromium")));
+  let chromium =
+    Harness.spawn ~section:"chromium arrives - no float memory" h "chromium"
+  in
   oxctl "window toggle floating --app-id ^chromium$";
   oxctl "window list";
-  section "check floating seed teardown" (fun () ->
-    Option.iter (Fake_river.close fake) !chromium);
-  oxctl "layout floating seed 50%"
+  Harness.close h chromium
 ;;
 
 let () =

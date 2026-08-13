@@ -1,9 +1,7 @@
-let with_kitty { Harness.fake; section; _ } body =
-  let kitty = ref None in
-  section "spawn kitty" (fun () ->
-    kitty := Some (Fake_river.spawn_window fake ~app_id:(Some "kitty")));
+let with_kitty h body =
+  let kitty = Harness.spawn ~section:"spawn kitty" h "kitty" in
   body ();
-  section "close kitty" (fun () -> Option.iter (Fake_river.close fake) !kitty)
+  Harness.close ~section:"close kitty" h kitty
 ;;
 
 let check_spawn_position_next ({ Harness.oxctl; _ } as h) =

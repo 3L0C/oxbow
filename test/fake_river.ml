@@ -705,8 +705,6 @@ let spawn_window ?pid t ~app_id =
   w
 ;;
 
-let add_window ?pid t ~app_id = spawn_window ?pid t ~app_id |> ignore
-
 let close t w =
   t.windows <- List.filter (fun (_, w') -> Proxy.id w' <> Proxy.id w) t.windows;
   Wm_server.River_window_v1.closed w;
@@ -750,8 +748,6 @@ let send_output_capture_sessions t ~name ~count =
   Wm_server.River_output_v1.capture_sessions (output_named t ~name) ~count;
   tick t
 ;;
-
-let close_window t ~app_id = window_named t ~app_id |> close t
 
 let send_pointer_enter t ~seat ~app_id =
   Wm_server.River_seat_v1.pointer_enter

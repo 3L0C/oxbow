@@ -45,16 +45,11 @@ val add_seat : t -> name:string -> unit
     {b Effects:} sends Wayland events *)
 val remove_seat : t -> seat -> unit
 
-(** [spawn_window ?pid t ~app_id] is [add_window] with the window as the result.
+(** [spawn_window ?pid t ~app_id] announces one window, then ticks. When [pid]
+    is present, the unreliable_pid event follows the app_id event.
 
     {b Effects:} sends Wayland events *)
 val spawn_window : ?pid:int -> t -> app_id:string option -> window
-
-(** [add_window ?pid t ~app_id] announces one window, then ticks. When [pid] is
-    present, the unreliable_pid event follows the app_id event.
-
-    {b Effects:} sends Wayland events *)
-val add_window : ?pid:int -> t -> app_id:string option -> unit
 
 (** [close t w] sends closed on [w], then ticks.
 
@@ -85,12 +80,6 @@ val send_capture_sessions : t -> app_id:string option -> count:int32 -> unit
 
     {b Effects:} sends Wayland events *)
 val send_output_capture_sessions : t -> name:string -> count:int32 -> unit
-
-(** [close_window t ~app_id] sends closed on the first window with [app_id],
-    then ticks.
-
-    {b Effects:} sends Wayland events *)
-val close_window : t -> app_id:string option -> unit
 
 (** [press_binding t ~index] sends pressed on binding [index], outside a
     sequence. Bindings count in creation order.

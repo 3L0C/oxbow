@@ -75,7 +75,12 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
       ; geom = { x = 0l; y = 0l; w = 0l; h = 0l }
       ; usable = { x = 0; y = 0; w = 0; h = 0 }
       ; tags = { selected = Tag.Set.singleton 1; previous = Tag.Set.singleton 1 }
-      ; overview = { offset = 0; enabled = false; gaps = 10; head = None }
+      ; overview =
+          { offset = 0
+          ; enabled = false
+          ; gaps = Config.default_overview_gaps
+          ; head = None
+          }
       ; tag_data =
           Tag.Table.make (fun () -> Config.copy_tag_data wm.config.default_tag_config)
       ; focus_stack = []

@@ -3,8 +3,7 @@ let check_column_consume ({ Harness.oxctl; _ } as h) =
   @@ fun () ->
   oxctl "layout scrolling";
   oxctl "window column consume";
-  oxctl "window list";
-  oxctl "layout tiling"
+  oxctl "window list"
 ;;
 
 let check_column_focus_zoom ({ Harness.oxctl; _ } as h) =
@@ -17,8 +16,7 @@ let check_column_focus_zoom ({ Harness.oxctl; _ } as h) =
   oxctl "window column consume";
   oxctl "window focus next";
   oxctl "window zoom";
-  oxctl "window list";
-  oxctl "layout tiling"
+  oxctl "window list"
 ;;
 
 let () =

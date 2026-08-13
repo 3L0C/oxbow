@@ -1,5 +1,8 @@
 include module type of Types.Config
 
+(** [default_overview_gaps] is the overview gap at output creation. *)
+val default_overview_gaps : int
+
 (** [create_tag_data ()] is the default [Data.t] configuration. *)
 val create_tag_data : unit -> Data.t
 
@@ -74,6 +77,15 @@ val set_spawn_focus : Types.Wm.t -> bool -> unit
 (** [copy_tag_data td] is a copy of [td] that shares no mutable record with
     [td]. *)
 val copy_tag_data : Data.t -> Data.t
+
+(** [reset_data data] restores every field of [data] to the defaults. *)
+val reset_data : Data.t -> unit
+
+(** [reset wm ~all] restores the configured tag data, and overview gaps of every
+    output. When [all] is [true] rules, modes, and labels are also reset.
+
+    {b Effects:} mutates WM state *)
+val reset : Types.Wm.t -> all:bool -> unit
 
 (** [add_window_rule wm rule] adds window rule defined by [rule] to [wm]'s
     configuration.

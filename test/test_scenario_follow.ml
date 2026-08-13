@@ -10,8 +10,7 @@ let check_scrolling_hover_no_follow ({ Harness.fake; section; oxctl; _ } as h) =
       ~seat:"seat0"
       ~app_id:(Some "kitty")
       ~x:100l
-      ~y:500l);
-  oxctl "layout tiling"
+      ~y:500l)
 ;;
 
 let check_floating_hover_follow ({ Harness.fake; section; oxctl; _ } as h) =
@@ -31,8 +30,7 @@ let check_floating_hover_follow ({ Harness.fake; section; oxctl; _ } as h) =
       ~seat:"seat0"
       ~app_id:(Some "kitty")
       ~x:120l
-      ~y:520l);
-  oxctl "layout tiling"
+      ~y:520l)
 ;;
 
 let () =

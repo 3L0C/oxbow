@@ -30,22 +30,17 @@ let check_window_focus_by_label ({ Harness.oxctl; _ } as h) =
   oxctl "window list --label=none"
 ;;
 
-let check_window_label_as_rule ({ Harness.fake; section; oxctl; _ } as h) =
+let check_window_label_as_rule ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check window label as rule" h []
   @@ fun () ->
   oxctl "window rules add --label-as=video_player --app-id=mpv";
   oxctl "window rules add --label-as=browser --app-id=firefox";
-  section "firefox and mpv arrive" (fun () ->
-    Fake_river.add_window fake ~app_id:(Some "firefox");
-    Fake_river.add_window fake ~app_id:(Some "mpv"));
+  let firefox = Harness.spawn h "firefox" in
+  let mpv = Harness.spawn h "mpv" in
   oxctl "window list --label=video_player";
   oxctl "window list --label=browser";
-  oxctl "window rules remove 0";
-  oxctl "window rules remove 0";
-  oxctl "window rules list";
-  section "close firefox and mpv" (fun () ->
-    Fake_river.close_window fake ~app_id:(Some "firefox");
-    Fake_river.close_window fake ~app_id:(Some "mpv"))
+  Harness.close h firefox;
+  Harness.close h mpv
 ;;
 
 let check_output_label_add ({ Harness.oxctl; _ } as h) =
@@ -71,8 +66,7 @@ let check_output_focus_by_label ({ Harness.oxctl; _ } as h) =
   oxctl "output focus match --label=first";
   oxctl "output list";
   oxctl "output focus match --label=third";
-  oxctl "output list";
-  oxctl "output label remove --name=FAKE-1 first"
+  oxctl "output list"
 ;;
 
 let () =

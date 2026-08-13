@@ -91,28 +91,7 @@ manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== check subscribe: setup ==
-manage:get_node(kitty)
-manage:set_capabilities(kitty, caps=0x4)
-manage:propose_dimensions(kitty, 1872x1032)
-manage:set_tiled(kitty, edges=0xf)
-manage:use_ssd(kitty)
-manage:inform_unmaximized(kitty)
-manage:inform_not_fullscreen(kitty)
-manage:inform_resize_end(kitty)
-manage:focus_window(seat0, kitty)
-manage:op_end(seat0)
-manage:focus_window(seat0, kitty)
-manage:op_end(seat0)
-render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_position(kitty, 24, 24)
-render:show(kitty)
-render:set_clip_box(kitty, 0, 0, 0x0)
-render:set_content_clip_box(kitty, 0, 0, 0x0)
-render:place_top(kitty)
-render:set_presentation_mode(FAKE-1, vsync)
-render:place_top(kitty)
-render:set_presentation_mode(FAKE-1, vsync)
+== check subscribe ==
 
 == tag view 2 ==
 manage:clear_focus(seat0)
@@ -254,7 +233,7 @@ event=layout output=FAKE-1 layout=scrolling scheme=null symbol=>>=
 event=mode seat=seat0 mode=resize
 event=output name=FAKE-1 labels= focused=true captured=true
 
-== check subscribe: teardown ==
+== close emacs ==
 manage:destroy(emacs)
 manage:destroy(emacs)
 manage:clear_focus(seat0)
@@ -262,18 +241,4 @@ manage:op_end(seat0)
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
-render:set_presentation_mode(FAKE-1, vsync)
-manage:destroy(kitty)
-manage:destroy(kitty)
-manage:clear_focus(seat0)
-manage:op_end(seat0)
-manage:clear_focus(seat0)
-manage:op_end(seat0)
-render:set_presentation_mode(FAKE-1, vsync)
-render:set_presentation_mode(FAKE-1, vsync)
-manage:clear_focus(seat0)
-manage:op_end(seat0)
-render:set_presentation_mode(FAKE-1, vsync)
-manage:clear_focus(seat0)
-manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)

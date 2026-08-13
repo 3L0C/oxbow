@@ -153,4 +153,7 @@ module Table : sig
 
       @raise Invalid_argument when [tags] is empty. *)
   val find : 'a t -> Set.t -> 'a
+
+  (** [iter f table] applies [f] to every slot. *)
+  val iter : ('a -> unit) -> 'a t -> unit
 end

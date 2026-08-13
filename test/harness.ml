@@ -3,8 +3,23 @@ exception Script_done
 type h_env =
   { env : Eio_unix.Stdenv.base
   ; fake : Fake_river.t
-  ; section : string -> (unit -> unit) -> unit
+  ; section : 'a. string -> (unit -> 'a) -> 'a
   ; oxctl : string -> unit
+  }
+
+type window =
+  { app_id : string
+  ; w : Fake_river.window
+  }
+
+type output =
+  { output_name : string
+  ; o : Fake_river.output
+  }
+
+type seat =
+  { seat_name : string
+  ; s : Fake_river.seat
   }
 
 let socket_path = Printf.sprintf "./oxbow-test-%d.sock" (Unix.getpid ())
@@ -40,6 +55,15 @@ let dump_new fake =
   List.iter print_endline fresh;
   seen := List.length all
 ;;
+
+let depth = ref 0
+
+let swallow fake =
+  settle fake;
+  seen := Fake_river.trace fake |> List.length
+;;
+
+let check_header name = if !depth = 1 then Printf.printf "\n== %s ==\n" name
 
 (* Run.loop binds the ipc socket late in its setup. Retry with yields until the
    bind wins the race with the script fiber. *)
@@ -88,44 +112,96 @@ let oxctl env args =
 
 let raw_oxctl h args = oxctl h.env args
 
+let with_reset name h f =
+  incr depth;
+  check_header name;
+  Fun.protect
+    ~finally:(fun () ->
+      if !depth = 1 then raw_oxctl h [ "config"; "reset"; "--all" ];
+      swallow h.fake;
+      decr depth)
+    f
+;;
+
 let with_windows name h spec body =
+  with_reset name h
+  @@ fun () ->
   let spawned = ref [] in
-  h.section (name ^ ": setup") (fun () ->
-    let tag = ref 1 in
-    List.iter
-      (fun (app_id, target) ->
-         if target <> !tag
-         then (
-           raw_oxctl h [ "tag"; "view"; string_of_int target ];
-           tag := target);
-         spawned := Fake_river.spawn_window h.fake ~app_id:(Some app_id) :: !spawned)
-      spec;
-    if !tag <> 1 then raw_oxctl h [ "tag"; "view"; "1" ]);
-  body ();
-  h.section (name ^ ": teardown") (fun () ->
-    List.iter (Fake_river.close h.fake) !spawned;
-    raw_oxctl h [ "tag"; "view"; "1" ])
+  (* Tag 0 is not a target. It makes the first spec set the visible tag, because
+     `config reset --all` does not restore it. *)
+  let tag = ref 0 in
+  List.iter
+    (fun (app_id, target) ->
+       if target <> !tag
+       then (
+         raw_oxctl h [ "tag"; "view"; string_of_int target ];
+         tag := target);
+       spawned := Fake_river.spawn_window h.fake ~app_id:(Some app_id) :: !spawned)
+    spec;
+  if !tag <> 1 then raw_oxctl h [ "tag"; "view"; "1" ];
+  swallow h.fake;
+  Fun.protect
+    ~finally:(fun () ->
+      List.iter (Fake_river.close h.fake) !spawned;
+      raw_oxctl h [ "tag"; "view"; "1" ])
+    body
 ;;
 
 let with_outputs name h spec body =
+  with_reset name h
+  @@ fun () ->
   let spawned = ref [] in
-  h.section (name ^ ": setup") (fun () ->
-    List.iter
-      (fun (n, x, y) ->
-         spawned := Fake_river.spawn_output h.fake ~x ~y ~name:n :: !spawned)
-      spec);
-  body ();
-  h.section (name ^ ": teardown") (fun () ->
-    List.iter (Fake_river.remove_output h.fake) !spawned)
+  List.iter
+    (fun (n, x, y) -> spawned := Fake_river.spawn_output h.fake ~x ~y ~name:n :: !spawned)
+    spec;
+  Fun.protect
+    ~finally:(fun () -> List.iter (Fake_river.remove_output h.fake) !spawned)
+    body
 ;;
 
 let with_seats name h spec body =
+  with_reset name h
+  @@ fun () ->
   let spawned = ref [] in
-  h.section (name ^ ": setup") (fun () ->
-    List.iter (fun n -> spawned := Fake_river.spawn_seat h.fake ~name:n :: !spawned) spec);
-  body ();
-  h.section (name ^ ": teardown") (fun () ->
-    List.iter (Fake_river.remove_seat h.fake) !spawned)
+  List.iter (fun n -> spawned := Fake_river.spawn_seat h.fake ~name:n :: !spawned) spec;
+  Fun.protect ~finally:(fun () -> List.iter (Fake_river.remove_seat h.fake) !spawned) body
+;;
+
+let spawn ?section ?pid h app_id =
+  let name = Option.value ~default:(app_id ^ " arrives") section in
+  let w =
+    h.section name (fun () -> Fake_river.spawn_window ?pid h.fake ~app_id:(Some app_id))
+  in
+  { app_id; w }
+;;
+
+let close ?section h { app_id; w } =
+  let name = Option.value ~default:("close " ^ app_id) section in
+  h.section name (fun () -> Fake_river.close h.fake w)
+;;
+
+let spawn_output ?section ?x ?y h output_name =
+  let name = Option.value ~default:(output_name ^ " arrives") section in
+  let o =
+    h.section name (fun () -> Fake_river.spawn_output ?x ?y h.fake ~name:output_name)
+  in
+  { output_name; o }
+;;
+
+let remove_output ?section h { output_name; o } =
+  let name = Option.value ~default:("remove " ^ output_name) section in
+  h.section name (fun () -> Fake_river.remove_output h.fake o)
+;;
+
+let spawn_seat ?section h seat_name =
+  let name = Option.value ~default:(seat_name ^ " arrives") section in
+  let s = h.section name (fun () -> Fake_river.spawn_seat h.fake ~name:seat_name) in
+  { seat_name; s }
+;;
+
+let remove_seat ?section h { seat_name; s } =
+  let name = Option.value ~default:("remove " ^ seat_name) section in
+  h.section name (fun () -> Fake_river.remove_seat h.fake s)
 ;;
 
 let run script =
@@ -136,10 +212,12 @@ let run script =
     @@ fun sw ->
     let server_sock, client_sock = Eio_unix.Net.socketpair_stream ~sw () in
     let fake = Fake_river.start ~sw server_sock in
-    let section_helper name f =
+    let section_helper : 'a. string -> (unit -> 'a) -> 'a =
+      fun name f ->
       section name;
-      f ();
-      dump_new fake
+      let v = f () in
+      dump_new fake;
+      v
     in
     let oxctl_helper t =
       let args = String.split_on_char ' ' t in

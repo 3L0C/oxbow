@@ -13,8 +13,9 @@ let default_scrolling () =
 
 let default_floating () = Params.Floating.{ seed = Pct 50. }
 let default_gaps () = Params.Gaps.{ inner = 10; outer = 20 }
+let default_overview_gaps = 10
 
-let default_borders =
+let default_borders () =
   Border.
     { width = 4l
     ; focused = Color.of_string_exn "#7FB4CA"
@@ -37,7 +38,7 @@ let create_tag_data () =
 
 let default () =
   { default_tag_config = create_tag_data ()
-  ; borders = default_borders
+  ; borders = default_borders ()
   ; cursor_theme = None
   ; modkey = Wire.Modifiers.mod4
   ; rules = { window = []; input = [] }
@@ -121,6 +122,54 @@ let copy_tag_data (td : Data.t) =
     ; floating = { seed = td.floating.seed }
     ; gaps = { inner = td.gaps.inner; outer = td.gaps.outer }
     }
+;;
+
+let reset_data (data : Data.t) =
+  let d = create_tag_data () in
+  data.layout <- d.layout;
+  data.tiling.scheme <- d.tiling.scheme;
+  data.tiling.mfact <- d.tiling.mfact;
+  data.tiling.nmaster <- d.tiling.nmaster;
+  data.tiling.dir <- d.tiling.dir;
+  data.scrolling.align <- d.scrolling.align;
+  data.scrolling.default_width <- d.scrolling.default_width;
+  data.scrolling.offset <- d.scrolling.offset;
+  data.scrolling.dir <- d.scrolling.dir;
+  data.floating.seed <- d.floating.seed;
+  data.gaps.inner <- d.gaps.inner;
+  data.gaps.outer <- d.gaps.outer
+;;
+
+let reset (wm : Types.Wm.t) ~all =
+  let d = default () in
+  reset_data wm.config.default_tag_config;
+  wm.config.borders.width <- d.borders.width;
+  wm.config.borders.focused <- d.borders.focused;
+  wm.config.borders.unfocused <- d.borders.unfocused;
+  wm.config.borders.urgent <- d.borders.urgent;
+  wm.config.borders.swallowing <- d.borders.swallowing;
+  wm.config.borders.captured <- d.borders.captured;
+  wm.config.cursor_theme <- d.cursor_theme;
+  wm.config.modkey <- d.modkey;
+  wm.config.spawn.position <- d.spawn.position;
+  wm.config.spawn.focus <- d.spawn.focus;
+  wm.config.focus_follows_pointer <- d.focus_follows_pointer;
+  wm.config.warp_on_focus <- d.warp_on_focus;
+  wm.config.drag_retile <- d.drag_retile;
+  wm.config.repeat_rate <- d.repeat_rate;
+  wm.config.repeat_delay <- d.repeat_delay;
+  List.iter
+    (fun (o : Types.Output.t) ->
+       Oxbow_core.Tag.Table.iter reset_data o.tag_data;
+       o.overview.gaps <- default_overview_gaps)
+    wm.outputs;
+  if all
+  then (
+    wm.config.rules.window <- [];
+    wm.config.rules.input <- [];
+    wm.config.modes <- (default ()).modes;
+    List.iter (fun (o : Types.Output.t) -> o.labels <- []) wm.outputs;
+    List.iter (fun (w : Types.Window.t) -> w.labels <- []) wm.windows)
 ;;
 
 let add_window_rule (wm : Types.Wm.t) rule =

@@ -269,4 +269,6 @@ module Table = struct
     | Some i -> table.(i - 1)
     | None -> invalid_arg "Tag.Table.find: empty tag set"
   ;;
+
+  let iter = Array.iter
 end

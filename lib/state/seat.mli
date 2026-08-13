@@ -146,6 +146,11 @@ val bind
     {b Effects:} mutates WM state *)
 val unbind : t -> ?mode:Oxbow_core.Mode.t -> int32 -> Types.Key.t -> bool
 
+(** [clear_bindings s] destroys every pointer and key bind of [s].
+
+    {b Effects:} mutates WM state *)
+val clear_bindings : t -> unit
+
 (** [focused_window seat] is the focused window on [seat]'s output; [None] when
     the seat has no output. *)
 val focused_window : t -> Types.Window.t option

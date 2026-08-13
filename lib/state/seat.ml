@@ -179,6 +179,15 @@ let unbind s ?(mode = Mode.normal) mods (key : Types.Key.t) =
   | Pointer button -> unbind_pointer_binding s mode mods button
 ;;
 
+let clear_bindings s =
+  List.iter (fun (k : Xkb_binding.t) -> Emit.destroy_xkb_binding k.obj) s.xkb_bindings;
+  List.iter
+    (fun (p : Pointer_binding.t) -> Emit.destroy_pointer_binding p.obj)
+    s.pointer_bindings;
+  s.xkb_bindings <- [];
+  s.pointer_bindings <- []
+;;
+
 let focused_window s =
   match s.output with
   | Some o -> Output.focused_window o

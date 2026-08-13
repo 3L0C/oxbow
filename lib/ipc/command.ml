@@ -11,6 +11,10 @@ module Border = struct
   [@@deriving yojson]
 end
 
+module Config = struct
+  type t = Reset of { all : bool } [@name "reset"] [@@deriving yojson]
+end
+
 module Gaps = struct
   type t =
     | Inner of
@@ -365,6 +369,7 @@ end
 
 type t =
   | Border of Border.t [@name "border"]
+  | Config of Config.t [@name "config"]
   | Exec of string array [@name "exec"]
   | Gaps of Gaps.t [@name "gaps"]
   | Input of Input.t [@name "input"]

@@ -10,19 +10,20 @@ let check_window_focus_zoom ({ Harness.oxctl; _ } as h) =
   oxctl "window query"
 ;;
 
-let check_window_close ({ Harness.fake; section; oxctl; _ } as h) =
+let check_window_close ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check window close" h [ "kitty", 1; "firefox", 1 ]
   @@ fun () ->
-  section "emacs arrives" (fun () -> Fake_river.add_window fake ~app_id:(Some "emacs"));
-  section "close emacs" (fun () -> Fake_river.close_window fake ~app_id:(Some "emacs"));
+  let emacs = Harness.spawn h "emacs" in
+  Harness.close h emacs;
   oxctl "window query"
 ;;
 
 let check_late_fixed_hint ({ Harness.fake; section; oxctl; _ } as h) =
   Harness.with_windows "check late fixed hint" h [ "kitty", 1 ]
   @@ fun () ->
-  section "galculator arrives without hint" (fun () ->
-    Fake_river.add_window fake ~app_id:(Some "galculator"));
+  let galculator =
+    Harness.spawn ~section:"galculator arrives without hint" h "galculator"
+  in
   section "late fixed hint" (fun () ->
     Fake_river.send_dimensions_hint
       fake
@@ -32,8 +33,7 @@ let check_late_fixed_hint ({ Harness.fake; section; oxctl; _ } as h) =
       ~max_w:300l
       ~max_h:200l);
   oxctl "window list --app-id ^galculator$";
-  section "close galculator" (fun () ->
-    Fake_river.close_window fake ~app_id:(Some "galculator"))
+  Harness.close h galculator
 ;;
 
 let check_captured_border ({ Harness.fake; section; oxctl; _ } as h) =
@@ -44,8 +44,7 @@ let check_captured_border ({ Harness.fake; section; oxctl; _ } as h) =
     Fake_river.send_capture_sessions fake ~app_id:(Some "kitty") ~count:2l);
   oxctl "window list --app-id ^kitty$";
   section "kitty capture stops" (fun () ->
-    Fake_river.send_capture_sessions fake ~app_id:(Some "kitty") ~count:0l);
-  oxctl "border color captured 0x957FB8"
+    Fake_river.send_capture_sessions fake ~app_id:(Some "kitty") ~count:0l)
 ;;
 
 let check_output_capture_sessions ({ Harness.fake; section; oxctl; _ } as h) =

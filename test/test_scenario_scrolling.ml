@@ -7,9 +7,7 @@ let check_scrolling_align_centered ({ Harness.oxctl; _ } as h) =
   oxctl "layout query";
   oxctl "layout scrolling align centered";
   oxctl "layout scrolling";
-  oxctl "window list";
-  oxctl "layout scrolling align visible";
-  oxctl "layout tiling"
+  oxctl "window list"
 ;;
 
 let check_scrolling_focus_scroll ({ Harness.oxctl; _ } as h) =
@@ -24,8 +22,7 @@ let check_scrolling_focus_scroll ({ Harness.oxctl; _ } as h) =
   oxctl "window focus match --app-id=feishin";
   oxctl "window list";
   oxctl "window focus match --app-id=mpv";
-  oxctl "window list";
-  oxctl "layout tiling"
+  oxctl "window list"
 ;;
 
 let check_scrolling_float_resize_move ({ Harness.oxctl; _ } as h) =
@@ -38,8 +35,7 @@ let check_scrolling_float_resize_move ({ Harness.oxctl; _ } as h) =
   oxctl "window focus match --app-id=mpv";
   oxctl "window resize to 25% 25%";
   oxctl "window move to 75% 75%";
-  oxctl "window list";
-  oxctl "layout tiling"
+  oxctl "window list"
 ;;
 
 let check_scrolling_orientation ({ Harness.oxctl; _ } as h) =
@@ -49,14 +45,14 @@ let check_scrolling_orientation ({ Harness.oxctl; _ } as h) =
     [ "mpv", 1; "kitty", 1; "emacs", 1; "firefox", 1 ]
   @@ fun () ->
   oxctl "layout scrolling left";
+  oxctl "window toggle floating --app-id=mpv";
+  oxctl "window list";
   oxctl "layout scrolling orientation down";
   oxctl "window list";
   oxctl "layout scrolling orientation right";
   oxctl "window list";
   oxctl "layout scrolling orientation up";
-  oxctl "window list";
-  oxctl "layout scrolling orientation left";
-  oxctl "layout tiling"
+  oxctl "window list"
 ;;
 
 let () =

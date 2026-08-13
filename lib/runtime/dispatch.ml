@@ -10,6 +10,11 @@ let handle_border wm _seat (cmd : Command.Border.t) =
     Ok None
 ;;
 
+let handle_config wm _seat (cmd : Command.Config.t) =
+  match cmd with
+  | Reset { all } -> Reset.config wm ~all
+;;
+
 let handle_gaps ctx seat (cmd : Command.Gaps.t) =
   let wm = Ctx.wm ctx in
   match cmd with
@@ -146,6 +151,7 @@ let handle_command ctx seat (cmd : Command.t) =
   let wm = Ctx.wm ctx in
   match cmd with
   | Border c -> handle_border wm seat c
+  | Config c -> handle_config wm seat c
   | Exec argv -> Execute.exec argv
   | Gaps c -> handle_gaps ctx seat c
   | Input c -> handle_input ctx seat c

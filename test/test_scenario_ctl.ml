@@ -1,13 +1,12 @@
-let check_window_rules_apply ({ Harness.fake; section; oxctl; _ } as h) =
+let check_window_rules_apply ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check window rules apply" h [ "kitty", 1 ]
   @@ fun () ->
   oxctl "window rules add --app-id ^mpv$ --float --tags 3";
-  section "mpv arrives floating on tag 3" (fun () ->
-    Fake_river.add_window fake ~app_id:(Some "mpv"));
+  let mpv = Harness.spawn ~section:"mpv arrives floating on tag 3" h "mpv" in
   oxctl "window list --fields app_id,tags,presentation";
   oxctl "window rules list";
   oxctl "window rules remove 0";
-  section "close mpv" (fun () -> Fake_river.close_window fake ~app_id:(Some "mpv"))
+  Harness.close h mpv
 ;;
 
 let check_window_rules_errors ({ Harness.oxctl; _ } as h) =
@@ -33,6 +32,24 @@ let check_window_list ({ Harness.oxctl; _ } as h) =
   oxctl "window list --json"
 ;;
 
+let check_config_reset ({ Harness.oxctl; _ } as h) =
+  Harness.with_windows "check config reset" h [ "kitty", 1; "emacs", 1 ]
+  @@ fun () ->
+  oxctl "gaps inner 2";
+  oxctl "layout tiling mfact 0.7";
+  oxctl "config reset"
+;;
+
+let check_config_reset_all ({ Harness.oxctl; _ } as h) =
+  Harness.with_windows "check config reset all" h [ "kitty", 1 ]
+  @@ fun () ->
+  oxctl "bind layout scrolling to Super+F9";
+  oxctl "window rules add --app-id=^mpv$ --float";
+  oxctl "config reset --all";
+  oxctl "window rules list";
+  oxctl "keymap list"
+;;
+
 let () =
   Harness.run
   @@ fun ({ Harness.fake; section; _ } as h) ->
@@ -42,5 +59,7 @@ let () =
   check_window_rules_apply h;
   check_window_rules_errors h;
   check_gaps h;
-  check_window_list h
+  check_window_list h;
+  check_config_reset h;
+  check_config_reset_all h
 ;;

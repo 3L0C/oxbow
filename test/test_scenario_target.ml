@@ -55,19 +55,17 @@ let check_window_toggle ({ Harness.oxctl; _ } as h) =
   oxctl "window toggle fullscreen --app-id=kitty --all"
 ;;
 
-let check_window_close ({ Harness.fake; section; oxctl; _ } as h) =
+let check_window_close ({ Harness.oxctl; _ } as h) =
   Harness.with_windows "check window close" h []
   @@ fun () ->
-  section "spawn kitty and mpv" (fun () ->
-    Fake_river.add_window fake ~app_id:(Some "kitty");
-    Fake_river.add_window fake ~app_id:(Some "mpv"));
+  let kitty = Harness.spawn h "kitty" in
+  let mpv = Harness.spawn h "mpv" in
   oxctl "window close --app-id=mpv";
-  section "mpv obeys close" (fun () -> Fake_river.close_window fake ~app_id:(Some "mpv"));
+  Harness.close ~section:"mpv obeys close" h mpv;
   oxctl "window close --all";
   oxctl "window close --app-id=nope";
   oxctl "window close";
-  section "kitty obeys close" (fun () ->
-    Fake_river.close_window fake ~app_id:(Some "kitty"));
+  Harness.close ~section:"kitty obeys close" h kitty;
   oxctl "window list"
 ;;
 

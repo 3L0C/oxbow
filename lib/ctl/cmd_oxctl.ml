@@ -5,6 +5,7 @@ let bind_group =
     ~name:"bind"
     ~doc:"Bind a key or pointer button to a command"
     [ Cmd_border.bind_cmd
+    ; Cmd_config.bind_cmd
     ; Cmd_exec.bind_cmd
     ; Cmd_gaps.bind_cmd
     ; Cmd_input.bind_cmd
@@ -27,6 +28,7 @@ let cmd ~version =
     ~name:"oxctl"
     ~doc:"command-line interface for controlling oxbow"
     [ Cmd_border.cmd
+    ; Cmd_config.cmd
     ; Cmd_exec.cmd
     ; Cmd_gaps.cmd
     ; Cmd_input.cmd

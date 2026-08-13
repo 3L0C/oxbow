@@ -1,11 +1,12 @@
 let check_window_manage { Harness.fake; section; oxctl; _ } =
-  let window = ref None in
-  section "check window manage" (fun () ->
-    window := Some (Fake_river.spawn_window fake ~app_id:(Some "foot"));
-    Fake_river.tick fake);
+  let window =
+    section "check window manage" (fun () ->
+      let w = Fake_river.spawn_window fake ~app_id:(Some "foot") in
+      Fake_river.tick fake;
+      w)
+  in
   oxctl "window list";
-  section "check window manage teardown" (fun () ->
-    Option.iter (Fake_river.close fake) !window)
+  section "check window manage teardown" (fun () -> Fake_river.close fake window)
 ;;
 
 let check_output_list ({ Harness.oxctl; _ } as h) =

@@ -91,7 +91,7 @@ manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== check input rules add: setup ==
+== check input rules add ==
 
 == input rules mouse --name Logitech.* --natural-scroll enabled --accel-speed 0.5 ==
 manage:clear_focus(seat0)
@@ -111,12 +111,17 @@ manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== check input rules add: teardown ==
+== check input rules remove ==
+
+== input rules mouse --name Logitech.* --natural-scroll enabled ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== check input rules remove: setup ==
+== input rules mouse --name .* --left-handed enabled ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
 
 == input rules remove 0 ==
 manage:clear_focus(seat0)
@@ -132,11 +137,6 @@ render:set_presentation_mode(FAKE-1, vsync)
 
 == input rules remove 5 ==
 err: no input rule at index 5
-manage:clear_focus(seat0)
-manage:op_end(seat0)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== check input rules remove: teardown ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
