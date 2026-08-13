@@ -132,8 +132,8 @@ render:place_top(kitty)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window rules list ==
-PATTERN                      EFFECTS
-app_id=^mpv$ case=sensitive  tags=concrete 4 presentation=float
+INDEX  PATTERN                      EFFECTS
+0      app_id=^mpv$ case=sensitive  tags=concrete 4 presentation=float
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(kitty)

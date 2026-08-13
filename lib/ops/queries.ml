@@ -4,8 +4,19 @@ open! Oxbow_state
 open! Oxbow_ipc
 open! Result.Syntax
 
+let indexed_rules conv rules =
+  `List
+    (List.mapi
+       (fun i rule ->
+          match conv rule with
+          | `Assoc fields -> `Assoc (("index", `Int i) :: fields)
+          | r -> r)
+       rules)
+;;
+
 let handle_window_rules (wm : Wm.t) =
-  Ok (Some ([%yojson_of: Window_rule.t list] wm.config.rules.window))
+  let rules = indexed_rules Window_rule.yojson_of_t wm.config.rules.window in
+  Ok (Some rules)
 ;;
 
 let handle_keymaps wm seat all = Ok (Some (Bind.list wm seat ~all))
@@ -80,7 +91,8 @@ let handle_devices (wm : Wm.t) ~pattern ~case ~role =
 ;;
 
 let handle_input_rules (wm : Wm.t) =
-  Ok (Some ([%yojson_of: Input_rule.t list] wm.config.rules.input))
+  let rules = indexed_rules Input_rule.yojson_of_t wm.config.rules.input in
+  Ok (Some rules)
 ;;
 
 let handle wm seat (query : Query.t) =
