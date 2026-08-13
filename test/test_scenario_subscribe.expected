@@ -90,6 +90,8 @@ manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 render:set_presentation_mode(FAKE-1, vsync)
+
+== check subscribe: setup ==
 manage:get_node(kitty)
 manage:set_capabilities(kitty, caps=0x4)
 manage:propose_dimensions(kitty, 1872x1032)
@@ -251,3 +253,27 @@ event=focus seat=seat0 output=FAKE-1 title=emacs app_id=emacs tags=2
 event=layout output=FAKE-1 layout=scrolling scheme=null symbol=>>=
 event=mode seat=seat0 mode=resize
 event=output name=FAKE-1 labels= focused=true captured=true
+
+== check subscribe: teardown ==
+manage:destroy(emacs)
+manage:destroy(emacs)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:destroy(kitty)
+manage:destroy(kitty)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)

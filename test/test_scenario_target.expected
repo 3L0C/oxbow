@@ -90,6 +90,497 @@ manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 render:set_presentation_mode(FAKE-1, vsync)
+
+== check window focus match: setup ==
+manage:get_node(kitty)
+manage:set_capabilities(kitty, caps=0x4)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:set_tiled(kitty, edges=0xf)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:get_node(foot)
+manage:set_capabilities(foot, caps=0x4)
+manage:propose_dimensions(foot, 1021x1032)
+manage:set_tiled(foot, edges=0xf)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:propose_dimensions(kitty, 833x1032)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window focus match --app-id=kitty ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:place_top(foot)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+2   null        foot   foot    FAKE-1  1     false    false   false     false   tiled         off     null        false    false
+1   null        kitty  kitty   FAKE-1  1     true     false   false     false   tiled         off     null        false    false
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(foot)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window focus match --app-id=foot ==
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+2   null        foot   foot    FAKE-1  1     true     false   false     false   tiled         off     null        false    false
+1   null        kitty  kitty   FAKE-1  1     false    false   false     false   tiled         off     null        false    false
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check window focus match: teardown ==
+manage:destroy(foot)
+manage:destroy(foot)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:destroy(kitty)
+manage:destroy(kitty)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check window focus cycle: setup ==
+manage:get_node(kitty)
+manage:set_capabilities(kitty, caps=0x4)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:set_tiled(kitty, edges=0xf)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:get_node(foot)
+manage:set_capabilities(foot, caps=0x4)
+manage:propose_dimensions(foot, 1021x1032)
+manage:set_tiled(foot, edges=0xf)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:propose_dimensions(kitty, 833x1032)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:get_node(emacs)
+manage:set_capabilities(emacs, caps=0x4)
+manage:propose_dimensions(emacs, 1872x1032)
+manage:set_tiled(emacs, edges=0xf)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(foot, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:hide(foot)
+render:hide(kitty)
+render:place_top(emacs)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(emacs)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(emacs, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:hide(emacs)
+render:show(foot)
+render:show(kitty)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window focus match --app-id=.* --cycle ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:place_top(foot)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+5   null        emacs  emacs   FAKE-1  2     false    false   false     true    tiled         off     null        false    false
+4   null        foot   foot    FAKE-1  1     false    false   false     false   tiled         off     null        false    false
+3   null        kitty  kitty   FAKE-1  1     true     false   false     false   tiled         off     null        false    false
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(foot)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window focus match --app-id=.* --cycle ==
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:show(emacs)
+render:hide(foot)
+render:hide(kitty)
+render:place_top(emacs)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+5   null        emacs  emacs   FAKE-1  2     true     false   false     false   tiled         off     null        false    false
+4   null        foot   foot    FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+3   null        kitty  kitty   FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window focus match --app-id=.* --cycle ==
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(emacs, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:hide(emacs)
+render:show(foot)
+render:show(kitty)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+5   null        emacs  emacs   FAKE-1  2     false    false   false     true    tiled         off     null        false    false
+4   null        foot   foot    FAKE-1  1     true     false   false     false   tiled         off     null        false    false
+3   null        kitty  kitty   FAKE-1  1     false    false   false     false   tiled         off     null        false    false
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check window focus cycle: teardown ==
+manage:destroy(emacs)
+manage:destroy(emacs)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:destroy(foot)
+manage:destroy(foot)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:destroy(kitty)
+manage:destroy(kitty)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check window label add: setup ==
+manage:get_node(kitty)
+manage:set_capabilities(kitty, caps=0x4)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:set_tiled(kitty, edges=0xf)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:get_node(foot)
+manage:set_capabilities(foot, caps=0x4)
+manage:propose_dimensions(foot, 1021x1032)
+manage:set_tiled(foot, edges=0xf)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:propose_dimensions(kitty, 833x1032)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:get_node(emacs)
+manage:set_capabilities(emacs, caps=0x4)
+manage:propose_dimensions(emacs, 1021x1032)
+manage:set_tiled(emacs, edges=0xf)
+manage:use_ssd(emacs)
+manage:inform_unmaximized(emacs)
+manage:inform_not_fullscreen(emacs)
+manage:inform_resize_end(emacs)
+manage:propose_dimensions(foot, 833x507)
+manage:propose_dimensions(kitty, 833x507)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+manage:focus_window(seat0, emacs)
+manage:op_end(seat0)
+render:set_borders(emacs, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(foot, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(emacs, 24, 24)
+render:show(emacs)
+render:set_clip_box(emacs, 0, 0, 0x0)
+render:set_content_clip_box(emacs, 0, 0, 0x0)
+render:set_position(foot, 1063, 24)
+render:set_position(kitty, 1063, 549)
+render:place_top(kitty)
+render:place_top(foot)
+render:place_top(emacs)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:place_top(foot)
+render:place_top(emacs)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window focus match --app-id=kitty ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(emacs, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:place_top(foot)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window label add scratch ==
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:place_top(foot)
+render:place_top(emacs)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window focus match --app-id=foot ==
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:place_top(emacs)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window label add scratch ==
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window label add seen --app-id=emacs ==
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+8   null        emacs  emacs   FAKE-1  1     false    false   false     false   tiled         off     null        false    false       seen
+7   null        foot   foot    FAKE-1  1     true     false   false     false   tiled         off     null        false    false       scratch
+6   null        kitty  kitty   FAKE-1  1     false    false   false     false   tiled         off     null        false    false       scratch
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(emacs)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check window label add: teardown ==
+manage:destroy(emacs)
+manage:destroy(emacs)
+manage:propose_dimensions(foot, 1021x1032)
+manage:propose_dimensions(kitty, 833x1032)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_position(foot, 24, 24)
+render:set_position(kitty, 1063, 24)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:destroy(foot)
+manage:destroy(foot)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:destroy(kitty)
+manage:destroy(kitty)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check window tag set: setup ==
 manage:get_node(kitty)
 manage:set_capabilities(kitty, caps=0x4)
 manage:propose_dimensions(kitty, 1872x1032)
@@ -202,8 +693,7 @@ render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== window close --app-id=mpv ==
-manage:close(mpv)
+== window label add scratch --app-id=kitty ==
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -212,52 +702,19 @@ render:place_top(mpv)
 render:place_top(emacs)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== window focus match --app-id=kitty ==
-manage:focus_window(seat0, kitty)
+== window label add scratch --app-id=foot ==
+manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_borders(emacs, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:place_top(kitty)
 render:place_top(foot)
 render:place_top(mpv)
 render:place_top(emacs)
-render:place_top(kitty)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== window label add scratch ==
-manage:focus_window(seat0, kitty)
-manage:op_end(seat0)
-render:place_top(foot)
-render:place_top(mpv)
-render:place_top(emacs)
-render:place_top(kitty)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== window focus match --app-id=foot ==
-manage:focus_window(seat0, foot)
-manage:op_end(seat0)
-render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:place_top(mpv)
-render:place_top(emacs)
-render:place_top(kitty)
-render:place_top(foot)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== window label add scratch ==
-manage:focus_window(seat0, foot)
-manage:op_end(seat0)
-render:place_top(mpv)
-render:place_top(emacs)
-render:place_top(kitty)
-render:place_top(foot)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window tag set --app-id=emacs --follow 3 ==
 manage:propose_dimensions(emacs, 1872x1032)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
-render:set_borders(emacs, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(foot, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
 render:hide(mpv)
 render:hide(foot)
 render:hide(kitty)
@@ -270,10 +727,10 @@ render:set_presentation_mode(FAKE-1, vsync)
 
 == window list ==
 ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
-4   null        emacs  emacs   FAKE-1  3     true     false   false     false   tiled         off     null        false    false
-3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
-2   null        foot   foot    FAKE-1  1     false    false   false     true    tiled         off     null        false    false       scratch
-1   null        kitty  kitty   FAKE-1  1     false    false   false     true    tiled         off     null        false    false       scratch
+12  null        emacs  emacs   FAKE-1  3     true     false   false     false   tiled         off     null        false    false
+11  null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+10  null        foot   foot    FAKE-1  1     false    false   false     true    tiled         off     null        false    false       scratch
+9   null        kitty  kitty   FAKE-1  1     false    false   false     true    tiled         off     null        false    false       scratch
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(emacs)
@@ -302,10 +759,10 @@ render:set_presentation_mode(FAKE-1, vsync)
 
 == window list ==
 ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
-4   null        emacs  emacs   FAKE-1  3     false    false   false     true    tiled         off     null        false    false
-3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
-2   null        foot   foot    FAKE-1  2     true     false   false     false   tiled         off     null        false    false       scratch
-1   null        kitty  kitty   FAKE-1  2     false    false   false     false   tiled         off     null        false    false       scratch
+12  null        emacs  emacs   FAKE-1  3     false    false   false     true    tiled         off     null        false    false
+11  null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+10  null        foot   foot    FAKE-1  2     true     false   false     false   tiled         off     null        false    false       scratch
+9   null        kitty  kitty   FAKE-1  2     false    false   false     false   tiled         off     null        false    false       scratch
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -326,10 +783,10 @@ render:set_presentation_mode(FAKE-1, vsync)
 
 == window list ==
 ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
-4   null        emacs  emacs   FAKE-1  3     false    false   false     true    tiled         off     null        false    false
-3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
-2   null        foot   foot    FAKE-1  2     true     false   false     false   tiled         off     null        false    false       scratch
-1   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
+12  null        emacs  emacs   FAKE-1  3     false    false   false     true    tiled         off     null        false    false
+11  null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+10  null        foot   foot    FAKE-1  2     true     false   false     false   tiled         off     null        false    false       scratch
+9   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
 render:place_top(foot)
@@ -347,116 +804,101 @@ render:set_presentation_mode(FAKE-1, vsync)
 
 == window list ==
 ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
-4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false
-3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
-2   null        foot   foot    FAKE-1  2     true     false   false     false   tiled         off     null        false    false       scratch
-1   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
+12  null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false
+11  null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
+10  null        foot   foot    FAKE-1  2     true     false   false     false   tiled         off     null        false    false       scratch
+9   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
 render:place_top(foot)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== window focus match --app-id=.* --cycle ==
+== check window tag set: teardown ==
+manage:destroy(emacs)
+manage:destroy(emacs)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:destroy(mpv)
+manage:destroy(mpv)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:destroy(foot)
+manage:destroy(foot)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:destroy(kitty)
+manage:destroy(kitty)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check window toggle: setup ==
+manage:get_node(kitty)
+manage:set_capabilities(kitty, caps=0x4)
 manage:propose_dimensions(kitty, 1872x1032)
+manage:set_tiled(kitty, edges=0xf)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:set_borders(foot, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
 render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:hide(foot)
 render:set_position(kitty, 24, 24)
 render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
 render:place_top(kitty)
 render:set_presentation_mode(FAKE-1, vsync)
-manage:focus_window(seat0, kitty)
-manage:op_end(seat0)
 render:place_top(kitty)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== window list ==
-ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
-4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false
-3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
-2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
-1   null        kitty  kitty   FAKE-1  5     true     false   false     false   tiled         off     null        false    false       scratch
-manage:focus_window(seat0, kitty)
-manage:op_end(seat0)
-render:place_top(kitty)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== window focus match --app-id=.* --cycle ==
-manage:focus_window(seat0, emacs)
-manage:op_end(seat0)
-render:set_borders(emacs, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:show(emacs)
-render:hide(kitty)
-render:place_top(emacs)
-render:set_presentation_mode(FAKE-1, vsync)
-manage:focus_window(seat0, emacs)
-manage:op_end(seat0)
-render:place_top(emacs)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== window list ==
-ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
-4   null        emacs  emacs   FAKE-1  6     true     false   false     false   tiled         off     null        false    false
-3   null        mpv    mpv     FAKE-1  1     false    false   false     true    tiled         off     null        false    false
-2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
-1   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
-manage:focus_window(seat0, emacs)
-manage:op_end(seat0)
-render:place_top(emacs)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== window focus match --app-id=.* --cycle ==
-manage:propose_dimensions(mpv, 1872x1032)
-manage:focus_window(seat0, mpv)
-manage:op_end(seat0)
-render:set_borders(emacs, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
-render:set_borders(mpv, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
-render:hide(emacs)
-render:set_position(mpv, 24, 24)
-render:show(mpv)
-render:place_top(mpv)
-render:set_presentation_mode(FAKE-1, vsync)
-manage:focus_window(seat0, mpv)
-manage:op_end(seat0)
-render:place_top(mpv)
-render:set_presentation_mode(FAKE-1, vsync)
-
-== window list ==
-ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
-4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false
-3   null        mpv    mpv     FAKE-1  1     true     false   false     false   tiled         off     null        false    false
-2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
-1   null        kitty  kitty   FAKE-1  5     false    false   false     true    tiled         off     null        false    false       scratch
-manage:focus_window(seat0, mpv)
-manage:op_end(seat0)
-render:place_top(mpv)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window toggle floating --app-id=kitty ==
 manage:propose_dimensions(kitty, 960x540)
 manage:set_tiled(kitty, edges=0x0)
-manage:focus_window(seat0, mpv)
+manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:set_position(kitty, 480, 270)
-render:place_top(mpv)
+render:place_top(kitty)
 render:set_presentation_mode(FAKE-1, vsync)
-manage:focus_window(seat0, mpv)
+manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:place_top(mpv)
+render:place_top(kitty)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window list ==
 ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
-4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false
-3   null        mpv    mpv     FAKE-1  1     true     false   false     false   tiled         off     null        false    false
-2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
-1   null        kitty  kitty   FAKE-1  5     false    false   false     true    floating      off     null        false    false       scratch
-manage:focus_window(seat0, mpv)
+13  null        kitty  kitty   FAKE-1  1     true     false   false     false   floating      off     null        false    false
+manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:place_top(mpv)
+render:place_top(kitty)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window toggle fullscreen --app-id=kitty --all ==
@@ -464,21 +906,91 @@ err: Usage: [01moxctl window toggle fullscreen[m [[01m--help[m] [[04mOPTION
 err: oxctl: [31munknown[m option [01m--all[m
 exit: 124
 
-== window label add seen --app-id=emacs ==
+== check window toggle: teardown ==
+manage:destroy(kitty)
+manage:destroy(kitty)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check window close: setup ==
+
+== spawn kitty and mpv ==
+manage:get_node(kitty)
+manage:set_capabilities(kitty, caps=0x4)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:set_tiled(kitty, edges=0xf)
+manage:use_ssd(kitty)
+manage:inform_unmaximized(kitty)
+manage:inform_not_fullscreen(kitty)
+manage:inform_resize_end(kitty)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:show(kitty)
+render:set_clip_box(kitty, 0, 0, 0x0)
+render:set_content_clip_box(kitty, 0, 0, 0x0)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:get_node(mpv)
+manage:set_capabilities(mpv, caps=0x4)
+manage:propose_dimensions(mpv, 1021x1032)
+manage:set_tiled(mpv, edges=0xf)
+manage:use_ssd(mpv)
+manage:inform_unmaximized(mpv)
+manage:inform_not_fullscreen(mpv)
+manage:inform_resize_end(mpv)
+manage:propose_dimensions(kitty, 833x1032)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
+manage:focus_window(seat0, mpv)
+manage:op_end(seat0)
+render:set_borders(mpv, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_borders(kitty, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(mpv, 24, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:set_position(kitty, 1063, 24)
+render:place_top(kitty)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
 render:place_top(mpv)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== window list ==
-ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
-4   null        emacs  emacs   FAKE-1  6     false    false   false     true    tiled         off     null        false    false       seen
-3   null        mpv    mpv     FAKE-1  1     true     false   false     false   tiled         off     null        false    false
-2   null        foot   foot    FAKE-1  2     false    false   false     true    tiled         off     null        false    false       scratch
-1   null        kitty  kitty   FAKE-1  5     false    false   false     true    floating      off     null        false    false       scratch
+== window close --app-id=mpv ==
+manage:close(mpv)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
+render:place_top(kitty)
 render:place_top(mpv)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== mpv obeys close ==
+manage:destroy(mpv)
+manage:destroy(mpv)
+manage:propose_dimensions(kitty, 1872x1032)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+manage:focus_window(seat0, kitty)
+manage:op_end(seat0)
+render:set_borders(kitty, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(kitty, 24, 24)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(kitty)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window close --all ==
@@ -488,14 +1000,35 @@ exit: 124
 
 == window close --app-id=nope ==
 err: no window matching app-id=nope
-manage:focus_window(seat0, mpv)
+manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:place_top(mpv)
+render:place_top(kitty)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window close ==
-manage:close(mpv)
-manage:focus_window(seat0, mpv)
+manage:close(kitty)
+manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
-render:place_top(mpv)
+render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== kitty obeys close ==
+manage:destroy(kitty)
+manage:destroy(kitty)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+[]
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check window close: teardown ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)

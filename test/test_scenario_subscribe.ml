@@ -10,13 +10,9 @@ let wait_stable lines =
   go (List.length !lines) 0
 ;;
 
-let () =
-  Harness.run
-  @@ fun { Harness.env; fake; section; oxctl } ->
-  section "arrive" (fun () ->
-    Fake_river.add_output fake ~name:"FAKE-1";
-    Fake_river.add_seat fake ~name:"seat0";
-    Fake_river.add_window fake ~app_id:(Some "kitty"));
+let check_subscribe ({ Harness.env; fake; section; oxctl } as h) =
+  Harness.with_windows "check subscribe" h [ "kitty", 1 ]
+  @@ fun () ->
   let lines = ref [] in
   Eio.Fiber.first
     (fun () ->
@@ -38,5 +34,15 @@ let () =
        List.rev !lines |> List.iter print_endline;
        Harness.section "events human";
        List.rev !lines
-       |> List.iter (fun l -> print_endline (Oxbow_ctl.Ctl_cli.render_event l)))
+       |> List.iter (fun l -> print_endline (Oxbow_ctl.Ctl_cli.render_event l)));
+  Fake_river.close_window fake ~app_id:(Some "emacs")
+;;
+
+let () =
+  Harness.run
+  @@ fun ({ Harness.fake; section; _ } as h) ->
+  section "arrive" (fun () ->
+    Fake_river.add_output fake ~name:"FAKE-1";
+    Fake_river.add_seat fake ~name:"seat0");
+  check_subscribe h
 ;;

@@ -1,5 +1,5 @@
 
-== trace ==
+== arrive ==
 render:set_presentation_mode(FAKE-1, vsync)
 render:set_presentation_mode(FAKE-1, vsync)
 render:set_presentation_mode(FAKE-1, vsync)
@@ -90,6 +90,8 @@ manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 render:set_presentation_mode(FAKE-1, vsync)
+
+== check window manage ==
 manage:get_node(foot)
 manage:set_capabilities(foot, caps=0x4)
 manage:propose_dimensions(foot, 1872x1032)
@@ -116,12 +118,36 @@ manage:op_end(seat0)
 render:place_top(foot)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== output list ==
-NAME    LABELS  FOCUSED  CAPTURED
-FAKE-1          true     false
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+1   null        foot   foot    FAKE-1  1     true     false   false     false   tiled         off     null        false    false
 manage:focus_window(seat0, foot)
 manage:op_end(seat0)
 render:place_top(foot)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== idle quiet ==
+== check window manage teardown ==
+manage:destroy(foot)
+manage:destroy(foot)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check output list: setup ==
+
+== output list ==
+NAME    LABELS  FOCUSED  CAPTURED
+FAKE-1          true     false
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check output list: teardown ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check idle quiet ==

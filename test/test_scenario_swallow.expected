@@ -91,6 +91,8 @@ manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 render:set_presentation_mode(FAKE-1, vsync)
 
+== check swallow lifecycle: setup ==
+
 == window rules add --app-id=^foot$ --swallow=terminal ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
@@ -188,4 +190,19 @@ render:show(foot)
 render:place_top(foot)
 render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== foot closes ==
+manage:destroy(foot)
+manage:destroy(foot)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check swallow lifecycle: teardown ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
