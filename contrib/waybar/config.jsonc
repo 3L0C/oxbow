@@ -1,0 +1,166 @@
+// Sample waybar config for oxbow. Also the template used by install.sh.
+//
+// Per-output setup: replace every OUTPUT_NAME with the output this bar sits on
+// (e.g. DP-1) and set "output" accordingly. That means one copy of this bar
+// block per output; install.sh does exactly that, one array element per
+// output. Scripts are expected at ~/.config/waybar/scripts/ (see README.md);
+// tag/window/layout clicks call oxctl directly, make sure it is in your $PATH.
+// Comments must stay //-style on their own lines: waybar's parser rejects #,
+// and install.sh strips whole-line // comments before transforming.
+{
+    "name": "oxbow-bar",
+    "output": "OUTPUT_NAME",
+    "layer": "top",
+    "position": "top",
+    "height": 28,
+    "spacing": 0,
+    "expand-left": true,
+    "no-center": true,
+
+    "modules-left": [
+        "custom/tag#1",
+        "custom/tag#2",
+        "custom/tag#3",
+        "custom/tag#4",
+        "custom/tag#5",
+        "custom/tag#6",
+        "custom/tag#7",
+        "custom/tag#8",
+        "custom/tag#9",
+        "custom/layout",
+        "custom/mode",
+        "custom/window"
+    ],
+    "modules-right": [
+        "clock"
+    ],
+
+    "custom/tag#1": {
+        "exec": "~/.config/waybar/scripts/tag.sh 1 OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl tag view 1",
+        "on-click-right": "oxctl tag toggle 1",
+        "on-scroll-down": "oxctl tag next",
+        "on-scroll-up": "oxctl tag prev",
+        "tooltip": false
+    },
+    "custom/tag#2": {
+        "exec": "~/.config/waybar/scripts/tag.sh 2 OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl tag view 2",
+        "on-click-right": "oxctl tag toggle 2",
+        "on-scroll-down": "oxctl tag next",
+        "on-scroll-up": "oxctl tag prev",
+        "tooltip": false
+    },
+    "custom/tag#3": {
+        "exec": "~/.config/waybar/scripts/tag.sh 3 OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl tag view 3",
+        "on-click-right": "oxctl tag toggle 3",
+        "on-scroll-down": "oxctl tag next",
+        "on-scroll-up": "oxctl tag prev",
+        "tooltip": false
+    },
+    "custom/tag#4": {
+        "exec": "~/.config/waybar/scripts/tag.sh 4 OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl tag view 4",
+        "on-click-right": "oxctl tag toggle 4",
+        "on-scroll-down": "oxctl tag next",
+        "on-scroll-up": "oxctl tag prev",
+        "tooltip": false
+    },
+    "custom/tag#5": {
+        "exec": "~/.config/waybar/scripts/tag.sh 5 OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl tag view 5",
+        "on-click-right": "oxctl tag toggle 5",
+        "on-scroll-down": "oxctl tag next",
+        "on-scroll-up": "oxctl tag prev",
+        "tooltip": false
+    },
+    "custom/tag#6": {
+        "exec": "~/.config/waybar/scripts/tag.sh 6 OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl tag view 6",
+        "on-click-right": "oxctl tag toggle 6",
+        "on-scroll-down": "oxctl tag next",
+        "on-scroll-up": "oxctl tag prev",
+        "tooltip": false
+    },
+    "custom/tag#7": {
+        "exec": "~/.config/waybar/scripts/tag.sh 7 OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl tag view 7",
+        "on-click-right": "oxctl tag toggle 7",
+        "on-scroll-down": "oxctl tag next",
+        "on-scroll-up": "oxctl tag prev",
+        "tooltip": false
+    },
+    "custom/tag#8": {
+        "exec": "~/.config/waybar/scripts/tag.sh 8 OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl tag view 8",
+        "on-click-right": "oxctl tag toggle 8",
+        "on-scroll-down": "oxctl tag next",
+        "on-scroll-up": "oxctl tag prev",
+        "tooltip": false
+    },
+    "custom/tag#9": {
+        "exec": "~/.config/waybar/scripts/tag.sh 9 OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl tag view 9",
+        "on-click-right": "oxctl tag toggle 9",
+        "on-scroll-down": "oxctl tag next",
+        "on-scroll-up": "oxctl tag prev",
+        "tooltip": false
+    },
+
+    "custom/layout": {
+        "exec": "~/.config/waybar/scripts/layout.sh OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "on-click": "oxctl layout next",
+        "on-click-right": "oxctl layout prev",
+        "on-scroll-down": "oxctl layout tiling next",
+        "on-scroll-up": "oxctl layout tiling prev",
+        "tooltip": false
+    },
+
+    // Hidden while the seat is in the default mode (empty text).
+    "custom/mode": {
+        "exec": "~/.config/waybar/scripts/mode.sh",
+        "return-type": "json",
+        "format": "{}",
+        "tooltip": false
+    },
+
+    "custom/window": {
+        "exec": "~/.config/waybar/scripts/window.sh OUTPUT_NAME",
+        "return-type": "json",
+        "format": "{}",
+        "escape": true,
+        "expand": true,
+        "max-length": 100,
+        "on-click": "oxctl output overview",
+        "on-click-right": "oxctl window zoom --no-warp",
+        "on-scroll-down": "oxctl window focus next --no-warp",
+        "on-scroll-up": "oxctl window focus prev --no-warp",
+        "tooltip": false
+    },
+
+    "clock": {
+        "format": " {:%B %d %H:%M} ",
+        "tooltip": false
+    }
+}

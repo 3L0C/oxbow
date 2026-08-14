@@ -1,0 +1,113 @@
+/* Sample waybar style for oxbow - kanagawa-flavoured base16 palette.
+ *
+ * All nine custom/tag#N instances share the widget name custom-tag, so
+ * #custom-tag styles every tag; the per-tag state arrives as CSS classes from
+ * the scripts' JSON (viewed / occupied / urgent / focused).
+ *
+ * Class mapping vs waybar's native river/tags: what river called "focused" (tag
+ * in the output's viewed set) is oxbow's "viewed"; oxbow's "focused" is new and
+ * indicates the tags of the focused window itself.
+ */
+
+* {
+    font-family: "JetBrainsMonoNL Nerd Font";
+    font-size: 14pt;
+}
+
+@define-color base00 #181616; @define-color base01 #1d1c19;
+@define-color base02 #393836; @define-color base03 #4a4947;
+@define-color base04 #727169; @define-color base05 #dcd7ba;
+@define-color base06 #c8c093; @define-color base07 #717c7c;
+
+@define-color base08 #ff5d62; @define-color base09 #ffa066;
+@define-color base0A #e6c384; @define-color base0B #98bb6c;
+@define-color base0C #a3d4d5; @define-color base0D #7fb4ca;
+@define-color base0E #957fb8; @define-color base0F #d27e99;
+
+* {
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+window#waybar {
+    background: @base00;
+}
+
+.modules-left {
+    margin: 0;
+    padding: 0;
+}
+
+.modules-right {
+    padding: 0 5px;
+}
+
+/* ========== Tags ========== */
+
+/* Vacant tags are hidden by default (tag.sh emits empty text); with
+ * `tag.sh --show-empty` they render dimmed via this base style.
+ */
+#custom-tag {
+    background-color: @base00;
+    color: @base04;
+    padding: 0 8px;
+    margin: 0;
+}
+
+#custom-tag.occupied {
+    color: @base05;
+}
+
+/* The output's viewed tag set. Was river/tags' "focused" look */
+#custom-tag.viewed {
+    background-color: @base02;
+    color: @base05;
+}
+
+/* Tags of the focused window; combines with .viewed's background */
+#custom-tag.focused {
+    color: @base0A;
+}
+
+#custom-tag.urgent {
+    background-color: @base08;
+    color: @base00;
+}
+
+/* ========== Layout / mode / window ========== */
+
+#custom-layout {
+    background-color: @base00;
+    color: @base05;
+    padding: 0 5px;
+    margin: 0;
+}
+
+#custom-mode {
+    background-color: @base09;
+    color: @base00;
+    padding: 0 5px;
+    margin: 0;
+}
+
+#custom-window {
+    background-color: @base02;
+    color: @base05;
+    padding: 0 5px;
+    margin: 0;
+}
+
+/* A seat is on this output */
+#custom-window.focused {
+    color: @base0A;
+}
+
+/* ========== Right side ========== */
+
+#clock {
+    background-color: transparent;
+    color: @base05;
+    padding: 0;
+    margin: 0;
+}
