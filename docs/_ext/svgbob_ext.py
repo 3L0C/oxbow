@@ -12,20 +12,29 @@ The svgbob CLI must be on PATH. Stroke color is currentColor, so
 the SVG follows the theme text color.
 """
 
+import shutil
 import subprocess
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
+
+SVGBOB = shutil.which("svgbob")
 
 
 class SvgbobDirective(Directive):
     has_content = True
 
     def run(self):
+        if SVGBOB is None:
+            error = self.state_machine.reporter.error(
+                "svgbob not found on PATH",
+                line=self.lineno,
+            )
+            return [error]
         source = "\n".join(self.content)
         result = subprocess.run(
             [
-                "svgbob",
+                SVGBOB,
                 "--background",
                 "transparent",
                 "--stroke-color",
