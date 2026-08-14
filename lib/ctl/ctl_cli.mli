@@ -97,8 +97,11 @@ val mode_name_arg : string Cmdliner.Term.t
 (** [color_arg] is the required trailing [COLOR] positional. *)
 val color_arg : Oxbow_core.Color.t Cmdliner.Term.t
 
-(** [index_arg] is the required trailing [INDEX] positional. *)
-val index_arg : int Cmdliner.Term.t
+(** [index_arg ~doc] is the required trailing [INDEX] positional. *)
+val index_arg : doc:string -> int Cmdliner.Term.t
+
+(** [index_args ~doc] is the required trailing [INDEX] list positional. *)
+val index_args : doc:string -> int list Cmdliner.Term.t
 
 (** [warp_flag] is the exclusive flag pair [--warp] and [--no-warp]. The flag
     overrides the warp on focus configuration for one command. *)
@@ -218,6 +221,15 @@ val scroll_button_flag : Oxbow_core.Pointer_button.t option Cmdliner.Term.t
 
 (** [send_events_flag] is the [--send-events] flag accepting a valid send event. *)
 val send_events_flag : Oxbow_core.Input_rule.Send_events.t option Cmdliner.Term.t
+
+(** [touchpad_rule] is the set of flags that make up a touchpad rule with a
+    non-empty set of settings. *)
+val touchpad_rule
+  : Oxbow_core.Input_rule.Touchpad.t Oxbow_core.Input_rule.rule Cmdliner.Term.t
+
+(** [mouse_rule] is the set of flags that make up a mouse rule with a non-empty
+    set of settings. *)
+val mouse_rule : Oxbow_core.Input_rule.Mouse.t Oxbow_core.Input_rule.rule Cmdliner.Term.t
 
 (** [sticky_flag] is the [--sticky] flag accepting a valid sticky scope. *)
 val sticky_flag : Oxbow_core.Sticky.t option Cmdliner.Term.t

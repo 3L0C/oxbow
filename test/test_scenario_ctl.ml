@@ -50,6 +50,21 @@ let check_config_reset_all ({ Harness.oxctl; _ } as h) =
   oxctl "keymap list"
 ;;
 
+let check_window_rules_remove ({ Harness.oxctl; _ } as h) =
+  Harness.with_windows "check rule removal" h []
+  @@ fun () ->
+  oxctl "window rules add --tags=1 --app-id=^firefox$";
+  oxctl "window rules add --tags=2 --app-id=^emacs$";
+  oxctl "window rules add --tags=3 --app-id=^mpv$";
+  oxctl "window rules add --tags=4 --app-id=^keepassxc$";
+  oxctl "window rules add --tags=5 --app-id=^feishin$";
+  oxctl "window rules list";
+  oxctl "window rules remove 0";
+  oxctl "window rules list";
+  oxctl "window rules remove 0,2,3";
+  oxctl "window rules list"
+;;
+
 let () =
   Harness.run
   @@ fun ({ Harness.fake; section; _ } as h) ->
@@ -61,5 +76,6 @@ let () =
   check_gaps h;
   check_window_list h;
   check_config_reset h;
-  check_config_reset_all h
+  check_config_reset_all h;
+  check_window_rules_remove h
 ;;

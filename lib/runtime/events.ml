@@ -8,13 +8,16 @@ let snapshot_tags (output : Output.t) =
   | Some name, Some record -> Some ((Record.Tags, name), Event.Tags record)
 ;;
 
-let snapshot_windows (wm : Wm.t) output =
-  let focused_window = Output.focused_window output in
-  match
-    output.name, Option.bind focused_window (fun w -> Some (Records.to_window wm w))
-  with
-  | None, _ | _, None -> None
-  | Some name, Some record -> Some ((Record.Window, name), Event.Window record)
+let snapshot_windows (wm : Wm.t) (output : Output.t) =
+  match output.name with
+  | None -> None
+  | Some name ->
+    let ev =
+      match Output.focused_window output with
+      | Some w -> Event.Window (Records.to_window wm w)
+      | None -> Event.Window_cleared name
+    in
+    Some ((Record.Window, name), ev)
 ;;
 
 let snapshot_layout (output : Output.t) =

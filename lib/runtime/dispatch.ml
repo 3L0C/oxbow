@@ -29,8 +29,10 @@ let handle_input ctx seat (cmd : Command.Input.t) =
   | Cursor c -> Cursor.handle wm seat c
   | Keyboard c -> Keyboard.handle ctx seat c
   | Pointer c -> Pointer.handle wm seat c
+  | Touchpad rule -> Input_rules.apply_rule wm (Touchpad rule)
+  | Mouse rule -> Input_rules.apply_rule wm (Mouse rule)
   | Rule_add rule -> Input_rules.add wm rule
-  | Rule_remove index -> Input_rules.remove wm index
+  | Rule_remove indices -> Input_rules.remove wm indices
 ;;
 
 let handle_keymap ctx seat (cmd : Command.Keymap.t) =
@@ -122,7 +124,7 @@ let handle_window wm seat (cmd : Command.Window.t) =
   | Column_width_default target -> Column.default_width wm seat target
   | Column_width_cycle target -> Column.cycle_width wm seat target
   | Rule_add rule -> Window_rules.add wm rule
-  | Rule_remove index -> Window_rules.remove wm index
+  | Rule_remove indices -> Window_rules.remove wm indices
   | Label_add { label; target } -> Labels.window_add wm seat target label
   | Label_remove { label; target } -> Labels.window_remove wm seat target label
   | Spawn_position position ->

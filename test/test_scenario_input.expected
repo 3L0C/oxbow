@@ -104,9 +104,9 @@ manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == input rules list ==
-KIND   PATTERN     CASE       SETTINGS
-mouse  Logitech.*  sensitive  accel_speed=0.5 natural_scroll=true
-mouse  .*          sensitive  left_handed=true
+KIND   INDEX  PATTERN     CASE       SETTINGS
+mouse  0      Logitech.*  sensitive  accel_speed=0.5 natural_scroll=true
+mouse  1      .*          sensitive  left_handed=true
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
@@ -123,20 +123,84 @@ manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 
+== input rules mouse --name Razer.* --natural-scroll disabled ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== input rules mouse --name SteelSeries.* --accel-speed 0.5 ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== input rules mouse --name Kensington.* --scroll-factor 2.0 ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
 == input rules remove 0 ==
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == input rules list ==
-KIND   PATTERN  CASE       SETTINGS
-mouse  .*       sensitive  left_handed=true
+KIND   INDEX  PATTERN        CASE       SETTINGS
+mouse  0      .*             sensitive  left_handed=true
+mouse  1      Razer.*        sensitive  natural_scroll=false
+mouse  2      SteelSeries.*  sensitive  accel_speed=0.5
+mouse  3      Kensington.*   sensitive  scroll_factor=2.0
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == input rules remove 5 ==
-err: no input rule at index 5
+err: no input rule at the given index 5
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
+
+== input rules remove 0,2,3 ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== input rules list ==
+KIND   INDEX  PATTERN  CASE       SETTINGS
+mouse  0      Razer.*  sensitive  natural_scroll=false
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check input touchpad settings ==
+
+== input touchpad --name .* --click-method button-areas ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== input touchpad --name .* --tap enabled ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== input touchpad --name .* ==
+err: Usage: [01moxctl input touchpad[m [[01m--help[m] [[04mOPTION[m]…
+err: oxctl: give at least one setting flag
+exit: 124
+
+== check input mouse settings ==
+
+== input mouse --name Logitech.* --natural-scroll enabled --accel-speed 0.5 ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== input mouse --name .* --left-handed enabled ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== input mouse --name .* ==
+err: Usage: [01moxctl input mouse[m [[01m--help[m] [[04mOPTION[m]…
+err: oxctl: give at least one setting flag
+exit: 124

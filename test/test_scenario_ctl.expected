@@ -166,7 +166,7 @@ manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window rules remove 7 ==
-err: no window rule at index 7
+err: no window rule at the given index 7
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
@@ -451,4 +451,69 @@ render:set_presentation_mode(FAKE-1, vsync)
 manage:focus_window(seat0, kitty)
 manage:op_end(seat0)
 render:place_top(kitty)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check rule removal ==
+
+== window rules add --tags=1 --app-id=^firefox$ ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules add --tags=2 --app-id=^emacs$ ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules add --tags=3 --app-id=^mpv$ ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules add --tags=4 --app-id=^keepassxc$ ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules add --tags=5 --app-id=^feishin$ ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules list ==
+INDEX  PATTERN                            EFFECTS
+0      app_id=^firefox$ case=sensitive    tags=concrete 1
+1      app_id=^emacs$ case=sensitive      tags=concrete 2
+2      app_id=^mpv$ case=sensitive        tags=concrete 4
+3      app_id=^keepassxc$ case=sensitive  tags=concrete 8
+4      app_id=^feishin$ case=sensitive    tags=concrete 16
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules remove 0 ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules list ==
+INDEX  PATTERN                            EFFECTS
+0      app_id=^emacs$ case=sensitive      tags=concrete 2
+1      app_id=^mpv$ case=sensitive        tags=concrete 4
+2      app_id=^keepassxc$ case=sensitive  tags=concrete 8
+3      app_id=^feishin$ case=sensitive    tags=concrete 16
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules remove 0,2,3 ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window rules list ==
+INDEX  PATTERN                      EFFECTS
+0      app_id=^mpv$ case=sensitive  tags=concrete 4
+manage:clear_focus(seat0)
+manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)

@@ -10,6 +10,8 @@ let indexed_rules conv rules =
        (fun i rule ->
           match conv rule with
           | `Assoc fields -> `Assoc (("index", `Int i) :: fields)
+          | `List [ `String tag; `Assoc fields ] ->
+            `List [ `String tag; `Assoc (("index", `Int i) :: fields) ]
           | r -> r)
        rules)
 ;;

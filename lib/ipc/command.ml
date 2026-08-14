@@ -65,8 +65,10 @@ module Input = struct
     | Cursor of Cursor.t [@name "cursor"]
     | Keyboard of Keyboard.t [@name "keyboard"]
     | Pointer of Pointer.t [@name "pointer"]
+    | Touchpad of Input_rule.Touchpad.t Input_rule.rule [@name "touchpad"]
+    | Mouse of Input_rule.Mouse.t Input_rule.rule [@name "mouse"]
     | Rule_add of Input_rule.t [@name "rule_add"]
-    | Rule_remove of int [@name "rule_remove"]
+    | Rule_remove of int list [@name "rule_remove"]
   [@@deriving yojson]
 end
 
@@ -343,7 +345,7 @@ module Window = struct
     | Column_width_default of Target.Window.One.t [@name "column_width_default"]
     | Column_width_cycle of Target.Window.One.t [@name "column_width_cycle"]
     | Rule_add of Window_rule.t [@name "rule_add"]
-    | Rule_remove of int [@name "rule_remove"]
+    | Rule_remove of int list [@name "rule_remove"]
     | Label_add of
         { label : string
         ; target : Target.Window.Any.t

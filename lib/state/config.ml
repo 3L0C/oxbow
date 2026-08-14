@@ -38,6 +38,7 @@ let create_tag_data () =
 
 let default () =
   { default_tag_config = create_tag_data ()
+  ; default_overview_gaps
   ; borders = default_borders ()
   ; cursor_theme = None
   ; modkey = Wire.Modifiers.mod4
@@ -143,6 +144,7 @@ let reset_data (data : Data.t) =
 let reset (wm : Types.Wm.t) ~all =
   let d = default () in
   reset_data wm.config.default_tag_config;
+  wm.config.default_overview_gaps <- d.default_overview_gaps;
   wm.config.borders.width <- d.borders.width;
   wm.config.borders.focused <- d.borders.focused;
   wm.config.borders.unfocused <- d.borders.unfocused;
@@ -161,7 +163,7 @@ let reset (wm : Types.Wm.t) ~all =
   List.iter
     (fun (o : Types.Output.t) ->
        Oxbow_core.Tag.Table.iter reset_data o.tag_data;
-       o.overview.gaps <- default_overview_gaps)
+       o.overview.gaps <- d.default_overview_gaps)
     wm.outputs;
   if all
   then (
@@ -204,3 +206,31 @@ let replace_input_rule (wm : Types.Wm.t) (rule : Input_rule.t) =
 ;;
 
 let declare_mode (wm : Types.Wm.t) name = wm.config.modes <- wm.config.modes @ [ name ]
+
+let remove_rules (wm : Types.Wm.t) kind indices =
+  let length, remove, repr =
+    match kind with
+    | `Window -> List.length wm.config.rules.window, remove_window_rule, "window"
+    | `Input -> List.length wm.config.rules.input, remove_input_rule, "input"
+  in
+  let in_bounds, out_of_bounds = List.partition (fun i -> i >= 0 && i < length) indices in
+  if out_of_bounds <> []
+  then (
+    let msg =
+      let prefix =
+        if List.length out_of_bounds > 1
+        then Printf.sprintf "no %s rule at the given indices " repr
+        else Printf.sprintf "no %s rule at the given index " repr
+      in
+      prefix ^ (List.map string_of_int out_of_bounds |> String.concat ",")
+    in
+    Error msg)
+  else (
+    List.sort_uniq Int.compare in_bounds |> List.rev |> List.iter (remove wm);
+    Ok None)
+;;
+
+let apply_default_overview_gaps (wm : Types.Wm.t) ~delta =
+  let gaps = Delta.resolve ~add:( + ) ~current:wm.config.default_overview_gaps delta in
+  wm.config.default_overview_gaps <- max 0 gaps
+;;

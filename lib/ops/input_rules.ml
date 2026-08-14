@@ -112,7 +112,7 @@ let apply_mouse obj dev ~device (settings : Input_rule.Mouse.t) =
   settings.scroll_factor |>? Emit.set_scroll_factor obj
 ;;
 
-let apply (wm : Wm.t) (device : Input_device.t) =
+let apply_rules_to (wm : Wm.t) (device : Input_device.t) =
   match device.lifecycle, device.libinput, device.role with
   | (New | Removed), _, _ | _, None, _ -> ()
   | Active, Some dev, Pointer { class_ = Touchpad } ->
@@ -142,7 +142,7 @@ let apply (wm : Wm.t) (device : Input_device.t) =
   | Active, _, (Keyboard _ | Touch | Tablet) -> ()
 ;;
 
-let apply_all wm = List.iter (apply wm) wm.input_devices
+let apply_rules wm = List.iter (apply_rules_to wm) wm.input_devices
 
 let validate_pattern ~case = function
   | Some s -> Result.map ignore (Pattern.re_compile ~case s)
@@ -159,7 +159,7 @@ let add_touchpad_rule
     Input_rule.Touchpad { pattern; case; settings = Input_rule.Touchpad.merge ~old ~new_ }
   in
   Config.replace_input_rule wm merged_rule;
-  apply_all wm;
+  apply_rules wm;
   None
 ;;
 
@@ -173,7 +173,7 @@ let add_mouse_rule
     Input_rule.Mouse { pattern; case; settings = Input_rule.Mouse.merge ~old ~new_ }
   in
   Config.replace_input_rule wm merged_rule;
-  apply_all wm;
+  apply_rules wm;
   None
 ;;
 
@@ -187,14 +187,31 @@ let add (wm : Wm.t) (rule : Input_rule.t) =
   | None, (Touchpad { pattern; case; _ } | Mouse { pattern; case; _ }) ->
     let+ () = validate_pattern ~case pattern in
     Config.add_input_rule wm rule;
-    apply_all wm;
+    apply_rules wm;
     None
 ;;
 
-let remove (wm : Wm.t) index =
-  match List.nth_opt wm.config.rules.input index with
-  | None -> Error (Printf.sprintf "no input rule at index %d" index)
-  | Some _ ->
-    Config.remove_input_rule wm index;
-    Ok None
+let remove wm indices = Config.remove_rules wm `Input indices
+
+let validate_rule (rule : Input_rule.t) =
+  match rule with
+  | Touchpad { pattern; case; _ } | Mouse { pattern; case; _ } ->
+    validate_pattern ~case pattern
+;;
+
+let apply_rule (wm : Wm.t) rule =
+  let+ () = validate_rule rule in
+  List.iter
+    (fun (device : Input_device.t) ->
+       match device.lifecycle, device.libinput, device.role, rule with
+       | (New | Removed), _, _, _ | _, None, _, _ -> ()
+       | Active, Some dev, Pointer { class_ = Touchpad }, Touchpad ({ settings; _ } as r)
+         when Input_rule.name_matches r ~name:device.name ->
+         apply_touchpad device.obj dev ~device:device.name settings
+       | Active, Some dev, Pointer { class_ = Mouse }, Mouse ({ settings; _ } as r)
+         when Input_rule.name_matches r ~name:device.name ->
+         apply_mouse device.obj dev ~device:device.name settings
+       | Active, _, (Keyboard _ | Pointer _ | Touch | Tablet), _ -> ())
+    wm.input_devices;
+  None
 ;;

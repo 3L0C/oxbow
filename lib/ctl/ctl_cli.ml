@@ -171,8 +171,8 @@ let rev_flag =
 let swap_target =
   let open Cmdliner.Term.Syntax in
   Cmdliner.Term.term_result' ~usage:true
-  @@ let+ first = Arg.(value & pos 0 (some string) None & info [] ~docv:"OUTPUT")
-     and+ second = Arg.(value & pos 1 (some string) None & info [] ~docv:"OUTPUT")
+  @@ let+ first = Arg.(value & pos 0 (some string) None & info [] ~docv:"SOURCE")
+     and+ second = Arg.(value & pos 1 (some string) None & info [] ~docv:"DESTINATION")
      and+ ring = ring_flag
      and+ rev = rev_flag in
      match ring, first, rev with
@@ -345,11 +345,16 @@ let color_arg =
            $(i,7FB4CA). May be prefixed with $(i,#) or $(i,0x).")
 ;;
 
-let index_arg =
+let index_arg ~doc = Arg.(required & pos 0 (some int) None & info [] ~docv:"INDEX" ~doc)
+
+let index_args ~doc =
   Arg.(
     required
-    & pos 0 (some int) None
-    & info [] ~docv:"INDEX" ~doc:"The rule index from the $(b,list) output.")
+    & pos 0 (some (list int)) None
+    & info
+        []
+        ~docv:"INDEX[,INDEX...]"
+        ~doc:(doc ^ " May be a single index $(b,3) or a comma separated list $(b,2,3,5)."))
 ;;
 
 let warp_flag =
@@ -706,6 +711,111 @@ let send_events_flag =
   @@ enum_of
        Input_rule.Send_events.to_string
        [ Enabled; Disabled; Disabled_on_external_mouse ]
+;;
+
+let touchpad_rule =
+  let open Cmdliner.Term.Syntax in
+  Term.term_result' ~usage:true
+  @@ let+ pattern = device_pattern_flag
+     and+ case = case_flag
+     and+ tap =
+       bool_state_flag "tap" ~doc:"Enable or disable tap-to-click." ~docv:"OPTION"
+     and+ tap_button_map =
+       button_map_flag
+         "tap-button-map"
+         ~doc:"Set the button order for taps with one, two, or three fingers."
+     and+ drag =
+       bool_state_flag "drag" ~doc:"Enable or disable tap-and-drag." ~docv:"OPTION"
+     and+ drag_lock = drag_lock_flag
+     and+ three_finger_drag = three_finger_drag_flag
+     and+ dwt =
+       bool_state_flag
+         "disable-while-typing"
+         ~doc:"Enable or disable the disable-while-typing feature."
+         ~docv:"OPTION"
+     and+ dwtp =
+       bool_state_flag
+         "disable-while-trackpointing"
+         ~doc:"Enable or disable the disable-while-trackpointing feature."
+         ~docv:"OPTION"
+     and+ click_method = click_method_flag
+     and+ clickfinger_button_map =
+       button_map_flag
+         "clickfinger-button-map"
+         ~doc:"Set the button order for clicks with one, two, or three fingers."
+     and+ accel_profile = accel_profile_flag
+     and+ accel_speed = accel_speed_flag
+     and+ natural_scroll = natural_scroll_flag
+     and+ left_handed = left_handed_flag
+     and+ middle_emulation = middle_emulation_flag
+     and+ scroll_method = scroll_method_flag
+     and+ send_events = send_events_flag
+     and+ scroll_factor = scroll_factor_flag in
+     let settings =
+       Input_rule.Touchpad.
+         { tap
+         ; tap_button_map
+         ; drag
+         ; drag_lock
+         ; three_finger_drag
+         ; dwt
+         ; dwtp
+         ; click_method
+         ; clickfinger_button_map
+         ; accel_profile
+         ; accel_speed
+         ; natural_scroll
+         ; left_handed
+         ; middle_emulation
+         ; scroll_method
+         ; send_events
+         ; scroll_factor
+         }
+     in
+     if settings = Input_rule.Touchpad.empty
+     then Error "give at least one setting flag"
+     else Ok ({ pattern; case; settings } : Input_rule.Touchpad.t Input_rule.rule)
+;;
+
+let mouse_rule =
+  let open Cmdliner in
+  let open Cmdliner.Term.Syntax in
+  Term.term_result' ~usage:true
+  @@ let+ pattern = device_pattern_flag
+     and+ case = case_flag
+     and+ accel_profile = accel_profile_flag
+     and+ accel_speed = accel_speed_flag
+     and+ natural_scroll = natural_scroll_flag
+     and+ left_handed = left_handed_flag
+     and+ middle_emulation = middle_emulation_flag
+     and+ scroll_method = scroll_method_flag
+     and+ scroll_button = scroll_button_flag
+     and+ scroll_button_lock =
+       bool_state_flag
+         "scroll-button-lock"
+         ~doc:
+           "Enable or disable the scroll button lock. With the lock, the scroll button \
+            toggles, and you do not hold it."
+         ~docv:"OPTION"
+     and+ send_events = send_events_flag
+     and+ scroll_factor = scroll_factor_flag in
+     let settings =
+       Input_rule.Mouse.
+         { accel_profile
+         ; accel_speed
+         ; natural_scroll
+         ; left_handed
+         ; middle_emulation
+         ; scroll_method
+         ; scroll_button
+         ; scroll_button_lock
+         ; send_events
+         ; scroll_factor
+         }
+     in
+     if settings = Input_rule.Mouse.empty
+     then Error "give at least one setting flag"
+     else Ok ({ pattern; case; settings } : Input_rule.Mouse.t Input_rule.rule)
 ;;
 
 let sticky_flag =

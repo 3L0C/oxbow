@@ -42,6 +42,7 @@ module Config = struct
 
   type t =
     { default_tag_config : Data.t
+    ; mutable default_overview_gaps : int
     ; borders : Border.t
     ; mutable cursor_theme : (string * int32) option
     ; mutable modes : Oxbow_core.Mode.t list

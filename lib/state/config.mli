@@ -1,8 +1,5 @@
 include module type of Types.Config
 
-(** [default_overview_gaps] is the overview gap at output creation. *)
-val default_overview_gaps : int
-
 (** [create_tag_data ()] is the default [Data.t] configuration. *)
 val create_tag_data : unit -> Data.t
 
@@ -127,3 +124,19 @@ val replace_input_rule : Types.Wm.t -> Oxbow_core.Input_rule.t -> unit
 
     {b Effects:} mutates WM state *)
 val declare_mode : Types.Wm.t -> Oxbow_core.Mode.t -> unit
+
+(** [remove_rules wm kind indices] removes the rules based on [kind] indexed by
+    [indices]. Is [Error msg] if [indices] contains any invalid index.
+
+    {b Effects:} mutates WM state *)
+val remove_rules
+  :  Types.Wm.t
+  -> [ `Window | `Input ]
+  -> int list
+  -> (Yojson.Safe.t option, string) result
+
+(** [apply_default_overview_gaps wm ~delta] applies [delta] to [wm]'s default
+    overview gaps.
+
+    {b Effects:} mutates WM state *)
+val apply_default_overview_gaps : Types.Wm.t -> delta:int Oxbow_core.Delta.t -> unit

@@ -209,6 +209,7 @@ render:set_presentation_mode(FAKE-1, vsync)
 {"event":"mode","seat":"seat0","mode":"normal"}
 {"event":"focus","seat":"seat0","output":"FAKE-1","title":"kitty","app_id":"kitty","tags":[1]}
 {"event":"tags","output":"FAKE-1","viewed":[2],"occupied":[1],"urgent":[],"focused":[]}
+{"event":"window","output":"FAKE-1"}
 {"event":"focus","seat":"seat0","output":"FAKE-1","title":null,"app_id":null,"tags":null}
 {"event":"tags","output":"FAKE-1","viewed":[2],"occupied":[1,2],"urgent":[],"focused":[2]}
 {"event":"window","id":2,"identifier":null,"title":"emacs","app_id":"emacs","output":"FAKE-1","tags":[2],"focused":true,"urgent":false,"captured":false,"hidden":false,"presentation":"tiled","sticky":"off","scratchpad":null,"stashed":false,"swallowing":false,"labels":[]}
@@ -225,6 +226,7 @@ event=output name=FAKE-1 labels= focused=true captured=false
 event=mode seat=seat0 mode=normal
 event=focus seat=seat0 output=FAKE-1 title=kitty app_id=kitty tags=1
 event=tags output=FAKE-1 viewed=2 occupied=1 urgent= focused=
+event=window output=FAKE-1
 event=focus seat=seat0 output=FAKE-1 title=null app_id=null tags=null
 event=tags output=FAKE-1 viewed=2 occupied=1,2 urgent= focused=2
 event=window id=2 identifier=null title=emacs app_id=emacs output=FAKE-1 tags=2 focused=true urgent=false captured=false hidden=false presentation=tiled sticky=off scratchpad=null stashed=false swallowing=false labels=

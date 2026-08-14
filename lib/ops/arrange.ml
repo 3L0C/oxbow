@@ -45,6 +45,7 @@ let set_gaps_outer wm seat delta scope =
 let set_gaps_overview wm seat delta scope =
   let+ outputs = outputs_of_scope wm seat scope in
   List.iter (Output.set_gaps_overview ~delta) outputs;
+  if scope = All then Config.apply_default_overview_gaps wm ~delta;
   Schedule.manage ();
   None
 ;;

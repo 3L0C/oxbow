@@ -65,13 +65,7 @@ let add (wm : Wm.t) (rule : Window_rule.t) =
     Ok None
 ;;
 
-let remove (wm : Wm.t) index =
-  match List.nth_opt wm.config.rules.window index with
-  | None -> Error (Printf.sprintf "no window rule at index %d" index)
-  | Some _ ->
-    Config.remove_window_rule wm index;
-    Ok None
-;;
+let remove wm indices = Config.remove_rules wm `Window indices
 
 let spawn_for (wm : Wm.t) (window : Window.t) =
   List.fold_left

@@ -11,6 +11,7 @@ end
 type t =
   | Tags of Record.Tags.t
   | Window of Record.Window.t
+  | Window_cleared of string
   | Layout of Record.Layout.t
   | Mode of Record.Mode.t
   | Focus of Record.Focus.t

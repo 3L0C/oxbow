@@ -13,11 +13,11 @@ val add
   -> Oxbow_core.Window_rule.t
   -> (Yojson.Safe.t option, string) result
 
-(** [remove wm index] removes the rule at [index] from [wm]'s configured rules.
-    Is [Error msg] when no rule matches.
+(** [remove wm indices] removes the rules at the given [indices] from [wm]'s
+    configured rules. Is [Error msg] when no rule matches.
 
     {b Effects:} mutates WM state *)
-val remove : Oxbow_state.Wm.t -> int -> (Yojson.Safe.t option, string) result
+val remove : Oxbow_state.Wm.t -> int list -> (Yojson.Safe.t option, string) result
 
 (** [spawn_for wm window] resolves the spawn position and the focus flag for
     [window]. *)

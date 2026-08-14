@@ -78,7 +78,7 @@ let on_output _ river_output (wm_box : Wm.t Box.t) =
       ; overview =
           { offset = 0
           ; enabled = false
-          ; gaps = Config.default_overview_gaps
+          ; gaps = wm.config.default_overview_gaps
           ; head = None
           }
       ; tag_data =
@@ -528,7 +528,7 @@ let on_libinput_device device (wm_box : Wm.t Box.t) =
                 if d.lifecycle = New
                 then (
                   Input_device.set_lifecycle d Active;
-                  Input_rules.apply wm d))
+                  Input_rules.apply_rules_to wm d))
              device_box.body
 
          method on_removed _ =
