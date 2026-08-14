@@ -1,0 +1,4693 @@
+.\" Pipe this output to groff -m man -K utf8 -T utf8 | less -R
+.\"
+.mso an.tmac
+.TH "OXCTL" 1 "" "Oxctl 0.1.0" "Oxctl Manual"
+.\" Disable hyphenation and ragged-right
+.nh
+.ad l
+.SH NAME
+.P
+oxctl \- command\-line interface for controlling oxbow
+.SH SYNOPSIS
+.P
+\fBoxctl\fR [\fICOMMAND\fR] …
+.SH COMMANDS
+.TP 4
+\fBbind\fR \fICOMMAND\fR …
+Bind a key or pointer button to a command
+.TP 4
+\fBborder\fR \fICOMMAND\fR …
+Border configuration commands
+.TP 4
+\fBconfig\fR \fICOMMAND\fR …
+Configuration operations
+.TP 4
+\fBexec\fR [\fIOPTION\fR]… \fICOMMAND\fR…
+Execute \fICOMMAND\fR as a shell command, e\N'46'g\N'46', \fI/bin/emacs \-\-eval "(scratch\-buffer\fR" )
+.TP 4
+\fBgaps\fR \fICOMMAND\fR …
+Configure the gaps between windows
+.TP 4
+\fBinput\fR \fICOMMAND\fR …
+Configure input devices
+.TP 4
+\fBkeymap\fR \fICOMMAND\fR …
+Manage keymaps
+.TP 4
+\fBlayout\fR \fICOMMAND\fR …
+Operations over layouts
+.TP 4
+\fBoutput\fR \fICOMMAND\fR …
+Operate on outputs
+.TP 4
+\fBscratchpad\fR \fICOMMAND\fR …
+Manage scratchpads
+.TP 4
+\fBseat\fR \fICOMMAND\fR …
+Operate on seats
+.TP 4
+\fBsession\fR \fICOMMAND\fR …
+Session control
+.TP 4
+\fBspawn\fR [\fIOPTION\fR]… \fISTRING\fR
+Run \fISTRING\fR as a shell command, e\N'46'g\N'46', \fI/bin/sh \-c STRING\fR
+.TP 4
+\fBsubscribe\fR [\fB\-\-human\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… [\fIKIND\fR]…
+Stream state\-change events as JSON lines
+.TP 4
+\fBtag\fR \fICOMMAND\fR …
+Operate on tag views
+.TP 4
+\fBunbind\fR [\fB\-\-mode\fR=\fIMODE\fR] [\fIOPTION\fR]… \fIKEYBIND\fR
+Unbind the given KEYBIND
+.TP 4
+\fBwindow\fR \fICOMMAND\fR …
+Operations over windows
+.TP 4
+\fBwm\fR \fICOMMAND\fR …
+Window\-manager control
+.SH "BIND"
+.P
+Bind a key or pointer button to a command
+.SS SYNOPSIS
+.P
+\fBoxctl bind\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBborder\fR \fICOMMAND\fR …
+Border configuration commands
+.TP 4
+\fBconfig\fR \fICOMMAND\fR …
+Configuration operations
+.TP 4
+\fBexec\fR [\fB\-\-mode\fR=\fIMODE\fR] [\fIOPTION\fR]… \fICOMMAND\fR… \fIto\fR \fIKEYBIND\fR
+Execute \fICOMMAND\fR as a shell command, e\N'46'g\N'46', \fI/bin/emacs \-\-eval "(scratch\-buffer\fR" )
+.TP 4
+\fBgaps\fR \fICOMMAND\fR …
+Configure the gaps between windows
+.TP 4
+\fBinput\fR \fICOMMAND\fR …
+Configure input devices
+.TP 4
+\fBkeymap\fR \fICOMMAND\fR …
+Manage keymaps
+.TP 4
+\fBlayout\fR \fICOMMAND\fR …
+Operations over layouts
+.TP 4
+\fBoutput\fR \fICOMMAND\fR …
+Operate on outputs
+.TP 4
+\fBscratchpad\fR \fICOMMAND\fR …
+Manage scratchpads
+.TP 4
+\fBsession\fR \fICOMMAND\fR …
+Session control
+.TP 4
+\fBspawn\fR [\fB\-\-mode\fR=\fIMODE\fR] [\fIOPTION\fR]… \fISTRING\fR \fIto\fR \fIKEYBIND\fR
+Run \fISTRING\fR as a shell command, e\N'46'g\N'46', \fI/bin/sh \-c STRING\fR
+.TP 4
+\fBtag\fR \fICOMMAND\fR …
+Operate on tag views
+.TP 4
+\fBwindow\fR \fICOMMAND\fR …
+Operations over windows
+.TP 4
+\fBwm\fR \fICOMMAND\fR …
+Window\-manager control
+.SH "BORDER"
+.P
+Border configuration commands
+.SS SYNOPSIS
+.P
+\fBoxctl border\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBcolor\fR \fICOMMAND\fR …
+Set the window color for a given state
+.TP 4
+\fBwidth\fR [\fIOPTION\fR]… \fIWIDTH\fR
+Configure the border width
+.SH "BORDER COLOR"
+.P
+Set the window color for a given state
+.SS SYNOPSIS
+.P
+\fBoxctl border color\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBcaptured\fR [\fIOPTION\fR]… \fICOLOR\fR
+Set the border color when the window state is captured
+.TP 4
+\fBfocused\fR [\fIOPTION\fR]… \fICOLOR\fR
+Set the border color when the window state is focused
+.TP 4
+\fBswallowing\fR [\fIOPTION\fR]… \fICOLOR\fR
+Set the border color when the window state is swallowing
+.TP 4
+\fBunfocused\fR [\fIOPTION\fR]… \fICOLOR\fR
+Set the border color when the window state is unfocused
+.TP 4
+\fBurgent\fR [\fIOPTION\fR]… \fICOLOR\fR
+Set the border color when the window state is urgent
+.SH "BORDER COLOR CAPTURED"
+.P
+Set the border color when the window state is captured
+.SS SYNOPSIS
+.P
+\fBoxctl border color captured\fR [\fIOPTION\fR]… \fICOLOR\fR
+.SS ARGUMENTS
+.TP 4
+\fICOLOR\fR (required)
+An RGBA or RGB color string\N'46' The following are equivalent: \fI7FB4CAFF\fR \fI7FB4CA\fR\N'46' May be prefixed with \fI#\fR or \fI0x\fR\N'46'
+.SH "BORDER COLOR FOCUSED"
+.P
+Set the border color when the window state is focused
+.SS SYNOPSIS
+.P
+\fBoxctl border color focused\fR [\fIOPTION\fR]… \fICOLOR\fR
+.SS ARGUMENTS
+.TP 4
+\fICOLOR\fR (required)
+An RGBA or RGB color string\N'46' The following are equivalent: \fI7FB4CAFF\fR \fI7FB4CA\fR\N'46' May be prefixed with \fI#\fR or \fI0x\fR\N'46'
+.SH "BORDER COLOR SWALLOWING"
+.P
+Set the border color when the window state is swallowing
+.SS SYNOPSIS
+.P
+\fBoxctl border color swallowing\fR [\fIOPTION\fR]… \fICOLOR\fR
+.SS ARGUMENTS
+.TP 4
+\fICOLOR\fR (required)
+An RGBA or RGB color string\N'46' The following are equivalent: \fI7FB4CAFF\fR \fI7FB4CA\fR\N'46' May be prefixed with \fI#\fR or \fI0x\fR\N'46'
+.SH "BORDER COLOR UNFOCUSED"
+.P
+Set the border color when the window state is unfocused
+.SS SYNOPSIS
+.P
+\fBoxctl border color unfocused\fR [\fIOPTION\fR]… \fICOLOR\fR
+.SS ARGUMENTS
+.TP 4
+\fICOLOR\fR (required)
+An RGBA or RGB color string\N'46' The following are equivalent: \fI7FB4CAFF\fR \fI7FB4CA\fR\N'46' May be prefixed with \fI#\fR or \fI0x\fR\N'46'
+.SH "BORDER COLOR URGENT"
+.P
+Set the border color when the window state is urgent
+.SS SYNOPSIS
+.P
+\fBoxctl border color urgent\fR [\fIOPTION\fR]… \fICOLOR\fR
+.SS ARGUMENTS
+.TP 4
+\fICOLOR\fR (required)
+An RGBA or RGB color string\N'46' The following are equivalent: \fI7FB4CAFF\fR \fI7FB4CA\fR\N'46' May be prefixed with \fI#\fR or \fI0x\fR\N'46'
+.SH "BORDER WIDTH"
+.P
+Configure the border width
+.SS SYNOPSIS
+.P
+\fBoxctl border width\fR [\fIOPTION\fR]… \fIWIDTH\fR
+.SH "CONFIG"
+.P
+Configuration operations
+.SS SYNOPSIS
+.P
+\fBoxctl config\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBreset\fR [\fB\-\-all\fR] [\fIOPTION\fR]…
+Restore the stock configuration
+.SH "CONFIG RESET"
+.P
+Restore the stock configuration
+.SS SYNOPSIS
+.P
+\fBoxctl config reset\fR [\fB\-\-all\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Reset rules, keybinds, modes, and window/output labels\N'46'
+.SH "EXEC"
+.P
+Execute \fICOMMAND\fR as a shell command, e\N'46'g\N'46', \fI/bin/emacs \-\-eval "(scratch\-buffer\fR" )
+.SS SYNOPSIS
+.P
+\fBoxctl exec\fR [\fIOPTION\fR]… \fICOMMAND\fR…
+.SS ARGUMENTS
+.TP 4
+\fICOMMAND\fR (required)
+The \fICOMMAND\fR to execute\N'46'
+.SH "GAPS"
+.P
+Configure the gaps between windows
+.SS SYNOPSIS
+.P
+\fBoxctl gaps\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBinner\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIINT_DELTA\fR
+Set the size of the inner gaps
+.TP 4
+\fBouter\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIINT_DELTA\fR
+Set the size of the outer gaps
+.TP 4
+\fBoverview\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIINT_DELTA\fR
+Set the size of the gaps for overview mode\N'46' A new output does not keep the \fB\-\-all\fR value\N'46'
+.SH "GAPS INNER"
+.P
+Set the size of the inner gaps
+.SS SYNOPSIS
+.P
+\fBoxctl gaps inner\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIINT_DELTA\fR
+.SS ARGUMENTS
+.TP 4
+\fIINT_DELTA\fR (required)
+May be either an absolute value (\fB6\fR), or an offset (\fB\-2\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "GAPS OUTER"
+.P
+Set the size of the outer gaps
+.SS SYNOPSIS
+.P
+\fBoxctl gaps outer\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIINT_DELTA\fR
+.SS ARGUMENTS
+.TP 4
+\fIINT_DELTA\fR (required)
+May be either an absolute value (\fB6\fR), or an offset (\fB\-2\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "GAPS OVERVIEW"
+.P
+Set the size of the gaps for overview mode\N'46' A new output does not keep the \fB\-\-all\fR value\N'46'
+.SS SYNOPSIS
+.P
+\fBoxctl gaps overview\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIINT_DELTA\fR
+.SS ARGUMENTS
+.TP 4
+\fIINT_DELTA\fR (required)
+May be either an absolute value (\fB6\fR), or an offset (\fB\-2\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "INPUT"
+.P
+Configure input devices
+.SS SYNOPSIS
+.P
+\fBoxctl input\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBcursor\fR \fICOMMAND\fR …
+Configure the cursor appearance
+.TP 4
+\fBkeyboard\fR \fICOMMAND\fR …
+Configure keyboard input
+.TP 4
+\fBlist\fR [\fIOPTION\fR]…
+List input devices matching the search pattern\N'46'
+.TP 4
+\fBpointer\fR \fICOMMAND\fR …
+Pointer operations and settings
+.TP 4
+\fBrules\fR \fICOMMAND\fR …
+Manage input rules
+.SH "INPUT CURSOR"
+.P
+Configure the cursor appearance
+.SS SYNOPSIS
+.P
+\fBoxctl input cursor\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBtheme\fR [\fIOPTION\fR]… \fINAME\fR \fISIZE\fR
+Set the XCursor theme to NAME and SIZE
+.SH "INPUT CURSOR THEME"
+.P
+Set the XCursor theme to NAME and SIZE
+.SS SYNOPSIS
+.P
+\fBoxctl input cursor theme\fR [\fIOPTION\fR]… \fINAME\fR \fISIZE\fR
+.SH "INPUT KEYBOARD"
+.P
+Configure keyboard input
+.SS SYNOPSIS
+.P
+\fBoxctl input keyboard\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBlayout\-file\fR [\fIOPTION\fR]… \fIPATH\fR
+Set keyboard keymap from XKB keymap file at PATH
+.TP 4
+\fBrepeat\fR [\fIOPTION\fR]… \fIRATE\fR \fIDELAY\fR
+Set the keyboard repeat RATE (keys/sec) and DELAY (ms)
+.SH "INPUT KEYBOARD LAYOUT-FILE"
+.P
+Set keyboard keymap from XKB keymap file at PATH
+.SS SYNOPSIS
+.P
+\fBoxctl input keyboard layout\-file\fR [\fIOPTION\fR]… \fIPATH\fR
+.SH "INPUT KEYBOARD REPEAT"
+.P
+Set the keyboard repeat RATE (keys/sec) and DELAY (ms)
+.SS SYNOPSIS
+.P
+\fBoxctl input keyboard repeat\fR [\fIOPTION\fR]… \fIRATE\fR \fIDELAY\fR
+.SH "INPUT LIST"
+.P
+List input devices matching the search pattern\N'46'
+.SS SYNOPSIS
+.P
+\fBoxctl input list\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.TP 4
+\fB\-\-name\fR=\fIREGEX\fR
+Match \fIREGEX\fR, a PCRE regex, against the device name\N'46'
+.TP 4
+\fB\-\-role\fR=\fIROLE\fR
+Filter to devices with this role\N'46' The value is one of \fBkeyboard\fR, \fBmouse\fR, \fBtouchpad\fR, \fBtouch\fR or \fBtablet\fR
+.SH "INPUT POINTER"
+.P
+Pointer operations and settings
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBfollow\fR \fICOMMAND\fR …
+How pointer motion changes focus
+.TP 4
+\fBwarp\fR \fICOMMAND\fR …
+Whether keyboard focus changes warp the pointer
+.SH "INPUT POINTER FOLLOW"
+.P
+How pointer motion changes focus
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer follow\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBalways\fR [\fIOPTION\fR]…
+Set the focus follows pointer policy to always
+.TP 4
+\fBcycle\fR [\fIOPTION\fR]…
+Cycle the focus follows pointer policy
+.TP 4
+\fBnever\fR [\fIOPTION\fR]…
+Set the focus follows pointer policy to never
+.TP 4
+\fBnot\-scrolling\fR [\fIOPTION\fR]…
+Set the focus follows pointer policy to not\-scrolling
+.SH "INPUT POINTER FOLLOW ALWAYS"
+.P
+Set the focus follows pointer policy to always
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer follow always\fR [\fIOPTION\fR]…
+.SH "INPUT POINTER FOLLOW CYCLE"
+.P
+Cycle the focus follows pointer policy
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer follow cycle\fR [\fIOPTION\fR]…
+.SH "INPUT POINTER FOLLOW NEVER"
+.P
+Set the focus follows pointer policy to never
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer follow never\fR [\fIOPTION\fR]…
+.SH "INPUT POINTER FOLLOW NOT-SCROLLING"
+.P
+Set the focus follows pointer policy to not\-scrolling
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer follow not\-scrolling\fR [\fIOPTION\fR]…
+.SH "INPUT POINTER WARP"
+.P
+Whether keyboard focus changes warp the pointer
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer warp\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBoff\fR [\fIOPTION\fR]…
+Turn warp\-on\-focus off
+.TP 4
+\fBon\fR [\fIOPTION\fR]…
+Turn warp\-on\-focus on
+.TP 4
+\fBtoggle\fR [\fIOPTION\fR]…
+Toggle warp\-on\-focus
+.SH "INPUT POINTER WARP OFF"
+.P
+Turn warp\-on\-focus off
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer warp off\fR [\fIOPTION\fR]…
+.SH "INPUT POINTER WARP ON"
+.P
+Turn warp\-on\-focus on
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer warp on\fR [\fIOPTION\fR]…
+.SH "INPUT POINTER WARP TOGGLE"
+.P
+Toggle warp\-on\-focus
+.SS SYNOPSIS
+.P
+\fBoxctl input pointer warp toggle\fR [\fIOPTION\fR]…
+.SH "INPUT RULES"
+.P
+Manage input rules
+.SS SYNOPSIS
+.P
+\fBoxctl input rules\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBlist\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+List the input rules
+.TP 4
+\fBmouse\fR [\fIOPTION\fR]…
+Add or update a mouse rule
+.TP 4
+\fBremove\fR [\fIOPTION\fR]… \fIINDEX\fR
+Remove an input rule
+.TP 4
+\fBtouchpad\fR [\fIOPTION\fR]…
+Add or update a touchpad rule
+.SH "INPUT RULES LIST"
+.P
+List the input rules
+.SS SYNOPSIS
+.P
+\fBoxctl input rules list\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.SH "INPUT RULES MOUSE"
+.P
+Add or update a mouse rule
+.SS SYNOPSIS
+.P
+\fBoxctl input rules mouse\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-accel\-profile\fR=\fIPROFILE\fR
+Set the pointer acceleration profile\N'46' The value is one of \fBnone\fR, \fBflat\fR, \fBadaptive\fR or \fBcustom\fR
+.TP 4
+\fB\-\-accel\-speed\fR=\fISPEED\fR
+Set the pointer acceleration speed\N'46' The range is \-1\N'46'0 to 1\N'46'0\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-left\-handed\fR=\fIOPTION\fR
+Enable or disable the left\-handed button layout\N'46'
+.TP 4
+\fB\-\-middle\-emulation\fR=\fIOPTION\fR
+Enable or disable middle\-button emulation\N'46'
+.TP 4
+\fB\-\-name\fR=\fIREGEX\fR
+Match \fIREGEX\fR, a PCRE regex, against the device name\N'46'
+.TP 4
+\fB\-\-natural\-scroll\fR=\fIOPTION\fR
+Enable or disable the natural scroll direction\N'46'
+.TP 4
+\fB\-\-scroll\-button\fR=\fIBUTTON\fR
+Set the button that starts on\-button\-down scroll\N'46' The value is one of \fBBtn_0\fR, \fBBtn_1\fR, \fBBtn_2\fR, \fBBtn_3\fR, \fBBtn_4\fR, \fBBtn_5\fR, \fBBtn_6\fR, \fBBtn_7\fR, \fBBtn_8\fR, \fBBtn_9\fR, \fBBtn_left\fR, \fBBtn_right\fR, \fBBtn_middle\fR, \fBBtn_side\fR, \fBBtn_extra\fR, \fBBtn_forward\fR, \fBBtn_back\fR or \fBBtn_task\fR
+.TP 4
+\fB\-\-scroll\-button\-lock\fR=\fIOPTION\fR
+Enable or disable the scroll button lock\N'46' With the lock, the scroll button toggles, and you do not hold it\N'46'
+.TP 4
+\fB\-\-scroll\-factor\fR=\fIFACTOR\fR
+Multiply the scroll distance by \fIFACTOR\fR\N'46'
+.TP 4
+\fB\-\-scroll\-method\fR=\fIMETHOD\fR
+Set the scroll method of the device\N'46' The value is one of \fBno\-scroll\fR, \fBtwo\-finger\fR, \fBedge\fR or \fBon\-button\-down\fR
+.TP 4
+\fB\-\-send\-events\fR=\fIOPTION\fR
+Set the send\-events mode of the device\N'46' The value is one of \fBenabled\fR, \fBdisabled\fR or \fBdisabled\-on\-external\-mouse\fR
+.SH "INPUT RULES REMOVE"
+.P
+Remove an input rule
+.SS SYNOPSIS
+.P
+\fBoxctl input rules remove\fR [\fIOPTION\fR]… \fIINDEX\fR
+.SS ARGUMENTS
+.TP 4
+\fIINDEX\fR (required)
+The rule index from the \fBlist\fR output\N'46'
+.SH "INPUT RULES TOUCHPAD"
+.P
+Add or update a touchpad rule
+.SS SYNOPSIS
+.P
+\fBoxctl input rules touchpad\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-accel\-profile\fR=\fIPROFILE\fR
+Set the pointer acceleration profile\N'46' The value is one of \fBnone\fR, \fBflat\fR, \fBadaptive\fR or \fBcustom\fR
+.TP 4
+\fB\-\-accel\-speed\fR=\fISPEED\fR
+Set the pointer acceleration speed\N'46' The range is \-1\N'46'0 to 1\N'46'0\N'46'
+.TP 4
+\fB\-\-click\-method\fR=\fIMETHOD\fR
+Set the click method of the touchpad\N'46' The value is one of \fBnone\fR, \fBbutton\-areas\fR or \fBclickfinger\fR
+.TP 4
+\fB\-\-clickfinger\-button\-map\fR=\fIBUTTON\fR
+Set the button order for clicks with one, two, or three fingers\N'46' The value is either \fBleft\-right\-middle\fR or \fBleft\-middle\-right\fR
+.TP 4
+\fB\-\-disable\-while\-trackpointing\fR=\fIOPTION\fR
+Enable or disable the disable\-while\-trackpointing feature\N'46'
+.TP 4
+\fB\-\-disable\-while\-typing\fR=\fIOPTION\fR
+Enable or disable the disable\-while\-typing feature\N'46'
+.TP 4
+\fB\-\-drag\fR=\fIOPTION\fR
+Enable or disable tap\-and\-drag\N'46'
+.TP 4
+\fB\-\-drag\-lock\fR=\fIOPTION\fR
+Set the drag lock mode for tap\-and\-drag\N'46' The value is one of \fBdisabled\fR, \fBenabled\-timeout\fR or \fBenabled\-sticky\fR
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-left\-handed\fR=\fIOPTION\fR
+Enable or disable the left\-handed button layout\N'46'
+.TP 4
+\fB\-\-middle\-emulation\fR=\fIOPTION\fR
+Enable or disable middle\-button emulation\N'46'
+.TP 4
+\fB\-\-name\fR=\fIREGEX\fR
+Match \fIREGEX\fR, a PCRE regex, against the device name\N'46'
+.TP 4
+\fB\-\-natural\-scroll\fR=\fIOPTION\fR
+Enable or disable the natural scroll direction\N'46'
+.TP 4
+\fB\-\-scroll\-factor\fR=\fIFACTOR\fR
+Multiply the scroll distance by \fIFACTOR\fR\N'46'
+.TP 4
+\fB\-\-scroll\-method\fR=\fIMETHOD\fR
+Set the scroll method of the device\N'46' The value is one of \fBno\-scroll\fR, \fBtwo\-finger\fR, \fBedge\fR or \fBon\-button\-down\fR
+.TP 4
+\fB\-\-send\-events\fR=\fIOPTION\fR
+Set the send\-events mode of the device\N'46' The value is one of \fBenabled\fR, \fBdisabled\fR or \fBdisabled\-on\-external\-mouse\fR
+.TP 4
+\fB\-\-tap\fR=\fIOPTION\fR
+Enable or disable tap\-to\-click\N'46'
+.TP 4
+\fB\-\-tap\-button\-map\fR=\fIBUTTON\fR
+Set the button order for taps with one, two, or three fingers\N'46' The value is either \fBleft\-right\-middle\fR or \fBleft\-middle\-right\fR
+.TP 4
+\fB\-\-three\-finger\-drag\fR=\fIOPTION\fR
+Set the drag gesture with three or four fingers\N'46' The value is one of \fBdisabled\fR, \fBenabled\-3fg\fR or \fBenabled\-4fg\fR
+.SH "KEYMAP"
+.P
+Manage keymaps
+.SS SYNOPSIS
+.P
+\fBoxctl keymap\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBlist\fR [\fIOPTION\fR]…
+List active keybindings
+.TP 4
+\fBmode\fR \fICOMMAND\fR …
+Declare and switch keymap modes
+.SH "KEYMAP LIST"
+.P
+List active keybindings
+.SS SYNOPSIS
+.P
+\fBoxctl keymap list\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+List keybindings for every seat
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.SH "KEYMAP MODE"
+.P
+Declare and switch keymap modes
+.SS SYNOPSIS
+.P
+\fBoxctl keymap mode\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdeclare\fR [\fIOPTION\fR]… \fIMODE\fR
+Declare a new keymap mode
+.TP 4
+\fBenter\fR [\fIOPTION\fR]… \fIMODE\fR
+Enter the given keymap mode
+.SH "KEYMAP MODE DECLARE"
+.P
+Declare a new keymap mode
+.SS SYNOPSIS
+.P
+\fBoxctl keymap mode declare\fR [\fIOPTION\fR]… \fIMODE\fR
+.SS ARGUMENTS
+.TP 4
+\fIMODE\fR (required)
+The mode name
+.SH "KEYMAP MODE ENTER"
+.P
+Enter the given keymap mode
+.SS SYNOPSIS
+.P
+\fBoxctl keymap mode enter\fR [\fIOPTION\fR]… \fIMODE\fR
+.SS ARGUMENTS
+.TP 4
+\fIMODE\fR (required)
+The mode name
+.SH "LAYOUT"
+.P
+Operations over layouts
+.SS SYNOPSIS
+.P
+\fBoxctl layout\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBfloating\fR [\fICOMMAND\fR] …
+Switch to the floating layout
+.TP 4
+\fBnext\fR [\fIOPTION\fR]…
+Cycle to the next layout
+.TP 4
+\fBprev\fR [\fIOPTION\fR]…
+Cycle to the prev layout
+.TP 4
+\fBquery\fR [\fIOPTION\fR]…
+Query current and available layouts
+.TP 4
+\fBscrolling\fR [\fICOMMAND\fR] …
+Switch to the scrolling layout
+.TP 4
+\fBtiling\fR [\fICOMMAND\fR] …
+Switch to the tiling layout
+.SH "LAYOUT FLOATING"
+.P
+Switch to the floating layout
+.SS SYNOPSIS
+.P
+\fBoxctl layout floating\fR [\fICOMMAND\fR] …
+.SS COMMANDS
+.TP 4
+\fBseed\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fISEED\fR
+Set the floating seed of the output
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT FLOATING SEED"
+.P
+Set the floating seed of the output
+.SS SYNOPSIS
+.P
+\fBoxctl layout floating seed\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fISEED\fR
+.SS ARGUMENTS
+.TP 4
+\fISEED\fR (required)
+The size used when a window becomes floating and has no remembered placement\N'46' A pixel value (e\N'46'g\N'46', \fB800\fR) or a percentage of the usable area (e\N'46'g\N'46', \fB50%\fR)\N'46' The value applies to both dimensions\N'46' The window is centered\N'46'
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT NEXT"
+.P
+Cycle to the next layout
+.SS SYNOPSIS
+.P
+\fBoxctl layout next\fR [\fIOPTION\fR]…
+.SH "LAYOUT PREV"
+.P
+Cycle to the prev layout
+.SS SYNOPSIS
+.P
+\fBoxctl layout prev\fR [\fIOPTION\fR]…
+.SH "LAYOUT QUERY"
+.P
+Query current and available layouts
+.SS SYNOPSIS
+.P
+\fBoxctl layout query\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING"
+.P
+Switch to the scrolling layout
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling\fR [\fICOMMAND\fR] …
+.SS COMMANDS
+.TP 4
+\fBalign\fR \fICOMMAND\fR …
+Set the scrolling layout alignment
+.TP 4
+\fBcentered\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Switch to the scrolling layout with centered alignment
+.TP 4
+\fBdefault\-width\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIFLOAT_DELTA\fR
+Set the default column width for new windows
+.TP 4
+\fBleft\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Switch to the scrolling layout with left alignment
+.TP 4
+\fBorientation\fR \fICOMMAND\fR …
+Set the orientation of the scrolling layout
+.TP 4
+\fBvisible\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Switch to the scrolling layout with visible alignment
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING ALIGN"
+.P
+Set the scrolling layout alignment
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling align\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBcentered\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Set the scrolling layout alignment to centered
+.TP 4
+\fBleft\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Set the scrolling layout alignment to left
+.TP 4
+\fBvisible\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Set the scrolling layout alignment to visible
+.SH "LAYOUT SCROLLING ALIGN CENTERED"
+.P
+Set the scrolling layout alignment to centered
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling align centered\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING ALIGN LEFT"
+.P
+Set the scrolling layout alignment to left
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling align left\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING ALIGN VISIBLE"
+.P
+Set the scrolling layout alignment to visible
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling align visible\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING CENTERED"
+.P
+Switch to the scrolling layout with centered alignment
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling centered\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING DEFAULT-WIDTH"
+.P
+Set the default column width for new windows
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling default\-width\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIFLOAT_DELTA\fR
+.SS ARGUMENTS
+.TP 4
+\fIFLOAT_DELTA\fR (required)
+May be either an absolute value (\fB0\N'46'55\fR), or an offset (\fB\-0\N'46'05\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING LEFT"
+.P
+Switch to the scrolling layout with left alignment
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling left\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING ORIENTATION"
+.P
+Set the orientation of the scrolling layout
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling orientation\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdown\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+The strip scrolls vertically, with the head of the strip on the bottom
+.TP 4
+\fBleft\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+The strip scrolls horizontally, with the head of the strip on the left
+.TP 4
+\fBright\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+The strip scrolls horizontally, with the head of the strip on the right
+.TP 4
+\fBup\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+The strip scrolls vertically, with the head of the strip on the top
+.SH "LAYOUT SCROLLING ORIENTATION DOWN"
+.P
+The strip scrolls vertically, with the head of the strip on the bottom
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling orientation down\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING ORIENTATION LEFT"
+.P
+The strip scrolls horizontally, with the head of the strip on the left
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling orientation left\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING ORIENTATION RIGHT"
+.P
+The strip scrolls horizontally, with the head of the strip on the right
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling orientation right\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING ORIENTATION UP"
+.P
+The strip scrolls vertically, with the head of the strip on the top
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling orientation up\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT SCROLLING VISIBLE"
+.P
+Switch to the scrolling layout with visible alignment
+.SS SYNOPSIS
+.P
+\fBoxctl layout scrolling visible\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING"
+.P
+Switch to the tiling layout
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling\fR [\fICOMMAND\fR] …
+.SS COMMANDS
+.TP 4
+\fBdeck\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Switch to the tiling layout with the deck scheme
+.TP 4
+\fBdiminish\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Switch to the tiling layout with the diminish scheme
+.TP 4
+\fBdwindle\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Switch to the tiling layout with the dwindle scheme
+.TP 4
+\fBeven\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Switch to the tiling layout with the even scheme
+.TP 4
+\fBmfact\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIFLOAT_DELTA\fR
+Set the ratio for the master stack
+.TP 4
+\fBmonocle\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Switch to the tiling layout with the monocle scheme
+.TP 4
+\fBnext\fR [\fIOPTION\fR]…
+Cycle to the next tiling scheme
+.TP 4
+\fBnmaster\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIINT_DELTA\fR
+Set the number of masters in the master stack
+.TP 4
+\fBorientation\fR \fICOMMAND\fR …
+Set the master orientation for the current layout
+.TP 4
+\fBprev\fR [\fIOPTION\fR]…
+Cycle to the prev tiling scheme
+.TP 4
+\fBquery\fR [\fIOPTION\fR]…
+Query current and available tiling schemes
+.TP 4
+\fBscheme\fR \fICOMMAND\fR …
+Set the tiling layout scheme
+.TP 4
+\fBspiral\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Switch to the tiling layout with the spiral scheme
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING DECK"
+.P
+Switch to the tiling layout with the deck scheme
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling deck\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING DIMINISH"
+.P
+Switch to the tiling layout with the diminish scheme
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling diminish\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING DWINDLE"
+.P
+Switch to the tiling layout with the dwindle scheme
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling dwindle\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING EVEN"
+.P
+Switch to the tiling layout with the even scheme
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling even\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING MFACT"
+.P
+Set the ratio for the master stack
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling mfact\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIFLOAT_DELTA\fR
+.SS ARGUMENTS
+.TP 4
+\fIFLOAT_DELTA\fR (required)
+May be either an absolute value (\fB0\N'46'55\fR), or an offset (\fB\-0\N'46'05\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING MONOCLE"
+.P
+Switch to the tiling layout with the monocle scheme
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling monocle\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING NEXT"
+.P
+Cycle to the next tiling scheme
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling next\fR [\fIOPTION\fR]…
+.SH "LAYOUT TILING NMASTER"
+.P
+Set the number of masters in the master stack
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling nmaster\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… \fIINT_DELTA\fR
+.SS ARGUMENTS
+.TP 4
+\fIINT_DELTA\fR (required)
+May be either an absolute value (\fB6\fR), or an offset (\fB\-2\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING ORIENTATION"
+.P
+Set the master orientation for the current layout
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling orientation\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdown\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Position the master stack down
+.TP 4
+\fBleft\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Position the master stack left
+.TP 4
+\fBright\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Position the master stack right
+.TP 4
+\fBup\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Position the master stack up
+.SH "LAYOUT TILING ORIENTATION DOWN"
+.P
+Position the master stack down
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling orientation down\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING ORIENTATION LEFT"
+.P
+Position the master stack left
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling orientation left\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING ORIENTATION RIGHT"
+.P
+Position the master stack right
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling orientation right\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING ORIENTATION UP"
+.P
+Position the master stack up
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling orientation up\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING PREV"
+.P
+Cycle to the prev tiling scheme
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling prev\fR [\fIOPTION\fR]…
+.SH "LAYOUT TILING QUERY"
+.P
+Query current and available tiling schemes
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling query\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING SCHEME"
+.P
+Set the tiling layout scheme
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling scheme\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdeck\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Set the tiling layout scheme to deck
+.TP 4
+\fBdiminish\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Set the tiling layout scheme to diminish
+.TP 4
+\fBdwindle\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Set the tiling layout scheme to dwindle
+.TP 4
+\fBeven\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Set the tiling layout scheme to even
+.TP 4
+\fBmonocle\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Set the tiling layout scheme to monocle
+.TP 4
+\fBspiral\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+Set the tiling layout scheme to spiral
+.SH "LAYOUT TILING SCHEME DECK"
+.P
+Set the tiling layout scheme to deck
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling scheme deck\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING SCHEME DIMINISH"
+.P
+Set the tiling layout scheme to diminish
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling scheme diminish\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING SCHEME DWINDLE"
+.P
+Set the tiling layout scheme to dwindle
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling scheme dwindle\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING SCHEME EVEN"
+.P
+Set the tiling layout scheme to even
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling scheme even\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING SCHEME MONOCLE"
+.P
+Set the tiling layout scheme to monocle
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling scheme monocle\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING SCHEME SPIRAL"
+.P
+Set the tiling layout scheme to spiral
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling scheme spiral\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "LAYOUT TILING SPIRAL"
+.P
+Switch to the tiling layout with the spiral scheme
+.SS SYNOPSIS
+.P
+\fBoxctl layout tiling spiral\fR [\fB\-\-all\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Apply the change to every tag on every output\N'46' The value becomes the default for new outputs and tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "OUTPUT"
+.P
+Operate on outputs
+.SS SYNOPSIS
+.P
+\fBoxctl output\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBcolumn\fR \fICOMMAND\fR …
+Operate on the columns of the focused output
+.TP 4
+\fBfocus\fR \fICOMMAND\fR …
+Focus an output by direction or match pattern
+.TP 4
+\fBlabel\fR \fICOMMAND\fR …
+Manage output labels
+.TP 4
+\fBlist\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+List all the active outputs
+.TP 4
+\fBoverview\fR [\fICOMMAND\fR] …
+Toggle the overview grid
+.TP 4
+\fBswap\fR \fICOMMAND\fR …
+Swap windows between outputs
+.SH "OUTPUT COLUMN"
+.P
+Operate on the columns of the focused output
+.SS SYNOPSIS
+.P
+\fBoxctl output column\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBwidth\fR [\fIOPTION\fR]… \fIFLOAT_DELTA\fR
+Adjust all columns by \fIDELTA\fR width
+.SH "OUTPUT COLUMN WIDTH"
+.P
+Adjust all columns by \fIDELTA\fR width
+.SS SYNOPSIS
+.P
+\fBoxctl output column width\fR [\fIOPTION\fR]… \fIFLOAT_DELTA\fR
+.SS ARGUMENTS
+.TP 4
+\fIFLOAT_DELTA\fR (required)
+May be either an absolute value (\fB0\N'46'55\fR), or an offset (\fB\-0\N'46'05\fR)
+.SH "OUTPUT FOCUS"
+.P
+Focus an output by direction or match pattern
+.SS SYNOPSIS
+.P
+\fBoxctl output focus\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdown\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+Focus the down output
+.TP 4
+\fBleft\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+Focus the left output
+.TP 4
+\fBmatch\fR [\fIOPTION\fR]…
+Focus the output matching the search pattern
+.TP 4
+\fBnext\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+Focus the next output
+.TP 4
+\fBprev\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+Focus the prev output
+.TP 4
+\fBright\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+Focus the right output
+.TP 4
+\fBup\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+Focus the up output
+.SH "OUTPUT FOCUS DOWN"
+.P
+Focus the down output
+.SS SYNOPSIS
+.P
+\fBoxctl output focus down\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "OUTPUT FOCUS LEFT"
+.P
+Focus the left output
+.SS SYNOPSIS
+.P
+\fBoxctl output focus left\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "OUTPUT FOCUS MATCH"
+.P
+Focus the output matching the search pattern
+.SS SYNOPSIS
+.P
+\fBoxctl output focus match\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the outputs that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the output\N'39's labels\N'46'
+.TP 4
+\fB\-\-name\fR=\fIREGEX\fR
+Match REGEX against the output\N'39's name\N'46'
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "OUTPUT FOCUS NEXT"
+.P
+Focus the next output
+.SS SYNOPSIS
+.P
+\fBoxctl output focus next\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "OUTPUT FOCUS PREV"
+.P
+Focus the prev output
+.SS SYNOPSIS
+.P
+\fBoxctl output focus prev\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "OUTPUT FOCUS RIGHT"
+.P
+Focus the right output
+.SS SYNOPSIS
+.P
+\fBoxctl output focus right\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "OUTPUT FOCUS UP"
+.P
+Focus the up output
+.SS SYNOPSIS
+.P
+\fBoxctl output focus up\fR [\fB\-\-no\-warp\fR] [\fB\-\-warp\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "OUTPUT LABEL"
+.P
+Manage output labels
+.SS SYNOPSIS
+.P
+\fBoxctl output label\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBadd\fR [\fIOPTION\fR]… \fILABEL\fR
+Add a label to the target output(s)
+.TP 4
+\fBremove\fR [\fIOPTION\fR]… \fILABEL\fR
+Remove LABEL from the target output(s)
+.SH "OUTPUT LABEL ADD"
+.P
+Add a label to the target output(s)
+.SS SYNOPSIS
+.P
+\fBoxctl output label add\fR [\fIOPTION\fR]… \fILABEL\fR
+.SS ARGUMENTS
+.TP 4
+\fILABEL\fR (required)
+The label
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the outputs that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the output\N'39's labels\N'46'
+.TP 4
+\fB\-\-name\fR=\fIREGEX\fR
+Match REGEX against the output\N'39's name\N'46'
+.SH "OUTPUT LABEL REMOVE"
+.P
+Remove LABEL from the target output(s)
+.SS SYNOPSIS
+.P
+\fBoxctl output label remove\fR [\fIOPTION\fR]… \fILABEL\fR
+.SS ARGUMENTS
+.TP 4
+\fILABEL\fR (required)
+The label
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the outputs that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the output\N'39's labels\N'46'
+.TP 4
+\fB\-\-name\fR=\fIREGEX\fR
+Match REGEX against the output\N'39's name\N'46'
+.SH "OUTPUT LIST"
+.P
+List all the active outputs
+.SS SYNOPSIS
+.P
+\fBoxctl output list\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.SH "OUTPUT OVERVIEW"
+.P
+Toggle the overview grid
+.SS SYNOPSIS
+.P
+\fBoxctl output overview\fR [\fICOMMAND\fR] …
+.SS COMMANDS
+.TP 4
+\fBcycle\fR \fICOMMAND\fR …
+Cycle the overview selection through the focus stack
+.SH "OUTPUT OVERVIEW CYCLE"
+.P
+Cycle the overview selection through the focus stack
+.SS SYNOPSIS
+.P
+\fBoxctl output overview cycle\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBnext\fR [\fB\-\-until\-release\fR=\fIMODS\fR] [\fIOPTION\fR]…
+Move the overview selection to the next window
+.TP 4
+\fBprev\fR [\fB\-\-until\-release\fR=\fIMODS\fR] [\fIOPTION\fR]…
+Move the overview selection to the prev window
+.SH "OUTPUT OVERVIEW CYCLE NEXT"
+.P
+Move the overview selection to the next window
+.SS SYNOPSIS
+.P
+\fBoxctl output overview cycle next\fR [\fB\-\-until\-release\fR=\fIMODS\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-until\-release\fR=\fIMODS\fR
+Close the overview when \fIMODS\fR modifiers are released
+.SH "OUTPUT OVERVIEW CYCLE PREV"
+.P
+Move the overview selection to the prev window
+.SS SYNOPSIS
+.P
+\fBoxctl output overview cycle prev\fR [\fB\-\-until\-release\fR=\fIMODS\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-until\-release\fR=\fIMODS\fR
+Close the overview when \fIMODS\fR modifiers are released
+.SH "OUTPUT SWAP"
+.P
+Swap windows between outputs
+.SS SYNOPSIS
+.P
+\fBoxctl output swap\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBall\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+Swap all windows between two outputs
+.TP 4
+\fBtags\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+Swap windows on TAGS between two outputs
+.TP 4
+\fBvisible\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+Swap all visible windows between two outputs
+.SH "OUTPUT SWAP ALL"
+.P
+Swap all windows between two outputs
+.SS SYNOPSIS
+.P
+\fBoxctl output swap all\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+.SS OPTIONS
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-\-rev\fR
+Go around the ring in the reverse direction\N'46'
+.TP 4
+\fB\-\-ring\fR=\fIOUTPUTS\fR
+Swap around the ring of comma\-separated \fIOUTPUTS\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.SH "OUTPUT SWAP TAGS"
+.P
+Swap windows on TAGS between two outputs
+.SS SYNOPSIS
+.P
+\fBoxctl output swap tags\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+.SS OPTIONS
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-\-rev\fR
+Go around the ring in the reverse direction\N'46'
+.TP 4
+\fB\-\-ring\fR=\fIOUTPUTS\fR
+Swap around the ring of comma\-separated \fIOUTPUTS\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.SH "OUTPUT SWAP VISIBLE"
+.P
+Swap all visible windows between two outputs
+.SS SYNOPSIS
+.P
+\fBoxctl output swap visible\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+.SS OPTIONS
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-\-rev\fR
+Go around the ring in the reverse direction\N'46'
+.TP 4
+\fB\-\-ring\fR=\fIOUTPUTS\fR
+Swap around the ring of comma\-separated \fIOUTPUTS\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.SH "SCRATCHPAD"
+.P
+Manage scratchpads
+.SS SYNOPSIS
+.P
+\fBoxctl scratchpad\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBtoggle\fR [\fIOPTION\fR]… [\fINAME\fR]
+Toggle the scratchpad group NAME
+.SH "SCRATCHPAD TOGGLE"
+.P
+Toggle the scratchpad group NAME
+.SS SYNOPSIS
+.P
+\fBoxctl scratchpad toggle\fR [\fIOPTION\fR]… [\fINAME\fR]
+.SS ARGUMENTS
+.TP 4
+\fINAME\fR (absent=\fBscratch\fR)
+The name of the scratchpad group to toggle\N'46'
+.SH "SEAT"
+.P
+Operate on seats
+.SS SYNOPSIS
+.P
+\fBoxctl seat\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBlist\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+List all the active seats
+.SH "SEAT LIST"
+.P
+List all the active seats
+.SS SYNOPSIS
+.P
+\fBoxctl seat list\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.SH "SESSION"
+.P
+Session control
+.SS SYNOPSIS
+.P
+\fBoxctl session\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBexit\fR [\fIOPTION\fR]…
+Exit the Wayland session i\N'46'e\N'46', logout
+.SH "SESSION EXIT"
+.P
+Exit the Wayland session i\N'46'e\N'46', logout
+.SS SYNOPSIS
+.P
+\fBoxctl session exit\fR [\fIOPTION\fR]…
+.SH "SPAWN"
+.P
+Run \fISTRING\fR as a shell command, e\N'46'g\N'46', \fI/bin/sh \-c STRING\fR
+.SS SYNOPSIS
+.P
+\fBoxctl spawn\fR [\fIOPTION\fR]… \fISTRING\fR
+.SS ARGUMENTS
+.TP 4
+\fISTRING\fR (required)
+The \fISTRING\fR to run as a shell command
+.SH "SUBSCRIBE"
+.P
+Stream state\-change events as JSON lines
+.SS SYNOPSIS
+.P
+\fBoxctl subscribe\fR [\fB\-\-human\fR] [\fB\-\-output\fR=\fINAME\fR] [\fIOPTION\fR]… [\fIKIND\fR]…
+.SS ARGUMENTS
+.TP 4
+\fIKIND\fR
+Event kinds to stream (default: all)\N'46' Available: tags, window, layout, mode, focus, and output
+.SS OPTIONS
+.TP 4
+\fB\-h\fR, \fB\-\-human\fR
+Render each event as one flat key=value line\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Only stream output\-keyed events for output \fINAME\fR; mode events pass through
+.SH "TAG"
+.P
+Operate on tag views
+.SS SYNOPSIS
+.P
+\fBoxctl tag\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBnext\fR [\fB\-\-occupied\fR] [\fIOPTION\fR]…
+View the next tag, wraps back to the first tag when called from the last tag
+.TP 4
+\fBprev\fR [\fB\-\-occupied\fR] [\fIOPTION\fR]…
+View the previous tag, wraps back to the last tag when viewing the first tag
+.TP 4
+\fBprevious\-selection\fR [\fIOPTION\fR]…
+View the previously selected set of tags
+.TP 4
+\fBquery\fR [\fIOPTION\fR]…
+Query the tag state of output
+.TP 4
+\fBtoggle\fR [\fIOPTION\fR]… \fITAGS\fR
+Toggle the visibility of \fITAGS\fR
+.TP 4
+\fBview\fR [\fIOPTION\fR]… \fITAGS\fR
+View a set of \fITAGS\fR
+.SH "TAG NEXT"
+.P
+View the next tag, wraps back to the first tag when called from the last tag
+.SS SYNOPSIS
+.P
+\fBoxctl tag next\fR [\fB\-\-occupied\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-occupied\fR
+Restrict operation to occupied tags\N'46'
+.SH "TAG PREV"
+.P
+View the previous tag, wraps back to the last tag when viewing the first tag
+.SS SYNOPSIS
+.P
+\fBoxctl tag prev\fR [\fB\-\-occupied\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-occupied\fR
+Restrict operation to occupied tags\N'46'
+.SH "TAG PREVIOUS-SELECTION"
+.P
+View the previously selected set of tags
+.SS SYNOPSIS
+.P
+\fBoxctl tag previous\-selection\fR [\fIOPTION\fR]…
+.SH "TAG QUERY"
+.P
+Query the tag state of output
+.SS SYNOPSIS
+.P
+\fBoxctl tag query\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.SH "TAG TOGGLE"
+.P
+Toggle the visibility of \fITAGS\fR
+.SS SYNOPSIS
+.P
+\fBoxctl tag toggle\fR [\fIOPTION\fR]… \fITAGS\fR
+.SS ARGUMENTS
+.TP 4
+\fITAGS\fR (required)
+Tags are numbered 1 to 32\N'46' They may be named directly as indices: a single tag (\fB7\fR), a comma\-separated list (\fB1,3,8\fR), or a range (\fB1\-3,5\fR)\N'46' They may also be given as a bitmask in hexadecimal (\fB0xff\fR), binary (\fB0b101\fR), or octal (\fB0o17\fR), where each set bit selects one tag\N'46' Note that \fB7\fR means tag 7, while \fB0b111\fR means tags 1, 2, and 3\N'46'
+.SH "TAG VIEW"
+.P
+View a set of \fITAGS\fR
+.SS SYNOPSIS
+.P
+\fBoxctl tag view\fR [\fIOPTION\fR]… \fITAGS\fR
+.SS ARGUMENTS
+.TP 4
+\fITAGS\fR (required)
+Tags are numbered 1 to 32\N'46' They may be named directly as indices: a single tag (\fB7\fR), a comma\-separated list (\fB1,3,8\fR), or a range (\fB1\-3,5\fR)\N'46' They may also be given as a bitmask in hexadecimal (\fB0xff\fR), binary (\fB0b101\fR), or octal (\fB0o17\fR), where each set bit selects one tag\N'46' Note that \fB7\fR means tag 7, while \fB0b111\fR means tags 1, 2, and 3\N'46' The string literal \fIoccupied\fR is allowed and represents all currently occupied tags\N'46'
+.SH "UNBIND"
+.P
+Unbind the given KEYBIND
+.SS SYNOPSIS
+.P
+\fBoxctl unbind\fR [\fB\-\-mode\fR=\fIMODE\fR] [\fIOPTION\fR]… \fIKEYBIND\fR
+.SS ARGUMENTS
+.TP 4
+\fIKEYBIND\fR (required)
+Modifiers, keysym, and/or button\N'46' Modifiers include Shift, Control, Mod1/Alt, Mod3, Mod4/Super/Logo, Mod5, or None\N'46' Keysyms mirror xkbcommon\-keysym\N'46'h without the \N'39'K_\N'39' prefix, (e\N'46'g\N'46' Return instead of K_Return)\N'46' Buttons are prefixed with \N'39'Btn_\N'39' followed by [0\-9], left, right, middle, side, extra, forward, back, or task\N'46'
+.SS OPTIONS
+.TP 4
+\fB\-\-mode\fR=\fIMODE\fR
+The keymap mode the binding belongs to (default \fBnormal\fR)\N'46'
+.SH "WINDOW"
+.P
+Operations over windows
+.SS SYNOPSIS
+.P
+\fBoxctl window\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBclose\fR [\fIOPTION\fR]…
+Close the target window(s)
+.TP 4
+\fBcolumn\fR \fICOMMAND\fR …
+Operate on the column of the focused window
+.TP 4
+\fBdrag\fR \fICOMMAND\fR …
+Configure window drag behavior
+.TP 4
+\fBfocus\fR \fICOMMAND\fR …
+Focus a window by direction or search query
+.TP 4
+\fBlabel\fR \fICOMMAND\fR …
+Manage window labels
+.TP 4
+\fBlist\fR [\fIOPTION\fR]…
+List windows matching the search pattern
+.TP 4
+\fBmove\fR \fICOMMAND\fR …
+Move the focused window
+.TP 4
+\fBquery\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+Query the currently focused window
+.TP 4
+\fBresize\fR \fICOMMAND\fR …
+Resize the focused window
+.TP 4
+\fBrules\fR \fICOMMAND\fR …
+Manage window rules
+.TP 4
+\fBscratchpad\fR \fICOMMAND\fR …
+Manage window scratchpads
+.TP 4
+\fBsend\fR \fICOMMAND\fR …
+Send the target window(s) to an output by direction or name
+.TP 4
+\fBshift\fR \fICOMMAND\fR …
+Shift the target window through the tile stack
+.TP 4
+\fBspawn\fR \fICOMMAND\fR …
+Configure window spawn behavior
+.TP 4
+\fBsticky\fR \fICOMMAND\fR …
+Manage window sticky state
+.TP 4
+\fBtag\fR \fICOMMAND\fR …
+Set the active TAGS on a window
+.TP 4
+\fBtoggle\fR \fICOMMAND\fR …
+Toggle window state
+.TP 4
+\fBzoom\fR [\fIOPTION\fR]…
+Promote the target window to master
+.SH "WINDOW CLOSE"
+.P
+Close the target window(s)
+.SS SYNOPSIS
+.P
+\fBoxctl window close\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW COLUMN"
+.P
+Operate on the column of the focused window
+.SS SYNOPSIS
+.P
+\fBoxctl window column\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBconsume\fR [\fIOPTION\fR]…
+Merge the next column into the target window\N'39's column
+.TP 4
+\fBcycle\fR [\fIOPTION\fR]…
+Cycle the target window\N'39's column\N'39's width between 1/3, 1/2, and 2/3
+.TP 4
+\fBdefault\fR [\fIOPTION\fR]…
+Restore the target window\N'39's column width to the tag\N'39's default width value
+.TP 4
+\fBmove\fR \fICOMMAND\fR …
+Move the target window\N'39's column through the strip
+.TP 4
+\fBrelease\fR [\fIOPTION\fR]…
+Expel the target window into its own column
+.TP 4
+\fBwidth\fR [\fIOPTION\fR]… \fIFLOAT_DELTA\fR
+Set the target window\N'39's column width
+.SH "WINDOW COLUMN CONSUME"
+.P
+Merge the next column into the target window\N'39's column
+.SS SYNOPSIS
+.P
+\fBoxctl window column consume\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW COLUMN CYCLE"
+.P
+Cycle the target window\N'39's column\N'39's width between 1/3, 1/2, and 2/3
+.SS SYNOPSIS
+.P
+\fBoxctl window column cycle\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW COLUMN DEFAULT"
+.P
+Restore the target window\N'39's column width to the tag\N'39's default width value
+.SS SYNOPSIS
+.P
+\fBoxctl window column default\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW COLUMN MOVE"
+.P
+Move the target window\N'39's column through the strip
+.SS SYNOPSIS
+.P
+\fBoxctl window column move\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBnext\fR [\fIOPTION\fR]…
+Shift column tail of the stack\N'46' Wraps to the head if target column is the tail
+.TP 4
+\fBprev\fR [\fIOPTION\fR]…
+Shift column toward the head of the stack\N'46' Wraps to the tail if target column is the head
+.SH "WINDOW COLUMN MOVE NEXT"
+.P
+Shift column tail of the stack\N'46' Wraps to the head if target column is the tail
+.SS SYNOPSIS
+.P
+\fBoxctl window column move next\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW COLUMN MOVE PREV"
+.P
+Shift column toward the head of the stack\N'46' Wraps to the tail if target column is the head
+.SS SYNOPSIS
+.P
+\fBoxctl window column move prev\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW COLUMN RELEASE"
+.P
+Expel the target window into its own column
+.SS SYNOPSIS
+.P
+\fBoxctl window column release\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW COLUMN WIDTH"
+.P
+Set the target window\N'39's column width
+.SS SYNOPSIS
+.P
+\fBoxctl window column width\fR [\fIOPTION\fR]… \fIFLOAT_DELTA\fR
+.SS ARGUMENTS
+.TP 4
+\fIFLOAT_DELTA\fR (required)
+May be either an absolute value (\fB0\N'46'55\fR), or an offset (\fB\-0\N'46'05\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW DRAG"
+.P
+Configure window drag behavior
+.SS SYNOPSIS
+.P
+\fBoxctl window drag\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBretile\fR \fICOMMAND\fR …
+Configure the drag behavior for tiled windows
+.SH "WINDOW DRAG RETILE"
+.P
+Configure the drag behavior for tiled windows
+.SS SYNOPSIS
+.P
+\fBoxctl window drag retile\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdisabled\fR [\fIOPTION\fR]…
+Do not retile a dragged tiled window on release; becomes floating
+.TP 4
+\fBenabled\fR [\fIOPTION\fR]…
+Retile a dragged tiled window on release
+.SH "WINDOW DRAG RETILE DISABLED"
+.P
+Do not retile a dragged tiled window on release; becomes floating
+.SS SYNOPSIS
+.P
+\fBoxctl window drag retile disabled\fR [\fIOPTION\fR]…
+.SH "WINDOW DRAG RETILE ENABLED"
+.P
+Retile a dragged tiled window on release
+.SS SYNOPSIS
+.P
+\fBoxctl window drag retile enabled\fR [\fIOPTION\fR]…
+.SH "WINDOW FOCUS"
+.P
+Focus a window by direction or search query
+.SS SYNOPSIS
+.P
+\fBoxctl window focus\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdown\fR [\fIOPTION\fR]…
+Focus the down window
+.TP 4
+\fBleft\fR [\fIOPTION\fR]…
+Focus the left window
+.TP 4
+\fBmatch\fR [\fIOPTION\fR]…
+Focus a window matching the search pattern
+.TP 4
+\fBnext\fR [\fIOPTION\fR]…
+Focus the next window
+.TP 4
+\fBprev\fR [\fIOPTION\fR]…
+Focus the prev window
+.TP 4
+\fBright\fR [\fIOPTION\fR]…
+Focus the right window
+.TP 4
+\fBup\fR [\fIOPTION\fR]…
+Focus the up window
+.SH "WINDOW FOCUS DOWN"
+.P
+Focus the down window
+.SS SYNOPSIS
+.P
+\fBoxctl window focus down\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "WINDOW FOCUS LEFT"
+.P
+Focus the left window
+.SS SYNOPSIS
+.P
+\fBoxctl window focus left\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "WINDOW FOCUS MATCH"
+.P
+Focus a window matching the search pattern
+.SS SYNOPSIS
+.P
+\fBoxctl window focus match\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "WINDOW FOCUS NEXT"
+.P
+Focus the next window
+.SS SYNOPSIS
+.P
+\fBoxctl window focus next\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "WINDOW FOCUS PREV"
+.P
+Focus the prev window
+.SS SYNOPSIS
+.P
+\fBoxctl window focus prev\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "WINDOW FOCUS RIGHT"
+.P
+Focus the right window
+.SS SYNOPSIS
+.P
+\fBoxctl window focus right\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "WINDOW FOCUS UP"
+.P
+Focus the up window
+.SS SYNOPSIS
+.P
+\fBoxctl window focus up\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "WINDOW LABEL"
+.P
+Manage window labels
+.SS SYNOPSIS
+.P
+\fBoxctl window label\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBadd\fR [\fIOPTION\fR]… \fILABEL\fR
+Add a label to the target window(s)
+.TP 4
+\fBremove\fR [\fIOPTION\fR]… \fILABEL\fR
+Remove LABEL from the target window(s)
+.SH "WINDOW LABEL ADD"
+.P
+Add a label to the target window(s)
+.SS SYNOPSIS
+.P
+\fBoxctl window label add\fR [\fIOPTION\fR]… \fILABEL\fR
+.SS ARGUMENTS
+.TP 4
+\fILABEL\fR (required)
+The label
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW LABEL REMOVE"
+.P
+Remove LABEL from the target window(s)
+.SS SYNOPSIS
+.P
+\fBoxctl window label remove\fR [\fIOPTION\fR]… \fILABEL\fR
+.SS ARGUMENTS
+.TP 4
+\fILABEL\fR (required)
+The label
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW LIST"
+.P
+List windows matching the search pattern
+.SS SYNOPSIS
+.P
+\fBoxctl window list\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW MOVE"
+.P
+Move the focused window
+.SS SYNOPSIS
+.P
+\fBoxctl window move\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdown\fR [\fIOPTION\fR]… \fIN\fR
+Move the target window(s) down by N (px or %, signed)
+.TP 4
+\fBdrag\fR [\fIOPTION\fR]…
+Begin an interactive move operation on the focused window
+.TP 4
+\fBleft\fR [\fIOPTION\fR]… \fIN\fR
+Move the target window(s) left by N (px or %, signed)
+.TP 4
+\fBright\fR [\fIOPTION\fR]… \fIN\fR
+Move the target window(s) right by N (px or %, signed)
+.TP 4
+\fBto\fR [\fIOPTION\fR]… \fIX\fR \fIY\fR
+Move the target window(s) to point (\fIX\fR, \fIY\fR)
+.TP 4
+\fBup\fR [\fIOPTION\fR]… \fIN\fR
+Move the target window(s) up by N (px or %, signed)
+.SH "WINDOW MOVE DOWN"
+.P
+Move the target window(s) down by N (px or %, signed)
+.SS SYNOPSIS
+.P
+\fBoxctl window move down\fR [\fIOPTION\fR]… \fIN\fR
+.SS ARGUMENTS
+.TP 4
+\fIN\fR (required)
+The distance to move the window by\N'46' May be a pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB25%\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW MOVE DRAG"
+.P
+Begin an interactive move operation on the focused window
+.SS SYNOPSIS
+.P
+\fBoxctl window move drag\fR [\fIOPTION\fR]…
+.SH "WINDOW MOVE LEFT"
+.P
+Move the target window(s) left by N (px or %, signed)
+.SS SYNOPSIS
+.P
+\fBoxctl window move left\fR [\fIOPTION\fR]… \fIN\fR
+.SS ARGUMENTS
+.TP 4
+\fIN\fR (required)
+The distance to move the window by\N'46' May be a pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB25%\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW MOVE RIGHT"
+.P
+Move the target window(s) right by N (px or %, signed)
+.SS SYNOPSIS
+.P
+\fBoxctl window move right\fR [\fIOPTION\fR]… \fIN\fR
+.SS ARGUMENTS
+.TP 4
+\fIN\fR (required)
+The distance to move the window by\N'46' May be a pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB25%\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW MOVE TO"
+.P
+Move the target window(s) to point (\fIX\fR, \fIY\fR)
+.SS SYNOPSIS
+.P
+\fBoxctl window move to\fR [\fIOPTION\fR]… \fIX\fR \fIY\fR
+.SS ARGUMENTS
+.TP 4
+\fIX\fR (required)
+The \fIX\fR position of the window\N'39's top\-left corner, measured from the left of the output\N'39's usable area\N'46' A pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB25%\fR places the left edge a quarter of the way accross)
+.TP 4
+\fIY\fR (required)
+The \fIY\fR position of the window\N'39's top\-left corner, measured from the top of the output\N'39's usable area\N'46' A pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width/height (e\N'46'g\N'46' \fB25%\fR places the top edge a quarter of the way down)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW MOVE UP"
+.P
+Move the target window(s) up by N (px or %, signed)
+.SS SYNOPSIS
+.P
+\fBoxctl window move up\fR [\fIOPTION\fR]… \fIN\fR
+.SS ARGUMENTS
+.TP 4
+\fIN\fR (required)
+The distance to move the window by\N'46' May be a pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB25%\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW QUERY"
+.P
+Query the currently focused window
+.SS SYNOPSIS
+.P
+\fBoxctl window query\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.SH "WINDOW RESIZE"
+.P
+Resize the focused window
+.SS SYNOPSIS
+.P
+\fBoxctl window resize\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdown\fR [\fIOPTION\fR]… \fIN\fR
+Resize the target window(s) down by N (px or %, signed)
+.TP 4
+\fBdrag\fR [\fIOPTION\fR]…
+Begin an interactive resize operation on the focused window
+.TP 4
+\fBleft\fR [\fIOPTION\fR]… \fIN\fR
+Resize the target window(s) left by N (px or %, signed)
+.TP 4
+\fBright\fR [\fIOPTION\fR]… \fIN\fR
+Resize the target window(s) right by N (px or %, signed)
+.TP 4
+\fBto\fR [\fIOPTION\fR]… \fIWIDTH\fR \fIHEIGHT\fR
+Resize the target window(s) to \fIWIDTH\fR and \fIHEIGHT\fR
+.TP 4
+\fBup\fR [\fIOPTION\fR]… \fIN\fR
+Resize the target window(s) up by N (px or %, signed)
+.SH "WINDOW RESIZE DOWN"
+.P
+Resize the target window(s) down by N (px or %, signed)
+.SS SYNOPSIS
+.P
+\fBoxctl window resize down\fR [\fIOPTION\fR]… \fIN\fR
+.SS ARGUMENTS
+.TP 4
+\fIN\fR (required)
+The distance to resize the window by\N'46' May be a pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB25%\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW RESIZE DRAG"
+.P
+Begin an interactive resize operation on the focused window
+.SS SYNOPSIS
+.P
+\fBoxctl window resize drag\fR [\fIOPTION\fR]…
+.SH "WINDOW RESIZE LEFT"
+.P
+Resize the target window(s) left by N (px or %, signed)
+.SS SYNOPSIS
+.P
+\fBoxctl window resize left\fR [\fIOPTION\fR]… \fIN\fR
+.SS ARGUMENTS
+.TP 4
+\fIN\fR (required)
+The distance to resize the window by\N'46' May be a pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB25%\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW RESIZE RIGHT"
+.P
+Resize the target window(s) right by N (px or %, signed)
+.SS SYNOPSIS
+.P
+\fBoxctl window resize right\fR [\fIOPTION\fR]… \fIN\fR
+.SS ARGUMENTS
+.TP 4
+\fIN\fR (required)
+The distance to resize the window by\N'46' May be a pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB25%\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW RESIZE TO"
+.P
+Resize the target window(s) to \fIWIDTH\fR and \fIHEIGHT\fR
+.SS SYNOPSIS
+.P
+\fBoxctl window resize to\fR [\fIOPTION\fR]… \fIWIDTH\fR \fIHEIGHT\fR
+.SS ARGUMENTS
+.TP 4
+\fIHEIGHT\fR (required)
+The \fIHEIGHT\fR of the window\N'46' May be a fixed pixel size (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable height (e\N'46'g\N'46' \fB50%\fR)
+.TP 4
+\fIWIDTH\fR (required)
+The \fIWIDTH\fR of the window\N'46' May be a fixed pixel size (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB50%\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW RESIZE UP"
+.P
+Resize the target window(s) up by N (px or %, signed)
+.SS SYNOPSIS
+.P
+\fBoxctl window resize up\fR [\fIOPTION\fR]… \fIN\fR
+.SS ARGUMENTS
+.TP 4
+\fIN\fR (required)
+The distance to resize the window by\N'46' May be a pixel offset (e\N'46'g\N'46' \fB100\fR) or a percentage of the usable width (e\N'46'g\N'46' \fB25%\fR)
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW RULES"
+.P
+Manage window rules
+.SS SYNOPSIS
+.P
+\fBoxctl window rules\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBadd\fR [\fIOPTION\fR]…
+Add a window rule
+.TP 4
+\fBlist\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+List the window rules
+.TP 4
+\fBremove\fR [\fIOPTION\fR]… \fIINDEX\fR
+Remove a window rule
+.SH "WINDOW RULES ADD"
+.P
+Add a window rule
+.SS SYNOPSIS
+.P
+\fBoxctl window rules add\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-fake\-fullscreen\fR
+Fake fullscreen\N'46'
+.TP 4
+\fB\-\-float\fR
+Manage the window floating\N'46'
+.TP 4
+\fB\-\-fullscreen\fR
+Manage the window fullscreen\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-label\-as\fR=\fILABEL\fR
+Add LABEL to matching windows\N'46'
+.TP 4
+\fB\-\-maximize\fR
+Manage the window maximized\N'46'
+.TP 4
+\fB\-\-move\-to\fR=\fIX,Y\fR
+Move the matching windows to \fIX\fR and \fIY\fR\N'46' Each half is a pixel size (e\N'46'g\N'46' \fB800\fR) or a percentage of the usable area (e\N'46'g\N'46' \fB50%\fR)\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-resize\-to\fR=\fIW,H\fR
+Resize the matching windows to \fIW\fR and \fIH\fR\N'46' Each half is a pixel size (e\N'46'g\N'46' \fB800\fR) or a percentage of the usable area (e\N'46'g\N'46' \fB50%\fR)\N'46'
+.TP 4
+\fB\-\-scratchpad\fR=\fINAME\fR
+Set the scratchpad group to NAME\N'46'
+.TP 4
+\fB\-\-spawn\-focus\fR=\fIOPTION\fR
+When enabled, the window takes focus on spawn\N'46'
+.TP 4
+\fB\-\-spawn\-position\fR=\fIPOSITION\fR
+Set the stack position of the window\N'46' The value is one of \fBmaster\fR, \fBprev\fR, \fBnext\fR or \fBend\fR
+.TP 4
+\fB\-\-sticky\fR=\fIOPTION\fR
+Set the sticky state of the window\N'46' The value is one of \fBoff\fR, \fBoccupied\fR or \fBall\fR
+.TP 4
+\fB\-\-swallow\fR=\fIROLE\fR
+Set the swallow role of the window\N'46' The value is one of \fBauto\fR, \fBterminal\fR or \fBdisabled\fR
+.TP 4
+\fB\-\-tags\fR=\fITAGS\fR
+Set TAGS on the matching windows\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.TP 4
+\fB\-\-tile\fR
+Manage the window tiled\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.TP 4
+\fB\-\-windowed\fR
+Exit fullscreen\N'46'
+.SH "WINDOW RULES LIST"
+.P
+List the window rules
+.SS SYNOPSIS
+.P
+\fBoxctl window rules list\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-expand\fR
+Do not truncate cell values\N'46'
+.TP 4
+\fB\-\-fields\fR=\fIFIELDS\fR
+Comma\-separated list of columns to show\N'46'
+.TP 4
+\fB\-\-json\fR
+Print the raw JSON reply\N'46'
+.SH "WINDOW RULES REMOVE"
+.P
+Remove a window rule
+.SS SYNOPSIS
+.P
+\fBoxctl window rules remove\fR [\fIOPTION\fR]… \fIINDEX\fR
+.SS ARGUMENTS
+.TP 4
+\fIINDEX\fR (required)
+The rule index from the \fBlist\fR output\N'46'
+.SH "WINDOW SCRATCHPAD"
+.P
+Manage window scratchpads
+.SS SYNOPSIS
+.P
+\fBoxctl window scratchpad\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBadd\fR [\fIOPTION\fR]… \fINAME\fR
+Add the target window(s) to the scratchpad group NAME
+.TP 4
+\fBclear\fR [\fIOPTION\fR]…
+Clear the target window(s) from their scratchpad group
+.SH "WINDOW SCRATCHPAD ADD"
+.P
+Add the target window(s) to the scratchpad group NAME
+.SS SYNOPSIS
+.P
+\fBoxctl window scratchpad add\fR [\fIOPTION\fR]… \fINAME\fR
+.SS ARGUMENTS
+.TP 4
+\fINAME\fR (required)
+The name of the scratchpad group to add the target window(s) to\N'46'
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SCRATCHPAD CLEAR"
+.P
+Clear the target window(s) from their scratchpad group
+.SS SYNOPSIS
+.P
+\fBoxctl window scratchpad clear\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SEND"
+.P
+Send the target window(s) to an output by direction or name
+.SS SYNOPSIS
+.P
+\fBoxctl window send\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdown\fR [\fIOPTION\fR]…
+Send to the down output
+.TP 4
+\fBleft\fR [\fIOPTION\fR]…
+Send to the left output
+.TP 4
+\fBnext\fR [\fIOPTION\fR]…
+Send to the next output
+.TP 4
+\fBprev\fR [\fIOPTION\fR]…
+Send to the prev output
+.TP 4
+\fBright\fR [\fIOPTION\fR]…
+Send to the right output
+.TP 4
+\fBto\fR [\fIOPTION\fR]… \fIOUTPUT_NAME\fR
+Send to the named output
+.TP 4
+\fBup\fR [\fIOPTION\fR]…
+Send to the up output
+.SH "WINDOW SEND DOWN"
+.P
+Send to the down output
+.SS SYNOPSIS
+.P
+\fBoxctl window send down\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SEND LEFT"
+.P
+Send to the left output
+.SS SYNOPSIS
+.P
+\fBoxctl window send left\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SEND NEXT"
+.P
+Send to the next output
+.SS SYNOPSIS
+.P
+\fBoxctl window send next\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SEND PREV"
+.P
+Send to the prev output
+.SS SYNOPSIS
+.P
+\fBoxctl window send prev\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SEND RIGHT"
+.P
+Send to the right output
+.SS SYNOPSIS
+.P
+\fBoxctl window send right\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SEND TO"
+.P
+Send to the named output
+.SS SYNOPSIS
+.P
+\fBoxctl window send to\fR [\fIOPTION\fR]… \fIOUTPUT_NAME\fR
+.SS ARGUMENTS
+.TP 4
+\fIOUTPUT_NAME\fR (required)
+The name of the target output, e\N'46'g\N'46', HDMI\-A\-2, eDP\-1, etc\N'46'
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SEND UP"
+.P
+Send to the up output
+.SS SYNOPSIS
+.P
+\fBoxctl window send up\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-take\fR
+Window takes the active tags on the destination output\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SHIFT"
+.P
+Shift the target window through the tile stack
+.SS SYNOPSIS
+.P
+\fBoxctl window shift\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBnext\fR [\fIOPTION\fR]…
+Shift target window toward the tail of the stack\N'46' Wraps to the head if target window is the tail
+.TP 4
+\fBprev\fR [\fIOPTION\fR]…
+Shift target window toward the head of the stack\N'46' Wraps to the tail if target window is the head
+.SH "WINDOW SHIFT NEXT"
+.P
+Shift target window toward the tail of the stack\N'46' Wraps to the head if target window is the tail
+.SS SYNOPSIS
+.P
+\fBoxctl window shift next\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SHIFT PREV"
+.P
+Shift target window toward the head of the stack\N'46' Wraps to the tail if target window is the head
+.SS SYNOPSIS
+.P
+\fBoxctl window shift prev\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW SPAWN"
+.P
+Configure window spawn behavior
+.SS SYNOPSIS
+.P
+\fBoxctl window spawn\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBfocus\fR \fICOMMAND\fR …
+Focus configuration for newly spawned windows
+.TP 4
+\fBposition\fR \fICOMMAND\fR …
+Set the spawn position of new windows
+.SH "WINDOW SPAWN FOCUS"
+.P
+Focus configuration for newly spawned windows
+.SS SYNOPSIS
+.P
+\fBoxctl window spawn focus\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBdisabled\fR [\fIOPTION\fR]…
+Do not focus windows on spawn
+.TP 4
+\fBenabled\fR [\fIOPTION\fR]…
+Focus windows on spawn
+.SH "WINDOW SPAWN FOCUS DISABLED"
+.P
+Do not focus windows on spawn
+.SS SYNOPSIS
+.P
+\fBoxctl window spawn focus disabled\fR [\fIOPTION\fR]…
+.SH "WINDOW SPAWN FOCUS ENABLED"
+.P
+Focus windows on spawn
+.SS SYNOPSIS
+.P
+\fBoxctl window spawn focus enabled\fR [\fIOPTION\fR]…
+.SH "WINDOW SPAWN POSITION"
+.P
+Set the spawn position of new windows
+.SS SYNOPSIS
+.P
+\fBoxctl window spawn position\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBend\fR [\fIOPTION\fR]…
+New windows spawn in the end position
+.TP 4
+\fBmaster\fR [\fIOPTION\fR]…
+New windows spawn in the master position
+.TP 4
+\fBnext\fR [\fIOPTION\fR]…
+New windows spawn in the next position
+.TP 4
+\fBprev\fR [\fIOPTION\fR]…
+New windows spawn in the prev position
+.SH "WINDOW SPAWN POSITION END"
+.P
+New windows spawn in the end position
+.SS SYNOPSIS
+.P
+\fBoxctl window spawn position end\fR [\fIOPTION\fR]…
+.SH "WINDOW SPAWN POSITION MASTER"
+.P
+New windows spawn in the master position
+.SS SYNOPSIS
+.P
+\fBoxctl window spawn position master\fR [\fIOPTION\fR]…
+.SH "WINDOW SPAWN POSITION NEXT"
+.P
+New windows spawn in the next position
+.SS SYNOPSIS
+.P
+\fBoxctl window spawn position next\fR [\fIOPTION\fR]…
+.SH "WINDOW SPAWN POSITION PREV"
+.P
+New windows spawn in the prev position
+.SS SYNOPSIS
+.P
+\fBoxctl window spawn position prev\fR [\fIOPTION\fR]…
+.SH "WINDOW STICKY"
+.P
+Manage window sticky state
+.SS SYNOPSIS
+.P
+\fBoxctl window sticky\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBall\fR [\fIOPTION\fR]…
+Set the target window(s) sticky scope to all
+.TP 4
+\fBoccupied\fR [\fIOPTION\fR]…
+Set the target window(s) sticky scope to occupied
+.TP 4
+\fBoff\fR [\fIOPTION\fR]…
+Set the target window(s) sticky scope to off
+.SH "WINDOW STICKY ALL"
+.P
+Set the target window(s) sticky scope to all
+.SS SYNOPSIS
+.P
+\fBoxctl window sticky all\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW STICKY OCCUPIED"
+.P
+Set the target window(s) sticky scope to occupied
+.SS SYNOPSIS
+.P
+\fBoxctl window sticky occupied\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW STICKY OFF"
+.P
+Set the target window(s) sticky scope to off
+.SS SYNOPSIS
+.P
+\fBoxctl window sticky off\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TAG"
+.P
+Set the active TAGS on a window
+.SS SYNOPSIS
+.P
+\fBoxctl window tag\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBset\fR [\fIOPTION\fR]… \fITAGS\fR
+Set the active TAGS for the target window(s)
+.TP 4
+\fBshift\fR \fICOMMAND\fR …
+Shift the focused window\N'39's tag in a given direction
+.SH "WINDOW TAG SET"
+.P
+Set the active TAGS for the target window(s)
+.SS SYNOPSIS
+.P
+\fBoxctl window tag set\fR [\fIOPTION\fR]… \fITAGS\fR
+.SS ARGUMENTS
+.TP 4
+\fITAGS\fR (required)
+Tags are numbered 1 to 32\N'46' They may be named directly as indices: a single tag (\fB7\fR), a comma\-separated list (\fB1,3,8\fR), or a range (\fB1\-3,5\fR)\N'46' They may also be given as a bitmask in hexadecimal (\fB0xff\fR), binary (\fB0b101\fR), or octal (\fB0o17\fR), where each set bit selects one tag\N'46' Note that \fB7\fR means tag 7, while \fB0b111\fR means tags 1, 2, and 3\N'46' The string literal \fIoccupied\fR is allowed and represents all currently occupied tags\N'46'
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TAG SHIFT"
+.P
+Shift the focused window\N'39's tag in a given direction
+.SS SYNOPSIS
+.P
+\fBoxctl window tag shift\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBnext\fR [\fIOPTION\fR]…
+Shift the target window to the next tag
+.TP 4
+\fBprev\fR [\fIOPTION\fR]…
+Shift the target window to the prev tag
+.SH "WINDOW TAG SHIFT NEXT"
+.P
+Shift the target window to the next tag
+.SS SYNOPSIS
+.P
+\fBoxctl window tag shift next\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-occupied\fR
+Restrict operation to occupied tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TAG SHIFT PREV"
+.P
+Shift the target window to the prev tag
+.SS SYNOPSIS
+.P
+\fBoxctl window tag shift prev\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-\-follow\fR
+Move focus with the manipulated object
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-occupied\fR
+Restrict operation to occupied tags\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TOGGLE"
+.P
+Toggle window state
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBfake\-fullscreen\fR [\fIOPTION\fR]…
+Toggle fake fullscreen on the target window
+.TP 4
+\fBfloating\fR [\fIOPTION\fR]…
+Toggle the floating state of the target window
+.TP 4
+\fBfullscreen\fR [\fIOPTION\fR]…
+Toggle real fullscreen on the target window
+.TP 4
+\fBmaximize\fR [\fIOPTION\fR]…
+Toggle maximize on the target window
+.TP 4
+\fBsticky\fR \fICOMMAND\fR …
+Toggle the window sticky state
+.TP 4
+\fBswallow\fR [\fIOPTION\fR]…
+Swallow the terminal under the target window, or release it
+.TP 4
+\fBtag\fR [\fIOPTION\fR]… \fITAGS\fR
+Toggle the active TAGS for the target window
+.SH "WINDOW TOGGLE FAKE-FULLSCREEN"
+.P
+Toggle fake fullscreen on the target window
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle fake\-fullscreen\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TOGGLE FLOATING"
+.P
+Toggle the floating state of the target window
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle floating\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TOGGLE FULLSCREEN"
+.P
+Toggle real fullscreen on the target window
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle fullscreen\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TOGGLE MAXIMIZE"
+.P
+Toggle maximize on the target window
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle maximize\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TOGGLE STICKY"
+.P
+Toggle the window sticky state
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle sticky\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBall\fR [\fIOPTION\fR]…
+Toggle the target window sticky scope between off and all
+.TP 4
+\fBoccupied\fR [\fIOPTION\fR]…
+Toggle the target window sticky scope between off and occupied
+.SH "WINDOW TOGGLE STICKY ALL"
+.P
+Toggle the target window sticky scope between off and all
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle sticky all\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TOGGLE STICKY OCCUPIED"
+.P
+Toggle the target window sticky scope between off and occupied
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle sticky occupied\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TOGGLE SWALLOW"
+.P
+Swallow the terminal under the target window, or release it
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle swallow\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW TOGGLE TAG"
+.P
+Toggle the active TAGS for the target window
+.SS SYNOPSIS
+.P
+\fBoxctl window toggle tag\fR [\fIOPTION\fR]… \fITAGS\fR
+.SS ARGUMENTS
+.TP 4
+\fITAGS\fR (required)
+Tags are numbered 1 to 32\N'46' They may be named directly as indices: a single tag (\fB7\fR), a comma\-separated list (\fB1,3,8\fR), or a range (\fB1\-3,5\fR)\N'46' They may also be given as a bitmask in hexadecimal (\fB0xff\fR), binary (\fB0b101\fR), or octal (\fB0o17\fR), where each set bit selects one tag\N'46' Note that \fB7\fR means tag 7, while \fB0b111\fR means tags 1, 2, and 3\N'46'
+.SS OPTIONS
+.TP 4
+\fB\-\-all\fR
+Act on every match\N'46'
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.SH "WINDOW ZOOM"
+.P
+Promote the target window to master
+.SS SYNOPSIS
+.P
+\fBoxctl window zoom\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-app\-id\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's app\-id\N'46'
+.TP 4
+\fB\-\-cycle\fR
+Act on the next match after the focused window\N'46'
+.TP 4
+\fB\-\-focused\fR
+Search the focused output only\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-identifier\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's identifier\N'46'
+.TP 4
+\fB\-\-invert\fR
+Select the windows that do not match\N'46'
+.TP 4
+\fB\-\-label\fR=\fIREGEX\fR
+Match REGEX against each of the window\N'39's labels\N'46'
+.TP 4
+\fB\-\-no\-warp\fR
+Do not warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.TP 4
+\fB\-\-output\fR=\fINAME\fR
+Filter to outputs matching \fINAME\fR\N'46'
+.TP 4
+\fB\-\-title\fR=\fIREGEX\fR
+Match REGEX against the window\N'39's title\N'46'
+.TP 4
+\fB\-\-warp\fR
+Warp the pointer after the focus change\N'46' This overrides the warp on focus configuration\N'46'
+.SH "WM"
+.P
+Window\-manager control
+.SS SYNOPSIS
+.P
+\fBoxctl wm\fR \fICOMMAND\fR …
+.SS COMMANDS
+.TP 4
+\fBclose\fR [\fIOPTION\fR]…
+Close oxbow (leaves River running)
+.SH "WM CLOSE"
+.P
+Close oxbow (leaves River running)
+.SS SYNOPSIS
+.P
+\fBoxctl wm close\fR [\fIOPTION\fR]…
+.SH COMMON OPTIONS
+.TP 4
+\fB\-\-help\fR[=\fIFMT\fR] (default=\fBauto\fR)
+Show this help in format \fIFMT\fR\N'46' The value \fIFMT\fR must be one of \fBauto\fR, \fBpager\fR, \fBgroff\fR or \fBplain\fR\N'46' With \fBauto\fR, the format is \fBpager\fR or \fBplain\fR whenever the \fBTERM\fR env var is \fBdumb\fR or undefined\N'46'
+.TP 4
+\fB\-\-version\fR
+Show version information\N'46'
+.SH EXIT STATUS
+.P
+\fBoxctl\fR exits with:
+.TP 4
+0
+on success
+.TP 4
+1
+on protocol error from oxbow
+.TP 4
+2
+on failure to connect to the oxbow socket

@@ -11,11 +11,6 @@
   fmt
   fmt.tty))
 
-(rule
- (with-stdout-to
-  oxctl.1
-  (run %{exe:main.exe} --help=groff)))
-
 (install
  (section man)
  (package oxbow)

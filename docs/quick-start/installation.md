@@ -1,0 +1,201 @@
+# Installation
+
+oxbow may be installed from source using
+[opam](https://opam.ocaml.org/), or via Nix/NixOS using
+flakes.
+
+```{attention}
+Regardless of which method you choose, oxbow requires
+[river](https://codeberg.org/river/river) 0.4.6 or later.
+See {doc}`river` to install and configure river.
+```
+
+## Opam
+
+At the time of writing, oxbow is not officially in opam.
+Thankfully, opam still makes it easy to install while we
+wait for approval.
+
+### Setup
+
+Install opam and the necessary dependencies:
+
+````{tab} Arch
+```{prompt} bash
+sudo pacman -S base-devel git rsync opam libxkbcommon
+```
+````
+
+````{tab} Fedora
+```{prompt} bash
+sudo dnf install gcc make patch pkg-config git rsync opam libxkbcommon-devel
+```
+````
+
+````{tab} Debian/Ubuntu
+```{prompt} bash
+sudo apt install build-essential pkg-config git rsync opam libxkbcommon-dev
+```
+````
+
+````{tab} openSUSE
+```{prompt} bash
+sudo zypper install gcc make patch pkg-config git rsync opam libxkbcommon-devel
+```
+````
+
+````{tab} Void
+```{prompt} bash
+sudo xbps-install -S base-devel git rsync opam libxkbcommon-devel
+```
+````
+
+Once opam is installed run
+
+```{prompt} bash
+opam init
+eval $(opam env)
+```
+
+```{note}
+`opam init` asks to add a hook to your shell configuration.
+If you answer yes, the hook adds packages installed through
+opam to your shell's `PATH`. Without it, you must run `eval
+$(opam env)` in every new shell.
+```
+
+### Install
+
+Pin and install from git:
+
+```{prompt} bash
+opam pin add oxbow https://github.com/3L0C/oxbow.git
+```
+
+## Nix/NixOS
+
+The oxbow repository is a flake. Flakes are required as the
+repository does not provide a `default.nix` for non-flake
+use. If your Nix installation does not have flakes enabled,
+add `--extra-experimental-features 'nix-command flakes'` to
+the commands below.
+
+````{tab} NixOS
+Add oxbow as a flake input, then put the package in
+`environment.systemPackages`:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    oxbow = {
+      url = "github:3L0C/oxbow";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = { nixpkgs, oxbow, ... }: {
+    nixosConfigurations.CHANGEME = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [({ pkgs, ... }: {
+        environment.systemPackages = [
+          oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default
+        ];
+      })];
+    };
+  };
+}
+```
+
+```{attention}
+Replace `CHANGEME` with your system's hostname.
+```
+````
+
+````{tab} Home Manager
+Use standalone Home Manager for a declarative install on a
+distribution other than NixOS. Add oxbow as a flake input,
+then put the package in `home.packages`:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    oxbow = {
+      url = "github:3L0C/oxbow";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = { nixpkgs, home-manager, oxbow, ... }: {
+    homeConfigurations.CHANGEME = home-manager.lib.homeManagerConfiguration {
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      modules = [({ pkgs, ... }: {
+        home.packages = [
+          oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default
+        ];
+      })];
+    };
+  };
+}
+```
+
+```{attention}
+Replace `CHANGEME` with your username.
+```
+````
+
+````{tab} Nix package manager
+For an imperative install into your user profile:
+
+```{prompt} bash
+nix profile install github:3L0C/oxbow
+```
+
+To upgrade later:
+
+```{prompt} bash
+nix profile upgrade oxbow
+```
+
+To try oxbow in a temporary shell without an install:
+
+```{prompt} bash
+nix shell github:3L0C/oxbow
+```
+````
+
+## Shell completion
+
+oxbow installs completion scripts for `oxbow` and `oxctl`.
+The scripts support bash and zsh.
+
+On Nix/NixOS, completion works without more steps. The
+scripts install to the standard completion directories, and
+NixOS and Home Manager load them with your other
+completions.
+
+With opam, the scripts install into your opam switch. Your
+shell does not search the switch by default. Add one line
+to your shell configuration:
+
+````{tab} Bash
+```bash
+# ~/.bashrc
+source "$(opam var share)/bash-completion/completions/oxctl"
+source "$(opam var share)/bash-completion/completions/oxbow"
+```
+````
+
+````{tab} Zsh
+```zsh
+# ~/.zshrc, before compinit
+fpath+=("$(opam var share)/zsh/site-functions")
+```
+````

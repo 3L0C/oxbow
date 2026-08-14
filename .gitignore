@@ -11,3 +11,4 @@ result-*
 
 # Other dot dirs (editor configs, etc.)
 .*/
+docs/_ext/__pycache__/*

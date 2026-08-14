@@ -97,6 +97,18 @@
             ++ pre-commit-check.enabledPackages
             ++ [
               # You can add packages from nixpkgs here
+              pkgs.gnumake
+              pkgs.svgbob
+              (pkgs.python3.withPackages (ps: [
+                ps.sphinx
+                ps.myst-parser
+                ps.furo
+                ps.sphinx-copybutton
+                ps.sphinx-prompt
+                ps.sphinx-autobuild
+                ps.sphinx-design
+                ps.sphinx-inline-tabs
+              ]))
             ];
 
           shellHook = ''
@@ -112,17 +124,26 @@
             echo "============================="
             echo ""
             echo "Build commands:"
-            echo "  dune build              - Build the project"
-            echo "  dune build @check       - Type-check without linking"
-            echo "  dune test               - Run tests"
-            echo "  dune clean              - Remove _build directory"
+            echo "  dune build                  - Build the project"
+            echo "  dune build @check           - Type-check without linking"
+            echo "  dune test                   - Run tests"
+            echo "  dune clean                  - Remove _build directory"
             echo ""
             echo "Development tools:"
-            echo "  utop                    - OCaml REPL with project libs loaded"
-            echo "  ocamlformat <file>      - Format an OCaml file"
-            echo "  dune build @fmt         - Check formatting of all files"
-            echo "  dune promote            - Apply formatter suggestions"
-            echo "  odoc                    - Generate documentation"
+            echo "  utop                        - OCaml REPL with project libs loaded"
+            echo "  ocamlformat <file>          - Format an OCaml file"
+            echo "  dune build @fmt             - Check formatting of all files"
+            echo "  dune promote                - Apply formatter suggestions"
+            echo "  odoc                        - Generate documentation"
+            echo ""
+            echo "Sphinx documentation:"
+            echo "  make docs                   - Build the HTML docs"
+            echo "  make docs-html              - Build HTML docs into \$(DOCS_BUILD)/html"
+            echo "  make docs-serve             - Build HTML and serve at localhost:8000"
+            echo "  make docs-live              - Live-reload HTML build (sphinx-autobuild)"
+            echo "  make docs-linkcheck         - Verify all internal and external links"
+            echo "  make docs-clean             - Remove \$(DOCS_BUILD)"
+            echo "  make man                    - Regenerate bin/oxctl/oxctl.1 from the built oxctl"
             echo ""
             echo "Code quality:"
             echo "  pre-commit run --all-files  - Run all pre-commit hooks"
