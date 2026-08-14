@@ -21,7 +21,7 @@
  (name oxbow)
  (synopsis "Dynamic window manager for the river Wayland compositor")
  (description
-  "oxbow is a window manager for river 0.4+, written in OCaml. It speaks\nthe river-window-management-v1 protocol and manages windows with\nbuilt-in dynamic layouts.\n\nThe package installs two executables:\n\n- oxbow: the window manager\n- oxctl: a CLI client for commands, queries, and event subscriptions\n\nConfiguration is an init script of oxctl commands.")
+  "oxbow is a window manager for river 0.4.6+, written in OCaml. It speaks\nthe river-window-management-v1 protocol and manages windows with\nbuilt-in dynamic layouts.\n\nThe package installs two executables:\n\n- oxbow: the window manager\n- oxctl: a CLI client for commands, queries, and event subscriptions\n\nConfiguration is an init script of oxctl commands.")
  (depends
   (ocaml
    (>= 5.4))
