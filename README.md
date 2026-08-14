@@ -24,14 +24,14 @@ own scripts.
 ## Documentation
 
 Full documentation is available at
-[3l0c-oxbow.readthedocs.io](https://3l0c-oxbow.readthedocs.io/).
+[oxbow-wm.readthedocs.io](https://oxbow-wm.readthedocs.io/).
 
-- [Installation](https://3l0c-oxbow.readthedocs.io/en/latest/quick-start/installation.html)
-- [River Setup](https://3l0c-oxbow.readthedocs.io/en/latest/quick-start/river.html)
-- [Getting Started](https://3l0c-oxbow.readthedocs.io/en/latest/quick-start/getting-started.html)
-- [oxctl Reference](https://3l0c-oxbow.readthedocs.io/en/latest/reference/oxctl.html)
-- [Defaults](https://3l0c-oxbow.readthedocs.io/en/latest/reference/defaults.html)
-- [Waybar Integration](https://3l0c-oxbow.readthedocs.io/en/latest/integrations/waybar.html)
+- [Installation](https://oxbow-wm.readthedocs.io/en/latest/quick-start/installation.html)
+- [River Setup](https://oxbow-wm.readthedocs.io/en/latest/quick-start/river.html)
+- [Getting Started](https://oxbow-wm.readthedocs.io/en/latest/quick-start/getting-started.html)
+- [oxctl Reference](https://oxbow-wm.readthedocs.io/en/latest/reference/oxctl.html)
+- [Defaults](https://oxbow-wm.readthedocs.io/en/latest/reference/defaults.html)
+- [Waybar Integration](https://oxbow-wm.readthedocs.io/en/latest/integrations/waybar.html)
 
 ## Installation
 
@@ -51,7 +51,7 @@ nix profile install github:3L0C/oxbow
 ```
 
 See the
-[installation guide](https://3l0c-oxbow.readthedocs.io/en/latest/quick-start/installation.html)
+[installation guide](https://oxbow-wm.readthedocs.io/en/latest/quick-start/installation.html)
 for build dependencies, NixOS and Home Manager
 configuration, and shell completion.
 
