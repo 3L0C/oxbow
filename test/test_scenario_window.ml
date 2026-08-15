@@ -105,6 +105,14 @@ let check_repeated_stale_echo ({ Harness.fake; section; oxctl; _ } as h) =
   Harness.close h kitty
 ;;
 
+let check_fit_to_output ({ Harness.oxctl; _ } as h) =
+  Harness.with_windows "check fit to output" h [ "emacs", 1 ]
+  @@ fun () ->
+  oxctl "window resize to 110% 110%";
+  oxctl "window toggle floating";
+  oxctl "window toggle floating"
+;;
+
 let () =
   Harness.run
   @@ fun ({ Harness.fake; section; _ } as h) ->
@@ -119,5 +127,6 @@ let () =
   check_floating_rules h;
   check_stale_dimensions_echo h;
   check_spatial_focus_floats h;
-  check_repeated_stale_echo h
+  check_repeated_stale_echo h;
+  check_fit_to_output h
 ;;
