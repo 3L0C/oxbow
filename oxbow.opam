@@ -3,7 +3,7 @@ opam-version: "2.0"
 version: "0.1.0"
 synopsis: "Dynamic window manager for the river Wayland compositor"
 description: """
-oxbow is a window manager for river 0.4+, written in OCaml. It speaks
+oxbow is a window manager for river 0.4.6+, written in OCaml. It speaks
 the river-window-management-v1 protocol and manages windows with
 built-in dynamic layouts.
 
