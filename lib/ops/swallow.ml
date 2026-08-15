@@ -82,7 +82,8 @@ let unswallow (child : Window.t) =
      | None -> ()
      | Some o ->
        Stacking.replace ~old_w:child ~new_w:host o;
-       Stacking.push [ child ] o);
+       Stacking.push [ child ] o;
+       if Window.floats host o then Window.restore_float host);
     Window.set_swallow_relation host None;
     Window.set_swallow_relation child None
 ;;
