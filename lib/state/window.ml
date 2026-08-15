@@ -428,6 +428,7 @@ let float_in_place w =
 
 let apply_float_geom w g =
   clamp w g |> set_geom w;
+  fit_to_output w;
   remember_float w
 ;;
 

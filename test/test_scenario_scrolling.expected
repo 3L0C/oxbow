@@ -414,7 +414,7 @@ render:set_presentation_mode(FAKE-1, vsync)
 == window move to 75% 75% ==
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
-render:set_position(mpv, 1440, 810)
+render:set_position(mpv, 1436, 806)
 render:place_top(kitty)
 render:place_top(emacs)
 render:place_top(mpv)
