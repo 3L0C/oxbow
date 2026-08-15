@@ -71,10 +71,3 @@ Claude Code was used in the following ways:
 - debugging
 
 I've written and will continue to write the code.
-
-Note that
-[river](https://codeberg.org/river/river#strict-no-llm-no-ai-policy)
-has a strict no LLM / no AI policy. The policy forbids
-generative AI for all contributions to river, including bug
-reports and comments on the issue tracker. Do not carry
-material from this repository into a river contribution.
