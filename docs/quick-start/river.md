@@ -23,7 +23,7 @@ river runs the init script at `~/.config/river/init` on
 startup
 
 ```bash
-#!/bin/sh
+#!/usr/bin/env sh
 oxbow
 ```
 
