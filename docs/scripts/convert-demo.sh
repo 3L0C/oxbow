@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Convert a screen recording to GIF and muted WebM.
+# Convert a screen recording to a muted WebM.
 # Usage: ./convert-demo.sh <input-file>
 
 set -euo pipefail
 
-OUTPUT_DIR="$HOME/Videos/converted"
+OUTPUT_DIR="."
 
 if [ $# -lt 1 ]; then
     echo "Usage: $0 <input-file>"
@@ -25,11 +25,6 @@ NAME="${NAME:-$DEFAULT_NAME}"
 
 mkdir -p "$OUTPUT_DIR"
 
-echo "Generating GIF..."
-ffmpeg -y -i "$INPUT" \
-    -vf "fps=30,split[s0][s1];[s0]palettegen=stats_mode=full[p];[s1][p]paletteuse=dither=sierra2_4a" \
-    "$OUTPUT_DIR/$NAME.gif"
-
 echo "Generating muted WebM..."
 ffmpeg -y -i "$INPUT" \
     -an \
@@ -37,4 +32,4 @@ ffmpeg -y -i "$INPUT" \
     "$OUTPUT_DIR/$NAME.webm"
 
 echo "Done:"
-ls -lh "$OUTPUT_DIR/$NAME.gif" "$OUTPUT_DIR/$NAME.webm"
+ls -lh "$OUTPUT_DIR/$NAME.webm"

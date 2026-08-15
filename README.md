@@ -1,5 +1,7 @@
 # <img src="docs/_static/favicon.svg" width="32" alt="oxbow logo"> oxbow
 
+[demo](https://github.com/user-attachments/assets/9e5fdfd8-c656-454c-b4a3-192392800787)
+
 oxbow is a dynamic tiling window manager for the Wayland
 compositor [River](https://codeberg.org/river/river),
 written in OCaml. Inspired by

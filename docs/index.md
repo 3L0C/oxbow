@@ -1,5 +1,9 @@
 # oxbow
 
+<video autoplay loop muted playsinline controls width="100%">
+  <source src="_static/demo.webm" type="video/webm">
+</video>
+
 oxbow is a dynamic tiling window manager for the Wayland
 compositor [River](https://codeberg.org/river/river),
 written in OCaml. Inspired by
