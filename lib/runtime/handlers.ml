@@ -323,7 +323,10 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
         method on_dimensions _ ~width ~height =
           Exceptions.guard "on_dimensions"
           @@ fun () ->
-          if window.geom.w <> width || window.geom.h <> height
+          let consumed = Window.consume_in_flight window ~width ~height in
+          if window.geom.w = width && window.geom.h = height
+          then Window.set_defense window Idle
+          else if not consumed
           then
             if Output.arranges window
             then (
@@ -333,7 +336,6 @@ let on_window _ river_window (wm_box : Wm.t Box.t) =
                   (Option.value ~default:"?" window.app_id));
               Window.reject_dimensions window ~width ~height)
             else Window.queue_request window @@ Dimensions { width; height }
-          else Window.set_defense window Idle
 
         method on_unreliable_pid _ ~unreliable_pid =
           Window.set_unreliable_pid window @@ Some unreliable_pid

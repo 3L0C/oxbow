@@ -94,6 +94,8 @@ render:set_presentation_mode(FAKE-1, vsync)
 == check overview toggle floating ==
 
 == layout floating ==
+manage:set_tiled(emacs, edges=0x0)
+manage:set_tiled(kitty, edges=0x0)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -150,6 +152,8 @@ render:set_presentation_mode(FAKE-1, vsync)
 == check overview layout switch ==
 
 == layout floating ==
+manage:set_tiled(emacs, edges=0x0)
+manage:set_tiled(kitty, edges=0x0)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -163,7 +167,6 @@ render:set_presentation_mode(FAKE-1, vsync)
 
 == window resize to 800 600 --app-id ^kitty$ ==
 manage:propose_dimensions(kitty, 800x600)
-manage:set_tiled(kitty, edges=0x0)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -190,7 +193,6 @@ render:set_presentation_mode(FAKE-1, vsync)
 
 == window resize to 640 480 --app-id ^emacs$ ==
 manage:propose_dimensions(emacs, 640x480)
-manage:set_tiled(emacs, edges=0x0)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(kitty)

@@ -86,7 +86,7 @@ let window_spatial ?warp wm seat target (dir : Direction.Spatial.t) =
               (fun w ->
                  if
                    w == current
-                   || (not @@ Window.is_tiled w)
+                   || (not @@ Window.is_tiled_or_floating w)
                    || (not @@ Window.tag_visible w)
                  then None
                  else Some (Rect.to_int w.geom |> Vector.center))

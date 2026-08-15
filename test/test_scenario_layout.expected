@@ -286,6 +286,8 @@ render:set_presentation_mode(FAKE-1, vsync)
 == check layout select ==
 
 == layout floating ==
+manage:set_tiled(emacs, edges=0x0)
+manage:set_tiled(kitty, edges=0x0)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(kitty)
@@ -299,7 +301,9 @@ render:set_presentation_mode(FAKE-1, vsync)
 
 == layout scrolling ==
 manage:propose_dimensions(emacs, 927x1032)
+manage:set_tiled(emacs, edges=0xf)
 manage:propose_dimensions(kitty, 927x1032)
+manage:set_tiled(kitty, edges=0xf)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:set_position(kitty, 969, 24)

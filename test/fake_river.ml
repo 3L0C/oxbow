@@ -739,6 +739,11 @@ let send_dimensions_hint t ~app_id ~min_w ~min_h ~max_w ~max_h =
   tick t
 ;;
 
+let send_dimensions t ~app_id ~width ~height =
+  Wm_server.River_window_v1.dimensions (window_named t ~app_id) ~width ~height;
+  tick t
+;;
+
 let send_capture_sessions t ~app_id ~count =
   Wm_server.River_window_v1.capture_sessions (window_named t ~app_id) ~count;
   tick t

@@ -121,7 +121,7 @@ render:set_presentation_mode(FAKE-1, vsync)
 render:place_top(foot)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== mpv arrives - swallows foot ==
+== mpv arrives; swallows foot ==
 manage:get_node(mpv)
 manage:set_capabilities(mpv, caps=0x4)
 manage:propose_dimensions(mpv, 1872x1032)
@@ -176,7 +176,7 @@ manage:op_end(seat0)
 render:place_top(mpv)
 render:set_presentation_mode(FAKE-1, vsync)
 
-== mpv closes - foot returns ==
+== mpv closes; foot returns ==
 manage:destroy(mpv)
 manage:destroy(mpv)
 manage:propose_dimensions(foot, 1872x1032)
@@ -266,6 +266,8 @@ render:place_top(mpv)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == layout floating ==
+manage:set_tiled(mpv, edges=0x0)
+manage:set_tiled(foot, edges=0x0)
 manage:focus_window(seat0, mpv)
 manage:op_end(seat0)
 render:place_top(mpv)
@@ -312,4 +314,245 @@ manage:op_end(seat0)
 manage:clear_focus(seat0)
 manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check floating swallow ==
+
+== window rules add --app-id=^foot$ --swallow=terminal ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== foot arrives ==
+manage:get_node(foot)
+manage:set_capabilities(foot, caps=0x4)
+manage:propose_dimensions(foot, 1872x1032)
+manage:set_tiled(foot, edges=0xf)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window toggle floating ==
+manage:propose_dimensions(foot, 960x540)
+manage:set_tiled(foot, edges=0x0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_position(foot, 480, 270)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== mpv arrives; swallows floating foot ==
+manage:get_node(mpv)
+manage:set_capabilities(mpv, caps=0x4)
+manage:propose_dimensions(mpv, 960x540)
+manage:set_tiled(mpv, edges=0x0)
+manage:use_ssd(mpv)
+manage:inform_unmaximized(mpv)
+manage:inform_not_fullscreen(mpv)
+manage:inform_resize_end(mpv)
+manage:focus_window(seat0, mpv)
+manage:op_end(seat0)
+manage:focus_window(seat0, mpv)
+manage:op_end(seat0)
+render:set_borders(mpv, edges=0xf, w=4, rgba=98989898 bbbbbbbb 6c6c6c6c ffffffff)
+render:set_borders(foot, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(mpv, 480, 270)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:hide(foot)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+6   null        mpv    mpv     FAKE-1  1     true     false   false     false   floating      off     null        false    true
+5   null        foot   foot    FAKE-1  1     false    false   false     true    floating      off     null        false    false
+manage:focus_window(seat0, mpv)
+manage:op_end(seat0)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== mpv closes; foot returns ==
+manage:destroy(mpv)
+manage:destroy(mpv)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:show(foot)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+5   null        foot   foot    FAKE-1  1     true     false   false     false   floating      off     null        false    false
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== close foot ==
+manage:destroy(foot)
+manage:destroy(foot)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== check swallow cross output ==
+
+== window rules add --app-id=^foot$ --swallow=terminal ==
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-2, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== foot arrives ==
+manage:get_node(foot)
+manage:set_capabilities(foot, caps=0x4)
+manage:propose_dimensions(foot, 1872x1032)
+manage:set_tiled(foot, edges=0xf)
+manage:use_ssd(foot)
+manage:inform_unmaximized(foot)
+manage:inform_not_fullscreen(foot)
+manage:inform_resize_end(foot)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+manage:focus_window(seat0, foot)
+manage:op_end(seat0)
+render:set_borders(foot, edges=0xf, w=4, rgba=7f7f7f7f b4b4b4b4 cacacaca ffffffff)
+render:set_position(foot, 24, 24)
+render:show(foot)
+render:set_clip_box(foot, 0, 0, 0x0)
+render:set_content_clip_box(foot, 0, 0, 0x0)
+render:set_presentation_mode(FAKE-2, vsync)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== mpv arrives; swallows foot ==
+manage:get_node(mpv)
+manage:set_capabilities(mpv, caps=0x4)
+manage:propose_dimensions(mpv, 1872x1032)
+manage:set_tiled(mpv, edges=0xf)
+manage:use_ssd(mpv)
+manage:inform_unmaximized(mpv)
+manage:inform_not_fullscreen(mpv)
+manage:inform_resize_end(mpv)
+manage:focus_window(seat0, mpv)
+manage:op_end(seat0)
+manage:focus_window(seat0, mpv)
+manage:op_end(seat0)
+render:set_borders(mpv, edges=0xf, w=4, rgba=98989898 bbbbbbbb 6c6c6c6c ffffffff)
+render:set_borders(foot, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(mpv, 24, 24)
+render:show(mpv)
+render:set_clip_box(mpv, 0, 0, 0x0)
+render:set_content_clip_box(mpv, 0, 0, 0x0)
+render:hide(foot)
+render:set_presentation_mode(FAKE-2, vsync)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window send to FAKE-2 ==
+manage:propose_dimensions(mpv, 1872x1032)
+manage:propose_dimensions(foot, 1872x1032)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_borders(mpv, edges=0xf, w=4, rgba=72727272 71717171 69696969 ffffffff)
+render:set_position(mpv, 1944, 24)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-2, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-2, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+8   null        mpv    mpv     FAKE-2  1     false    false   false     false   tiled         off     null        false    true
+7   null        foot   foot    FAKE-2  1     false    false   false     true    tiled         off     null        false    false
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-2, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window toggle swallow ==
+err: no focused window
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-2, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== window list ==
+ID  IDENTIFIER  TITLE  APP-ID  OUTPUT  TAGS  FOCUSED  URGENT  CAPTURED  HIDDEN  PRESENTATION  STICKY  SCRATCHPAD  STASHED  SWALLOWING  LABELS
+8   null        mpv    mpv     FAKE-2  1     false    false   false     false   tiled         off     null        false    true
+7   null        foot   foot    FAKE-2  1     false    false   false     true    tiled         off     null        false    false
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:place_top(mpv)
+render:set_presentation_mode(FAKE-2, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== mpv closes ==
+manage:destroy(mpv)
+manage:destroy(mpv)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_position(foot, 1944, 24)
+render:show(foot)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-2, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+render:place_top(foot)
+render:set_presentation_mode(FAKE-2, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+
+== close foot ==
+manage:destroy(foot)
+manage:destroy(foot)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+manage:clear_focus(seat0)
+manage:op_end(seat0)
+render:set_presentation_mode(FAKE-2, vsync)
+render:set_presentation_mode(FAKE-1, vsync)
+render:set_presentation_mode(FAKE-2, vsync)
 render:set_presentation_mode(FAKE-1, vsync)

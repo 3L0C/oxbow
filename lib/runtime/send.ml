@@ -23,7 +23,8 @@ let propose_dimensions (_ : Ctx.manage Ctx.t) (w : Window.t) ~width ~height =
   if w.committed.proposed <> Some (width, height)
   then (
     River.Window_management.River_window_v1.propose_dimensions w.obj ~width ~height;
-    Window.set_proposed w (Some (width, height)))
+    Window.set_proposed w (Some (width, height));
+    Window.push_in_flight w (width, height))
 ;;
 
 let fullscreen (_ : Ctx.manage Ctx.t) (w : Window.t) ~(output : Output.t) =

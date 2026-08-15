@@ -147,6 +147,8 @@ render:place_top(emacs)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == layout floating ==
+manage:set_tiled(emacs, edges=0x0)
+manage:set_tiled(kitty, edges=0x0)
 manage:focus_window(seat0, emacs)
 manage:op_end(seat0)
 render:place_top(kitty)

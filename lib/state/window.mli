@@ -31,6 +31,19 @@ val set_defense : t -> Defense.t -> unit
     {b Effects:} mutates WM state *)
 val set_proposed : t -> (int32 * int32) option -> unit
 
+(** [push_in_flight window dims] records the proposed [dims] not yet echoed.
+
+    {b Effects:} mutates WM state *)
+val push_in_flight : t -> int32 * int32 -> unit
+
+(** [consume_in_flight window ~width ~height] is [true] when the size matches an
+    entry. Entries older than the newest match drop; the match stays (one
+    proposal can produce the same report more than once). On [false] the list
+    clears.
+
+    {b Effects:} mutates WM state *)
+val consume_in_flight : t -> width:int32 -> height:int32 -> bool
+
 (** [set_fullscreen_on window output] updates [window]'s fullscreen output.
 
     {b Effects:} mutates WM state *)
@@ -78,6 +91,9 @@ val tag_visible : t -> bool
 
 (** [is_tiled window] is [true] when [window] is tiled. *)
 val is_tiled : t -> bool
+
+(** [is_tiled_or_floating window] is [true] when [window] is tiled or floating. *)
+val is_tiled_or_floating : t -> bool
 
 (** [scroll_clipped w] is [true] when [w] has a [`Scrolling] clip, is tiled and
     the layout of [w]'s output is [Scrolling]. *)
@@ -130,6 +146,9 @@ val tile : t -> unit
 (** [clamp window geom] is [geom] clamped to [window]'s size hints, if any.
     Converts to [int32 rect] *)
 val clamp : t -> int Oxbow_core.Rect.t -> int32 Oxbow_core.Rect.t
+
+(** [clamp32 window geom] is [clamp] but takes an [int32 Rect.t]. *)
+val clamp32 : t -> int32 Oxbow_core.Rect.t -> int32 Oxbow_core.Rect.t
 
 (** [set_float_seed_pending window pending] sets [window]'s pending float seed
     flag to [pending].

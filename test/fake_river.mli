@@ -69,6 +69,12 @@ val send_dimensions_hint
   -> max_h:int32
   -> unit
 
+(** [send_dimensions t ~app_id ~width ~height] sends dimensions on the first
+    window with [app_id], then ticks.
+
+    {b Effects:} sends Wayland events *)
+val send_dimensions : t -> app_id:string option -> width:int32 -> height:int32 -> unit
+
 (** [send_capture_sessions t ~app_id ~count] sends capture_sessions on the first
     window with [app_id], then ticks.
 

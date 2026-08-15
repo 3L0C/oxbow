@@ -56,6 +56,7 @@ let create (output : Types.Output.t option) scroll_width river_window : t =
   ; scratchpad = { name = None; stashed = false }
   ; committed =
       { proposed = None
+      ; in_flight = []
       ; fullscreen_on = None
       ; caps = None
       ; tiled_edges = None
@@ -88,6 +89,25 @@ let floor_geom (g : int32 Rect.t) = { g with w = max g.w 0l; h = max g.h 0l }
 let set_geom w g = w.geom <- floor_geom g
 let set_defense w d = w.defense <- d
 let set_proposed w dims = w.committed.proposed <- dims
+let push_in_flight w dims = w.committed.in_flight <- w.committed.in_flight @ [ dims ]
+
+let consume_in_flight w ~width ~height =
+  let rec from_newest_match = function
+    | [] -> None
+    | (pw, ph) :: rest as l ->
+      (match from_newest_match rest with
+       | Some _ as found -> found
+       | None -> if pw = width && ph = height then Some l else None)
+  in
+  match from_newest_match w.committed.in_flight with
+  | Some keep ->
+    w.committed.in_flight <- keep;
+    true
+  | None ->
+    w.committed.in_flight <- [];
+    false
+;;
+
 let set_fullscreen_on w output = w.committed.fullscreen_on <- output
 let set_clip w clip = w.clip <- clip
 
@@ -142,6 +162,12 @@ let tag_visible w =
 ;;
 
 let is_tiled w = w.presentation = Tiled
+
+let is_tiled_or_floating w =
+  match w.presentation with
+  | Tiled | Floating -> true
+  | Maximized _ | Fullscreen _ -> false
+;;
 
 let scroll_clipped w =
   match w.clip, w.output with
@@ -487,12 +513,15 @@ let set_scroll_width w v =
     Schedule.manage ())
 ;;
 
-let set_output w output =
+let rec set_output w output =
   let aux () =
     Schedule.manage ();
     w.output <- output;
     set_fullscreen_on w None;
-    set_proposed w None
+    set_proposed w None;
+    match w.swallow.relation with
+    | Some (Swallowing host) -> set_output host output
+    | Some (Swallowed_by _) | None -> ()
   in
   match w.output, output with
   | Some o, None when Option.is_none w.output_before_evac ->

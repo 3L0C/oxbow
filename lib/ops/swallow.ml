@@ -37,7 +37,7 @@ let find_host (wm : Wm.t) (child : Window.t) =
   in
   let eligible w =
     Window.can_swallow w
-    && Window.is_tiled w
+    && Window.is_tiled_or_floating w
     && Phys.opt_equal w.output child.output
     && Tag.Set.intersects w.tags child.tags
     &&
@@ -50,6 +50,12 @@ let find_host (wm : Wm.t) (child : Window.t) =
 
 let swallow ~(host : Window.t) ~child =
   Window.set_tags child host.tags;
+  (match host.output with
+   | Some o when Window.floats host o ->
+     Window.set_geom child (Window.clamp32 child host.geom);
+     Window.set_presentation child host.presentation;
+     Window.remember_float child
+   | Some _ | None -> ());
   Option.iter (Stacking.replace ~old_w:host ~new_w:child) host.output;
   Window.swallow ~host ~child
 ;;
@@ -61,7 +67,7 @@ let try_swallow (wm : Wm.t) (child : Window.t) =
      | None -> false)
     && child.swallow.role = Auto
     && Option.is_none child.swallow.relation
-    && Window.is_tiled child
+    && Window.is_tiled_or_floating child
     && Option.is_none child.parent
     && child.sticky = Off
     && Option.is_some child.output

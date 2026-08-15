@@ -67,6 +67,44 @@ let check_floating_rules ({ Harness.oxctl; _ } as h) =
   Harness.spawn ~section:"spawn kitty" h "kitty" |> Harness.close h
 ;;
 
+let check_stale_dimensions_echo ({ Harness.fake; section; oxctl; _ } as h) =
+  Harness.with_windows "check stale dimensions echo" h []
+  @@ fun () ->
+  let kitty = Harness.spawn h "kitty" in
+  oxctl "window toggle floating";
+  section "stale echo arrives" (fun () ->
+    Fake_river.send_dimensions fake ~app_id:(Some "kitty") ~width:1872l ~height:1032l);
+  oxctl "window list";
+  Harness.close h kitty
+;;
+
+let check_spatial_focus_floats ({ Harness.oxctl; _ } as h) =
+  Harness.with_windows "check spatial focus floats" h [ "kitty", 1; "emacs", 1 ]
+  @@ fun () ->
+  oxctl "window toggle floating";
+  oxctl "window move to 75% 25%";
+  oxctl "window focus left";
+  oxctl "window query";
+  oxctl "window focus right";
+  oxctl "window query"
+;;
+
+let check_repeated_stale_echo ({ Harness.fake; section; oxctl; _ } as h) =
+  Harness.with_windows "check repeated stale echo" h []
+  @@ fun () ->
+  let kitty = Harness.spawn h "kitty" in
+  oxctl "window toggle floating";
+  section "stale report arrives twice" (fun () ->
+    Fake_river.send_dimensions fake ~app_id:(Some "kitty") ~width:1872l ~height:1032l;
+    Fake_river.send_dimensions fake ~app_id:(Some "kitty") ~width:1872l ~height:1032l);
+  section "float ack arrives" (fun () ->
+    Fake_river.send_dimensions fake ~app_id:(Some "kitty") ~width:960l ~height:540l);
+  section "client resizes, then returns to an old ask" (fun () ->
+    Fake_river.send_dimensions fake ~app_id:(Some "kitty") ~width:800l ~height:600l;
+    Fake_river.send_dimensions fake ~app_id:(Some "kitty") ~width:1872l ~height:1032l);
+  Harness.close h kitty
+;;
+
 let () =
   Harness.run
   @@ fun ({ Harness.fake; section; _ } as h) ->
@@ -78,5 +116,8 @@ let () =
   check_late_fixed_hint h;
   check_captured_border h;
   check_output_capture_sessions h;
-  check_floating_rules h
+  check_floating_rules h;
+  check_stale_dimensions_echo h;
+  check_spatial_focus_floats h;
+  check_repeated_stale_echo h
 ;;

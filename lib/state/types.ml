@@ -254,6 +254,7 @@ and Window : sig
 
     type t =
       { mutable proposed : (int32 * int32) option
+      ; mutable in_flight : (int32 * int32) list
       ; mutable fullscreen_on : int32 option
       ; mutable caps : int32 option
       ; mutable tiled_edges : int32 option

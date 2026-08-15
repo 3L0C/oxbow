@@ -17,8 +17,8 @@ let dimensions ctx (w : Window.t) =
       Send.propose_dimensions ctx w ~width:w.geom.w ~height:w.geom.h)
 ;;
 
-let decoration ctx w =
-  let tiled = Window.is_tiled w in
+let decoration ctx (w : Window.t) =
+  let tiled = Window.is_tiled w && (not @@ Output.is_floating w.output) in
   let edges =
     let open Wire in
     if tiled
@@ -267,8 +267,9 @@ let window_z_order ctx (output : Output.t) =
   let windows =
     if Output.current_layout output = Floating
     then visible
-    else
-      List.partition Window.is_tiled visible |> fun (tiled, floating) -> floating @ tiled
+    else (
+      let tiled, floating = List.partition Window.is_tiled visible in
+      floating @ tiled)
   in
   List.rev windows |> List.iter (Send.place_top ctx)
 ;;
