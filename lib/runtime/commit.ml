@@ -264,9 +264,13 @@ let node ctx covered (w : Window.t) =
 
 let window_z_order ctx (output : Output.t) =
   let visible = List.filter Window.tag_visible output.focus_stack in
-  let tiled, floating = List.partition Window.is_tiled visible in
-  List.rev tiled |> List.iter (Send.place_top ctx);
-  List.rev floating |> List.iter (Send.place_top ctx)
+  let windows =
+    if Output.current_layout output = Floating
+    then visible
+    else
+      List.partition Window.is_tiled visible |> fun (tiled, floating) -> floating @ tiled
+  in
+  List.rev windows |> List.iter (Send.place_top ctx)
 ;;
 
 let op_window_top ctx (seat : Seat.t) =
