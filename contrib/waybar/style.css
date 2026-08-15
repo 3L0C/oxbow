@@ -5,12 +5,12 @@
  * the scripts' JSON (viewed / occupied / urgent / focused).
  *
  * Class mapping vs waybar's native river/tags: what river called "focused" (tag
- * in the output's viewed set) is oxbow's "viewed"; oxbow's "focused" is new and
- * indicates the tags of the focused window itself.
+ * in the output's viewed set) is oxbow's "viewed"; oxbow's "focused" is
+ * different and indicates the tags of the focused window itself.
  */
 
 * {
-    font-family: "JetBrainsMonoNL Nerd Font";
+    font-family: "monospace";
     font-size: 14pt;
 }
 
