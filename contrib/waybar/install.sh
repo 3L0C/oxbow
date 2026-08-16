@@ -81,7 +81,7 @@ tags_json="${tags_json%,}]"
 if [ -z "$outputs" ]; then
     command -v oxctl >/dev/null ||
         die "oxctl not found; pass --output NAME to skip auto-detection"
-    outputs=$(oxctl output list 2>/dev/null | jq -r '.[]') ||
+    outputs=$(oxctl output list --json 2>/dev/null | jq -r '.[]') ||
         die "could not auto-detect outputs (is oxbow running?); pass --output NAME"
     [ -n "$outputs" ] ||
         die "oxbow reports no outputs; pass --output NAME"
