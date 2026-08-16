@@ -130,17 +130,16 @@ let set_layout wm seat (layout : Layout.t) scope =
   let* outputs = outputs_of_scope wm seat scope in
   let target_floats = layout = Floating in
   let fixup (o : Output.t) =
-    let tags_written =
+    let crossed =
       match scope with
       | Focused ->
-        Tag.Set.first o.tags.selected |> Option.value ~default:(Tag.Set.singleton 1)
-      | Output _ | All -> Tag.Set.all
-    in
-    let crossed =
-      Tag.Set.to_list tags_written
-      |> List.filter (fun s ->
-        let td = Output.tag_data o s in
-        td.layout = Floating <> target_floats)
+        let td = Output.to_tag_data o in
+        if td.layout = Floating <> target_floats then [ o.tags.selected ] else []
+      | Output _ | All ->
+        Tag.Set.to_list Tag.Set.all
+        |> List.filter (fun s ->
+          let td = Output.tag_data o s in
+          td.layout = Floating <> target_floats)
     in
     let windows =
       List.filter
@@ -148,17 +147,14 @@ let set_layout wm seat (layout : Layout.t) scope =
            Window.is_tiled w && List.exists (fun s -> Window.on_tags w ~tags:s) crossed)
         o.wm_stack
     in
-    let fix w =
-      if not target_floats
-      then Window.remember_float w
-      else (
-        match w.float_rel with
-        | None ->
-          Window.fit_to_output w;
-          Window.remember_float w
-        | Some _ -> Window.restore_float w)
+    let fix (w : Window.t) =
+      match w.float_rel with
+      | None ->
+        Window.fit_to_output w;
+        Window.remember_float w
+      | Some _ -> Window.restore_float w
     in
-    if not o.overview.enabled then List.iter fix windows
+    if target_floats && not o.overview.enabled then List.iter fix windows
   in
   List.iter fixup outputs;
   apply_scoped wm seat scope ~f:(Output.apply_layout ~layout)

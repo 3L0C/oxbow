@@ -113,6 +113,20 @@ let check_fit_to_output ({ Harness.oxctl; _ } as h) =
   oxctl "window toggle floating"
 ;;
 
+let check_floating_transitions ({ Harness.oxctl; _ } as h) =
+  Harness.with_windows "check fit to output" h [ "emacs", 1; "kitty", 2 ]
+  @@ fun () ->
+  oxctl "window resize to 50% 50% --app-id=^emacs$";
+  oxctl "window move to 25% 25% --app-id=^emacs$";
+  oxctl "window toggle floating --app-id=^emacs$";
+  oxctl "window resize to 50% 50% --app-id=^kitty$";
+  oxctl "window move to 50% 50% --app-id=^kitty$";
+  oxctl "window toggle floating --app-id=^kitty$";
+  oxctl "tag view 1,2";
+  oxctl "layout floating";
+  oxctl "layout tiling"
+;;
+
 let () =
   Harness.run
   @@ fun ({ Harness.fake; section; _ } as h) ->
@@ -128,5 +142,6 @@ let () =
   check_stale_dimensions_echo h;
   check_spatial_focus_floats h;
   check_repeated_stale_echo h;
-  check_fit_to_output h
+  check_fit_to_output h;
+  check_floating_transitions h
 ;;
