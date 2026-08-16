@@ -1,4 +1,4 @@
-# River setup
+# Configure River
 
 oxbow requires [river](https://codeberg.org/river/river)
 0.4.6 or later. This page shows how to install and configure
@@ -23,8 +23,9 @@ river runs the init script at `~/.config/river/init` on
 startup
 
 ```bash
-#!/usr/bin/env sh
-oxbow
+#!/bin/sh
+eval "$(opam env)"
+exec oxbow
 ```
 
 Make the script executable:
