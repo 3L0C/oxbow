@@ -8,6 +8,8 @@ build:
   jobs:
     pre_build:
         - cargo install svgbob_cli
+        # No reshim for jobs.pre_build, only jobs.build
+        - asdf reshim rust
 
 sphinx:
   configuration: docs/conf.py

@@ -8,8 +8,8 @@ Usage in MyST:
     +-----+
     ```
 
-The svgbob CLI must be on PATH. Stroke color is currentColor, so
-the SVG follows the theme text color.
+The svgbob CLI must be on PATH. Stroke color is currentColor, so the SVG follows
+the theme text color.
 """
 
 import shutil
@@ -18,7 +18,8 @@ import subprocess
 from docutils import nodes
 from docutils.parsers.rst import Directive
 
-SVGBOB = shutil.which("svgbob")
+# Readthedocs installs as 'svgbob_cli'; Nix installs as 'svgbob'
+SVGBOB = shutil.which("svgbob_cli") or shutil.which("svgbob")
 
 
 class SvgbobDirective(Directive):
