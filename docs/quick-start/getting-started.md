@@ -5,24 +5,84 @@ begin configuration.
 
 ```{attention}
 Please see river's [list of useful software](https://codeberg.org/river/wiki/src/branch/main/pages/useful-software.md)
-to ensure all your Wayland related needs are met.
+for additional tools (launcher, bar, lock screen, wallpaper).
 ```
 
 ## Init configuration
 
-Create the file `~/.config/oxbow/init` with the following
-content
+oxbow runs the init script at `~/.config/oxbow/init` on
+startup.
+
+````{tab} opam
+Create `~/.config/oxbow/init` script:
 
 ```bash
 #!/bin/sh
+eval "$(opam env)"
 oxctl bind spawn foot to Super+Return
 ```
 
-Make the file executable
+Make the script executable:
 
 ```{prompt} bash
 chmod +x ~/.config/oxbow/init
 ```
+````
+
+````{tab} NixOS
+Extend the module from [NixOS River setup](./river.md#configure-river):
+
+```{code-block} nix
+:emphasize-lines: 4-7,9
+{ pkgs, oxbow, ... }:
+let
+  oxbow-pkg = oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  oxctl = "${oxbow-pkg}/bin/oxctl";
+  oxbow-init = pkgs.writeShellScript "oxbow-init" ''
+    ${oxctl} bind spawn foot to Super+Return
+  '';
+  river-init = pkgs.writeShellScript "river-init" ''
+    exec ${oxbow-pkg}/bin/oxbow -c ${oxbow-init}
+  '';
+  wrapped-river = pkgs.symlinkJoin {
+    name = "river";
+    paths = [ pkgs.river ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/river --add-flags "-c ${river-init}"
+    '';
+  };
+in
+{
+  environment.systemPackages = [ wrapped-river ];
+}
+```
+
+```{attention}
+`oxbow -c` overrides `~/.config/oxbow/init`. Use one or the other.
+```
+````
+
+````{tab} Home Manager
+```{code-block} nix
+{ pkgs, oxbow, ... }:
+let
+  oxbow-pkg = oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  oxctl = "${oxbow-pkg}/bin/oxctl";
+in
+{
+  xdg.configFile = {
+    "oxbow/init" = {
+      executable = true;
+      text = ''
+        #!/bin/sh
+        ${oxctl} bind spawn foot to Super+Return
+      '';
+    };
+  };
+}
+```
+````
 
 oxbow also has default keybinds. The init script adds to
 them. See the defaults
@@ -34,13 +94,13 @@ Start river; oxbow starts with it and runs the init script.
 
 These keybinds are enough for a first session.
 
-| Keybind           | Action                                                      |
-|-------------------|-------------------------------------------------------------|
-| `Super+Return`    | Spawn the [foot](https://codeberg.org/dnkl/foot) terminal   |
-| `Super+j`         | Focus the next window in the stack                          |
-| `Super+k`         | Focus the previous window in the stack                      |
-| `Super+q`         | Closes the focused window                                   |
-| `Super+Q`         | Exit the wayland session (i.e., return to greeter/tty/etc.) |
+| Keybind        | Action                                                    |
+|----------------|-----------------------------------------------------------|
+| `Super+Return` | Spawn the [foot](https://codeberg.org/dnkl/foot) terminal |
+| `Super+j`      | Focus the next window in the stack                        |
+| `Super+k`      | Focus the previous window in the stack                    |
+| `Super+q`      | Close the focused window                                  |
+| `Super+Q`      | Exit the Wayland session and return to greeter or TTY     |
 
 ## Settings
 

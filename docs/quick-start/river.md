@@ -20,7 +20,10 @@ Distribution packages differ:
 ## Configure river
 
 river runs the init script at `~/.config/river/init` on
-startup
+startup.
+
+````{tab} opam
+Create `~/.config/river/init` script:
 
 ```bash
 #!/bin/sh
@@ -33,15 +36,51 @@ Make the script executable:
 ```{prompt} bash
 chmod +x ~/.config/river/init
 ```
+````
 
-Home Manager users can write the file declaratively:
-
+````{tab} NixOS
 ```nix
-xdg.configFile."river/init" = {
-  executable = true;
-  text = ''
-    #!/bin/sh
-    oxbow
+{ pkgs, oxbow, ... }:
+let
+  oxbow-pkg = oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  river-init = pkgs.writeShellScript "river-init" ''
+    exec ${oxbow-pkg}/bin/oxbow
   '';
-};
+  wrapped-river = pkgs.symlinkJoin {
+    name = "river";
+    paths = [ pkgs.river ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/river --add-flags "-c ${river-init}"
+    '';
+  };
+in
+{
+  environment.systemPackages = [ wrapped-river ];
+}
 ```
+
+```{attention}
+Use `wrapped-river`, not `pkgs.river`, in display manager
+entries and systemd services. Only `wrapped-river` runs the
+init script.
+```
+````
+
+````{tab} Home Manager
+```nix
+{ pkgs, oxbow, ... }:
+let
+  oxbow-pkg = oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
+{
+  xdg.configFile."river/init" = {
+    executable = true;
+    text = ''
+      #!/bin/sh
+      exec ${oxbow-pkg}/bin/oxbow
+    '';
+  };
+}
+```
+````
