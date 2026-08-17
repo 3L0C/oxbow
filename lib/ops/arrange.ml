@@ -134,27 +134,39 @@ let set_layout wm seat (layout : Layout.t) scope =
       match scope with
       | Focused ->
         let td = Output.to_tag_data o in
-        if td.layout = Floating <> target_floats then [ o.tags.selected ] else []
+        if td.layout = Floating <> target_floats then Some o.tags.selected else None
       | Output _ | All ->
         Tag.Set.to_list Tag.Set.all
-        |> List.filter (fun s ->
-          let td = Output.tag_data o s in
-          td.layout = Floating <> target_floats)
+        |> List.fold_left
+             (fun acc s ->
+                let td = Output.tag_data o s in
+                if td.layout = Floating <> target_floats then Tag.Set.union acc s else acc)
+             Tag.Set.empty
+        |> Option.some
     in
     let windows =
-      List.filter
-        (fun w ->
-           Window.is_tiled w && List.exists (fun s -> Window.on_tags w ~tags:s) crossed)
-        o.wm_stack
+      match crossed with
+      | None -> []
+      | Some tags when Tag.Set.is_empty tags -> []
+      | Some tags ->
+        List.filter
+          (fun w -> Window.on_tags w ~tags && Window.is_tiled_or_floating w)
+          o.wm_stack
     in
     let fix (w : Window.t) =
-      match w.float_rel with
-      | None ->
-        Window.fit_to_output w;
-        Window.remember_float w
-      | Some _ -> Window.restore_float w
+      let enter () =
+        match w.float_rel with
+        | None ->
+          Window.fit_to_output w;
+          Window.remember_float w
+        | Some _ -> Window.restore_float w
+      in
+      let exit () = Window.remember_float w in
+      match layout with
+      | Tiling | Scrolling -> exit ()
+      | Floating -> enter ()
     in
-    if target_floats && not o.overview.enabled then List.iter fix windows
+    if Option.is_some crossed && not o.overview.enabled then List.iter fix windows
   in
   List.iter fixup outputs;
   apply_scoped wm seat scope ~f:(Output.apply_layout ~layout)
