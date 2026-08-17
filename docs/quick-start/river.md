@@ -6,23 +6,66 @@ river to start oxbow.
 
 ## Install river
 
-Distribution packages differ:
+````{tab} Arch
+```{prompt} bash
+sudo pacman -S river
+```
+````
 
-- Arch: `sudo pacman -S river`.
-- Fedora: 0.4.6+ is in Fedora 45 and Rawhide only.
-- Debian, Ubuntu, openSUSE, and Void: no 0.4.6 package at
-  the time of writing. Build river from source; see the
-  [river README](https://codeberg.org/river/river).
-- Nix: `pkgs.river` in nixpkgs unstable is 0.4.6+. Add it
-  next to oxbow in your configuration, or run
-  `nix profile install nixpkgs#river`.
+````{tab} Fedora
+Fedora 45 and Rawhide carry river 0.4.6+:
+
+```{prompt} bash
+sudo dnf install river
+```
+````
+
+````{tab} NixOS
+Add the following module to your configuration:
+
+```nix
+{ pkgs, ... }:
+{
+  environment.systemPackages = [ pkgs.river ];
+}
+```
+
+```{attention}
+River is 0.4.5 in NixOS 26.05. Use nixpkgs unstable for 0.4.6+.
+```
+````
+
+````{tab} Home Manager
+Add the following module to your configuration:
+
+```nix
+{ pkgs, ... }:
+{
+  home.packages = [ pkgs.river ];
+}
+```
+
+```{attention}
+River is 0.4.5 in NixOS 26.05. Use nixpkgs unstable for 0.4.6+.
+```
+
+```{attention}
+Do not use `wayland.windowManager.river`. It uses
+river-classic.
+```
+````
+
+````{tab} From source
+Please see [river's README](https://codeberg.org/river/river#building)
+for the necessary steps.
+````
 
 ## Configure river
 
 river runs the init script at `~/.config/river/init` on
 startup.
 
-````{tab} opam
+````{tab} Non-Nix
 Create `~/.config/river/init` script:
 
 ```bash
@@ -39,6 +82,8 @@ chmod +x ~/.config/river/init
 ````
 
 ````{tab} NixOS
+Replace the module we created earlier:
+
 ```nix
 { pkgs, oxbow, ... }:
 let
@@ -68,6 +113,8 @@ init script.
 ````
 
 ````{tab} Home Manager
+Add the following module to your configuration:
+
 ```nix
 { pkgs, oxbow, ... }:
 let
