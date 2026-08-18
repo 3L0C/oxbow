@@ -139,7 +139,7 @@ let occupied_tags ?except windows =
     (fun s w ->
        match except with
        | Some w' when w' == w -> s
-       | Some _ | None -> Tag.Set.union s w.tags)
+       | Some _ | None -> if not w.scratchpad.stashed then Tag.Set.union s w.tags else s)
     Tag.Set.empty
     windows
 ;;
