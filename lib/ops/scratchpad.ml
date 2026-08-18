@@ -32,7 +32,8 @@ let toggle (wm : Wm.t) (seat : Seat.t) name =
     List.iter
       (fun w ->
          Window.set_stashed w false;
-         Placement.move_window w o ~policy:Take;
+         Placement.move_window w o;
+         Window.set_tags w o.tags.selected;
          Window.float w)
       members;
     Focus.focus_window wm seat head;
