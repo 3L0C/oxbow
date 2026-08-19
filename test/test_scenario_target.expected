@@ -410,8 +410,8 @@ render:place_top(kitty)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window toggle fullscreen --app-id=kitty --all ==
-err: Usage: [01moxctl window toggle fullscreen[m [[01m--help[m] [[04mOPTION[m]…
-err: oxctl: [31munknown[m option [01m--all[m
+err: Usage: oxctl window toggle fullscreen [--help] [OPTION]…
+err: oxctl: unknown option '--all'
 exit: 124
 
 == check window close ==
@@ -491,7 +491,7 @@ render:place_top(kitty)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == window close --all ==
-err: Usage: [01moxctl window close[m [[01m--help[m] [[04mOPTION[m]…
+err: Usage: oxctl window close [--help] [OPTION]…
 err: oxctl: --all needs a pattern
 exit: 124
 

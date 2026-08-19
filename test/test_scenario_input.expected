@@ -184,7 +184,7 @@ manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == input touchpad --name .* ==
-err: Usage: [01moxctl input touchpad[m [[01m--help[m] [[04mOPTION[m]…
+err: Usage: oxctl input touchpad [--help] [OPTION]…
 err: oxctl: give at least one setting flag
 exit: 124
 
@@ -201,6 +201,6 @@ manage:op_end(seat0)
 render:set_presentation_mode(FAKE-1, vsync)
 
 == input mouse --name .* ==
-err: Usage: [01moxctl input mouse[m [[01m--help[m] [[04mOPTION[m]…
+err: Usage: oxctl input mouse [--help] [OPTION]…
 err: oxctl: give at least one setting flag
 exit: 124

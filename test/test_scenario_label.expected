@@ -153,13 +153,13 @@ render:set_presentation_mode(FAKE-1, vsync)
 == check label empty rejected ==
 
 == window label add  ==
-err: Usage: [01moxctl window label add[m [[01m--help[m] [[04mOPTION[m]… [04mLABEL[m
-err: oxctl: [04mLABEL[m argument: label must not be empty
+err: Usage: oxctl window label add [--help] [OPTION]… LABEL
+err: oxctl: LABEL argument: label must not be empty
 exit: 124
 
 == output label add  ==
-err: Usage: [01moxctl output label add[m [[01m--help[m] [[04mOPTION[m]… [04mLABEL[m
-err: oxctl: [04mLABEL[m argument: label must not be empty
+err: Usage: oxctl output label add [--help] [OPTION]… LABEL
+err: oxctl: LABEL argument: label must not be empty
 exit: 124
 
 == check window focus by label ==

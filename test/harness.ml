@@ -41,11 +41,15 @@ let dump_trace fake = List.iter print_endline (Fake_river.trace fake)
 let seen = ref 0
 
 let settle fake =
+  let rec loop () =
+    while not @@ Fake_river.idle fake do
+      barrier ()
+    done;
+    barrier ();
+    if not @@ Fake_river.idle fake then loop ()
+  in
   barrier ();
-  while not @@ Fake_river.idle fake do
-    barrier ()
-  done;
-  barrier ()
+  loop ()
 ;;
 
 let dump_new fake =
