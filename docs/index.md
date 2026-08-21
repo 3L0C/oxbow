@@ -31,6 +31,7 @@ own scripts.
 quick-start/installation
 quick-start/river
 quick-start/getting-started
+quick-start/video-demos
 reference/oxctl
 reference/defaults
 integrations/waybar
