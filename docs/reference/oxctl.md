@@ -48,8 +48,8 @@ one window state. Colors are `#RRGGBB` or `0xRRGGBBAA`.
 ## config
 
 `oxctl config reset` restores the stock settings on every
-output and tag: layout parameters, gaps, borders, cursor
-theme, spawn behavior, pointer behavior, and drag retile.
+output and tag: layout parameters, gaps, borders, spawn
+behavior, pointer behavior, and drag retile.
 
 `oxctl config reset --all` also removes the window rules,
 the input rules, the window and output labels, and every
@@ -62,12 +62,14 @@ Any input rules already applied are not reset.
 
 ## exec
 
-`oxctl exec COMMAND...` runs `COMMAND` directly, with no
-shell in between. Use [`spawn`](#spawn) when the command
-needs shell syntax.
+`oxctl exec COMMAND...` runs `COMMAND` directly.
 
 ```{prompt} bash
 oxctl exec -- /usr/bin/emacs --eval '(scratch-buffer)'
+```
+
+```{note}
+Use [`spawn`](#spawn) when the command needs shell syntax.
 ```
 
 ## gaps
@@ -91,31 +93,34 @@ absolute value (`8`), and accepts `--output NAME` or
 ### input keyboard
 
 `oxctl input keyboard repeat RATE DELAY` sets the key repeat
-rate (keys per second) and delay (ms). `oxctl input
-keyboard layout-file PATH` loads an
+rate (keys per second) and delay (ms).
+
+`oxctl input keyboard layout-file PATH` loads an
 [XKB keymap file](https://xkbcommon.org/doc/current/keymap-text-format-v1-v2.html).
 
 ### input list
 
-`oxctl input list` prints the input devices. Filter with
-`--name REGEX` and `--role ROLE` (`keyboard`, `mouse`,
-`touchpad`, `touch`, or `tablet`). Accepts the following
-flags:
+`oxctl input list` prints the input devices. Accepts the
+following flags:
 
-| Flag              | Effect                                 |
-|-------------------|----------------------------------------|
-| `--fields FIELDS` | Show only these columns, in this order |
-| `--expand`        | Do not truncate cell values            |
-| `--json`          | Print the raw JSON reply               |
+| Flag              | Effect                                                                                                                          |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `--name REGEX`    | Show only input devices whose name matches `REGEX`                                                                              |
+| `--role ROLE`     | Show only input devices whose role matches `ROLE`<br>`ROLE` may be one of `keyboard`, `mouse`, `touchpad`, `touch`, or `tablet` |
+| `--fields FIELDS` | Show only these columns, in this order                                                                                          |
+| `--expand`        | Do not truncate cell values                                                                                                     |
+| `--json`          | Print the raw JSON reply                                                                                                        |
 
 Long cell values truncate at 15 characters with `...`; use
-`--expand` or `--fields` to see them in full.
+`--expand` to see them in full.
 
 ### input pointer
 
 `oxctl input pointer follow POLICY` sets how pointer motion
-changes focus. `oxctl input pointer follow cycle` steps
-through the policies.
+changes focus.
+
+`oxctl input pointer follow cycle` steps through the
+policies.
 
 | Policy          | Effect                                                            |
 |-----------------|-------------------------------------------------------------------|
@@ -180,7 +185,7 @@ Mouse only:
 ### input touchpad and input mouse
 
 `oxctl input touchpad` and `oxctl input mouse` apply
-settings to the matching devices one time, without a rule.
+settings to the matching devices as a oneshot.
 
 ```{prompt} bash
 oxctl input touchpad --name '.*' --tap enabled
@@ -192,7 +197,7 @@ The commands take the same flags as
 
 ## keymap
 
-A keymap mode is a named set of binds, like river's modes.
+A keymap mode is a named set of binds.
 
 | Command                          | Effect                |
 |----------------------------------|-----------------------|
@@ -228,11 +233,17 @@ The tiling layout has a master area and a stack area.
 #### Schemes
 
 A scheme controls how the stack area arranges its windows.
-`oxctl layout tiling SCHEME` switches to the tiling layout
-with the scheme. `oxctl layout tiling scheme SCHEME` sets
-the scheme without switching layouts. `oxctl layout tiling
-next` and `prev` cycle the schemes; `oxctl layout tiling
-query` prints them.
+
+| Command                             | Effect                                    |
+|-------------------------------------|-------------------------------------------|
+| `oxctl layout tiling SCHEME`        | Switch to the tiling layout with `SCHEME` |
+| `oxctl layout tiling scheme SCHEME` | Set the scheme to `SCHEME`                |
+| `oxctl layout tiling next`          | Cycle to the next scheme                  |
+| `oxctl layout tiling prev`          | Cycle to the prev scheme                  |
+| `oxctl layout tiling query`         | Print the available schemes               |
+
+A `SCHEME` is one of `even`, `diminish`, `dwindle`,
+`spiral`, `deck`, or `monocle`.
 
 ````{tab} Even
 ```{prompt} bash
@@ -313,7 +324,7 @@ Each window takes half of the remaining area, alternating top and left.
 |                                  |             |             |
 |                                  |             |      E      |
 |                                  |             |             |
-+----------------------------------+---------------------------+
++----------------------------------+-------------+-------------+
 ```
 ````
 
@@ -350,7 +361,7 @@ Each window takes half of the remaining area, rotating top, right, bottom, left.
 oxctl layout tiling deck
 ```
 
-The stack windows lie on one pile. The most recently focused
+The stack windows lie in one pile. The most recently focused
 window in the stack is visible.
 
 ```{svgbob}
@@ -404,8 +415,8 @@ Every window uses the full usable area.
 
 #### Orientation
 
-`oxctl layout tiling orientation left|right|up|down` sets
-the position of the master area. Any scheme may have any
+`oxctl layout tiling orientation DIRECTION` sets the
+position of the master area. Any scheme may have any
 orientation.
 
 ````{tab} Left
@@ -515,9 +526,12 @@ oxctl layout tiling orientation down
 #### Master area
 
 `oxctl layout tiling nmaster DELTA` sets how many windows
-the master area holds. `oxctl layout tiling mfact DELTA`
-sets the fraction of the output the master area uses. Both
-take a signed delta or an absolute value.
+the master area holds.
+
+`oxctl layout tiling mfact DELTA` sets the fraction of the
+output the master area uses.
+
+Both take a signed delta or an absolute value.
 
 ```{prompt} bash
 oxctl layout tiling nmaster 2
@@ -535,16 +549,18 @@ commands live under [`window column`](#window-column).
 The alignment controls how the strip scrolls when focus
 changes.
 
+| Command                                  | Effect                                          |
+|------------------------------------------|-------------------------------------------------|
+| `oxctl layout scrolling ALIGNMENT`       | Switch to the scrolling layout with `ALIGNMENT` |
+| `oxctl layout scrolling align ALIGNMENT` | Set the scrolling alignment to `ALIGNMENT`      |
+
+`ALIGNMENT` is one of `visible`, `left`, or `centered`:
+
 | Alignment  | Behavior                                       |
 |------------|------------------------------------------------|
 | `visible`  | Scroll only when the focused column is cut off |
 | `left`     | Put the focused column on the left edge        |
 | `centered` | Keep the focused column in the center          |
-
-Use `oxctl layout scrolling ALIGNMENT` to switch to the
-scrolling layout with the given alignment. `oxctl layout
-scrolling align visible|left|centered` sets the alignment
-without switching.
 
 #### Default width
 
@@ -554,11 +570,13 @@ the output.
 
 ```{prompt} bash
 oxctl layout scrolling default-width 0.5
+oxctl layout scrolling default-width -0.05
+oxctl layout scrolling default-width +0.05
 ```
 
 #### Orientation
 
-`oxctl layout scrolling orientation left|right|up|down`
+`oxctl layout scrolling orientation DIRECTION`
 sets the scroll direction and the position of the head of
 the strip.
 
@@ -718,18 +736,17 @@ expression. `match` has the following flags:
 
 ### output label
 
-A label is a free-form string on an output or a window.
-Labels feed the `--label` pattern flag in matching, rules,
-and lists.
+A label is a free-form string on an output. Labels feed the
+`--label` pattern flag in matching, and lists.
 
 ```{prompt} bash
 oxctl output label add primary --name DP-1
 oxctl output label remove primary
 ```
 
-`add` and `remove` act on the focused output when no
-pattern is given. [`window label`](#window-label) does the
-same for windows.
+`add` and `remove` act on the focused output when no pattern
+is given. [`window label`](#window-label) does the same for
+windows.
 
 ### output list
 
@@ -743,8 +760,8 @@ labels, focus, and capture state. The
 visible windows in a grid, in focus order.
 
 `oxctl output overview cycle next` and `prev` move the
-selection through the grid. With `--until-release MODS`,
-the overview closes and the selection takes focus when you
+selection through the grid. With `--until-release MODS`, the
+overview closes and the selection takes focus when you
 release the modifiers:
 
 ```{prompt} bash
@@ -775,17 +792,21 @@ for a worked example.
 
 ## scratchpad
 
-A scratchpad group holds windows that stash away and come
-back on demand. `oxctl scratchpad toggle [NAME]` toggles
-the group; the name defaults to `scratch`. When a member
-window is visible, the toggle stashes all members.
-Otherwise it summons all members to the focused output as
-floating windows.
+A scratchpad is a group of one or more windows that stash
+away and come back on demand.
 
-Windows join a group with
+`oxctl scratchpad toggle [NAME]` toggles the group; the
+name defaults to `scratch`. When a member window is
+visible, the toggle stashes all members.  Otherwise it
+summons all members to the focused output as floating
+windows.
+
+Add a window to a group with
 [`oxctl window scratchpad add`](#window-scratchpad) or the
-`--scratchpad` [rule effect](#window-rules). A drop-down
-terminal in the init script:
+`--scratchpad` [rule effect](#window-rules).
+
+Add the following commands to your init script to define a
+drop-down terminal:
 
 ```bash
 oxctl window rules add --app-id=dropdown --scratchpad=scratch --float
@@ -804,10 +825,13 @@ oxctl bind spawn 'oxctl scratchpad toggle || foot --app-id=dropdown' to Super+gr
 ## spawn
 
 `oxctl spawn STRING` runs `STRING` through `/bin/sh -c`.
-Use [`exec`](#exec) to run a command without a shell.
 
 ```{prompt} bash
 oxctl spawn 'grim -g "$(slurp)"'
+```
+
+```{note}
+Use [`exec`](#exec) to run a command without a shell.
 ```
 
 ## subscribe
@@ -817,13 +841,13 @@ lines. Without arguments, all kinds stream. Each
 subscription starts with a full snapshot, then sends one
 line per change.
 
-| Kind     | One event per                                     |
-|----------|---------------------------------------------------|
-| `tags`   | Output whose tag state changed                    |
-| `window` | Window whose state changed                        |
-| `layout` | Output whose layout or scheme changed             |
-| `mode`   | Seat whose keymap mode changed                    |
-| `focus`  | Seat whose focus changed                          |
+| Kind     | One event per                                        |
+|----------|------------------------------------------------------|
+| `tags`   | Output whose tag state changed                       |
+| `window` | Window whose state changed                           |
+| `layout` | Output whose layout or scheme changed                |
+| `mode`   | Seat whose keymap mode changed                       |
+| `focus`  | Seat whose focus changed                             |
 | `output` | Output whose focus, labels, or capture state changed |
 
 ```{prompt} bash
@@ -849,8 +873,8 @@ Tags are numbered 1 to 32.
 
 | Command                        | Effect                               |
 |--------------------------------|--------------------------------------|
-| `oxctl tag view TAGS`          | View the tag set                     |
-| `oxctl tag toggle TAGS`        | Toggle the visibility of the tags    |
+| `oxctl tag view TAGS`          | View the tag set `TAGS`              |
+| `oxctl tag toggle TAGS`        | Toggle the visibility of the `TAGS`  |
 | `oxctl tag next`               | View the next tag                    |
 | `oxctl tag prev`               | View the previous tag                |
 | `oxctl tag previous-selection` | View the previously selected tag set |
@@ -903,7 +927,7 @@ flags control which matches the command acts on:
 | `--output NAME` | Search outputs matching `NAME` only            |
 
 Without a selection flag, the command acts on the first
-match. For example, focus the browser from any window:
+match. For example, focus firefox from any window:
 
 ```{prompt} bash
 oxctl window focus match --app-id firefox
@@ -939,12 +963,17 @@ The default width for new windows is set with
 
 ### window drag
 
-`oxctl window drag retile enabled|disabled` controls what
-an interactive drag does to a tiled window on release. With
-`enabled`, the window tiles again at the drop position.
-With `disabled`, the window becomes floating. The drag
-itself starts with [`window move drag`](#window-move) or
-[`window resize drag`](#window-resize).
+
+`oxctl window drag retile STATE` controls what an
+interactive drag does to a tiled window on release.
+
+When `STATE` is `enabled`, the window is placed into the
+tiled stack at the drop position.
+
+When `STATE` is `disabled`, the window is left floating.
+
+The drag itself starts with
+[`window move drag`](#window-move).
 
 ### window focus
 
@@ -984,9 +1013,6 @@ oxctl window list --fields id,app_id,tags
 
 ### window move
 
-Moves floating windows. Directions take a signed pixel or
-percent value; `to` takes absolute values.
-
 | Command                     | Effect                                          |
 |-----------------------------|-------------------------------------------------|
 | `oxctl window move left N`  | Move left by `N` (px or %)                      |
@@ -996,10 +1022,12 @@ percent value; `to` takes absolute values.
 | `oxctl window move to X Y`  | Move to point (`X`, `Y`)                        |
 | `oxctl window move drag`    | Start an interactive move on the focused window |
 
+`move` on a tiled window makes the window float.
+
 ### window query
 
-`oxctl window query` prints the focused window as a
-one-row table. The [list flags](#input-list) apply.
+`oxctl window query` prints the focused window as a one-row
+table. The [list flags](#input-list) apply.
 
 ### window resize
 
@@ -1026,8 +1054,10 @@ oxctl window rules remove INDICES
 ```
 
 `oxctl window rules list` prints the rules with their
-indices. `oxctl window rules remove INDICES` deletes one or
-more.
+indices.
+
+`oxctl window rules remove INDICES` deletes one or more
+rules.
 
 #### Patterns
 
@@ -1088,9 +1118,9 @@ Sends the target window to another output.
 
 ### window shift
 
-`oxctl window shift next` and `prev` move the target
-window through the tile stack, toward the tail or the head.
-Both wrap at the ends.
+`oxctl window shift next` and `prev` move the target window
+through the tile stack, toward the tail or the head. Both
+wrap at the ends.
 
 `--occupied` restricts the shift to tags occupied by one or
 more windows.
@@ -1108,9 +1138,10 @@ window enters the stack.
 | `end`    | The tail of the stack                |
 
 `oxctl window spawn focus enabled|disabled` sets whether a
-new window takes focus. The `--spawn-position` and
-`--spawn-focus` [rule effects](#window-rules) override
-both per window.
+new window takes focus.
+
+The `--spawn-position` and `--spawn-focus`
+[rule effects](#window-rules) override both per window.
 
 ### window sticky
 

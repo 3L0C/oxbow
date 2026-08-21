@@ -64,6 +64,8 @@ in
 ````
 
 ````{tab} Home Manager
+Add the following module to your configuration:
+
 ```{code-block} nix
 { pkgs, oxbow, ... }:
 let
@@ -84,10 +86,6 @@ in
 ```
 ````
 
-oxbow also has default keybinds. The init script adds to
-them. See the defaults
-[here](../reference/defaults.md#keybinds) for the full list.
-
 ## First launch
 
 Start river; oxbow starts with it and runs the init script.
@@ -102,16 +100,19 @@ These keybinds are enough for a first session.
 | `Super+q`      | Close the focused window                                  |
 | `Super+Q`      | Exit the Wayland session and return to greeter or TTY     |
 
+See the defaults [here](../reference/defaults.md#keybinds)
+for the full list.
+
 ## Settings
 
-Open up foot and run the following commands
+Open up foot and run the following commands:
 
 ```{prompt} bash
 oxctl gaps inner 0
 oxctl gaps outer 0
 ```
 
-Configure the borders as well
+Configure the borders as well:
 
 ```{prompt} bash
 oxctl border width 2
@@ -120,7 +121,7 @@ oxctl border color unfocused '#71799d'
 oxctl border color urgent '#f7768e'
 ```
 
-Configure input devices
+Configure input devices:
 
 ```{prompt} bash
 oxctl input pointer follow always
@@ -128,15 +129,18 @@ oxctl input pointer warp on
 oxctl input keyboard repeat 50 250
 ```
 
+See the `oxctl` reference [here](../reference/oxctl.md#bind)
+for the keybind syntax.
+
 ## Tags
 
-Move windows between tags
+Move windows between tags:
 
 ```{prompt} bash
 oxctl window tag set 2
 ```
 
-View multiple tags at once
+View multiple tags at once:
 
 ```{prompt} bash
 oxctl tag view 1,2
@@ -155,7 +159,7 @@ oxbow has three layouts:
 The tiling layout works like dwm. One master window on the
 left, the rest stacked evenly on the right. Open five
 windows then change the orientation, and stacking
-arrangement
+arrangement:
 
 ```{prompt} bash
 oxctl layout tiling orientation right
@@ -182,7 +186,7 @@ oxctl layout tiling spiral
 +-------------+-------------+----------------------------------+
 ```
 
-Switch back to the default
+Switch back to the default:
 
 ```{prompt} bash
 oxctl layout tiling orientation left
@@ -214,7 +218,7 @@ See all the arrangements [here](../reference/oxctl.md#tiling).
 ### Scrolling
 
 Switch to the scrolling layout with `Super+s`. There are
-three alignments: Visible, Left, and Centered
+three alignments: Visible, Left, and Centered:
 
 ````{tab} Visible
 
@@ -323,8 +327,7 @@ keep the position and size that you give them.
 ## Overview
 
 Overview shows all visible windows and cycles focus through
-them, like alt-tab. Test it with these binds
-
+them, like alt-tab. Test it with these binds:
 
 ```{prompt} bash
 oxctl bind output overview cycle next --until-release=Super to Super+n
@@ -334,7 +337,7 @@ oxctl bind output overview cycle prev --until-release=Super to Super+Shift+n
 Hold `Super` and press `n` to cycle. Release `Super` to
 select the focused window.
 
-The overview looks like this
+The overview looks like this:
 
 ```{svgbob}
 +--------------------+--------------------+--------------------+
@@ -366,7 +369,7 @@ The overview is displayed in focus order.
 
 ## Multiple outputs
 
-List the output names
+List the output names with:
 
 ```{prompt} bash
 oxctl output list
@@ -374,23 +377,30 @@ oxctl output list
 
 ### Output focus
 
+Focus a specific output with:
+
 ```{prompt} bash
-oxctl bind output focus match --name HDMI-A-1 to Super+semicolon
-oxctl bind output focus match --name DP-1 to Super+apostrophe
+oxctl output focus match --name HDMI-A-1
+oxctl output focus match --name DP-1
 ```
 
-Each bind moves focus to the named output. Use the output
-names for your system.
+Focus an output spatially with:
+
+```{prompt} bash
+oxctl output focus left
+oxctl output focus right
+oxctl output focus up
+oxctl output focus down
+```
 
 ### Tag swaps
+
+Swap a set of tags between outputs:
 
 ```{prompt} bash
 oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 to Super+e
 oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 --rev to Super+w
 ```
-
-Each bind swaps the windows on the visible tags through the
-outputs in the ring.
 
 Each press swaps the focused output's windows with the next
 output in the ring. For example, start with these windows on
@@ -411,6 +421,8 @@ tag 1:
 
 ## Window rules
 
+Add rules to windows with:
+
 ```{prompt} bash
 oxctl window rules add --tags 3 --output=DP-3 --app-id=firefox
 oxctl window rules add --tags 2 --output=DP-3 --app-id=emacs
@@ -421,7 +433,7 @@ oxctl window rules add --tags 4 --output=DP-3 --app-id=steam
 These rules set the initial tags and output for each window
 matching the given app-id.
 
-View existing rules
+View existing rules:
 
 ```{prompt} bash $ auto
 $ oxctl window rules list

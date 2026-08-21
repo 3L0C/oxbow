@@ -1,20 +1,18 @@
 # Installation
 
-oxbow may be installed from source using
-[opam](https://opam.ocaml.org/), or via Nix/NixOS using
-flakes.
+oxbow may be installed with [opam](https://opam.ocaml.org/),
+or via Nix/NixOS using flakes.
 
 ```{attention}
-Regardless of which method you choose, oxbow requires
-[river](https://codeberg.org/river/river) 0.4.6 or later.
-See {doc}`river` to install and configure river.
+oxbow requires [river](https://codeberg.org/river/river)
+0.4.6 or later.  See {doc}`river` to install and configure
+river.
 ```
 
 ## Opam
 
-At the time of writing, oxbow is not officially in opam.
-Thankfully, opam still makes it easy to install while we
-wait for approval.
+oxbow is packaged in opam's repository, making it easy to
+install on many systems.
 
 ### Setup
 
@@ -66,19 +64,39 @@ $(opam env)` in every new shell.
 
 ### Install
 
-Pin and install from git:
-
 ```{prompt} bash
-opam pin add oxbow https://github.com/3L0C/oxbow.git
+opam install oxbow
 ```
+
+### Shell completion
+
+oxbow provides completion scripts for `oxbow` and `oxctl`,
+with support for bash and zsh.
+
+Add the following to your shell configuration:
+
+````{tab} Bash
+```bash
+# ~/.bashrc
+source "$(opam var share)/bash-completion/completions/oxctl"
+source "$(opam var share)/bash-completion/completions/oxbow"
+```
+````
+
+````{tab} Zsh
+```zsh
+# ~/.zshrc, before compinit
+fpath+=("$(opam var share)/zsh/site-functions")
+```
+````
 
 ## Nix/NixOS
 
-The oxbow repository is a flake. Flakes are required as the
-repository does not provide a `default.nix` for non-flake
-use. If your Nix installation does not have flakes enabled,
-add `--extra-experimental-features 'nix-command flakes'` to
-the commands below.
+The oxbow repository is a flake. Flake support is required
+as oxbow does not provide a `default.nix` for non-flake use.
+If your Nix installation does not have flakes enabled, add
+`--extra-experimental-features 'nix-command flakes'` to the
+commands below.
 
 ````{tab} NixOS
 Add oxbow as a flake input, then put the package in
@@ -171,31 +189,30 @@ nix shell github:3L0C/oxbow
 ```
 ````
 
-## Shell completion
+### Shell completion
 
-oxbow installs completion scripts for `oxbow` and `oxctl`.
-The scripts support bash and zsh.
-
-On Nix/NixOS, completion works without more steps. The
-scripts install to the standard completion directories, and
-NixOS and Home Manager load them with your other
-completions.
-
-With opam, the scripts install into your opam switch. Your
-shell does not search the switch by default. Add one line
-to your shell configuration:
-
-````{tab} Bash
-```bash
-# ~/.bashrc
-source "$(opam var share)/bash-completion/completions/oxctl"
-source "$(opam var share)/bash-completion/completions/oxbow"
-```
+````{tab} NixOS
+Make sure
+`programs.bash.completion.enable`/`programs.zsh.enableCompletion`
+are set to `true`.
 ````
 
-````{tab} Zsh
+````{tab} Home Manager
+Make sure
+`programs.bash.enableCompletion`/`programs.zsh.enableCompletion`
+are set to `true`.
+````
+
+````{tab} Nix package manager
+For bash, make sure `~/.nix-profile/share` is in `$XDG_DATA_DIRS`:
+
+```{prompt} bash
+echo $XDG_DATA_DIRS | tr : '\n' | grep nix-profile
+```
+
+For zsh, add the following line before `compinit`:
+
 ```zsh
-# ~/.zshrc, before compinit
-fpath+=("$(opam var share)/zsh/site-functions")
+fpath+=(~/.nix-profile/share/zsh/site-functions)
 ```
 ````

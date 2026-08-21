@@ -1,11 +1,8 @@
 # Waybar
 
-oxbow ships waybar modules in
+oxbow provides a waybar template in
 [`contrib/waybar`](https://github.com/3L0C/oxbow/tree/master/contrib/waybar).
-The modules show the tags, the layout, the keymap mode, and
-the window title. Each module is a standard waybar custom
-module. A small shell script feeds each module from `oxctl
-subscribe`. The bar is styled after dwm's native bar.
+The bar is styled after dwm's native bar.
 
 ## Dependencies
 
@@ -15,22 +12,14 @@ subscribe`. The bar is styled after dwm's native bar.
 
 ## Quick start
 
-Clone the repository, then run the installer while oxbow is
-running:
+Clone the repository, then run the installer while inside
+oxbow:
 
 ```{prompt} bash
 git clone https://github.com/3L0C/oxbow.git
 cd oxbow/contrib/waybar
 ./install.sh
 ```
-
-The installer finds your outputs with `oxctl output list`,
-makes one bar for each output, and writes `config.jsonc`,
-`style.css`, and `scripts/` to `~/.config/waybar`.
-
-The installer does not overwrite existing files. Running it
-with `--force` will backup the files and install the oxbow
-bar.
 
 Options:
 
@@ -41,9 +30,15 @@ Options:
 | `--show-empty`  | Show tags that have no windows in a dim color.                 |
 | `--force`       | Backup and replace existing files.                             |
 
-To add the modules to a waybar configuration that you
-already have, copy the module blocks from
-`contrib/waybar/config.jsonc` and the `scripts/` directory.
+```{note}
+The install script finds your outputs with `oxctl output
+list`, makes one bar for each output, and writes
+`config.jsonc`, `style.css`, and `scripts/` to
+`~/.config/waybar`.
+
+It does not overwrite existing files. Running it with
+`--force` will backup the files before installation.
+```
 
 ## Modules
 
@@ -72,9 +67,8 @@ The `river/tags` module for `river-classic` used the
 
 `scripts/capture.sh` feeds a screen-capture indicator. It
 shows `REC` while a capture session records the output. The
-installer copies the script but does not add the module. To
-use it, add this block to your configuration and put
-`custom/capture` in a module list:
+install script copies `capture.sh` but does not add the
+module. To use it, add this block to your configuration:
 
 ```json
 "custom/capture": {
@@ -84,27 +78,16 @@ use it, add this block to your configuration and put
 }
 ```
 
+Then, add `custom/capture` to a module list:
+
+```{code-block} json
+:emphasize-lines: 2
+"modules-right": [
+    "custom/capture",
+    "clock"
+],
+```
+
+
 Style the active state with the `recording` CSS class on
 `#custom-capture`.
-
-## One bar: follow the seat
-
-Each `custom/window` module is attached to one output. For
-a single bar, use `focus.sh` in place of `window.sh`. It
-subscribes to the `focus` events, so the title follows the
-seat across outputs.
-
-## Reconnect behavior
-
-Each script runs `oxctl subscribe` in a retry loop. When
-oxbow stops, the modules show no new data. Each script
-enters a retry loop until oxbow returns, waiting one second
-between attempts. A waybar restart is not necessary.
-
-## Limitations
-
-Each module is driven by a script. The default configuration
-has 9 tag modules, one layout module, and one window module.
-Eleven processes per bar, per output. The higher resource
-usage enables precise interaction through per module click
-actions.
