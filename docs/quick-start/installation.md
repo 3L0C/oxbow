@@ -92,11 +92,7 @@ fpath+=("$(opam var share)/zsh/site-functions")
 
 ## Nix/NixOS
 
-The oxbow repository is a flake. Flake support is required
-as oxbow does not provide a `default.nix` for non-flake use.
-If your Nix installation does not have flakes enabled, add
-`--extra-experimental-features 'nix-command flakes'` to the
-commands below.
+You can install oxbow with or without flakes.
 
 ````{tab} NixOS
 Add oxbow as a flake input, then put the package in
@@ -169,6 +165,34 @@ Replace `CHANGEME` with your username.
 ```
 ````
 
+````{tab} Without flakes
+```nix
+{pkgs, ...}: let
+  version = "0.1.0-1";
+
+  oxbow-src = builtins.fetchTarball {
+    url = "https://github.com/3L0C/oxbow/archive/refs/tags/v${version}.tar.gz";
+    sha256 = "09a3z0c40s3hsdvmd5rv47ckad4d06j60ghycrk4cqsyrb2rfav2";
+  };
+
+  oxbowPkgs = pkgs.extend (import "${oxbow-src}/nix/overlay.nix");
+in {
+  environment.systemPackages = [ oxbowPkgs.oxbow ];
+}
+```
+
+```{attention}
+To upgrade, change to the desired `version`. Replace `sha256`
+with `pkgs.lib.fakeHash`. Build the configuration once, and
+replace `pkgs.lib.fakeHash` with the expected value.
+```
+
+```{note}
+Replace `environment.systemPackages` with `home.packages`
+for a Home Manager configuration.
+```
+````
+
 ````{tab} Nix package manager
 For an imperative install into your user profile:
 
@@ -198,6 +222,12 @@ are set to `true`.
 ````
 
 ````{tab} Home Manager
+Make sure
+`programs.bash.enableCompletion`/`programs.zsh.enableCompletion`
+are set to `true`.
+````
+
+````{tab} Without flakes
 Make sure
 `programs.bash.enableCompletion`/`programs.zsh.enableCompletion`
 are set to `true`.
