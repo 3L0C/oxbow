@@ -8,7 +8,7 @@
     src = ./.;
 
     hooks = {
-      alejandra.enable = true;
+      nixfmt.enable = true;
 
       ocamlformat = {
         enable = true;
