@@ -33,16 +33,15 @@ chmod +x ~/.config/oxbow/init
 Extend the module from [NixOS River setup](./river.md#configure-river):
 
 ```{code-block} nix
-:emphasize-lines: 4-7,9
-{ pkgs, oxbow, ... }:
+:emphasize-lines: 3-6,8
+{ pkgs, ... }:
 let
-  oxbow-pkg = oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  oxctl = "${oxbow-pkg}/bin/oxctl";
+  oxctl = "${pkgs.oxbow}/bin/oxctl";
   oxbow-init = pkgs.writeShellScript "oxbow-init" ''
     ${oxctl} bind spawn foot to Super+Return
   '';
   river-init = pkgs.writeShellScript "river-init" ''
-    exec ${oxbow-pkg}/bin/oxbow -c ${oxbow-init}
+    exec ${pkgs.oxbow}/bin/oxbow -c ${oxbow-init}
   '';
   wrapped-river = pkgs.symlinkJoin {
     name = "river";
@@ -67,10 +66,9 @@ in
 Add the following module to your configuration:
 
 ```{code-block} nix
-{ pkgs, oxbow, ... }:
+{ pkgs, ... }:
 let
-  oxbow-pkg = oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  oxctl = "${oxbow-pkg}/bin/oxctl";
+  oxctl = "${pkgs.oxbow}/bin/oxctl";
 in
 {
   xdg.configFile = {

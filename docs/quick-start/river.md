@@ -85,11 +85,10 @@ chmod +x ~/.config/river/init
 Replace the module we created earlier:
 
 ```nix
-{ pkgs, oxbow, ... }:
+{ pkgs, ... }:
 let
-  oxbow-pkg = oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default;
   river-init = pkgs.writeShellScript "river-init" ''
-    exec ${oxbow-pkg}/bin/oxbow
+    exec ${pkgs.oxbow}/bin/oxbow
   '';
   wrapped-river = pkgs.symlinkJoin {
     name = "river";
@@ -116,16 +115,13 @@ init script.
 Add the following module to your configuration:
 
 ```nix
-{ pkgs, oxbow, ... }:
-let
-  oxbow-pkg = oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in
+{ pkgs, ... }:
 {
   xdg.configFile."river/init" = {
     executable = true;
     text = ''
       #!/bin/sh
-      exec ${oxbow-pkg}/bin/oxbow
+      exec ${pkgs.oxbow}/bin/oxbow
     '';
   };
 }

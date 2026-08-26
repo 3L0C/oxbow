@@ -113,9 +113,8 @@ Add oxbow as a flake input, then put the package in
     nixosConfigurations.CHANGEME = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [({ pkgs, ... }: {
-        environment.systemPackages = [
-          oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default
-        ];
+        nixpkgs.overlays = [ oxbow.overlays.default ];
+        environment.systemPackages = [ pkgs.oxbow ];
       })];
     };
   };
@@ -124,6 +123,20 @@ Add oxbow as a flake input, then put the package in
 
 ```{attention}
 Replace `CHANGEME` with your system's hostname.
+```
+
+```{attention}
+The rest of the instructions assume your config contains
+`nixpkgs.overlays = [ oxbow.overlays.default ]`. This
+overlay adds `oxbow` as a package to `pkgs`. If you'd rather
+not add this overlay, you can use the following in place of
+`pkgs.oxbow`:
+
+`oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default`
+
+You may need to use
+[`specialArgs`](https://nixos-and-flakes.thiscute.world/nixos-with-flakes/nixos-flake-and-module-system#pass-non-default-parameters-to-submodules)
+to pass either `inputs` or `oxbow` to additional modules.
 ```
 ````
 
@@ -149,11 +162,12 @@ then put the package in `home.packages`:
 
   outputs = { nixpkgs, home-manager, oxbow, ... }: {
     homeConfigurations.CHANGEME = home-manager.lib.homeManagerConfiguration {
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        overlays = [ oxbow.overlays.default ];
+      };
       modules = [({ pkgs, ... }: {
-        home.packages = [
-          oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default
-        ];
+        home.packages = [ pkgs.oxbow ];
       })];
     };
   };
@@ -162,6 +176,19 @@ then put the package in `home.packages`:
 
 ```{attention}
 Replace `CHANGEME` with your username.
+```
+
+```{attention}
+The rest of the instructions assume your config contains
+the `pkgs` overlay shown above. This overlay adds `oxbow` as
+a package to `pkgs`. If you'd rather not add this overlay,
+you can use the following in place of `pkgs.oxbow`:
+
+`oxbow.packages.${pkgs.stdenv.hostPlatform.system}.default`
+
+You may need to use
+[`extraSpecialArgs`](https://nix-community.github.io/home-manager/nix-flakes/standalone.html?highlight=extraspecialargs#standalone-setup)
+to pass either `inputs` or `oxbow` to additional modules.
 ```
 ````
 
@@ -174,10 +201,9 @@ Replace `CHANGEME` with your username.
     url = "https://github.com/3L0C/oxbow/archive/refs/tags/v${version}.tar.gz";
     sha256 = "09a3z0c40s3hsdvmd5rv47ckad4d06j60ghycrk4cqsyrb2rfav2";
   };
-
-  oxbowPkgs = pkgs.extend (import "${oxbow-src}/nix/overlay.nix");
 in {
-  environment.systemPackages = [ oxbowPkgs.oxbow ];
+  nixpkgs.overlays = [ (import "${oxbow-src}/nix/overlay.nix") ];
+  environment.systemPackages = [ pkgs.oxbow ];
 }
 ```
 
