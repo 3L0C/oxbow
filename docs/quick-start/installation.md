@@ -199,7 +199,7 @@ to pass either `inputs` or `oxbow` to additional modules.
 
   oxbow-src = builtins.fetchTarball {
     url = "https://github.com/3L0C/oxbow/archive/refs/tags/v${version}.tar.gz";
-    sha256 = "09a3z0c40s3hsdvmd5rv47ckad4d06j60ghycrk4cqsyrb2rfav2";
+    sha256 = "0spkvw0xv5yqs66idnwd6rcainf5bn1aqazb7yrnc4nji0x9bxfw";
   };
 in {
   nixpkgs.overlays = [ (import "${oxbow-src}/nix/overlay.nix") ];
