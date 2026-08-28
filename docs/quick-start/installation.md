@@ -195,11 +195,11 @@ to pass either `inputs` or `oxbow` to additional modules.
 ````{tab} Without flakes
 ```nix
 {pkgs, ...}: let
-  version = "0.1.0-1";
+  version = "0.1.1";
 
   oxbow-src = builtins.fetchTarball {
     url = "https://github.com/3L0C/oxbow/archive/refs/tags/v${version}.tar.gz";
-    sha256 = "0spkvw0xv5yqs66idnwd6rcainf5bn1aqazb7yrnc4nji0x9bxfw";
+    sha256 = "18f239rd7pw6x96wgvv8iwrwj3g556612r0s3zlbr2garvghi5iv";
   };
 in {
   nixpkgs.overlays = [ (import "${oxbow-src}/nix/overlay.nix") ];
