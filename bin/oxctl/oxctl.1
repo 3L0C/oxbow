@@ -320,11 +320,17 @@ Configure keyboard input
 \fBlist\fR [\fIOPTION\fR]…
 List input devices matching the search pattern\N'46'
 .TP 4
+\fBmouse\fR [\fIOPTION\fR]…
+Configure mouse settings
+.TP 4
 \fBpointer\fR \fICOMMAND\fR …
 Pointer operations and settings
 .TP 4
 \fBrules\fR \fICOMMAND\fR …
 Manage input rules
+.TP 4
+\fBtouchpad\fR [\fIOPTION\fR]…
+Configure touchpad settings
 .SH "INPUT CURSOR"
 .P
 Configure the cursor appearance
@@ -391,6 +397,49 @@ Match \fIREGEX\fR, a PCRE regex, against the device name\N'46'
 .TP 4
 \fB\-\-role\fR=\fIROLE\fR
 Filter to devices with this role\N'46' The value is one of \fBkeyboard\fR, \fBmouse\fR, \fBtouchpad\fR, \fBtouch\fR or \fBtablet\fR
+.SH "INPUT MOUSE"
+.P
+Configure mouse settings
+.SS SYNOPSIS
+.P
+\fBoxctl input mouse\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-accel\-profile\fR=\fIPROFILE\fR
+Set the pointer acceleration profile\N'46' The value is one of \fBnone\fR, \fBflat\fR, \fBadaptive\fR or \fBcustom\fR
+.TP 4
+\fB\-\-accel\-speed\fR=\fISPEED\fR
+Set the pointer acceleration speed\N'46' The range is \-1\N'46'0 to 1\N'46'0\N'46'
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-left\-handed\fR=\fIOPTION\fR
+Enable or disable the left\-handed button layout\N'46'
+.TP 4
+\fB\-\-middle\-emulation\fR=\fIOPTION\fR
+Enable or disable middle\-button emulation\N'46'
+.TP 4
+\fB\-\-name\fR=\fIREGEX\fR
+Match \fIREGEX\fR, a PCRE regex, against the device name\N'46'
+.TP 4
+\fB\-\-natural\-scroll\fR=\fIOPTION\fR
+Enable or disable the natural scroll direction\N'46'
+.TP 4
+\fB\-\-scroll\-button\fR=\fIBUTTON\fR
+Set the button that starts on\-button\-down scroll\N'46' The value is one of \fBBtn_0\fR, \fBBtn_1\fR, \fBBtn_2\fR, \fBBtn_3\fR, \fBBtn_4\fR, \fBBtn_5\fR, \fBBtn_6\fR, \fBBtn_7\fR, \fBBtn_8\fR, \fBBtn_9\fR, \fBBtn_left\fR, \fBBtn_right\fR, \fBBtn_middle\fR, \fBBtn_side\fR, \fBBtn_extra\fR, \fBBtn_forward\fR, \fBBtn_back\fR or \fBBtn_task\fR
+.TP 4
+\fB\-\-scroll\-button\-lock\fR=\fIOPTION\fR
+Enable or disable the scroll button lock\N'46' With the lock, the scroll button toggles, and you do not hold it\N'46'
+.TP 4
+\fB\-\-scroll\-factor\fR=\fIFACTOR\fR
+Multiply the scroll distance by \fIFACTOR\fR\N'46'
+.TP 4
+\fB\-\-scroll\-method\fR=\fIMETHOD\fR
+Set the scroll method of the device\N'46' The value is one of \fBno\-scroll\fR, \fBtwo\-finger\fR, \fBedge\fR or \fBon\-button\-down\fR
+.TP 4
+\fB\-\-send\-events\fR=\fIOPTION\fR
+Set the send\-events mode of the device\N'46' The value is one of \fBenabled\fR, \fBdisabled\fR or \fBdisabled\-on\-external\-mouse\fR
 .SH "INPUT POINTER"
 .P
 Pointer operations and settings
@@ -495,7 +544,7 @@ List the input rules
 \fBmouse\fR [\fIOPTION\fR]…
 Add or update a mouse rule
 .TP 4
-\fBremove\fR [\fIOPTION\fR]… \fIINDEX\fR
+\fBremove\fR [\fIOPTION\fR]… \fIINDEX[,INDEX\N'46'\N'46'\N'46']\fR
 Remove an input rule
 .TP 4
 \fBtouchpad\fR [\fIOPTION\fR]…
@@ -564,17 +613,81 @@ Set the send\-events mode of the device\N'46' The value is one of \fBenabled\fR,
 Remove an input rule
 .SS SYNOPSIS
 .P
-\fBoxctl input rules remove\fR [\fIOPTION\fR]… \fIINDEX\fR
+\fBoxctl input rules remove\fR [\fIOPTION\fR]… \fIINDEX[,INDEX\N'46'\N'46'\N'46']\fR
 .SS ARGUMENTS
 .TP 4
-\fIINDEX\fR (required)
-The rule index from the \fBlist\fR output\N'46'
+\fIINDEX[,INDEX\N'46'\N'46'\N'46']\fR (required)
+The input rule(s) by index\N'46' See existing rules and their index with \fBoxctl input rules list\fR\N'46' May be a single index \fB3\fR or a comma separated list \fB2,3,5\fR\N'46'
 .SH "INPUT RULES TOUCHPAD"
 .P
 Add or update a touchpad rule
 .SS SYNOPSIS
 .P
 \fBoxctl input rules touchpad\fR [\fIOPTION\fR]…
+.SS OPTIONS
+.TP 4
+\fB\-\-accel\-profile\fR=\fIPROFILE\fR
+Set the pointer acceleration profile\N'46' The value is one of \fBnone\fR, \fBflat\fR, \fBadaptive\fR or \fBcustom\fR
+.TP 4
+\fB\-\-accel\-speed\fR=\fISPEED\fR
+Set the pointer acceleration speed\N'46' The range is \-1\N'46'0 to 1\N'46'0\N'46'
+.TP 4
+\fB\-\-click\-method\fR=\fIMETHOD\fR
+Set the click method of the touchpad\N'46' The value is one of \fBnone\fR, \fBbutton\-areas\fR or \fBclickfinger\fR
+.TP 4
+\fB\-\-clickfinger\-button\-map\fR=\fIBUTTON\fR
+Set the button order for clicks with one, two, or three fingers\N'46' The value is either \fBleft\-right\-middle\fR or \fBleft\-middle\-right\fR
+.TP 4
+\fB\-\-disable\-while\-trackpointing\fR=\fIOPTION\fR
+Enable or disable the disable\-while\-trackpointing feature\N'46'
+.TP 4
+\fB\-\-disable\-while\-typing\fR=\fIOPTION\fR
+Enable or disable the disable\-while\-typing feature\N'46'
+.TP 4
+\fB\-\-drag\fR=\fIOPTION\fR
+Enable or disable tap\-and\-drag\N'46'
+.TP 4
+\fB\-\-drag\-lock\fR=\fIOPTION\fR
+Set the drag lock mode for tap\-and\-drag\N'46' The value is one of \fBdisabled\fR, \fBenabled\-timeout\fR or \fBenabled\-sticky\fR
+.TP 4
+\fB\-i\fR, \fB\-\-ignore\-case\fR
+Match \fIPATTERN\fR case\-insensitively\N'46'
+.TP 4
+\fB\-\-left\-handed\fR=\fIOPTION\fR
+Enable or disable the left\-handed button layout\N'46'
+.TP 4
+\fB\-\-middle\-emulation\fR=\fIOPTION\fR
+Enable or disable middle\-button emulation\N'46'
+.TP 4
+\fB\-\-name\fR=\fIREGEX\fR
+Match \fIREGEX\fR, a PCRE regex, against the device name\N'46'
+.TP 4
+\fB\-\-natural\-scroll\fR=\fIOPTION\fR
+Enable or disable the natural scroll direction\N'46'
+.TP 4
+\fB\-\-scroll\-factor\fR=\fIFACTOR\fR
+Multiply the scroll distance by \fIFACTOR\fR\N'46'
+.TP 4
+\fB\-\-scroll\-method\fR=\fIMETHOD\fR
+Set the scroll method of the device\N'46' The value is one of \fBno\-scroll\fR, \fBtwo\-finger\fR, \fBedge\fR or \fBon\-button\-down\fR
+.TP 4
+\fB\-\-send\-events\fR=\fIOPTION\fR
+Set the send\-events mode of the device\N'46' The value is one of \fBenabled\fR, \fBdisabled\fR or \fBdisabled\-on\-external\-mouse\fR
+.TP 4
+\fB\-\-tap\fR=\fIOPTION\fR
+Enable or disable tap\-to\-click\N'46'
+.TP 4
+\fB\-\-tap\-button\-map\fR=\fIBUTTON\fR
+Set the button order for taps with one, two, or three fingers\N'46' The value is either \fBleft\-right\-middle\fR or \fBleft\-middle\-right\fR
+.TP 4
+\fB\-\-three\-finger\-drag\fR=\fIOPTION\fR
+Set the drag gesture with three or four fingers\N'46' The value is one of \fBdisabled\fR, \fBenabled\-3fg\fR or \fBenabled\-4fg\fR
+.SH "INPUT TOUCHPAD"
+.P
+Configure touchpad settings
+.SS SYNOPSIS
+.P
+\fBoxctl input touchpad\fR [\fIOPTION\fR]…
 .SS OPTIONS
 .TP 4
 \fB\-\-accel\-profile\fR=\fIPROFILE\fR
@@ -749,7 +862,7 @@ Set the floating seed of the output
 .SS ARGUMENTS
 .TP 4
 \fISEED\fR (required)
-The size used when a window becomes floating and has no remembered placement\N'46' A pixel value (e\N'46'g\N'46', \fB800\fR) or a percentage of the usable area (e\N'46'g\N'46', \fB50%\fR)\N'46' The value applies to both dimensions\N'46' The window is centered\N'46'
+The size used when a window becomes floating and has no remembered placement\N'46' A pixel value (e\N'46'g\N'46', \fB800\fR) or a percentage of the usable area (e\N'46'g\N'46', \fB50%\fR)\N'46' The value applies to both dimensions\N'46' The window is centered\N'46' 
 .SS OPTIONS
 .TP 4
 \fB\-\-all\fR
@@ -1689,20 +1802,20 @@ Swap windows between outputs
 \fBoxctl output swap\fR \fICOMMAND\fR …
 .SS COMMANDS
 .TP 4
-\fBall\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+\fBall\fR [\fIOPTION\fR]… [\fISOURCE\fR] [\fIDESTINATION\fR]
 Swap all windows between two outputs
 .TP 4
-\fBtags\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+\fBtags\fR [\fIOPTION\fR]… [\fISOURCE\fR] [\fIDESTINATION\fR]
 Swap windows on TAGS between two outputs
 .TP 4
-\fBvisible\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+\fBvisible\fR [\fIOPTION\fR]… [\fISOURCE\fR] [\fIDESTINATION\fR]
 Swap all visible windows between two outputs
 .SH "OUTPUT SWAP ALL"
 .P
 Swap all windows between two outputs
 .SS SYNOPSIS
 .P
-\fBoxctl output swap all\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+\fBoxctl output swap all\fR [\fIOPTION\fR]… [\fISOURCE\fR] [\fIDESTINATION\fR]
 .SS OPTIONS
 .TP 4
 \fB\-\-follow\fR
@@ -1721,7 +1834,7 @@ Window takes the active tags on the destination output\N'46'
 Swap windows on TAGS between two outputs
 .SS SYNOPSIS
 .P
-\fBoxctl output swap tags\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+\fBoxctl output swap tags\fR [\fIOPTION\fR]… [\fISOURCE\fR] [\fIDESTINATION\fR]
 .SS OPTIONS
 .TP 4
 \fB\-\-follow\fR
@@ -1740,7 +1853,7 @@ Window takes the active tags on the destination output\N'46'
 Swap all visible windows between two outputs
 .SS SYNOPSIS
 .P
-\fBoxctl output swap visible\fR [\fIOPTION\fR]… [\fIOUTPUT\fR] [\fIOUTPUT\fR]
+\fBoxctl output swap visible\fR [\fIOPTION\fR]… [\fISOURCE\fR] [\fIDESTINATION\fR]
 .SS OPTIONS
 .TP 4
 \fB\-\-follow\fR
@@ -3311,7 +3424,7 @@ Add a window rule
 \fBlist\fR [\fB\-\-expand\fR] [\fB\-\-fields\fR=\fIFIELDS\fR] [\fB\-\-json\fR] [\fIOPTION\fR]…
 List the window rules
 .TP 4
-\fBremove\fR [\fIOPTION\fR]… \fIINDEX\fR
+\fBremove\fR [\fIOPTION\fR]… \fIINDEX[,INDEX\N'46'\N'46'\N'46']\fR
 Remove a window rule
 .SH "WINDOW RULES ADD"
 .P
@@ -3407,11 +3520,11 @@ Print the raw JSON reply\N'46'
 Remove a window rule
 .SS SYNOPSIS
 .P
-\fBoxctl window rules remove\fR [\fIOPTION\fR]… \fIINDEX\fR
+\fBoxctl window rules remove\fR [\fIOPTION\fR]… \fIINDEX[,INDEX\N'46'\N'46'\N'46']\fR
 .SS ARGUMENTS
 .TP 4
-\fIINDEX\fR (required)
-The rule index from the \fBlist\fR output\N'46'
+\fIINDEX[,INDEX\N'46'\N'46'\N'46']\fR (required)
+The window rule(s) by index\N'46' See existing rules and their index with \fBoxctl window rules list\fR\N'46' May be a single index \fB3\fR or a comma separated list \fB2,3,5\fR\N'46'
 .SH "WINDOW SCRATCHPAD"
 .P
 Manage window scratchpads
