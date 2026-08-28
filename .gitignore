@@ -12,3 +12,4 @@ result-*
 # Other dot dirs (editor configs, etc.)
 .*/
 docs/_ext/__pycache__/*
+.pre-commit-config.yaml
