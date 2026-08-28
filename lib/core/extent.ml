@@ -18,17 +18,17 @@ let to_string = function
 ;;
 
 let of_string str =
-  let error = Error (Printf.sprintf "bad extent: %s" str) in
+  let error s = Error (Printf.sprintf "bad extent: %s" s) in
   match String.trim str with
-  | s when String.ends_with ~suffix:"%" s ->
-    (match String.split_on_char '%' s with
+  | str' when String.ends_with ~suffix:"%" str' ->
+    (match String.split_on_char '%' str' with
      | s :: _ ->
        (match float_of_string_opt s with
-        | None -> error
+        | None -> error str'
         | Some f -> Ok (Pct f))
-     | _ -> error)
-  | s ->
-    (match int_of_string_opt s with
-     | None -> error
+     | _ -> error str')
+  | str' ->
+    (match int_of_string_opt str' with
+     | None -> error str'
      | Some n -> Ok (Px n))
 ;;

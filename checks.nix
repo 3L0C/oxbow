@@ -24,11 +24,17 @@
       };
       end-of-file-fixer = {
         enable = true;
-        excludes = ["^protocols/.*\\.ml$"];
+        excludes = [
+          "^protocols/.*\\.ml$"
+          "^test/.*\\.expected$"
+        ];
       };
       trim-trailing-whitespace = {
         enable = true;
-        excludes = ["^protocols/.*\\.ml$"];
+        excludes = [
+          "^protocols/.*\\.ml$"
+          "^test/.*\\.expected$"
+        ];
       };
     };
   };

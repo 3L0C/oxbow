@@ -14,8 +14,13 @@ let setup () =
 ;;
 
 let main () =
+  let argv =
+    match Array.to_list Sys.argv with
+    | [] | [ _ ] -> Sys.argv
+    | x :: xs -> x :: Ctl_cli.preparse_args xs |> Array.of_list
+  in
   setup ();
-  Cmd.eval' @@ Cmd_oxctl.cmd ~version
+  Cmd.eval' ~argv @@ Cmd_oxctl.cmd ~version
 ;;
 
 let () = if !Sys.interactive then () else exit (main ())

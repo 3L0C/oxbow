@@ -364,3 +364,6 @@ val query_term
 val const_leaves
   :  (string * string * Oxbow_ipc.Command.t) list
   -> (int Cmdliner.Cmd.t * int Cmdliner.Cmd.t) list
+
+(** [preparse_args args] is a disambiguated argument list. *)
+val preparse_args : string list -> string list

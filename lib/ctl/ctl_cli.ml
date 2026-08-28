@@ -43,7 +43,8 @@ let direction_targets =
 ;;
 
 let delta_conv of_string pp =
-  let parser = function
+  let parser str =
+    match String.trim str with
     | "" -> Error "empty delta"
     | s when s.[0] = '+' || s.[0] = '-' ->
       (match of_string s with
@@ -1133,4 +1134,46 @@ let query_term ?render term =
 
 let const_leaves l =
   List.map (fun (name, doc, c) -> cmd_pair ~name ~doc (Cmdliner.Term.const c)) l
+;;
+
+let disambiguate_opt f arg =
+  match f arg with
+  | Some _ when String.starts_with ~prefix:"-" arg -> Some (" " ^ arg)
+  | _ -> None
+;;
+
+let disambiguate_res f arg =
+  match f arg with
+  | Ok _ when String.starts_with ~prefix:"-" arg -> Some (" " ^ arg)
+  | _ -> None
+;;
+
+let disambiguate_int_delta = disambiguate_opt int_of_string_opt
+let disambiguate_float_delta = disambiguate_opt float_of_string_opt
+let disambiguate_extent = disambiguate_res Extent.of_string
+
+let disambiguate_extent_pair arg =
+  match String.split_on_char ',' arg with
+  | s :: _ -> disambiguate_res Extent.of_string s |> Option.map (fun _ -> " " ^ arg)
+  | _ -> None
+;;
+
+let disambiguate_arg arg =
+  List.find_map
+    (fun f -> f arg)
+    [ disambiguate_int_delta
+    ; disambiguate_float_delta
+    ; disambiguate_extent
+    ; disambiguate_extent_pair
+    ]
+  |> Option.value ~default:arg
+;;
+
+let preparse_args args =
+  let rec aux acc = function
+    | [] -> List.rev acc
+    | "--" :: _ as xs -> List.rev acc @ xs
+    | x :: xs -> aux (disambiguate_arg x :: acc) xs
+  in
+  aux [] args
 ;;

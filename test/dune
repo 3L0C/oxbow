@@ -8,6 +8,7 @@
   test_core
   test_layouts
   test_events
+  test_ctl_cli
   test_scenario_swap
   test_scenario_overview
   test_scenario_follow

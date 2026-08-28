@@ -1,0 +1,356 @@
+args : "oxctl gaps inner 10"
+args': "oxctl gaps inner 10"
+args = args': true
+
+args : "oxctl gaps outer 20"
+args': "oxctl gaps outer 20"
+args = args': true
+
+args : "oxctl border width 4"
+args': "oxctl border width 4"
+args = args': true
+
+args : "oxctl border color focused '#7fb4ca'"
+args': "oxctl border color focused '#7fb4ca'"
+args = args': true
+
+args : "oxctl border color unfocused '#727169'"
+args': "oxctl border color unfocused '#727169'"
+args = args': true
+
+args : "oxctl border color urgent '#ff5d62'"
+args': "oxctl border color urgent '#ff5d62'"
+args = args': true
+
+args : "oxctl input pointer follow not-scrolling"
+args': "oxctl input pointer follow not-scrolling"
+args = args': true
+
+args : "oxctl input pointer warp on"
+args': "oxctl input pointer warp on"
+args = args': true
+
+args : "oxctl input keyboard repeat 50 250"
+args': "oxctl input keyboard repeat 50 250"
+args = args': true
+
+args : "oxctl input cursor theme 'BreezeX-RosePineDawn-Linux' 24"
+args': "oxctl input cursor theme 'BreezeX-RosePineDawn-Linux' 24"
+args = args': true
+
+args : "oxctl output column width 0.95"
+args': "oxctl output column width 0.95"
+args = args': true
+
+args : "oxctl layout tiling nmaster 1"
+args': "oxctl layout tiling nmaster 1"
+args = args': true
+
+args : "oxctl layout tiling mfact 0.60"
+args': "oxctl layout tiling mfact 0.60"
+args = args': true
+
+args : "oxctl layout scrolling align visible --all"
+args': "oxctl layout scrolling align visible --all"
+args = args': true
+
+args : "oxctl layout scrolling default-width --all 0.95"
+args': "oxctl layout scrolling default-width --all 0.95"
+args = args': true
+
+args : "oxctl layout scrolling --output DP-3"
+args': "oxctl layout scrolling --output DP-3"
+args = args': true
+
+args : "oxctl bind window column default to Super+a"
+args': "oxctl bind window column default to Super+a"
+args = args': true
+
+args : "oxctl bind window column consume to Super+c"
+args': "oxctl bind window column consume to Super+c"
+args = args': true
+
+args : "oxctl bind window column release to Super+x"
+args': "oxctl bind window column release to Super+x"
+args = args': true
+
+args : "oxctl bind window column cycle to Super+d"
+args': "oxctl bind window column cycle to Super+d"
+args = args': true
+
+args : "oxctl bind layout scrolling centered to Super+f"
+args': "oxctl bind layout scrolling centered to Super+f"
+args = args': true
+
+args : "oxctl bind layout scrolling visible to Super+p"
+args': "oxctl bind layout scrolling visible to Super+p"
+args = args': true
+
+args : "oxctl bind layout scrolling left to Super+b"
+args': "oxctl bind layout scrolling left to Super+b"
+args = args': true
+
+args : "oxctl bind window toggle floating to Super+Shift+space"
+args': "oxctl bind window toggle floating to Super+Shift+space"
+args = args': true
+
+args : "oxctl bind window toggle fake-fullscreen to Super+Shift+i"
+args': "oxctl bind window toggle fake-fullscreen to Super+Shift+i"
+args = args': true
+
+args : "oxctl bind window toggle maximize to Super+Shift+f"
+args': "oxctl bind window toggle maximize to Super+Shift+f"
+args = args': true
+
+args : "oxctl bind window toggle sticky occupied to Super+Shift+s"
+args': "oxctl bind window toggle sticky occupied to Super+Shift+s"
+args = args': true
+
+args : "oxctl bind window toggle swallow to Super+w"
+args': "oxctl bind window toggle swallow to Super+w"
+args = args': true
+
+args : "oxctl bind tag toggle 1 to Super+Shift+1"
+args': "oxctl bind tag toggle 1 to Super+Shift+1"
+args = args': true
+
+args : "oxctl bind tag toggle 2 to Super+Shift+2"
+args': "oxctl bind tag toggle 2 to Super+Shift+2"
+args = args': true
+
+args : "oxctl bind tag toggle 3 to Super+Shift+3"
+args': "oxctl bind tag toggle 3 to Super+Shift+3"
+args = args': true
+
+args : "oxctl bind tag toggle 4 to Super+Shift+4"
+args': "oxctl bind tag toggle 4 to Super+Shift+4"
+args = args': true
+
+args : "oxctl bind tag toggle 5 to Super+Shift+5"
+args': "oxctl bind tag toggle 5 to Super+Shift+5"
+args = args': true
+
+args : "oxctl bind tag toggle 6 to Super+Shift+6"
+args': "oxctl bind tag toggle 6 to Super+Shift+6"
+args = args': true
+
+args : "oxctl bind tag toggle 7 to Super+Shift+7"
+args': "oxctl bind tag toggle 7 to Super+Shift+7"
+args = args': true
+
+args : "oxctl bind tag toggle 8 to Super+Shift+8"
+args': "oxctl bind tag toggle 8 to Super+Shift+8"
+args = args': true
+
+args : "oxctl bind tag toggle 9 to Super+Shift+9"
+args': "oxctl bind tag toggle 9 to Super+Shift+9"
+args = args': true
+
+args : "oxctl window rules add --app-id=kitten-scratch --scratchpad=kitten-scratch --move-to=25%,25% --resize-to=50%,50%"
+args': "oxctl window rules add --app-id=kitten-scratch --scratchpad=kitten-scratch --move-to=25%,25% --resize-to=50%,50%"
+args = args': true
+
+args : "oxctl window rules add --app-id=kitten-scratch --scratchpad=kitten-scratch --move-to 25%,-25% --resize-to -50%,50%"
+args': "oxctl window rules add --app-id=kitten-scratch --scratchpad=kitten-scratch --move-to 25%,-25% --resize-to  -50%,50%"
+args = args': false
+
+args : "oxctl window rules add --app-id=kitten-scratch --scratchpad=kitten-scratch --move-to -25,25 --resize-to 50,-50"
+args': "oxctl window rules add --app-id=kitten-scratch --scratchpad=kitten-scratch --move-to  -25,25 --resize-to 50,-50"
+args = args': false
+
+args : "oxctl bind spawn 'oxctl scratchpad toggle kitten-scratch || kitty --app-id=kitten-scratch -o font_size=24' to Super+Shift+Return"
+args': "oxctl bind spawn 'oxctl scratchpad toggle kitten-scratch || kitty --app-id=kitten-scratch -o font_size=24' to Super+Shift+Return"
+args = args': true
+
+args : "oxctl bind output overview cycle next --until-release=Super to Super+n"
+args': "oxctl bind output overview cycle next --until-release=Super to Super+n"
+args = args': true
+
+args : "oxctl bind output overview cycle prev --until-release=Super to Super+Shift+n"
+args': "oxctl bind output overview cycle prev --until-release=Super to Super+Shift+n"
+args = args': true
+
+args : "oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 --rev to Shift+Control+Alt+space"
+args': "oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 --rev to Shift+Control+Alt+space"
+args = args': true
+
+args : "oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 to Shift+Control+Alt+parenright"
+args': "oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 to Shift+Control+Alt+parenright"
+args = args': true
+
+args : "oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 to Shift+Control+Alt+j"
+args': "oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 to Shift+Control+Alt+j"
+args = args': true
+
+args : "oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 --rev to Shift+Control+Alt+k"
+args': "oxctl bind output swap tags --ring HDMI-A-1,DP-3,DP-1 --rev to Shift+Control+Alt+k"
+args = args': true
+
+args : "oxctl bind window tag set 1 to Super+Control+1"
+args': "oxctl bind window tag set 1 to Super+Control+1"
+args = args': true
+
+args : "oxctl bind window tag set 2 to Super+Control+2"
+args': "oxctl bind window tag set 2 to Super+Control+2"
+args = args': true
+
+args : "oxctl bind window tag set 3 to Super+Control+3"
+args': "oxctl bind window tag set 3 to Super+Control+3"
+args = args': true
+
+args : "oxctl bind window tag set 4 to Super+Control+4"
+args': "oxctl bind window tag set 4 to Super+Control+4"
+args = args': true
+
+args : "oxctl bind window tag set 5 to Super+Control+5"
+args': "oxctl bind window tag set 5 to Super+Control+5"
+args = args': true
+
+args : "oxctl bind window tag set 6 to Super+Control+6"
+args': "oxctl bind window tag set 6 to Super+Control+6"
+args = args': true
+
+args : "oxctl bind window tag set 7 to Super+Control+7"
+args': "oxctl bind window tag set 7 to Super+Control+7"
+args = args': true
+
+args : "oxctl bind window tag set 8 to Super+Control+8"
+args': "oxctl bind window tag set 8 to Super+Control+8"
+args = args': true
+
+args : "oxctl bind window tag set 9 to Super+Control+9"
+args': "oxctl bind window tag set 9 to Super+Control+9"
+args = args': true
+
+args : "oxctl window rules add --tags 3 --app-id=firefox"
+args': "oxctl window rules add --tags 3 --app-id=firefox"
+args = args': true
+
+args : "oxctl window rules add --tags 2 --app-id=emacs"
+args': "oxctl window rules add --tags 2 --app-id=emacs"
+args = args': true
+
+args : "oxctl window rules add --tags 9 --app-id=org.keepassxc.KeePassXC"
+args': "oxctl window rules add --tags 9 --app-id=org.keepassxc.KeePassXC"
+args = args': true
+
+args : "oxctl window rules add --tags 4 --app-id=vesktop"
+args': "oxctl window rules add --tags 4 --app-id=vesktop"
+args = args': true
+
+args : "oxctl window rules add --tags 4 --app-id=steam"
+args': "oxctl window rules add --tags 4 --app-id=steam"
+args = args': true
+
+args : "oxctl window rules add --swallow=terminal --app-id=kitty"
+args': "oxctl window rules add --swallow=terminal --app-id=kitty"
+args = args': true
+
+args : "oxctl window rules add --title=Picture-in-Picture --spawn-position=end --spawn-focus=disabled --resize-to=35%,35% --move-to=64%,62% --sticky=occupied"
+args': "oxctl window rules add --title=Picture-in-Picture --spawn-position=end --spawn-focus=disabled --resize-to=35%,35% --move-to=64%,62% --sticky=occupied"
+args = args': true
+
+args : "oxctl keymap mode declare passthrough"
+args': "oxctl keymap mode declare passthrough"
+args = args': true
+
+args : "oxctl bind keymap mode enter passthrough to Super+F1"
+args': "oxctl bind keymap mode enter passthrough to Super+F1"
+args = args': true
+
+args : "oxctl bind keymap mode enter --mode=passthrough normal to Super+F1"
+args': "oxctl bind keymap mode enter --mode=passthrough normal to Super+F1"
+args = args': true
+
+args : "oxctl bind session exit to Super+Shift+q"
+args': "oxctl bind session exit to Super+Shift+q"
+args = args': true
+
+args : "oxctl bind output focus match --name=^HDMI-A-1$ to Shift+Control+Alt+m"
+args': "oxctl bind output focus match --name=^HDMI-A-1$ to Shift+Control+Alt+m"
+args = args': true
+
+args : "oxctl bind output focus match --name=^DP-3$ to Shift+Control+Alt+n"
+args': "oxctl bind output focus match --name=^DP-3$ to Shift+Control+Alt+n"
+args = args': true
+
+args : "oxctl bind output focus match --name=^DP-1$ to Shift+Control+Alt+e"
+args': "oxctl bind output focus match --name=^DP-1$ to Shift+Control+Alt+e"
+args = args': true
+
+args : "oxctl bind window send next --take to Shift+Control+Alt+l"
+args': "oxctl bind window send next --take to Shift+Control+Alt+l"
+args = args': true
+
+args : "oxctl bind window send prev --take to Shift+Control+Alt+h"
+args': "oxctl bind window send prev --take to Shift+Control+Alt+h"
+args = args': true
+
+args : "oxctl bind window tag shift next --occupied to Super+Shift+l"
+args': "oxctl bind window tag shift next --occupied to Super+Shift+l"
+args = args': true
+
+args : "oxctl bind window tag shift prev --occupied to Super+Shift+h"
+args': "oxctl bind window tag shift prev --occupied to Super+Shift+h"
+args = args': true
+
+args : "oxctl bind window tag shift next --follow to Super+Control+l"
+args': "oxctl bind window tag shift next --follow to Super+Control+l"
+args = args': true
+
+args : "oxctl bind window tag shift prev --follow to Super+Control+h"
+args': "oxctl bind window tag shift prev --follow to Super+Control+h"
+args = args': true
+
+args : "oxctl bind spawn 'oxctl window resize to 35% 35% && oxctl window move to 64% 62%' to Super+z"
+args': "oxctl bind spawn 'oxctl window resize to 35% 35% && oxctl window move to 64% 62%' to Super+z"
+args = args': true
+
+args : "oxctl bind layout tiling mfact -0.05 to Super+Control+h"
+args': "oxctl bind layout tiling mfact  -0.05 to Super+Control+h"
+args = args': false
+
+args : "oxctl bind layout tiling mfact +0.05 to Super+Control+h"
+args': "oxctl bind layout tiling mfact +0.05 to Super+Control+h"
+args = args': true
+
+args : "oxctl bind layout tiling mfact 0.05 to Super+Control+h"
+args': "oxctl bind layout tiling mfact 0.05 to Super+Control+h"
+args = args': true
+
+args : "oxctl bind layout tiling mfact 0.05 to Super+Control+h"
+args': "oxctl bind layout tiling mfact 0.05 to Super+Control+h"
+args = args': true
+
+args : "oxctl bind window move down -10% to Super+Shift+up"
+args': "oxctl bind window move down  -10% to Super+Shift+up"
+args = args': false
+
+args : "oxctl bind window move down +5% to Super+Shift+up"
+args': "oxctl bind window move down +5% to Super+Shift+up"
+args = args': true
+
+args : "oxctl bind layout tiling mfact -- -0.05 to Super+Control+h"
+args': "oxctl bind layout tiling mfact -- -0.05 to Super+Control+h"
+args = args': true
+
+args : "oxctl bind layout tiling mfact -- +0.05 to Super+Control+h"
+args': "oxctl bind layout tiling mfact -- +0.05 to Super+Control+h"
+args = args': true
+
+args : "oxctl bind layout tiling mfact -- 0.05 to Super+Control+h"
+args': "oxctl bind layout tiling mfact -- 0.05 to Super+Control+h"
+args = args': true
+
+args : "oxctl bind layout tiling mfact -- 0.05 to Super+Control+h"
+args': "oxctl bind layout tiling mfact -- 0.05 to Super+Control+h"
+args = args': true
+
+args : "oxctl bind window move down -- -10% to Super+Shift+up"
+args': "oxctl bind window move down -- -10% to Super+Shift+up"
+args = args': true
+
+args : "oxctl bind window move down -- +5% to Super+Shift+up"
+args': "oxctl bind window move down -- +5% to Super+Shift+up"
+args = args': true
+
