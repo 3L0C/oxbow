@@ -48,9 +48,9 @@
   (logs
    (>= 0.10))
   (ppx_yojson_conv
-   (>= 0.17))
+   (>= v0.17))
   (ppx_yojson_conv_lib
-   (>= 0.17))
+   (>= v0.17))
   (re
    (>= 1.12))
   (wayland
